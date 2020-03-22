@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "248240010646",
+    "firebase_url": "https://influenceme-dev.firebaseio.com",
+    "project_id": "influenceme-dev",
+    "storage_bucket": "influenceme-dev.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:248240010646:android:4830b9635c728c99b519b7",
+        "android_client_info": {
+          "package_name": "com.influenceme"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "248240010646-j4da5g0qsk8pv3uirb4kb3psr6hqt8np.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.influenceme",
+            "certificate_hash": "5e8f16062ea3cd2c4a0d547876baa6f38cabf625"
+          }
+        },
+        {
+          "client_id": "248240010646-s9pf2j6efnlu7img60d4q01rdd6digkb.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCIYEkwzO57S0Jjt1jUIUIkJu9ieNEw6EI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "248240010646-s9pf2j6efnlu7img60d4q01rdd6digkb.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
