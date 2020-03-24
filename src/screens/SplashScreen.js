@@ -1,13 +1,32 @@
 import React, { Component } from 'react';
 import { View, StyleSheet } from 'react-native';
 import AppText from '../components/AppText';
+import firebase from 'react-native-firebase';
+
 class SplashScreen extends Component {
 
     componentDidMount() {
-        setTimeout(()=>{
-            this.props.navigation.navigate('Main');
-        },1500)
+        const user = firebase.auth().currentUser;
+        if (user) this.props.navigation.navigate('User');
+        else this.props.navigation.navigate('Home');
+
+        /* firebase.auth().onAuthStateChanged(user => {
+            console.log('Splash onAuthStateChange>', user);
+            if (user && !user.isAnonymous) {
+                this.props.navigation.navigate('User');
+            } else {
+                this.props.navigation.navigate('Home');
+            }
+        }) */
+        setTimeout(() => {
+            // Go to some screen acording to some logic
+        }, 1500)
     }
+
+    componentWillUnmount() {
+        console.log('Splash unmount')
+    }
+
     render() {
         return (
             <View style={styles.container}>

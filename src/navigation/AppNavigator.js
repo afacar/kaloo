@@ -2,12 +2,13 @@ import { createAppContainer, createSwitchNavigator } from 'react-navigation';
 
 import SplashScreen from '../screens/SplashScreen';
 import MainNavigator from './MainNavigator';
-
+import UserNavigator from "./UserNavigator";
 
 const AppNavigator = createSwitchNavigator(
     {
         Splash: { screen: SplashScreen },
-        Main: { screen: MainNavigator},
+        Main: { screen: MainNavigator },
+        User: { screen: UserNavigator },
     },
     {
         initialRouteName: "Splash",
@@ -15,5 +16,5 @@ const AppNavigator = createSwitchNavigator(
     }
 );
 
-const App = createAppContainer(AppNavigator);
-export default App;
+const AppContainer = createAppContainer(AppNavigator);
+export default AppContainer;
