@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { View, StyleSheet } from 'react-native';
 import AppText from '../components/AppText';
 import { Input, Button } from 'react-native-elements';
+
 class MainScreen extends Component {
 
     render() {
@@ -14,8 +15,8 @@ class MainScreen extends Component {
                 <View>
                     <AppText>Or SignUp as Influencer</AppText>
                     <Button
-                        title="SignUp"
-                        onPress={()=> this.props.navigation.navigate('Signup')}
+                        title="Create Event"
+                        onPress={()=> this.props.navigation.navigate('Register')}
                     />
                 </View>
             </View>

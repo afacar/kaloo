@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, StyleSheet } from 'react-native';
+import { View, StyleSheet, PermissionsAndroid } from 'react-native';
 import AppText from '../components/AppText';
 import { Input, Button } from 'react-native-elements';
 import firebase from "react-native-firebase";
@@ -13,14 +13,30 @@ class EventListScreen extends Component {
             } else {
                 this.props.navigation.navigate('Splash');
             }
-        })
+        });
+
+        this.checkCameraPermission()
+    }
+
+    checkCameraPermission = async () => {
+        try {
+            const granted = await PermissionsAndroid.request(
+                PermissionsAndroid.PERMISSIONS.CAMERA);
+            if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+                console.log('You can use the camera');
+            } else {
+                console.log('Camera permission denied');
+            }
+        } catch (err) {
+            console.warn(err);
+        }
     }
 
     componentWillUnmount() {
-        if(this.authListener) {
+        if (this.authListener) {
             console.log('EventList Unmounts');
             this.authListener();
-        } 
+        }
     }
 
     render() {

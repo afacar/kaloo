@@ -27,7 +27,6 @@ class SignInScreen extends Component {
                     leftIcon={{ type: 'font-awesome', name: 'chevron-right' }}
                     onChangeText={email => this.setState({email})}
                     value={this.state.email}
-                    disabled
                 />
                 <Input
                     placeholder='Enter Password'
