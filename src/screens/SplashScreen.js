@@ -6,9 +6,9 @@ import firebase from 'react-native-firebase';
 class SplashScreen extends Component {
 
     componentDidMount() {
-        const user = firebase.auth().currentUser;
-        if (user) this.props.navigation.navigate('User');
-        else this.props.navigation.navigate('Home');
+        // const user = firebase.auth().currentUser;
+        // if (user) this.props.navigation.navigate('User');
+        // else this.props.navigation.navigate('Home');
 
         /* firebase.auth().onAuthStateChanged(user => {
             console.log('Splash onAuthStateChange>', user);
@@ -20,6 +20,7 @@ class SplashScreen extends Component {
         }) */
         setTimeout(() => {
             // Go to some screen acording to some logic
+            this.props.navigation.navigate('DummyMain');
         }, 1500)
     }
 

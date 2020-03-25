@@ -1,5 +1,5 @@
 export default {
-    GOOGLE_PLACES_API_KEY: 'AIzaSyCjVpBHGUmZhPME8Q0D0nvU9Y7Xb0Ez8QQ',
     APPLICATION_NAME: 'influenceMe',
-    APP_FONT: 'San Francisco'
+    APP_FONT: 'San Francisco',
+    AGORA_APP_ID:'a0ee6b5742ca4cfe84d1e9fa4c97b946'
   }
