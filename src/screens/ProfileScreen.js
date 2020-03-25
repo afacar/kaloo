@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, StyleSheet } from 'react-native';
+import { View, StyleSheet, ActivityIndicator } from 'react-native';
 import AppText from '../components/AppText';
 import { Input, Button, Avatar } from 'react-native-elements';
 import firebase from "react-native-firebase";
@@ -9,10 +9,10 @@ const db = firebase.firestore();
 
 class ProfileScreen extends Component {
     user = firebase.auth().currentUser
-    state = { email: this.user.email, displayName: this.user.displayName, photoUrl: null }
+    state = { email: this.user.email, displayName: this.user.displayName, photoURL: this.user.photoURL }
 
     componentDidMount() {
-        this.fetchProfile = db.doc(`users/${this.user.uid}`).get().then(function(doc) {
+        /* this.fetchProfile = db.doc(`users/${this.user.uid}`).get().then(function(doc) {
             if (doc.exists) {
                 console.log("Document data:", doc.data());
             } else {
@@ -21,7 +21,7 @@ class ProfileScreen extends Component {
             }
         }).catch(function(error) {
             console.log("Error getting document:", error);
-        });
+        }); */
     }
 
     handleProfileUpdate = async () => {
@@ -79,25 +79,32 @@ class ProfileScreen extends Component {
                 if (Platform.OS === 'ios')
                     response.path = response.uri.replace("file://", '');
                 console.log('response', response);
-                this.setState({ photoUrl: response.uri })
+                this.setState({ photoURL: response.uri })
                 console.log('uploading avatar...')
-                await firebase.storage().ref(`users/${this.user.uid}/avatar/${this.user.uid}.jpg`).putFile(response.path);
+                let avatarRef = firebase.storage().ref(`users/${this.user.uid}/avatar/${this.user.uid}.jpg`)
+                await avatarRef.putFile(response.path);
                 console.log('avatar is uploaded!')
-
+                let newPhotoURL = await avatarRef.getDownloadURL();
+                await firebase.auth().currentUser.updateProfile({ photoURL: newPhotoURL })
+                this.setState({ photoURL: newPhotoURL })
+                console.log('newPhotoURL is Set!', newPhotoURL);
             }
         });
     }
 
     render() {
-        const { photoUrl } = this.state
+        const { photoURL } = this.state
         return (
             <View style={styles.container}>
                 <Avatar
-                    onPress={this.onAvatarPressed}
+                    //onPress={this.onAvatarPressed}
+                    renderPlaceholderContent={<ActivityIndicator />}
+                    onEditPress={this.onAvatarPressed}
                     size="xlarge"
                     rounded={true}
                     showEditButton={true}
-                    source={photoUrl ? {uri: photoUrl} : require('../assets/profile.png')}
+                    source={{ uri: photoURL }}
+                    
                 />
                 <View style={{ alignSelf: 'stretch', borderWidth: 4 }}>
                     <Input
