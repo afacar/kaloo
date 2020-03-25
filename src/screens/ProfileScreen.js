@@ -84,6 +84,7 @@ class ProfileScreen extends Component {
                 let avatarRef = firebase.storage().ref(`users/${this.user.uid}/avatar/${this.user.uid}.jpg`)
                 await avatarRef.putFile(response.path);
                 console.log('avatar is uploaded!')
+                // TODO: We need to get compressed avatar later
                 let newPhotoURL = await avatarRef.getDownloadURL();
                 await firebase.auth().currentUser.updateProfile({ photoURL: newPhotoURL })
                 this.setState({ photoURL: newPhotoURL })
