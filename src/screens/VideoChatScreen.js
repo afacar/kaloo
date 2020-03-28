@@ -81,6 +81,7 @@ export default class VideoChatScreen extends Component {
         // rtc object
 
         RtcEngine.on('userJoined', (data) => {
+            console.warn('user id', data.uid);
             const { peerIds } = this.state;
             if (peerIds.indexOf(data.uid) === -1) {
                 this.setState({
@@ -108,8 +109,10 @@ export default class VideoChatScreen extends Component {
         this.setState({
             uid: ticketID
         })
+        console.warn('channelName', channelName)
         RtcEngine.joinChannel(channelName, ticketID)
             .then((result) => {
+                console.warn('join success', result)
                 if (clientRole == 2) {
                 } else {
                     startLive(channelName);
@@ -202,7 +205,7 @@ export default class VideoChatScreen extends Component {
     renderTwoVideos() {
         return (
             // <View style={{ flex: 1 }}>
-            <AgoraView style={styles.localVideoBox} mode={1} showLocalVideo={true} />
+            <AgoraView style={{ flex: 1}} mode={1} showLocalVideo={true} />
             // </View>
         )
     }

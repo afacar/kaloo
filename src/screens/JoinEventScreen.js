@@ -3,6 +3,7 @@ import { View, StyleSheet, Image, Share } from 'react-native';
 import AppText from '../components/AppText';
 import { Input, Button, Text, Card } from 'react-native-elements';
 import { app } from '../constants';
+import { setEventListener, clearEventListener } from "../utils/EventHandler";
 
 class JoinEventScreen extends Component {
     event = this.props.navigation.getParam('event', '')
@@ -48,7 +49,7 @@ class JoinEventScreen extends Component {
 
     // This method navigates to video call screen
     joinCall = () => {
-        var { eventNumber } = this.props;
+        var { eventNumber } = this.state;
         // TODO send ticketID
         this.props.navigation.navigate('VideoChat', { channelProfile: 0, eventID: eventNumber + '', clientRole: 2 })
     }
