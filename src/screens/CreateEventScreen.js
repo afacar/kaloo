@@ -44,6 +44,7 @@ class CreateEventScreen extends Component {
         let { data: { eventNumber, eventLink } } = await createEvent(JSON.stringify(event));
         event.eventNumber = eventNumber
         event.eventLink = eventLink
+        event.status = 'SCHEDULED'
         console.log('Recieved created event:=>', event)
         // TODO: GOTO EVENT SCREEN
         this.props.navigation.navigate('MyEvent', { event });

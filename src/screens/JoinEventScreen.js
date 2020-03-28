@@ -9,6 +9,8 @@ class JoinEventScreen extends Component {
 
     componentDidMount() {
         console.log('Event state is', this.state)
+        // TODO: Listen for changes at Event
+        // event.status
     }
 
     onShare = async () => {
@@ -52,7 +54,7 @@ class JoinEventScreen extends Component {
                     <Text>Event Date: {eventDate.toDate().toLocaleString()}</Text>
                     <Text>Event Link: {eventLink}</Text>
                     <Button title='Share' onPress={this.onShare} />
-                    <Button title='Test Camera' onPress={this.onCamera} />
+                    <Button title='...waiting' onPress={this.onCamera} disabled />
                 </Card>
             </View >
         )
