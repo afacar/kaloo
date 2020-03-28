@@ -234,30 +234,37 @@ export default class VideoChatScreen extends Component {
             <View style={{ flex: 1 }}>
                 <StatusBar hidden={true} />
                 {
-                    <View style={{ flex: 1 }}>
+                    capacity === 0 && (
+                        < AgoraView style={{ flex: 1 }} mode={1} showLocalVideo={true} />
+                    )
+                }
+                {
+                    capacity > 0 && (
                         <View style={{ flex: 1 }}>
-                            <AgoraView mode={1} key={this.state.peerIds[0]} style={{ flex: 1 }} remoteUid={this.state.peerIds[0]} />
-                            <AppButton style={styles.videoQuitButton} onPress={this.endLive}>
-                                <AppText style={{ color: '#FFFFFF', marginLeft: 8, fontSize: 16, fontWeight: 'bold' }}>End</AppText>
-                            </AppButton>
-                            <AppText style={[styles.liveInfo, styles.timerCard]}>{this.state.timeStr}</AppText>
+                            <View style={{ flex: 1 }}>
+                                <AgoraView mode={1} key={this.state.peerIds[0]} style={{ flex: 1 }} remoteUid={this.state.peerIds[0]} />
+                                <AppButton style={styles.videoQuitButton} onPress={this.endLive}>
+                                    <AppText style={{ color: '#FFFFFF', marginLeft: 8, fontSize: 16, fontWeight: 'bold' }}>End</AppText>
+                                </AppButton>
+                                <AppText style={[styles.liveInfo, styles.timerCard]}>{this.state.timeStr}</AppText>
+                            </View>
+                            {
+                                capacity == 1 && (
+                                    this.renderTwoVideos()
+                                )
+                            }
+                            {
+                                capacity == 2 && (
+                                    this.renderThreeVideos()
+                                )
+                            }
+                            {
+                                capacity == 3 && (
+                                    this.renderFourVideos()
+                                )
+                            }
                         </View>
-                        {
-                            capacity == 1 && (
-                                this.renderTwoVideos()
-                            )
-                        }
-                        {
-                            capacity == 2 && (
-                                this.renderThreeVideos()
-                            )
-                        }
-                        {
-                            capacity == 3 && (
-                                this.renderFourVideos()
-                            )
-                        }
-                    </View>
+                    )
                 }
             </View>
         )
