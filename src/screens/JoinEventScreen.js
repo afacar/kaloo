@@ -48,7 +48,7 @@ class JoinEventScreen extends Component {
 
     // This method navigates to video call screen
     joinCall = () => {
-        var { eventNumber } = this.props;
+        var { eventNumber } = this.state;
         // TODO send ticketID
         this.props.navigation.navigate('VideoChat', { channelProfile: 0, eventID: eventNumber + '', clientRole: 2 })
     }
