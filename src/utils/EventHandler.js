@@ -2,6 +2,7 @@ import firebase from "react-native-firebase"
 import { app } from "../constants";
 
 
+var liveEventListener = () => { };
 var eventListener = () => { };
 
 export const startLive = (eventID) => {
@@ -76,8 +77,8 @@ export const decrementViewer = (eventID, ticketID) => {
         })
 }
 
-export const setEventListener = (eventID, callback) => {
-    eventListener = firebase.firestore().collection('events').doc(eventID).collection('live').doc('--stats--').onSnapshot(eventSnapshot => {
+export const setLiveEventListener = (eventID, callback) => {
+    liveEventListener = firebase.firestore().collection('events').doc(eventID).collection('live').doc('--stats--').onSnapshot(eventSnapshot => {
         console.log('eventSnapshot ', eventSnapshot.data());
         const liveStats = eventSnapshot.data();
         if (liveStats) {
@@ -85,6 +86,18 @@ export const setEventListener = (eventID, callback) => {
         } else {
             callback({ status: undefined, viewerCount: 0, startedAt: undefined })
         }
+    })
+}
+
+export const clearLiveEventListener = () => {
+    if (liveEventListener)
+        liveEventListener();
+}
+
+export const setEventListener = (eventID, callback) => {
+    eventListener = firebase.firestore().collection('events').doc(eventID + '').onSnapshot(eventSnapshot => {
+        console.log('eventSnapshot ', eventSnapshot.data());
+        callback(eventSnapshot.data())
     })
 }
 

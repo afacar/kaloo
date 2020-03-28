@@ -35,7 +35,31 @@ class EventListScreen extends Component {
             });
         console.log('events here', events)
         this.setState({ events })
-        this.checkCameraPermission()
+        this.checkCameraPermission();
+        this.checkAudioPermission();
+    }
+
+    checkAudioPermission = async () => {
+        try {
+            const granted = await PermissionsAndroid.request(
+                PermissionsAndroid.PERMISSIONS.RECORD_AUDIO,
+                {
+                    title: 'Microphone Permission',
+                    message:
+                        'InfluenceMe needs access to your camera',
+                    buttonNeutral: 'Ask Me Later',
+                    buttonNegative: 'Cancel',
+                    buttonPositive: 'OK',
+                },
+            );
+            if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+                // granted
+            } else {
+                // not granted
+            }
+        } catch (err) {
+            // console.warn(err);
+        }
     }
 
     checkCameraPermission = async () => {

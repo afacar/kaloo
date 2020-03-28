@@ -3,6 +3,7 @@ import { View, StyleSheet, Image, Share } from 'react-native';
 import AppText from '../components/AppText';
 import { Input, Button, Text, Card } from 'react-native-elements';
 import { app } from '../constants';
+import { setEventListener, clearEventListener } from '../utils/EventHandler';
 
 class MyEventScreen extends Component {
     event = this.props.navigation.getParam('event', '')
@@ -10,6 +11,14 @@ class MyEventScreen extends Component {
 
     componentDidMount() {
         console.log('Event state is', this.state)
+
+        setEventListener(this.event.eventNumber, (event) => {
+            this.setState({ ...event })
+        })
+    }
+
+    componentWillUnmount() {
+        clearEventListener(this.event.eventNumber);
     }
 
     onShare = async () => {
@@ -35,14 +44,14 @@ class MyEventScreen extends Component {
     joinLive = () => {
         var { eventNumber } = this.state;
         // TODO send  ticketID
-        this.props.navigation.navigate('Live', { clientRole: 1, channelProfile: 1, eventID: toString(eventNumber) })
+        this.props.navigation.navigate('Live', { clientRole: 1, channelProfile: 1, eventID: eventNumber + '' })
     }
 
     // This method navigates to video call screen
     joinCall = () => {
         var { eventNumber } = this.props;
         // TODO send channelName and ticketID
-        this.props.navigation.navigate('VideoChat', { channelProfile: 0, eventID: toString(eventNumber), clientRole: 1 })
+        this.props.navigation.navigate('VideoChat', { channelProfile: 0, eventID: eventNumber + '', clientRole: 1 })
     }
 
     onCamera = () => {
@@ -77,6 +86,11 @@ class MyEventScreen extends Component {
                     {
                         status === app.EVENT_STATUS.COMPLETED && (
                             <Button title='Finished' disabled />
+                        )
+                    }
+                    {
+                        status === app.EVENT_STATUS.IN_PROGRESS && (
+                            <Button title='Live on other device' disabled />
                         )
                     }
                 </Card>

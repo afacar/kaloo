@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { View, Text, NativeModules, PermissionsAndroid, Alert, StatusBar, TouchableOpacity } from 'react-native';
 import app from '../constants/app';
 import { RtcEngine, AgoraView } from 'react-native-agora';
-import { decrementViewer, clearEventListener, setEventListener, incrementViewer, startLive, endLive } from '../utils/EventHandler';
+import { decrementViewer, clearLiveEventListener, setLiveEventListener, incrementViewer, startLive, endLive } from '../utils/EventHandler';
 import { handleAndroidBackButton, removeAndroidBackButtonHandler } from '../utils/BackHandler';
 import AppButton from '../components/AppButton';
 import { styles } from '../constants';
@@ -140,7 +140,7 @@ export default class LiveScreen extends Component {
 
         // setup listener for  watcherCount
         var eventID = this.props.navigation.getParam('eventID', 'agora_test');
-        setEventListener(eventID, ({ status, viewerCount, startedAt }) => {
+        setLiveEventListener(eventID, ({ status, viewerCount, startedAt }) => {
             var time = 0;
             if (startedAt) {
                 time = parseInt(firebase.firestore.Timestamp.now().seconds) - parseInt(startedAt);
@@ -169,6 +169,7 @@ export default class LiveScreen extends Component {
 
     startLive = () => {
         var channelName = this.props.navigation.getParam('eventID', 'agora_test');
+        console.warn('channel name ', channelName);
         startLive(channelName);
     }
 
@@ -301,7 +302,7 @@ export default class LiveScreen extends Component {
 
     componentWillUnmount() {
         removeAndroidBackButtonHandler();
-        clearEventListener();
+        clearLiveEventListener();
         RtcEngine.leaveChannel()
             .then(res => {
                 if (this.props.navigation.getParam('clientRole', 1) === 2)

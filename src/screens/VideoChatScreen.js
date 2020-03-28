@@ -3,7 +3,7 @@ import { View, Text, NativeModules, PermissionsAndroid, Alert, StatusBar } from 
 import app from '../constants/app';
 import { RtcEngine, AgoraView } from 'react-native-agora';
 import { styles } from '../constants';
-import { clearEventListener, setEventListener, startLive, endLive } from '../utils/EventHandler';
+import { clearLiveEventListener, setLiveEventListener, startLive, endLive } from '../utils/EventHandler';
 import { handleAndroidBackButton, removeAndroidBackButtonHandler } from '../utils/BackHandler';
 import { formatTime } from '../utils/Utils';
 import firebase from 'react-native-firebase';
@@ -121,7 +121,7 @@ export default class VideoChatScreen extends Component {
 
         // setup listener for  watcherCount
         var eventID = this.props.navigation.getParam('eventID', 'agora_test');
-        setEventListener(eventID, ({ status, viewerCount, startedAt }) => {
+        setLiveEventListener(eventID, ({ status, viewerCount, startedAt }) => {
             var time = 0;
             if (startedAt) {
                 time = parseInt(firebase.firestore.Timestamp.now().seconds) - parseInt(startedAt);
@@ -272,7 +272,7 @@ export default class VideoChatScreen extends Component {
 
     componentWillUnmount() {
         removeAndroidBackButtonHandler();
-        clearEventListener();
+        clearLiveEventListener();
         RtcEngine.leaveChannel()
             .then(res => {
             });
