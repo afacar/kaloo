@@ -57,5 +57,14 @@ export default StyleSheet.create({
         height: 140,
         bottom: 24,
         right: 24
+    },
+    startButton: {
+        position: 'absolute',
+        bottom: 24,
+        width: 220,
+        height: 46,
+        borderWidth: 1,
+        justifyContent: 'center',
+        alignItems: 'center'
     }
 });

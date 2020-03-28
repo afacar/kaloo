@@ -7,6 +7,7 @@ var eventListener = () => { };
 export const startLive = (eventID) => {
     const eventRef = firebase.firestore().collection('events').doc(eventID);
     const liveStatsRef = firebase.firestore().collection('events').doc(eventID).collection('live').doc('--stats--');
+    //TODO: change milliseconds to timestamp
     eventRef.set({ status: app.EVENT_STATUS.IN_PROGRESS, startedAt: firebase.firestore.Timestamp.now().seconds.toString() }, { merge: true });
     liveStatsRef.set({ status: app.EVENT_STATUS.IN_PROGRESS, startedAt: firebase.firestore.Timestamp.now().seconds.toString(), viewerCount: 0 }, { merge: true });
 }

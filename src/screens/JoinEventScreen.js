@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { View, StyleSheet, Image, Share } from 'react-native';
 import AppText from '../components/AppText';
 import { Input, Button, Text, Card } from 'react-native-elements';
+import { app } from '../constants';
 
 class JoinEventScreen extends Component {
     event = this.props.navigation.getParam('event', '')
@@ -33,15 +34,31 @@ class JoinEventScreen extends Component {
         }
     };
 
+    joinLive = () => {
+        var { eventNumber } = this.state;
+        // TODO send  ticketID
+        this.props.navigation.navigate('Live', { clientRole: 2, channelProfile: 1, eventID: eventNumber })
+    }
+
+    // This method navigates to video call screen
+    joinCall = () => {
+        var { eventNumber } = this.props;
+        // TODO send ticketID
+        this.props.navigation.navigate('VideoChat', { channelProfile: 0, eventID: eventNumber, clientRole: 2 })
+    }
+
     onCamera = () => {
-        // TODO: Opening camera here
-        console.log('We are live')
+        if (this.state.eventType === 'live') {
+            this.joinLive();
+        } else if (this.state.eventType === 'call') {
+            this.joinCall();
+        }
     }
 
     render() {
-        const { image, title, description, duration, eventType, capacity, price, eventDate, eventLink } = this.state;
+        const { image, title, description, duration, eventType, capacity, price, eventDate, eventLink, status } = this.state;
         console.log('eventDate is', eventDate)
-        console.log('eventDate typeOf is', eventDate.toDate() )
+        console.log('eventDate typeOf is', eventDate.toDate())
         return (
             <View style={styles.container}>
                 <Card title={title}>
@@ -54,7 +71,24 @@ class JoinEventScreen extends Component {
                     <Text>Event Date: {eventDate.toDate().toLocaleString()}</Text>
                     <Text>Event Link: {eventLink}</Text>
                     <Button title='Share' onPress={this.onShare} />
-                    <Button title='...waiting' onPress={this.onCamera} disabled />
+                    {
+
+                    }
+                    {
+                        (status === app.EVENT_STATUS.SCHEDULED) && (
+                            <Button title='Waiting...' disabled />
+                        )
+                    }
+                    {
+                        status === app.EVENT_STATUS.COMPLETED && (
+                            <Button title='Finished' disabled />
+                        )
+                    }
+                    {
+                        ((status === app.EVENT_STATUS.IN_PROGRESS) || (status === app.EVENT_STATUS.SUSPENDED)) && (
+                            <Button title='Join' onPress={this.onCamera} />
+                        )
+                    }
                 </Card>
             </View >
         )

@@ -5,6 +5,7 @@ import { Input, Button, Card, Image, Avatar, CheckBox } from 'react-native-eleme
 import { ScrollView, TouchableOpacity } from 'react-native-gesture-handler';
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import firebase from 'react-native-firebase';
+import { app } from '../constants';
 
 const DEFAULT_EVENT_PIC = 'https://firebasestorage.googleapis.com/v0/b/influenceme-dev.appspot.com/o/assets%2Fbroadcast-media.png?alt=media&token=608c9143-879d-4ff7-a30d-ac61ba319904'
 
@@ -40,11 +41,11 @@ class CreateEventScreen extends Component {
         event.uid = firebase.auth().currentUser.uid;
         event.displayName = firebase.auth().currentUser.displayName;
         event.photoURL = firebase.auth().currentUser.photoURL;
+        event.status = app.EVENT_STATUS.SCHEDULED
         console.log('calling create event...', event);
         let { data: { eventNumber, eventLink } } = await createEvent(JSON.stringify(event));
         event.eventNumber = eventNumber
         event.eventLink = eventLink
-        event.status = 'SCHEDULED'
         console.log('Recieved created event:=>', event)
         // TODO: GOTO EVENT SCREEN
         this.props.navigation.navigate('MyEvent', { event });

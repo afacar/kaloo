@@ -72,7 +72,7 @@ export default class LiveScreen extends Component {
         var eventID = this.props.navigation.getParam('eventID', 'agora_test');
         var result = incrementViewer(eventID);
         if (result == -1) {
-            incrementViewers();
+            incrementViewer();
         }
     }
 
@@ -132,7 +132,7 @@ export default class LiveScreen extends Component {
                     console.warn('increasing viewer count')
                     this.incrementViewers();
                 } else {
-                    startLive(channelName);
+                    // startLive(channelName);
                 }
             })
             .catch((error) => {
@@ -165,6 +165,11 @@ export default class LiveScreen extends Component {
         // setup back button listener
         const { navigation } = this.props;
         handleAndroidBackButton(navigation, this.backButtonPressed);
+    }
+
+    startLive = () => {
+        var channelName = this.props.navigation.getParam('eventID', 'agora_test');
+        startLive(channelName);
     }
 
     backButtonPressed(navigation) {
@@ -260,6 +265,9 @@ export default class LiveScreen extends Component {
                                 </View>
 
                                 <AppText style={styles.viewerCard}>{this.state.viewers + ' Viewers'}</AppText>
+                                <AppButton style={styles.startButton} onPress={this.startLive}>
+                                    <AppText>Start Broadcast</AppText>
+                                </AppButton>
                             </View>
                         )
                     }

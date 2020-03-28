@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { View, StyleSheet, Image, Share } from 'react-native';
 import AppText from '../components/AppText';
 import { Input, Button, Text, Card } from 'react-native-elements';
+import { app } from '../constants';
 
 class MyEventScreen extends Component {
     event = this.props.navigation.getParam('event', '')
@@ -31,13 +32,31 @@ class MyEventScreen extends Component {
         }
     };
 
+    joinLive = () => {
+        var { eventNumber } = this.state;
+        // TODO send  ticketID
+        this.props.navigation.navigate('Live', { clientRole: 1, channelProfile: 1, eventID: eventNumber })
+    }
+
+    // This method navigates to video call screen
+    joinCall = () => {
+        var { eventNumber } = this.props;
+        // TODO send channelName and ticketID
+        this.props.navigation.navigate('VideoChat', { channelProfile: 0, eventID: eventNumber, clientRole: 1 })
+    }
+
     onCamera = () => {
         // TODO: Opening camera here
         console.log('We are live')
+        if (this.state.eventType === 'live') {
+            this.joinLive();
+        } else if (this.state.eventType === 'call'){
+            this.joinCall();
+        }
     }
 
     render() {
-        const { image, title, description, duration, eventType, capacity, price, eventDate, eventLink } = this.state;
+        const { image, title, description, duration, eventType, capacity, price, eventDate, eventLink, status } = this.state;
         return (
             <View style={styles.container}>
                 <Card title={title || 'Some event title'}>
@@ -50,7 +69,16 @@ class MyEventScreen extends Component {
                     <Text>Event Date: {eventDate.toLocaleString()}</Text>
                     <Text>Event Link: {eventLink}</Text>
                     <Button title='Share' onPress={this.onShare} />
-                    <Button title='Test Camera' onPress={this.onCamera} />
+                    {
+                        ((status === app.EVENT_STATUS.SCHEDULED) || (status === app.EVENT_STATUS.SUSPENDED)) && (
+                            <Button title='Preview' onPress={this.onCamera} />
+                        )
+                    }
+                    {
+                        status === app.EVENT_STATUS.COMPLETED && (
+                            <Button title='Finished' disabled />
+                        )
+                    }
                 </Card>
             </View >
         )
