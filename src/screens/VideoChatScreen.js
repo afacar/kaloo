@@ -3,7 +3,7 @@ import { View, Text, NativeModules, PermissionsAndroid, Alert, StatusBar } from 
 import app from '../constants/app';
 import { RtcEngine, AgoraView } from 'react-native-agora';
 import { styles } from '../constants';
-import { clearLiveEventListener, setLiveEventListener, startLive, endLive } from '../utils/EventHandler';
+import { clearLiveEventListener, setLiveEventListener, startLive, endLive, suspendLive } from '../utils/EventHandler';
 import { handleAndroidBackButton, removeAndroidBackButtonHandler } from '../utils/BackHandler';
 import { formatTime } from '../utils/Utils';
 import firebase from 'react-native-firebase';
@@ -81,7 +81,7 @@ export default class VideoChatScreen extends Component {
         // rtc object
 
         RtcEngine.on('userJoined', (data) => {
-            console.warn('user id', data.uid);
+            console.warn("user joined ", data.uid);
             const { peerIds } = this.state;
             if (peerIds.indexOf(data.uid) === -1) {
                 this.setState({
@@ -112,7 +112,7 @@ export default class VideoChatScreen extends Component {
         console.warn('channelName', channelName)
         RtcEngine.joinChannel(channelName, ticketID)
             .then((result) => {
-                console.warn('join success', result)
+                console.warn("join success")
                 if (clientRole == 2) {
                 } else {
                     startLive(channelName);
@@ -162,6 +162,9 @@ export default class VideoChatScreen extends Component {
                 },
                 {
                     text: 'OK', onPress: () => {
+                        if (navigation.getParam('clientRole', 1) === 1) {
+                            suspendLive(navigation.getParam('eventID', 'agora_test'));
+                        }
                         navigation.goBack();
                         navigation.goBack();
                     }
@@ -205,7 +208,7 @@ export default class VideoChatScreen extends Component {
     renderTwoVideos() {
         return (
             // <View style={{ flex: 1 }}>
-            <AgoraView style={{ flex: 1}} mode={1} showLocalVideo={true} />
+            <AgoraView style={{ flex: 1 }} mode={1} showLocalVideo={true} />
             // </View>
         )
     }
