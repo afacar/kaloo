@@ -35,8 +35,7 @@ class RegisterScreen extends Component {
         isWaiting: false,
     }
 
-    componentDidMount() {
-    }
+    componentDidMount() { }
 
     createAccount = async () => {
         let { displayName, email, password, photoURL, imagePickerResponse } = this.state;
@@ -54,16 +53,14 @@ class RegisterScreen extends Component {
             console.log('photoURL is ready=', photoURL);
             this.setState({ photoURL })
         }
-        //let userRef = db.doc(`users/${uid}`)
+        // Update user profile @Authentication
         console.log('update profile', displayName, photoURL)
         await currentUser.updateProfile({ displayName, photoURL });
-        /* await userRef.set({
-            email, displayName, photoURL
-        }, { merge: true }); */
-        console.log('user registeration is complete!', currentUser);
-        console.log('user registeration is complete2!', firebase.auth().currentUser);
+        // Create user @Firestore
+        let userRef = db.doc(`users/${currentUser.uid}`)
+        await userRef.set({ email, displayName, photoURL, isResizedPhoto: false }, { merge: true });
         this.setState({ isWaiting: false })
-        
+
         // Navigate user to Event List
         this.props.navigation.navigate('EventList')
     }
@@ -95,6 +92,7 @@ class RegisterScreen extends Component {
     }
 
     onAvatarPressed = () => {
+        if (this.state.isWaiting) return;
         var customButtons = [];
         /* if (this.state.profile.photoURL !== strings.DEFAULT_PROFILE_PIC) {
           customButtons = [{
@@ -149,40 +147,45 @@ class RegisterScreen extends Component {
             <View style={styles.container}>
                 <Avatar
                     onPress={this.onAvatarPressed}
-                    size="xlarge"
+                    size='large'
                     rounded={true}
                     showEditButton={true}
                     source={{ uri: photoURL || DEFAULT_PROFILE_PIC }}
                 />
-                <View style={{ alignSelf: 'stretch', borderWidth: 4 }}>
+                <View style={{ alignSelf: 'stretch', paddingHorizontal: 20 }}>
                     <Input
                         placeholder='Display name'
-                        leftIcon={{ type: 'font-awesome', name: 'chevron-right' }}
+                        leftIcon={{ type: 'MaterialCommunity', name: 'account-circle' }}
                         onChangeText={displayName => this.setState({ displayName })}
                         value={displayName}
+                        disabled={isWaiting}
                     />
                     <Input
                         placeholder='Enter Email'
-                        leftIcon={{ type: 'font-awesome', name: 'chevron-right' }}
+                        leftIcon={{ type: 'MaterialCommunity', name: 'email' }}
                         onChangeText={email => this.setState({ email })}
                         value={email}
+                        keyboardType='email-address'
+                        disabled={isWaiting}
                     />
                     <Input
                         placeholder='Password'
-                        leftIcon={{ type: 'font-awesome', name: 'chevron-right' }}
+                        leftIcon={{ type: 'MaterialCommunity', name: 'lock' }}
                         onChangeText={password => this.setState({ password })}
                         value={password}
                         secureTextEntry
+                        disabled={isWaiting}
                     />
                     <Input
                         placeholder='Repassword'
-                        leftIcon={{ type: 'font-awesome', name: 'chevron-right' }}
+                        leftIcon={{ type: 'MaterialCommunity', name: 'lock' }}
                         onChangeText={repassword => this.setState({ repassword })}
                         value={repassword}
                         secureTextEntry
+                        disabled={isWaiting}
                     />
                 </View>
-                <View style={{ alignSelf: 'stretch', flexDirection: 'row', borderWidth: 2, justifyContent: 'space-evenly' }}>
+                <View style={{ alignSelf: 'stretch', flexDirection: 'row', justifyContent: 'center' }}>
                     <Button
                         title="Create My Account"
                         onPress={this.checkAccount}
