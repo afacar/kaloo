@@ -35,14 +35,14 @@ class MyEventScreen extends Component {
     joinLive = () => {
         var { eventNumber } = this.state;
         // TODO send  ticketID
-        this.props.navigation.navigate('Live', { clientRole: 1, channelProfile: 1, eventID: eventNumber })
+        this.props.navigation.navigate('Live', { clientRole: 1, channelProfile: 1, eventID: toString(eventNumber) })
     }
 
     // This method navigates to video call screen
     joinCall = () => {
         var { eventNumber } = this.props;
         // TODO send channelName and ticketID
-        this.props.navigation.navigate('VideoChat', { channelProfile: 0, eventID: eventNumber, clientRole: 1 })
+        this.props.navigation.navigate('VideoChat', { channelProfile: 0, eventID: toString(eventNumber), clientRole: 1 })
     }
 
     onCamera = () => {
@@ -50,7 +50,7 @@ class MyEventScreen extends Component {
         console.log('We are live')
         if (this.state.eventType === 'live') {
             this.joinLive();
-        } else if (this.state.eventType === 'call'){
+        } else if (this.state.eventType === 'call') {
             this.joinCall();
         }
     }
