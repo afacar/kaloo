@@ -5,6 +5,8 @@ import SignUpScreen from '../screens/SignUpScreen';
 import SignInScreen from '../screens/SignInScreen';
 import JoinEventScreen from '../screens/JoinEventScreen';
 import RegisterScreen from '../screens/RegisterScreen';
+import LiveScreen from '../screens/LiveScreen';
+import VideoChatScreen from '../screens/VideoChatScreen';
 
 export default MainNavigatior = createStackNavigator(
   {
@@ -13,6 +15,18 @@ export default MainNavigatior = createStackNavigator(
     Signup: SignUpScreen,
     SignIn: SignInScreen,
     Register: RegisterScreen,
+    Live: {
+      screen: LiveScreen,
+      navigationOptions: {
+        headerShown: false
+      },
+    },
+    VideoChat: {
+      screen: VideoChatScreen,
+      navigationOptions: {
+        headerShown: false
+      },
+    },
   },
   {
     initialRouteName: "Home",
