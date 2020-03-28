@@ -14,14 +14,29 @@ export default StyleSheet.create({
         left: 24,
         backgroundColor: 'transparent'
     },
-    timerCard: {
+    liveInfo: {
         position: 'absolute',
+        flexDirection: 'row',
         top: 24,
         right: 24,
-        backgroundColor: 'white',
+        backgroundColor: 'transparent',
+    },
+    timerCard: {
         fontSize: 16,
+        backgroundColor: 'white',
         color: 'black',
-        borderRadius: 55,
+        borderRadius: 56,
+        textAlign: 'center',
+        padding: 8
+    },
+    liveText: {
+        marginLeft: 16,
+        width: 70,
+        height: 40,
+        fontSize: 16,
+        color: 'white',
+        backgroundColor: colors.RED,
+        borderRadius: 56,
         textAlign: 'center',
         padding: 8
     },

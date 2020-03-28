@@ -254,7 +254,11 @@ export default class LiveScreen extends Component {
                                 <AppButton style={styles.videoQuitButton} onPress={this.endLive}>
                                     <AppText style={{ color: '#FFFFFF', marginLeft: 8, fontSize: 16, fontWeight: 'bold' }}>End</AppText>
                                 </AppButton>
-                                <AppText style={styles.timerCard}>{this.state.timeStr}</AppText>
+                                <View style={styles.liveInfo}>
+                                    <AppText style={styles.timerCard}>{this.state.timeStr}</AppText>
+                                    <AppText style={styles.liveText}>Live</AppText>
+                                </View>
+
                                 <AppText style={styles.viewerCard}>{this.state.viewers + ' Viewers'}</AppText>
                             </View>
                         )

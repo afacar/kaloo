@@ -114,7 +114,7 @@ export default class DummyMainScreen extends Component {
                 duration: "30",
                 eventDate: '27 Mart 2020 12: 05: 56 UTC + 3',
                 eventNumber: 17,
-                eventType: "call",
+                eventType: "live",
                 image: "https://firebasestorage.googleapis.com/v0/b/influenceme-dev.appspot.com/o/assets%2Fbroadcast-media.png?alt=media&token=608c9143-879d-4ff7-a30d-ac61ba319904",
                 price: "1",
                 title: "asd",
