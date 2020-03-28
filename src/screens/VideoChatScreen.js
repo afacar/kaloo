@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, Text, NativeModules, PermissionsAndroid,  Alert, StatusBar } from 'react-native';
+import { View, Text, NativeModules, PermissionsAndroid, Alert, StatusBar } from 'react-native';
 import app from '../constants/app';
 import { RtcEngine, AgoraView } from 'react-native-agora';
 import { styles } from '../constants';
@@ -88,6 +88,11 @@ export default class VideoChatScreen extends Component {
                 })
             }
         })
+        RtcEngine.on('userOffline', (data) => {
+            this.setState({
+                peerIds: this.state.peerIds.filter(uid => uid !== data.uid)
+            })
+        })
         RtcEngine.on('error', (error) => {
             // console.warn("error", error);
         })
@@ -111,6 +116,7 @@ export default class VideoChatScreen extends Component {
                 }
             })
             .catch((error) => {
+                console.warn("join error ", error)
             });
 
         // setup listener for  watcherCount
@@ -234,7 +240,7 @@ export default class VideoChatScreen extends Component {
                             <AppButton style={styles.videoQuitButton} onPress={this.endLive}>
                                 <AppText style={{ color: '#FFFFFF', marginLeft: 8, fontSize: 16, fontWeight: 'bold' }}>End</AppText>
                             </AppButton>
-                            <AppText style={styles.timerCard}>{this.state.timeStr}</AppText>
+                            <AppText style={[styles.liveInfo, styles.timerCard]}>{this.state.timeStr}</AppText>
                         </View>
                         {
                             capacity == 1 && (

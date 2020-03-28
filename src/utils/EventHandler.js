@@ -7,21 +7,16 @@ var eventListener = () => { };
 export const startLive = (eventID) => {
     const eventRef = firebase.firestore().collection('events').doc(eventID);
     const liveStatsRef = firebase.firestore().collection('events').doc(eventID).collection('live').doc('--stats--');
-    firebase.firestore().runTransaction(async transaction => {
-        transaction.set(eventRef, { status: app.EVENT_STATUS.IN_PROGRESS, startedAt: firebase.firestore.Timestamp.now().seconds.toString() }, { merge: true });
-        transaction.set(liveStatsRef, { status: app.EVENT_STATUS.IN_PROGRESS, startedAt: firebase.firestore.Timestamp.now().seconds.toString(), viewerCount: 0 }, { merge: true });
-        return 1;
-    })
+    eventRef.set({ status: app.EVENT_STATUS.IN_PROGRESS, startedAt: firebase.firestore.Timestamp.now().seconds.toString() }, { merge: true });
+    liveStatsRef.set({ status: app.EVENT_STATUS.IN_PROGRESS, startedAt: firebase.firestore.Timestamp.now().seconds.toString(), viewerCount: 0 }, { merge: true });
 }
 
 export const endLive = (eventID) => {
     const eventRef = firebase.firestore().collection('events').doc(eventID);
     const liveStatsRef = firebase.firestore().collection('events').doc(eventID).collection('live').doc('--stats--');
-    firebase.firestore().runTransaction(async transaction => {
-        transaction.set(eventRef, { status: app.EVENT_STATUS.COMPLETED, endAt: firebase.firestore.Timestamp.now().seconds.toString() }, { merge: true });
-        transaction.set(liveStatsRef, { status: app.EVENT_STATUS.COMPLETED, endAt: firebase.firestore.Timestamp.now().seconds.toString() }, { merge: true });
-        return 1;
-    })
+    eventRef.set({ status: app.EVENT_STATUS.COMPLETED, endAt: firebase.firestore.Timestamp.now().seconds.toString() }, { merge: true });
+    liveStatsRef.set({ status: app.EVENT_STATUS.COMPLETED, endAt: firebase.firestore.Timestamp.now().seconds.toString() }, { merge: true });
+    return 1;
 }
 
 export const incrementViewer = (eventID) => {
@@ -75,7 +70,7 @@ export const decrementViewer = (eventID, ticketID) => {
             return newCount;
         })
         .catch(error => {
-            console.warn('Error on incrementing watcher count ', error);
+            console.warn('Error on decrementing watcher count ', error);
             return -1;
         })
 }
