@@ -9,18 +9,6 @@ class SplashScreen extends Component {
         const user = firebase.auth().currentUser;
         if (user) this.props.navigation.navigate('User');
         else this.props.navigation.navigate('Home');
-
-        /* firebase.auth().onAuthStateChanged(user => {
-            console.log('Splash onAuthStateChange>', user);
-            if (user && !user.isAnonymous) {
-                this.props.navigation.navigate('User');
-            } else {
-                this.props.navigation.navigate('Home');
-            }
-        }) */
-        setTimeout(() => {
-            // Go to some screen acording to some logic
-        }, 1500)
     }
 
     componentWillUnmount() {
