@@ -9,15 +9,52 @@ export default class DummyMainScreen extends Component {
        @param clientRole, 1 for host, 2 for audience 
     */
     joinLive = (clientRole) => {
-        // TODO send channelName and ticketID
-        this.props.navigation.navigate('Live', { clientRole, channelProfile: 1 })
+        var { event, user } = this.props;
+        if (!event) {
+            // TODO eventType comes from redux or firebase somewhere around. 
+            event = {
+                eventID: '1DPfiXvpp2mqlHz0Yam7',
+                capacity: "50",
+                creationTime: '27 Mart 2020 12: 06: 12 UTC+ 3',
+                description: "xcv",
+                duration: "30",
+                eventDate: '27 Mart 2020 12: 05: 56 UTC + 3',
+                eventNumber: 17,
+                eventType: "live",
+                image: "https://firebasestorage.googleapis.com/v0/b/influenceme-dev.appspot.com/o/assets%2Fbroadcast-media.png?alt=media&token=608c9143-879d-4ff7-a30d-ac61ba319904",
+                price: "1",
+                title: "asd",
+                uid: "ktIlp0ovUrMgsR9YVGFOFcooY2I3",
+            }
+        }
+        const { eventID } = event;
+        // TODO send  ticketID
+        this.props.navigation.navigate('Live', { clientRole, channelProfile: 1, eventID })
     }
 
-    // This method navigates to video chat screen
+    // This method navigates to video call screen
     joinChat = () => {
-
+        var { event, user } = this.props;
+        if (!event) {
+            // TODO eventType comes from redux or firebase somewhere around. 
+            event = {
+                eventID: '1DPfiXvpp2mqlHz0Yam7',
+                capacity: "50",
+                creationTime: '27 Mart 2020 12: 06: 12 UTC+ 3',
+                description: "xcv",
+                duration: "30",
+                eventDate: '27 Mart 2020 12: 05: 56 UTC + 3',
+                eventNumber: 17,
+                eventType: "live",
+                image: "https://firebasestorage.googleapis.com/v0/b/influenceme-dev.appspot.com/o/assets%2Fbroadcast-media.png?alt=media&token=608c9143-879d-4ff7-a30d-ac61ba319904",
+                price: "1",
+                title: "asd",
+                uid: "ktIlp0ovUrMgsR9YVGFOFcooY2I3",
+            }
+        }
+        const { eventID } = event;
         // TODO send channelName and ticketID
-        this.props.navigation.navigate('VideoChat', { channelProfile: 0 })
+        this.props.navigation.navigate('VideoChat', { channelProfile: 0, eventID })
     }
 
 
@@ -65,10 +102,26 @@ export default class DummyMainScreen extends Component {
     }
 
     render() {
-        // eventType assumed either "live" or "chat"
-        var { eventType, user } = this.props;
-        if (!eventType)
-            eventType = 'chat'; // TODO eventype comes from redux or firebase somewhere around. 
+        // eventType assumed either "live" or "call"
+        var { event, user } = this.props;
+        if (!event) {
+            // TODO eventType comes from redux or firebase somewhere around. 
+            event = {
+                eventID: '1DPfiXvpp2mqlHz0Yam7',
+                capacity: "50",
+                creationTime: '27 Mart 2020 12: 06: 12 UTC+ 3',
+                description: "xcv",
+                duration: "30",
+                eventDate: '27 Mart 2020 12: 05: 56 UTC + 3',
+                eventNumber: 17,
+                eventType: "call",
+                image: "https://firebasestorage.googleapis.com/v0/b/influenceme-dev.appspot.com/o/assets%2Fbroadcast-media.png?alt=media&token=608c9143-879d-4ff7-a30d-ac61ba319904",
+                price: "1",
+                title: "asd",
+                uid: "ktIlp0ovUrMgsR9YVGFOFcooY2I3",
+            }
+        }
+        const { eventType } = event;
         return (
             <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
                 {
@@ -88,22 +141,17 @@ export default class DummyMainScreen extends Component {
                     )
                 }
                 {
-                    eventType === 'chat' && (
+                    eventType === 'call' && (
                         <View>
                             <AppButton
                                 style={{ backgroundColor: '#0A84FF', height: 40, width: 200, borderRadius: 25, margin: 10, justifyContent: 'center', alignItems: 'center' }}
                                 onPress={() => this.joinChat()}>
                                 <AppText>Join Chat</AppText>
                             </AppButton>
-                            {/* <AppButton
-                                style={{ backgroundColor: '#0A84FF', height: 40, width: 200, borderRadius: 25, margin: 10, justifyContent: 'center', alignItems: 'center' }}
-                                onPress={() => this.joinChat()}>
-                                <AppText>Join Chat</AppText>
-                            </AppButton> */}
                         </View>
                     )
                 }
-            </View>
+            </View >
         )
     }
 }
