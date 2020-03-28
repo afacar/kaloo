@@ -1,11 +1,18 @@
 import React, { Component } from 'react';
-import { View, StyleSheet, PermissionsAndroid } from 'react-native';
+import { View, StyleSheet, PermissionsAndroid, FlatList } from 'react-native';
 import AppText from '../components/AppText';
-import { Input, Button } from 'react-native-elements';
+import { Input, Button, Card, ListItem } from 'react-native-elements';
 import firebase from "react-native-firebase";
+const db = firebase.firestore()
+const auth = firebase.auth()
 
 class EventListScreen extends Component {
-    componentDidMount() {
+    state = {
+        events: []
+    }
+
+    async componentDidMount() {
+
         this.authListener = firebase.auth().onAuthStateChanged(user => {
             console.log('EventList onAuthStateChange>', user);
             if (user && !user.isAnonymous) {
@@ -15,6 +22,19 @@ class EventListScreen extends Component {
             }
         });
 
+        var pathToEvents = `users/${auth.currentUser.uid}/myevents`;
+        console.log('pathToEvents', pathToEvents)
+        let events = await db.collection(pathToEvents).get()
+            .then(function (querySnapshot) {
+                var events = [];
+                querySnapshot.forEach(function (doc) {
+                    events.push(doc.data());
+                });
+                console.log("Current events fetched: ", events);
+                return events;
+            });
+        console.log('events here', events)
+        this.setState({ events })
         this.checkCameraPermission()
     }
 
@@ -34,31 +54,48 @@ class EventListScreen extends Component {
 
     componentWillUnmount() {
         if (this.authListener) {
-            console.log('EventList Unmounts');
+            console.log('authListener Unmounts');
             this.authListener();
         }
     }
 
     render() {
+        const { events } = this.state;
         return (
             <View style={styles.container}>
-                <AppText>List of Events</AppText>
-                <Button
-                    title="Sign Out"
-                    onPress={() => firebase.auth().signOut()}
-                />
-                <Button
-                    title="Go to Balance"
-                    onPress={() => this.props.navigation.navigate('Balance')}
-                />
-                <Button
-                    title="Go to Profile"
-                    onPress={() => this.props.navigation.navigate('Profile')}
-                />
-                <Button
-                    title="Go to Create Event"
-                    onPress={() => this.props.navigation.navigate('CreateEvent')}
-                />
+                <View style={{ alignSelf: 'stretch', flexDirection: 'row', justifyContent: 'space-around' }}>
+                    <Button
+                        title="Create Event"
+                        onPress={() => this.props.navigation.navigate('CreateEvent')}
+                    />
+                    <Button
+                        title="Profile"
+                        onPress={() => this.props.navigation.navigate('Profile')}
+                    />
+                    <Button
+                        title="Sign Out"
+                        onPress={() => firebase.auth().signOut()}
+                    />
+                </View>
+                <Card containerStyle={{ padding: 0, flex: 1, alignSelf: 'stretch' }} title='My Events'>
+                    {
+                        events.map((e, i) => {
+                            return (
+                                <ListItem
+                                    key={i}
+                                    leftAvatar={{ source: { uri: e.image } }}
+                                    rightIcon={{ type: 'MaterialCommunity', name: 'chevron-right' }}
+                                    roundAvatar
+                                    title={e.title}
+                                    subtitle={e.description || 'No description'}
+                                    avatar={{ uri: e.image }}
+                                    bottomDivider
+                                    onPress={() => this.props.navigation.navigate('MyEvent', { event: e })}
+                                />
+                            );
+                        })
+                    }
+                </Card>
             </View>
         )
     }
@@ -67,8 +104,9 @@ class EventListScreen extends Component {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        justifyContent: 'space-around',
-        alignItems: 'center'
+        justifyContent: 'flex-start',
+        alignItems: 'center',
+        borderWidth: 2
     }
 })
 
