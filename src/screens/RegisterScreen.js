@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { View, StyleSheet, Alert, Text } from 'react-native';
 import AppText from '../components/AppText';
-import { Input, Button, Avatar } from 'react-native-elements';
+import { Input, Button, Avatar, CheckBox } from 'react-native-elements';
 import firebase from "react-native-firebase";
 import ImagePicker from "react-native-image-picker";
 
@@ -47,22 +47,22 @@ class RegisterScreen extends Component {
         if (photoURL !== DEFAULT_PROFILE_PIC) {
             console.log('uploading avatar...')
             let avatarRef = firebase.storage().ref(`users/${currentUser.uid}/avatar/${currentUser.uid}.jpg`)
-            await avatarRef.putFile(imagePickerResponse.path)
+            avatarRef.putFile(imagePickerResponse.path)
             console.log('avatar is uploaded!')
-            photoURL = await avatarRef.getDownloadURL()
-            console.log('photoURL is ready=', photoURL);
-            this.setState({ photoURL })
+            //let newAvatarRef = firebase.storage().ref(`users/${currentUser.uid}/avatar/${currentUser.uid}_200x200.jpg`)
+            //photoURL = await newAvatarRef.getDownloadURL()
+            //this.setState({ photoURL })
         }
         // Update user profile @Authentication
         console.log('update profile', displayName, photoURL)
         await currentUser.updateProfile({ displayName, photoURL });
         // Create user @Firestore
         let userRef = db.doc(`users/${currentUser.uid}`)
-        await userRef.set({ email, displayName, photoURL, isResizedPhoto: false }, { merge: true });
+        await userRef.set({ email, displayName, photoURL }, { merge: true });
         this.setState({ isWaiting: false })
 
         // Navigate user to Event List
-        this.props.navigation.navigate('EventList')
+        this.props.navigation.navigate('EventList', { displayName })
     }
 
     checkAccount = async () => {
@@ -185,7 +185,12 @@ class RegisterScreen extends Component {
                         disabled={isWaiting}
                     />
                 </View>
-                <View style={{ alignSelf: 'stretch', flexDirection: 'row', justifyContent: 'center' }}>
+                <View style={{ alignSelf: 'stretch', flexDirection: 'column', justifyContent: 'center' }}>
+                    <CheckBox
+                        title='I accept terms'
+                        checked={this.state.terms}
+                        onPress={() => this.setState({ terms: !this.state.terms })}
+                    />
                     <Button
                         title="Create My Account"
                         onPress={this.checkAccount}

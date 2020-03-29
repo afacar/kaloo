@@ -49,9 +49,10 @@ class MainScreen extends Component {
                 <Input
                     value={this.state.ticket}
                     placeholder='Enter Your Ticket'
-                    leftIcon={{ type: 'font-awesome', name: 'chevron-right' }}
+                    leftIcon={{ type: 'entypo', name: 'ticket' }}
                     onChangeText={ticket => this.setState({ ticket: ticket.trim(), errorMessage: ' ' })}
                     errorMessage={this.state.errorMessage}
+                    autoCapitalize='characters'
                 />
                 <Button
                     title="Go to Event"

@@ -68,7 +68,7 @@ class MyEventScreen extends Component {
         const { image, title, description, duration, eventType, capacity, price, eventDate, eventLink, status } = this.state;
         return (
             <View style={styles.container}>
-                <Card title={title || 'Some event title'}>
+                <Card title={title || 'Some event title'} containerStyle={{ margin: 5 }}>
                     <Image source={{ uri: image }} style={{ width: 100, height: 100 }} />
                     <Text>description: {description || 'No description'}</Text>
                     <Text>Duration: {duration}</Text>
@@ -103,7 +103,7 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         justifyContent: 'flex-start',
-        alignItems: 'center'
+        alignItems: 'stretch'
     }
 })
 
