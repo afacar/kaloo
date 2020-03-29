@@ -64,6 +64,8 @@ class EventListScreen extends Component {
             .then(function (querySnapshot) {
                 var events = [];
                 querySnapshot.forEach(function (doc) {
+                    let event = doc.data()
+                    event.eventDate = event.eventDate.toDate()
                     events.push(doc.data());
                 });
                 console.log("Current events fetched: ", events);

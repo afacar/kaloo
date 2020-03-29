@@ -10,9 +10,10 @@ class MyEventScreen extends Component {
     state = { ...this.event }
 
     componentDidMount() {
-        console.log('Event state is', this.state)
+        console.log('MyEventScreen Mounted', this.state)
 
         setEventListener(this.event.eventNumber, (event) => {
+            event.eventDate = event.eventDate.toDate()
             this.setState({ ...event })
         })
     }
@@ -69,30 +70,32 @@ class MyEventScreen extends Component {
         return (
             <View style={styles.container}>
                 <Card title={title || 'Some event title'} containerStyle={{ margin: 5 }}>
-                    <Image source={{ uri: image }} style={{ width: 100, height: 100 }} />
-                    <Text>description: {description || 'No description'}</Text>
-                    <Text>Duration: {duration}</Text>
-                    <Text>Capacity: {capacity}</Text>
-                    <Text>Event Type: {eventType}</Text>
-                    <Text>Price: {price}</Text>
-                    <Text>Event Date: {eventDate.toDate().toLocaleString()}</Text>
-                    <Text>Event Link: {eventLink}</Text>
-                    <Button title='Share' onPress={this.onShare} />
-                    {
-                        ((status === app.EVENT_STATUS.SCHEDULED) || (status === app.EVENT_STATUS.SUSPENDED)) && (
-                            <Button title='Preview' onPress={this.onCamera} />
-                        )
-                    }
-                    {
-                        status === app.EVENT_STATUS.COMPLETED && (
-                            <Button title='Finished' disabled />
-                        )
-                    }
-                    {
-                        status === app.EVENT_STATUS.IN_PROGRESS && (
-                            <Button title='Live on other device' disabled />
-                        )
-                    }
+                    <View>
+                        <Image source={{ uri: image }} style={{ width: 100, height: 100 }} />
+                        <Text>description: {description || 'No description'}</Text>
+                        <Text>Duration: {duration}</Text>
+                        <Text>Capacity: {capacity}</Text>
+                        <Text>Event Type: {eventType}</Text>
+                        <Text>Price: {price}</Text>
+                        <Text>Event Date: {eventDate.toLocaleString()}</Text>
+                        <Text>Event Link: {eventLink}</Text>
+                        <Button title='Share' onPress={this.onShare} />
+                        {
+                            ((status === app.EVENT_STATUS.SCHEDULED) || (status === app.EVENT_STATUS.SUSPENDED)) && (
+                                <Button title='Preview' onPress={this.onCamera} />
+                            )
+                        }
+                        {
+                            status === app.EVENT_STATUS.COMPLETED && (
+                                <Button title='Finished' disabled />
+                            )
+                        }
+                        {
+                            status === app.EVENT_STATUS.IN_PROGRESS && (
+                                <Button title='Live on other device' disabled />
+                            )
+                        }
+                    </View>
                 </Card>
             </View >
         )
