@@ -75,7 +75,7 @@ class MyEventScreen extends Component {
                     <Text>Capacity: {capacity}</Text>
                     <Text>Event Type: {eventType}</Text>
                     <Text>Price: {price}</Text>
-                    <Text>Event Date: {eventDate.toLocaleString()}</Text>
+                    <Text>Event Date: {eventDate.toDate().toLocaleString()}</Text>
                     <Text>Event Link: {eventLink}</Text>
                     <Button title='Share' onPress={this.onShare} />
                     {
