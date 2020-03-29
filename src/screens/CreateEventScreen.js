@@ -1,11 +1,14 @@
 import React, { Component } from 'react';
 import { View, StyleSheet, ActivityIndicator, Text } from 'react-native';
 import AppText from '../components/AppText';
-import { Input, Button, Card, Image, Avatar, CheckBox } from 'react-native-elements';
+import { Input, Button, Card, Image, Avatar, CheckBox, Overlay, Icon } from 'react-native-elements';
 import { ScrollView, TouchableOpacity } from 'react-native-gesture-handler';
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import firebase from 'react-native-firebase';
+import ImagePicker from "react-native-image-picker";
 import { app } from '../constants';
+
+import EventPreview from '../components/EventPreview';
 
 const DEFAULT_EVENT_PIC = 'https://firebasestorage.googleapis.com/v0/b/influenceme-dev.appspot.com/o/assets%2Fbroadcast-media.png?alt=media&token=608c9143-879d-4ff7-a30d-ac61ba319904'
 
@@ -21,7 +24,8 @@ class CreateEventScreen extends Component {
         isDatePickerVisible: false,
         eventDate: new Date(),
         titleMessage: ' ',
-        isAvatarChanged: false // TODO: Currently they can't change event image
+        isAvatarChanged: false, // TODO: Currently they can't change event image
+        isPreview: false,
     }
 
     onDateChange = (selectedDate) => {
@@ -38,6 +42,7 @@ class CreateEventScreen extends Component {
         delete event.isDatePickerVisible
         delete event.titleMessage
         delete event.isAvatarChanged
+        delete event.isPreview
         event.uid = firebase.auth().currentUser.uid;
         event.displayName = firebase.auth().currentUser.displayName;
         event.photoURL = firebase.auth().currentUser.photoURL;
@@ -51,7 +56,7 @@ class CreateEventScreen extends Component {
         this.props.navigation.navigate('MyEvent', { event });
     }
 
-    onAvatarPressed = () => {
+    onImagePressed = () => {
         var customButtons = [];
         /* if (this.state.profile.photoURL !== strings.DEFAULT_PROFILE_PIC) {
           customButtons = [{
@@ -93,7 +98,7 @@ class CreateEventScreen extends Component {
             else {
                 if (Platform.OS === 'ios')
                     response.path = response.uri.replace("file://", '');
-                console.log('response', response);
+                console.log('event imagePicker response', response);
                 this.setState({ image: response.uri, pickerResponse: response, isAvatarChanged: true })
             }
         });
@@ -104,37 +109,39 @@ class CreateEventScreen extends Component {
         return (
             <ScrollView>
                 <View style={styles.container}>
-                    <Card containerStyle={{ flex: 1, alignSelf: 'stretch' }} >
-                        <View style={{ flexDirection: 'row', borderWidth: 2, borderColor: 'red' }} >
-                            <Avatar
-                                //onPress={this.onAvatarPressed}
-                                renderPlaceholderContent={<ActivityIndicator />}
-                                //onEditPress={this.onAvatarPressed}
-                                size='medium'
-                                title='Event Pict'
-                                rounded={false}
-                                avatarStyle={{ width: 60, height: 60, alignSelf: 'center' }}
-                                showEditButton={true}
+                    <Card containerStyle={{ borderWidth: 1 }} >
+                        <TouchableOpacity onPress={this.onImagePressed} style={{ flexDirection: 'column', alignContent: 'center' }} >
+                            <Image
+                                containerStyle={{ alignSelf: 'stretch', borderBottomWidth: 1, height: 100 }}
                                 source={{ uri: image }}
-                                containerStyle={{ borderColor: 'red', alignSelf: 'center', flex: 1, flexDirection: 'column', justifyContent: 'space-around', borderWidth: 2 }}
+                                style={{ height: undefined, width: undefined }}
+                                resizeMode='contain'
                             />
-                            <View style={{ flex: 3, flexDirection: 'column', alignContent: 'center' }} >
-                                <Input
-                                    placeholder='Event title'
-                                    onChangeText={title => this.setState({ title, titleMessage: ' ' })}
-                                    value={title}
-                                    errorMessage={this.state.titleMessage}
-                                />
-                                <Input
-                                    placeholder='Event description'
-                                    onChangeText={description => this.setState({ description })}
-                                    value={description}
-                                    multiline
-                                />
-                            </View>
-                        </View>
-                        <View style={{ alignSelf: 'stretch', flexDirection: 'column', justifyContent: 'space-between', borderWidth: 2, borderColor: 'blue', marginTop: 10 }}>
-                            <TouchableOpacity style={{ borderWidth: 1 }} onPress={() => this.setState({ isDatePickerVisible: true })}>
+                            <Icon
+                                reverse
+                                name='camera'
+                                type='material-community'
+                                size={10}
+                                containerStyle={{
+                                    position: 'absolute',
+                                    right: 5, bottom: 5
+                                }}
+                            />
+                        </TouchableOpacity>
+                        <Input
+                            placeholder='Event title'
+                            onChangeText={title => this.setState({ title, titleMessage: ' ' })}
+                            value={title}
+                            errorMessage={this.state.titleMessage}
+                        />
+                        <Input
+                            placeholder='Event description'
+                            onChangeText={description => this.setState({ description })}
+                            value={description}
+                            multiline
+                        />
+                        <View style={{ alignSelf: 'stretch', flexDirection: 'column', justifyContent: 'space-between', borderColor: 'blue', marginTop: 10 }}>
+                            <TouchableOpacity onPress={() => this.setState({ isDatePickerVisible: true })}>
                                 <Input
                                     label='Date/Time of Event'
                                     value={eventDate.toLocaleString()}
@@ -142,10 +149,10 @@ class CreateEventScreen extends Component {
                                 />
                             </TouchableOpacity>
                             <Input
-                                label='Duration'
+                                label='Duration (min)'
                                 value={duration}
                                 onChangeText={(duration) => this.setState({ duration })}
-                                containerStyle={{ alignSelf: 'stretch', borderWidth: 5, borderColor: 'brown' }}
+                                containerStyle={{ alignSelf: 'stretch', borderColor: 'brown' }}
                             />
                             <DateTimePickerModal
                                 isVisible={this.state.isDatePickerVisible}
@@ -185,7 +192,7 @@ class CreateEventScreen extends Component {
                                 disabled={eventType === 'call'}
                             />
                             <Input
-                                label='Ticket Price'
+                                label='Ticket Price ($)'
                                 onChangeText={(price) => this.setState({ price })}
                                 value={price}
                                 keyboardType='numeric'
@@ -193,9 +200,21 @@ class CreateEventScreen extends Component {
                             />
                         </View>
 
-                        <Button title='Create Event' type='outline' onPress={this.createEvent} />
+                        <Button title='Preview Event' type='outline' onPress={() => this.setState({ isPreview: true })} />
                     </Card>
                 </View>
+                <Overlay
+                    isVisible={this.state.isPreview}
+                    windowBackgroundColor="rgba(255, 255, 255, .5)"
+                    onBackdropPress={() => this.setState({ isPreview: false })}
+                    fullScreen
+                >
+                    <EventPreview
+                        event={this.state}
+                        cancel={() => this.setState({ isPreview: false })}
+                        publish={() => this.createEvent()}
+                    />
+                </Overlay>
             </ScrollView>
         )
     }
