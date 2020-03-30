@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, StyleSheet, Alert, Text } from 'react-native';
+import { View, StyleSheet, Alert, Text, ScrollView } from 'react-native';
 import AppText from '../components/AppText';
 import { Input, Button, Avatar, CheckBox } from 'react-native-elements';
 import firebase from "react-native-firebase";
@@ -144,67 +144,69 @@ class RegisterScreen extends Component {
     render() {
         const { displayName, email, password, repassword, photoURL, isWaiting } = this.state
         return (
-            <View style={styles.container}>
-                <Avatar
-                    onPress={this.onAvatarPressed}
-                    size='large'
-                    rounded={true}
-                    showEditButton={true}
-                    source={{ uri: photoURL || DEFAULT_PROFILE_PIC }}
-                />
-                <View style={{ alignSelf: 'stretch', paddingHorizontal: 20 }}>
-                    <Input
-                        placeholder='Display name'
-                        leftIcon={{ type: 'MaterialCommunity', name: 'account-circle' }}
-                        onChangeText={displayName => this.setState({ displayName })}
-                        value={displayName}
-                        disabled={isWaiting}
+            <ScrollView>
+                <View style={styles.container}>
+                    <Avatar
+                        onPress={this.onAvatarPressed}
+                        size='large'
+                        rounded={true}
+                        showEditButton={true}
+                        source={{ uri: photoURL || DEFAULT_PROFILE_PIC }}
                     />
-                    <Input
-                        placeholder='Enter Email'
-                        leftIcon={{ type: 'MaterialCommunity', name: 'email' }}
-                        onChangeText={email => this.setState({ email })}
-                        value={email}
-                        keyboardType='email-address'
-                        disabled={isWaiting}
-                    />
-                    <Input
-                        placeholder='Password'
-                        leftIcon={{ type: 'MaterialCommunity', name: 'lock' }}
-                        onChangeText={password => this.setState({ password })}
-                        value={password}
-                        secureTextEntry
-                        disabled={isWaiting}
-                    />
-                    <Input
-                        placeholder='Repassword'
-                        leftIcon={{ type: 'MaterialCommunity', name: 'lock' }}
-                        onChangeText={repassword => this.setState({ repassword })}
-                        value={repassword}
-                        secureTextEntry
-                        disabled={isWaiting}
-                    />
+                    <View style={{ alignSelf: 'stretch', paddingHorizontal: 20 }}>
+                        <Input
+                            placeholder='Display name'
+                            leftIcon={{ type: 'MaterialCommunity', name: 'account-circle' }}
+                            onChangeText={displayName => this.setState({ displayName })}
+                            value={displayName}
+                            disabled={isWaiting}
+                        />
+                        <Input
+                            placeholder='Enter Email'
+                            leftIcon={{ type: 'MaterialCommunity', name: 'email' }}
+                            onChangeText={email => this.setState({ email })}
+                            value={email}
+                            keyboardType='email-address'
+                            disabled={isWaiting}
+                        />
+                        <Input
+                            placeholder='Password'
+                            leftIcon={{ type: 'MaterialCommunity', name: 'lock' }}
+                            onChangeText={password => this.setState({ password })}
+                            value={password}
+                            secureTextEntry
+                            disabled={isWaiting}
+                        />
+                        <Input
+                            placeholder='Repassword'
+                            leftIcon={{ type: 'MaterialCommunity', name: 'lock' }}
+                            onChangeText={repassword => this.setState({ repassword })}
+                            value={repassword}
+                            secureTextEntry
+                            disabled={isWaiting}
+                        />
+                    </View>
+                    <View style={{ alignSelf: 'stretch', flexDirection: 'column', justifyContent: 'center' }}>
+                        <CheckBox
+                            title='I accept terms'
+                            checked={this.state.terms}
+                            onPress={() => this.setState({ terms: !this.state.terms })}
+                        />
+                        <Button
+                            title="Create My Account"
+                            onPress={this.checkAccount}
+                            disabled={isWaiting}
+                        />
+                    </View>
+                    <View style={{ alignSelf: 'stretch', flexDirection: 'row', borderWidth: 2, justifyContent: 'space-evenly' }}>
+                        <Text>or Signin if you have account</Text>
+                        <Button
+                            title="Sign In"
+                            onPress={() => this.props.navigation.navigate('SignIn', { email })}
+                        />
+                    </View>
                 </View>
-                <View style={{ alignSelf: 'stretch', flexDirection: 'column', justifyContent: 'center' }}>
-                    <CheckBox
-                        title='I accept terms'
-                        checked={this.state.terms}
-                        onPress={() => this.setState({ terms: !this.state.terms })}
-                    />
-                    <Button
-                        title="Create My Account"
-                        onPress={this.checkAccount}
-                        disabled={isWaiting}
-                    />
-                </View>
-                <View style={{ alignSelf: 'stretch', flexDirection: 'row', borderWidth: 2, justifyContent: 'space-evenly' }}>
-                    <Text>or Signin if you have account</Text>
-                    <Button
-                        title="Sign In"
-                        onPress={() => this.props.navigation.navigate('SignIn', { email })}
-                    />
-                </View>
-            </View>
+            </ScrollView>
         )
     }
 }
@@ -212,8 +214,9 @@ class RegisterScreen extends Component {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        justifyContent: 'space-around',
-        alignItems: 'center'
+        justifyContent: 'flex-start',
+        alignItems: 'center',
+        marginTop: 10
     }
 })
 
