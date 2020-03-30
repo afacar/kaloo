@@ -28,7 +28,7 @@ class EventPreview extends Component {
         console.log('event preview render', this.props)
         return (
             <View style={styles.container}>
-                <Card title={eventLink ? `Event Published` : 'Preview'} containerStyle={{ margin: 5 }}>
+                <Card title={eventLink ? `Event Published` : 'Preview'} titleStyle={{ backgroundColor: eventLink? 'green': 'grey' }} containerStyle={{ margin: 5 }}>
                     <Image source={{ uri: image }} style={{ width: 100, height: 100 }} />
                     <Text>Title: {title || 'No title'}</Text>
                     <Text>description: {description || 'No description'}</Text>
@@ -42,8 +42,8 @@ class EventPreview extends Component {
                 </Card>
                 {
                     !eventLink && (<View style={{ justifyContent: 'space-around', flexDirection: 'row' }}>
-                        <Button title='Edit' onPress={() => this.props.cancel()} />
-                        <Button title='Publish' onPress={() => this._confirmPublish()} />
+                        <Button disabled={isWaiting} title='Edit' onPress={() => this.props.cancel()} />
+                        <Button disabled={isWaiting} title='Publish' onPress={() => this._confirmPublish()} />
                     </View>)
                 }
             </View>

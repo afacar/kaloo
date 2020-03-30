@@ -16,22 +16,24 @@ const functions = firebase.functions()
 
 const DEFAULT_EVENT_PIC = 'https://firebasestorage.googleapis.com/v0/b/influenceme-dev.appspot.com/o/assets%2Fbroadcast-media.png?alt=media&token=608c9143-879d-4ff7-a30d-ac61ba319904'
 
+const INITIAL_STATE = {
+    image: DEFAULT_EVENT_PIC,
+    title: '',
+    description: '',
+    duration: '30',
+    eventType: 'live',
+    capacity: '5',
+    price: '1',
+    isDatePickerVisible: false,
+    eventDate: new Date(),
+    titleMessage: '',
+    isAvatarChanged: false, // TODO: Currently they can't change event image
+    isPreview: false,
+    isWaiting: false,
+}
+
 class CreateEventScreen extends Component {
-    state = {
-        image: DEFAULT_EVENT_PIC,
-        title: '',
-        description: '',
-        duration: '30',
-        eventType: 'live',
-        capacity: '5',
-        price: '1',
-        isDatePickerVisible: false,
-        eventDate: new Date(),
-        titleMessage: '',
-        isAvatarChanged: false, // TODO: Currently they can't change event image
-        isPreview: false,
-        isWaiting: false,
-    }
+    state = INITIAL_STATE
 
     onDateChange = (selectedDate) => {
         this.setState({ isDatePickerVisible: false, eventDate: selectedDate })
@@ -46,12 +48,16 @@ class CreateEventScreen extends Component {
         event.displayName = auth.currentUser.displayName;
         event.photoURL = auth.currentUser.photoURL;
         event.status = app.EVENT_STATUS.SCHEDULED
-        console.log(`Uploading event image to: users/${event.uid}/events/${eventDate.toLocaleString()}.jpg`)
-        const imageRef = storage.ref(`users/${auth.currentUser.uid}/events/${eventDate.toLocaleString()}.jpg`)
-        imageRef.putFile(this.state.pickerResponse.path)
-        console.log('New Image uploaded')
-        console.log('calling create event...', event);
         this.setState({ isWaiting: true })
+        if (image !== DEFAULT_EVENT_PIC) {
+            console.log(`Uploading event image to: users/${event.uid}/events/${eventDate.toLocaleString()}.jpg`)
+            const imageRef = storage.ref(`users/${auth.currentUser.uid}/events/${eventDate.toLocaleString()}.jpg`)
+            await imageRef.putFile(this.state.pickerResponse.path)
+            let newImage = await imageRef.getDownloadURL()
+            console.log('New Image uploaded')
+            event.image = newImage
+        }
+        console.log('calling create event...', event);
         let { data: { eventNumber, eventLink } } = await createEvent(JSON.stringify(event));
         this.setState({ isWaiting: false })
         event.eventNumber = eventNumber
@@ -105,7 +111,7 @@ class CreateEventScreen extends Component {
                 if (Platform.OS === 'ios')
                     response.path = response.uri.replace("file://", '');
                 console.log('event imagePicker response', response);
-                this.setState({ image: response.uri, pickerResponse: response, isAvatarChanged: true })
+                this.setState({ image: response.uri, pickerResponse: response })
             }
         });
     }
@@ -114,6 +120,13 @@ class CreateEventScreen extends Component {
         if (this.state.title.length < 1)
             return this.setState({ titleMessage: 'Title is a must!' })
         this.setState({ isPreview: true })
+    }
+
+    _onPreviewClose = () => {
+        const { eventLink, isWaiting } = this.state
+        if (isWaiting) return;
+        if (eventLink) return this.setState({ ...INITIAL_STATE })
+        this.setState({ isPreview: false })
     }
 
     render() {
@@ -218,12 +231,12 @@ class CreateEventScreen extends Component {
                 <Overlay
                     isVisible={this.state.isPreview}
                     windowBackgroundColor="rgba(255, 255, 255, .5)"
-                    onBackdropPress={() => this.setState({ isPreview: false })}
+                    onBackdropPress={this._onPreviewClose}
                     fullScreen
                 >
                     <EventPreview
                         event={this.state}
-                        cancel={() => this.setState({ isPreview: false })}
+                        cancel={this._onPreviewClose}
                         publish={() => this.createEvent()}
                     />
                 </Overlay>
