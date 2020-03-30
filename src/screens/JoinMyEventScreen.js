@@ -80,7 +80,7 @@ class JoinMyEventScreen extends Component {
                         <Text>Event Link: {eventLink}</Text>
                         <Button title='Share' onPress={this.onShare} />
                         {
-                            (status === app.EVENT_STATUS.SCHEDULED) && (
+                            ((status === app.EVENT_STATUS.SCHEDULED) || (status === app.EVENT_STATUS.SUSPENDED)) && (
                                 <Button title='Waiting...' disabled />
                             )
                         }
@@ -90,7 +90,7 @@ class JoinMyEventScreen extends Component {
                             )
                         }
                         {
-                            ((status === app.EVENT_STATUS.IN_PROGRESS) || (status === app.EVENT_STATUS.SUSPENDED)) && (
+                            (status === app.EVENT_STATUS.IN_PROGRESS) && (
                                 <Button title='Join' onPress={this.onCamera} />
                             )
                         }

@@ -21,6 +21,14 @@ export const suspendLive = (eventID) => {
     return 1;
 }
 
+export const continueLive = (eventID) => {
+    const eventRef = firebase.firestore().collection('events').doc(eventID);
+    const liveStatsRef = firebase.firestore().collection('events').doc(eventID).collection('live').doc('--stats--');
+    eventRef.set({ status: app.EVENT_STATUS.IN_PROGRESS }, { merge: true });
+    liveStatsRef.set({ status: app.EVENT_STATUS.IN_PROGRESS }, { merge: true });
+    return 1;
+}
+
 export const endLive = (eventID) => {
     const eventRef = firebase.firestore().collection('events').doc(eventID);
     const liveStatsRef = firebase.firestore().collection('events').doc(eventID).collection('live').doc('--stats--');

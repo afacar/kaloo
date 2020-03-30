@@ -64,8 +64,7 @@ class JoinEventScreen extends Component {
 
     render() {
         const { image, title, description, duration, eventType, capacity, price, eventDate, eventLink, status } = this.state;
-        console.log('eventDate is', eventDate)
-        console.log('eventDate typeOf is', eventDate.toDate())
+        console.warn('status ', status)
         return (
             <View style={styles.container}>
                 <Card title={title} containerStyle={{ justifyContent: 'flex-start', alignSelf: 'stretch' }}>
@@ -80,7 +79,7 @@ class JoinEventScreen extends Component {
                         <Text>Event Link: {eventLink}</Text>
                         <Button title='Share' onPress={this.onShare} />
                         {
-                            (status === app.EVENT_STATUS.SCHEDULED) && (
+                            ((status === app.EVENT_STATUS.SCHEDULED) || (status === app.EVENT_STATUS.SUSPENDED)) && (
                                 <Button title='Waiting...' disabled />
                             )
                         }
@@ -90,7 +89,7 @@ class JoinEventScreen extends Component {
                             )
                         }
                         {
-                            ((status === app.EVENT_STATUS.IN_PROGRESS) || (status === app.EVENT_STATUS.SUSPENDED)) && (
+                            (status === app.EVENT_STATUS.IN_PROGRESS) && (
                                 <Button title='Join' onPress={this.onCamera} />
                             )
                         }
