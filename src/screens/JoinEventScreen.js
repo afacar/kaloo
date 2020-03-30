@@ -68,34 +68,33 @@ class JoinEventScreen extends Component {
         console.log('eventDate typeOf is', eventDate.toDate())
         return (
             <View style={styles.container}>
-                <Card title={title}>
-                    <Image source={{ uri: image }} style={{ width: 100, height: 100 }} />
-                    <Text>description: {description}</Text>
-                    <Text>Duration: {duration}</Text>
-                    <Text>Capacity: {capacity}</Text>
-                    <Text>Event Type: {eventType}</Text>
-                    <Text>Price: {price}</Text>
-                    <Text>Event Date: {eventDate.toDate().toLocaleString()}</Text>
-                    <Text>Event Link: {eventLink}</Text>
-                    <Button title='Share' onPress={this.onShare} />
-                    {
-
-                    }
-                    {
-                        (status === app.EVENT_STATUS.SCHEDULED) && (
-                            <Button title='Waiting...' disabled />
-                        )
-                    }
-                    {
-                        status === app.EVENT_STATUS.COMPLETED && (
-                            <Button title='Finished' disabled />
-                        )
-                    }
-                    {
-                        ((status === app.EVENT_STATUS.IN_PROGRESS) || (status === app.EVENT_STATUS.SUSPENDED)) && (
-                            <Button title='Join' onPress={this.onCamera} />
-                        )
-                    }
+                <Card title={title} containerStyle={{ justifyContent: 'flex-start', alignSelf: 'stretch' }}>
+                    <View>
+                        <Image source={{ uri: image }} style={{ width: 100, height: 100 }} />
+                        <Text>description: {description}</Text>
+                        <Text>Duration: {duration}</Text>
+                        <Text>Capacity: {capacity}</Text>
+                        <Text>Event Type: {eventType}</Text>
+                        <Text>Price: {price}</Text>
+                        <Text>Event Date: {eventDate.toDate().toLocaleString()}</Text>
+                        <Text>Event Link: {eventLink}</Text>
+                        <Button title='Share' onPress={this.onShare} />
+                        {
+                            (status === app.EVENT_STATUS.SCHEDULED) && (
+                                <Button title='Waiting...' disabled />
+                            )
+                        }
+                        {
+                            status === app.EVENT_STATUS.COMPLETED && (
+                                <Button title='Finished' disabled />
+                            )
+                        }
+                        {
+                            ((status === app.EVENT_STATUS.IN_PROGRESS) || (status === app.EVENT_STATUS.SUSPENDED)) && (
+                                <Button title='Join' onPress={this.onCamera} />
+                            )
+                        }
+                    </View>
                 </Card>
             </View >
         )
@@ -105,7 +104,7 @@ class JoinEventScreen extends Component {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        justifyContent: 'space-around',
+        justifyContent: 'flex-start',
         alignItems: 'center'
     }
 })

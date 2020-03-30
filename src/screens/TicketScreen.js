@@ -5,7 +5,7 @@ import { Input, Button, Text } from 'react-native-elements';
 import firebase from 'react-native-firebase';
 const db = firebase.firestore()
 
-class MainScreen extends Component {
+class TicketScreen extends Component {
     state = { ticket: '', isWaiting: false, errorMessage: ' ', isFormatOk: false }
 
     checkTicket = async () => {
@@ -25,7 +25,7 @@ class MainScreen extends Component {
             let event = eventDoc.data()
             event.ticket = {...ticketDoc.data(), ticket }
             console.log('event dataxx:', event)
-            this.props.navigation.navigate('JoinEvent', { event })
+            this.props.navigation.navigate('JoinMyEvent', { event })
         } else {
             this.setState({ isWaiting: false, errorMessage: 'No such a ticket!' })
         }
@@ -59,13 +59,6 @@ class MainScreen extends Component {
                     onPress={this.checkTicket}
                     disabled={this.state.isWaiting}
                 />
-                <View>
-                    <AppText>Or SignUp as Influencer</AppText>
-                    <Button
-                        title="Create Event"
-                        onPress={() => this.props.navigation.navigate('Register')}
-                    />
-                </View>
             </View>
         )
     }
@@ -79,4 +72,4 @@ const styles = StyleSheet.create({
     }
 })
 
-export default MainScreen;
+export default TicketScreen;
