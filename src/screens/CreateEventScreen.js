@@ -10,6 +10,10 @@ import { app } from '../constants';
 
 import EventPreview from '../components/EventPreview';
 
+const storage = firebase.storage()
+const auth = firebase.auth()
+const functions = firebase.functions()
+
 const DEFAULT_EVENT_PIC = 'https://firebasestorage.googleapis.com/v0/b/influenceme-dev.appspot.com/o/assets%2Fbroadcast-media.png?alt=media&token=608c9143-879d-4ff7-a30d-ac61ba319904'
 
 class CreateEventScreen extends Component {
@@ -23,9 +27,10 @@ class CreateEventScreen extends Component {
         price: '1',
         isDatePickerVisible: false,
         eventDate: new Date(),
-        titleMessage: ' ',
+        titleMessage: '',
         isAvatarChanged: false, // TODO: Currently they can't change event image
         isPreview: false,
+        isWaiting: false,
     }
 
     onDateChange = (selectedDate) => {
@@ -33,27 +38,28 @@ class CreateEventScreen extends Component {
     };
 
     createEvent = async () => {
-        let event = this.state
-        if (event.title.trim().length < 1) {
-            return this.setState({ titleMessage: 'Proper title please' })
-        }
-        let createEvent = firebase.functions().httpsCallable('createEvent')
+        let { image, title, description, duration, eventType, capacity, price, eventDate } = this.state
 
-        delete event.isDatePickerVisible
-        delete event.titleMessage
-        delete event.isAvatarChanged
-        delete event.isPreview
-        event.uid = firebase.auth().currentUser.uid;
-        event.displayName = firebase.auth().currentUser.displayName;
-        event.photoURL = firebase.auth().currentUser.photoURL;
+        let event = { image, title, description, duration, eventType, capacity, price, eventDate }
+        let createEvent = functions.httpsCallable('createEvent')
+        event.uid = auth.currentUser.uid;
+        event.displayName = auth.currentUser.displayName;
+        event.photoURL = auth.currentUser.photoURL;
         event.status = app.EVENT_STATUS.SCHEDULED
+        console.log(`Uploading event image to: users/${event.uid}/events/${eventDate.toLocaleString()}.jpg`)
+        const imageRef = storage.ref(`users/${auth.currentUser.uid}/events/${eventDate.toLocaleString()}.jpg`)
+        imageRef.putFile(this.state.pickerResponse.path)
+        console.log('New Image uploaded')
         console.log('calling create event...', event);
+        this.setState({ isWaiting: true })
         let { data: { eventNumber, eventLink } } = await createEvent(JSON.stringify(event));
+        this.setState({ isWaiting: false })
         event.eventNumber = eventNumber
         event.eventLink = eventLink
         console.log('Recieved created event:=>', event)
+        this.setState({ eventNumber, eventLink })
         // TODO: GOTO EVENT SCREEN
-        this.props.navigation.navigate('MyEvent', { event });
+        //this.props.navigation.navigate('MyEvent', { event });
     }
 
     onImagePressed = () => {
@@ -102,6 +108,12 @@ class CreateEventScreen extends Component {
                 this.setState({ image: response.uri, pickerResponse: response, isAvatarChanged: true })
             }
         });
+    }
+
+    _eventPreview = () => {
+        if (this.state.title.length < 1)
+            return this.setState({ titleMessage: 'Title is a must!' })
+        this.setState({ isPreview: true })
     }
 
     render() {
@@ -200,7 +212,7 @@ class CreateEventScreen extends Component {
                             />
                         </View>
 
-                        <Button title='Preview Event' type='outline' onPress={() => this.setState({ isPreview: true })} />
+                        <Button title='Preview Event' type='outline' onPress={this._eventPreview} />
                     </Card>
                 </View>
                 <Overlay

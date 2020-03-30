@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, StyleSheet, PermissionsAndroid, FlatList, Text, ActivityIndicator } from 'react-native';
+import { View, StyleSheet, PermissionsAndroid, FlatList, Text, ActivityIndicator, ScrollView } from 'react-native';
 import AppText from '../components/AppText';
 import { Input, Button, Card, ListItem, Icon, Image, Avatar } from 'react-native-elements';
 import firebase from "react-native-firebase";
@@ -125,8 +125,8 @@ class EventListScreen extends Component {
         const { events } = this.state;
         return (
             <View style={styles.container}>
-                <Card containerStyle={{ margin: 5, flex: 1, alignSelf: 'stretch' }} >
-                    <View>
+                <Card containerStyle={{ borderWidth:2, margin: 5, flex: 1, alignSelf: 'stretch' }} >
+                    <View style={{ justifyContent:'flex-start', height: '100%', borderWidth: 0 }}>
                         {
                             <View>
                                 <ListItem
@@ -145,23 +145,25 @@ class EventListScreen extends Component {
                                 />
                             </View>
                         }
-                        {
-                            events.length > 0 && events.map((e, i) => {
-                                return (
-                                    <ListItem
-                                        key={i}
-                                        leftAvatar={{ source: { uri: e.image } }}
-                                        rightIcon={{ type: 'MaterialCommunity', name: 'chevron-right' }}
-                                        roundAvatar
-                                        title={e.title}
-                                        subtitle={e.description || 'No description'}
-                                        avatar={{ uri: e.image }}
-                                        bottomDivider
-                                        onPress={() => this.props.navigation.navigate('MyEvent', { event: e })}
-                                    />
-                                );
-                            })
-                        }
+                        <ScrollView overScrollMode='never'>
+                            {
+                                events.length > 0 && events.map((e, i) => {
+                                    return (
+                                        <ListItem
+                                            key={i}
+                                            leftAvatar={{ source: { uri: e.image } }}
+                                            rightIcon={{ type: 'MaterialCommunity', name: 'chevron-right' }}
+                                            roundAvatar
+                                            title={e.title}
+                                            subtitle={e.description || 'No description'}
+                                            avatar={{ uri: e.image }}
+                                            bottomDivider
+                                            onPress={() => this.props.navigation.navigate('MyEvent', { event: e })}
+                                        />
+                                    );
+                                })
+                            }
+                        </ScrollView>
                     </View>
                 </Card>
             </View>

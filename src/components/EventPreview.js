@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, StyleSheet, Image, Alert } from 'react-native';
+import { View, StyleSheet, Image, Alert, ActivityIndicator } from 'react-native';
 import { Input, Button, Text, Card } from 'react-native-elements';
 
 class EventPreview extends Component {
@@ -24,13 +24,13 @@ class EventPreview extends Component {
     }
 
     render() {
-        const { image, title, description, duration, eventType, capacity, price, eventDate, eventLink, status } = this.props.event;
+        const { image, title, description, duration, eventType, capacity, price, eventDate, eventLink, status, isWaiting } = this.props.event;
         console.log('event preview render', this.props)
         return (
             <View style={styles.container}>
-                <Card title={'Preview'} containerStyle={{ margin: 5 }}>
+                <Card title={eventLink ? `Event Published` : 'Preview'} containerStyle={{ margin: 5 }}>
                     <Image source={{ uri: image }} style={{ width: 100, height: 100 }} />
-                    <Text>description: {title || 'No title'}</Text>
+                    <Text>Title: {title || 'No title'}</Text>
                     <Text>description: {description || 'No description'}</Text>
                     <Text>Duration: {duration}</Text>
                     <Text>Capacity: {capacity}</Text>
@@ -40,8 +40,13 @@ class EventPreview extends Component {
                     <Text>Event Link: {eventLink || 'https://inf.me/event/{eventID}'}</Text>
                     <Button title='Share' onPress={this.onShare} />
                 </Card>
-                <Button title='Publish' onPress={() => this._confirmPublish()} />
-            </View >
+                {
+                    !eventLink && (<View style={{ justifyContent: 'space-around', flexDirection: 'row' }}>
+                        <Button title='Edit' onPress={() => this.props.cancel()} />
+                        <Button title='Publish' onPress={() => this._confirmPublish()} />
+                    </View>)
+                }
+            </View>
         )
     }
 }
