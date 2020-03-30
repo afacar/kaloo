@@ -81,7 +81,7 @@ class MyEventScreen extends Component {
                         <Text>Event Link: {eventLink}</Text>
                         <Button title='Share' onPress={this.onShare} />
                         {
-                            ((status === app.EVENT_STATUS.SCHEDULED) || (status === app.EVENT_STATUS.SUSPENDED)) && (
+                            ((status === app.EVENT_STATUS.SCHEDULED) || (status === app.EVENT_STATUS.SUSPENDED || status === app.EVENT_STATUS.IN_PROGRESS)) && (
                                 <Button title='Preview' onPress={this.onCamera} />
                             )
                         }
@@ -92,7 +92,7 @@ class MyEventScreen extends Component {
                         }
                         {
                             status === app.EVENT_STATUS.IN_PROGRESS && (
-                                <Button title='Live on other device' disabled />
+                                <Button title='Continue' onPress={this.onCamera} />
                             )
                         }
                     </View>

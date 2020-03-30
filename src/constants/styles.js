@@ -16,36 +16,44 @@ export default StyleSheet.create({
     },
     liveInfo: {
         position: 'absolute',
-        flexDirection: 'row',
         top: 24,
         right: 24,
         backgroundColor: 'transparent',
     },
     timerCard: {
-        fontSize: 16,
+        fontSize: 12,
         backgroundColor: 'white',
         color: 'black',
         borderRadius: 56,
         textAlign: 'center',
-        padding: 8
+        justifyContent: 'center',
+        alignContent: 'center',
+        padding: 8,
     },
     liveText: {
         marginLeft: 16,
-        width: 70,
-        height: 40,
-        fontSize: 16,
+        fontSize: 12,
         color: 'white',
         backgroundColor: colors.RED,
         borderRadius: 56,
         textAlign: 'center',
-        padding: 8
+        padding: 8,
+        paddingHorizontal: 20
     },
     viewerCard: {
         position: 'absolute',
         bottom: 24,
         right: 24,
         backgroundColor: 'white',
-        fontSize: 16,
+        fontSize: 12,
+        color: 'black',
+        borderRadius: 55,
+        textAlign: 'center',
+        padding: 8
+    },
+    viewerText: {
+        backgroundColor: 'white',
+        fontSize: 12,
         color: 'black',
         borderRadius: 55,
         textAlign: 'center',
@@ -60,10 +68,14 @@ export default StyleSheet.create({
     },
     startButton: {
         position: 'absolute',
+        alignSelf: 'center',
+        backgroundColor: colors.BLUE,
         bottom: 24,
-        width: 220,
-        height: 46,
-        borderWidth: 1,
+        // width: 220,
+        // height: 46,
+        // borderWidth: 1,
+        borderRadius: 38,
+        padding: 12,
         justifyContent: 'center',
         alignItems: 'center'
     }

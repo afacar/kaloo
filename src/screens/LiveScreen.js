@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
-import { View, Text, NativeModules, PermissionsAndroid, Alert, StatusBar, TouchableOpacity } from 'react-native';
+import { View, Text, NativeModules, PermissionsAndroid, Alert, StatusBar, TouchableOpacity, BackHandler, ToastAndroid } from 'react-native';
 import app from '../constants/app';
 import { RtcEngine, AgoraView } from 'react-native-agora';
-import { decrementViewer, clearLiveEventListener, setLiveEventListener, incrementViewer, startLive, endLive } from '../utils/EventHandler';
+import { decrementViewer, clearLiveEventListener, setLiveEventListener, incrementViewer, startLive, endLive, suspendLive, continueLive } from '../utils/EventHandler';
 import { handleAndroidBackButton, removeAndroidBackButtonHandler } from '../utils/BackHandler';
 import AppButton from '../components/AppButton';
 import { styles } from '../constants';
@@ -19,6 +19,11 @@ const {
 } = Agora
 
 export default class LiveScreen extends Component {
+
+    constructor(props) {
+        super(props);
+        this.backButtonPressed = this.backButtonPressed.bind(this);
+    }
 
     state = {
         uid: Math.floor(Math.random() * 100),
@@ -41,7 +46,6 @@ export default class LiveScreen extends Component {
                 // not granted
             }
         } catch (err) {
-            // console.warn(err);
         }
     }
 
@@ -64,7 +68,6 @@ export default class LiveScreen extends Component {
                 // not granted
             }
         } catch (err) {
-            // console.warn(err);
         }
     }
 
@@ -112,7 +115,6 @@ export default class LiveScreen extends Component {
             }
         })
         RtcEngine.on('error', (error) => {
-            // console.warn("error", error);
         })
         RtcEngine.init(options);
     }
@@ -129,7 +131,6 @@ export default class LiveScreen extends Component {
         RtcEngine.joinChannel(channelName, ticketID)
             .then((result) => {
                 if (clientRole == 2) {
-                    console.warn('increasing viewer count')
                     this.incrementViewers();
                 } else {
                     // startLive(channelName);
@@ -145,13 +146,10 @@ export default class LiveScreen extends Component {
             if (startedAt) {
                 time = parseInt(firebase.firestore.Timestamp.now().seconds) - parseInt(startedAt);
                 this.setState({ time });
-                console.log("time is ", time);
                 if (!this.timer) {
                     this.timer = setInterval(() => {
                         var time = this.state.time;
                         var timeStr = formatTime(time);
-                        console.log("time 1 is ", time);
-                        console.log("timeStr is ", timeStr);
                         this.setState({
                             time: this.state.time + 1,
                             timeStr
@@ -159,33 +157,26 @@ export default class LiveScreen extends Component {
                     }, 1000)
                 }
             }
-            this.setState({ viewers: viewerCount, status: status })
+            this.setState({ viewers: viewerCount || 0, status: status })
         });
 
         // setup back button listener
-        const { navigation } = this.props;
-        handleAndroidBackButton(navigation, this.backButtonPressed);
+        handleAndroidBackButton(this.backButtonPressed);
     }
 
     startLive = () => {
         var channelName = this.props.navigation.getParam('eventID', 'agora_test');
-        console.warn('channel name ', channelName);
-        startLive(channelName);
-    }
-
-    backButtonPressed(navigation) {
         Alert.alert(
-            "Confirm Exit",
-            "You can continue live from the event page",
+            "Start broadcast",
+            "Are you sure you want to start broadcasting?",
             [
                 {
-                    text: 'Cancel', onPress: () => { },
+                    text: 'No', onPress: () => { },
                     style: 'cancel'
                 },
                 {
-                    text: 'OK', onPress: () => {
-                        navigation.goBack();
-                        navigation.goBack();
+                    text: 'Yes', onPress: () => {
+                        startLive(channelName);
                     }
                 },
             ],
@@ -193,10 +184,34 @@ export default class LiveScreen extends Component {
         );
     }
 
+    continueLive = () => {
+        var channelName = this.props.navigation.getParam('eventID', 'agora_test');
+        Alert.alert(
+            "Continue broadcast",
+            "Are you sure you want to continue broadcasting?",
+            [
+                {
+                    text: 'No', onPress: () => { },
+                    style: 'cancel'
+                },
+                {
+                    text: 'Yes', onPress: () => {
+                        continueLive(channelName);
+                    }
+                },
+            ],
+            { cancelable: false }
+        );
+    }
+
+    suspendLive = () => {
+        this.backButtonPressed();
+    }
+
     endLive = () => {
         Alert.alert(
             "Confirm End",
-            "You cannot continue if you finish the live",
+            "Do you want to end your stream early",
             [
                 {
                     text: 'Cancel', onPress: () => { },
@@ -207,7 +222,6 @@ export default class LiveScreen extends Component {
                         RtcEngine.leaveChannel();
                         endLive(this.props.navigation.getParam('eventID', 'agora_test'));
                         this.props.navigation.goBack();
-                        this.props.navigation.goBack();
                     }
                 },
             ],
@@ -216,7 +230,37 @@ export default class LiveScreen extends Component {
     }
 
     leaveLive = () => {
-        this.backButtonPressed(this.props.navigation);
+        this.backButtonPressed();
+    }
+
+    backButtonPressed() {
+        const { navigation } = this.props;
+        var clientRole = this.props.navigation.getParam('clientRole', 2);
+        var eventID = this.props.navigation.getParam('eventID', 'agora_test');
+
+        Alert.alert(
+            "Confirm Exit",
+            "You can continue live from MyEvent page",
+            [
+                {
+                    text: 'Cancel', onPress: () => {
+                        return true;
+                    },
+                    style: 'cancel'
+                },
+                {
+                    text: 'OK', onPress: () => {
+                        if (clientRole === 1) {
+                            suspendLive(eventID)
+                        } 
+                        navigation.goBack();
+                        return false;
+                    }
+                },
+            ],
+            { cancelable: false }
+        );
+        return true;
     }
 
 
@@ -257,23 +301,45 @@ export default class LiveScreen extends Component {
                                         </AppButton>
                                     )
                                 } */}
-                                <AppButton style={styles.videoQuitButton} onPress={this.endLive}>
-                                    <AppText style={{ color: '#FFFFFF', marginLeft: 8, fontSize: 16, fontWeight: 'bold' }}>End</AppText>
+                                <AppButton style={styles.videoQuitButton} onPress={this.suspendLive}>
+                                    <AppText style={{ color: '#FFFFFF', marginLeft: 8, fontSize: 16, fontWeight: 'bold' }}>Go back</AppText>
                                 </AppButton>
                                 <View style={styles.liveInfo}>
-                                    <AppText style={styles.timerCard}>{this.state.timeStr}</AppText>
-                                    <AppText style={styles.liveText}>Live</AppText>
+                                    <View style={{ flex: 1, marginBottom: 10, justifyContent: 'center', alignItems: 'center' }}>
+                                        <AppText style={styles.viewerText}>{this.state.viewers + ' Viewers'}</AppText>
+                                    </View>
+                                    <View style={{ flex: 1, flexDirection: 'row' }}>
+                                        <AppText style={styles.timerCard}>{this.state.timeStr}</AppText>
+                                        <AppText style={styles.liveText}>Live</AppText>
+                                    </View>
                                 </View>
 
-                                <AppText style={styles.viewerCard}>{this.state.viewers + ' Viewers'}</AppText>
-                                <AppButton style={styles.startButton} onPress={this.startLive}>
-                                    <AppText>Start Broadcast</AppText>
-                                </AppButton>
+                                {
+                                    this.state.status === app.EVENT_STATUS.IN_PROGRESS && (
+                                        <AppButton style={styles.startButton} onPress={this.endLive}>
+                                            <AppText style={{ color: 'white', fontWeight: 'bold', fontSize: 16 }}>End Broadcasting</AppText>
+                                        </AppButton>
+                                    )
+                                }
+                                {
+                                    this.state.status === app.EVENT_STATUS.SUSPENDED && (
+                                        <AppButton style={styles.startButton} onPress={this.continueLive}>
+                                            <AppText style={{ color: 'white', fontWeight: 'bold', fontSize: 16 }}>Continue Broadcasting</AppText>
+                                        </AppButton>
+                                    )
+                                }
+                                {
+                                    this.state.status === app.EVENT_STATUS.SCHEDULED && (
+                                        <AppButton style={styles.startButton} onPress={this.startLive}>
+                                            <AppText style={{ color: 'white', fontWeight: 'bold', fontSize: 16 }}>Start Broadcasting</AppText>
+                                        </AppButton>
+                                    )
+                                }
                             </View>
                         )
                     }
                     {
-                        // Watcher
+                        // Viewer
                         clientRole === 2 && (
                             <View style={{ flex: 1 }}>
                                 <AgoraView mode={1} key={this.state.peerIds[0]} style={{ flex: 1 }} remoteUid={this.state.peerIds[0]} />
@@ -289,7 +355,6 @@ export default class LiveScreen extends Component {
                                 </AppButton>
                                 <View style={styles.liveInfo}>
                                     <AppText style={styles.timerCard}>{this.state.timeStr}</AppText>
-                                    <AppText style={styles.liveText}>Live</AppText>
                                 </View>
                                 <AppText style={styles.viewerCard}>{this.state.viewers + ' Viewers'}</AppText>
                             </View>
@@ -301,7 +366,7 @@ export default class LiveScreen extends Component {
     }
 
     componentWillUnmount() {
-        removeAndroidBackButtonHandler();
+        removeAndroidBackButtonHandler(this.backButtonPressed);
         clearLiveEventListener();
         RtcEngine.leaveChannel()
             .then(res => {
