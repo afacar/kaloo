@@ -26,7 +26,9 @@ const INITIAL_STATE = {
     price: '1',
     isDatePickerVisible: false,
     eventDate: new Date(),
+    eventLink: '',
     titleMessage: '',
+    dateMessage: '',
     isAvatarChanged: false, // TODO: Currently they can't change event image
     isPreview: false,
     isWaiting: false,
@@ -47,25 +49,43 @@ class CreateEventScreen extends Component {
         event.uid = auth.currentUser.uid;
         event.displayName = auth.currentUser.displayName;
         event.photoURL = auth.currentUser.photoURL;
-        event.status = app.EVENT_STATUS.SCHEDULED
+        event.status = app.EVENT_STATUS.SCHEDULED;
+        event.eventTimestamp = eventDate.getTime();
+
         this.setState({ isWaiting: true })
+
+        // Check if new event image is set
         if (image !== DEFAULT_EVENT_PIC) {
-            console.log(`Uploading event image to: users/${event.uid}/events/${eventDate.toLocaleString()}.jpg`)
-            const imageRef = storage.ref(`users/${auth.currentUser.uid}/events/${eventDate.toLocaleString()}.jpg`)
-            await imageRef.putFile(this.state.pickerResponse.path)
-            let newImage = await imageRef.getDownloadURL()
-            console.log('New Image uploaded')
-            event.image = newImage
+            let imagePath = `events/${event.uid}/${event.eventTimestamp}.jpg`
+            console.log(`Uploading event image to: ${imagePath}`)
+            const imageRef = storage.ref(imagePath)
+            await imageRef.getDownloadURL().then((url) => {
+                // Another event created at the same timestamp
+                this.setState({ isWaiting: false, isPreview: false, dateMessage: 'There is already an event on this date!' })
+            }).catch(async (error) => {
+                if (error.code === 'storage/object-not-found') {
+                    await imageRef.putFile(this.state.pickerResponse.path)
+                    let newImage = await imageRef.getDownloadURL()
+                    console.log('New Image uploaded')
+                    event.image = newImage
+                    event.isResizedImage = false
+                    console.log('calling create event...', event);
+                    let { data: { eventNumber, eventLink } } = await createEvent(JSON.stringify(event));
+                    event.eventNumber = eventNumber
+                    event.eventLink = eventLink
+                    console.log('Recieved created event:=>', event)
+                    this.setState({ eventNumber, eventLink, isWaiting: false })
+                }
+            })
+        } else {
+            event.isResizedImage = true
+            console.log('calling create event...', event);
+            let { data: { eventNumber, eventLink } } = await createEvent(JSON.stringify(event));
+            event.eventNumber = eventNumber
+            event.eventLink = eventLink
+            console.log('Recieved created event:=>', event)
+            this.setState({ eventNumber, eventLink, isWaiting: false })
         }
-        console.log('calling create event...', event);
-        let { data: { eventNumber, eventLink } } = await createEvent(JSON.stringify(event));
-        this.setState({ isWaiting: false })
-        event.eventNumber = eventNumber
-        event.eventLink = eventLink
-        console.log('Recieved created event:=>', event)
-        this.setState({ eventNumber, eventLink })
-        // TODO: GOTO EVENT SCREEN
-        //this.props.navigation.navigate('MyEvent', { event });
     }
 
     onImagePressed = () => {
@@ -171,6 +191,7 @@ class CreateEventScreen extends Component {
                                     label='Date/Time of Event'
                                     value={eventDate.toLocaleString()}
                                     disabled
+                                    errorMessage={this.state.dateMessage}
                                 />
                             </TouchableOpacity>
                             <Input

@@ -3,8 +3,11 @@ import { View, StyleSheet, PermissionsAndroid, FlatList, Text, ActivityIndicator
 import AppText from '../components/AppText';
 import { Input, Button, Card, ListItem, Icon, Image, Avatar } from 'react-native-elements';
 import firebase from "react-native-firebase";
+
 const db = firebase.firestore()
 const auth = firebase.auth()
+const storage = firebase.storage()
+
 const DEFAULT_EVENT_PIC = 'https://firebasestorage.googleapis.com/v0/b/influenceme-dev.appspot.com/o/assets%2Fbroadcast-media.png?alt=media&token=608c9143-879d-4ff7-a30d-ac61ba319904'
 
 class UserHeader extends React.Component {
@@ -21,7 +24,7 @@ class UserHeader extends React.Component {
                     type='clear'
                     onPress={() => this.props.navigation.navigate('Profile')}
                     title={this.currentUser.displayName}
-                    icon={{ type: 'MaterialCommunity', name: 'settings' }}
+                    icon={{ type: 'MaterialCommunity', name: 'settings', size: 15 }}
                     iconRight
                 />
             </View>
@@ -47,8 +50,7 @@ class EventListScreen extends Component {
         events: []
     }
 
-    async componentDidMount() {
-
+    componentDidMount = async () => {
         this.authListener = firebase.auth().onAuthStateChanged(user => {
             console.log('EventList onAuthStateChange>', user);
             if (user && !user.isAnonymous) {
@@ -59,13 +61,27 @@ class EventListScreen extends Component {
         });
 
         var pathToEvents = `users/${auth.currentUser.uid}/myevents`;
-        console.log('pathToEvents', pathToEvents)
         let events = await db.collection(pathToEvents).get()
-            .then(function (querySnapshot) {
+            .then((querySnapshot) => {
                 var events = [];
                 querySnapshot.forEach(function (doc) {
                     let event = doc.data()
+                    // Convert Firebase Timestamp tp JS Date object
                     event.eventDate = event.eventDate.toDate()
+                    if (!event.isResizedImage) {
+                        let eventTimestamp = event.eventTimestamp || event.eventDate.getTime()
+                        let resizedImageFileName = eventTimestamp + '_200x200.jpg'
+                        let imagePath = `events/${auth.currentUser.uid}/${resizedImageFileName}`
+                        console.log(`Checking resized event images at: ${imagePath}`)
+                        const imageRef = storage.ref(imagePath)
+                        imageRef.getDownloadURL().then((url) => {
+                            // Set resized image as event image
+                            db.doc(`events/${event.eventNumber}`).update({ image: url, isResizedImage: true })
+                            db.doc(`users/${event.uid}/myevents/${event.eventNumber}`).update({ image: url, isResizedImage: true })
+                        }).catch(async (error) => {
+                            console.log('No resized event image yet')
+                        })
+                    }
                     events.push(doc.data());
                 });
                 console.log("Current events fetched: ", events);
@@ -125,8 +141,8 @@ class EventListScreen extends Component {
         const { events } = this.state;
         return (
             <View style={styles.container}>
-                <Card containerStyle={{ borderWidth:2, margin: 5, flex: 1, alignSelf: 'stretch' }} >
-                    <View style={{ justifyContent:'flex-start', height: '100%', borderWidth: 0 }}>
+                <Card containerStyle={{ borderWidth: 2, margin: 5, flex: 1, alignSelf: 'stretch' }} >
+                    <View style={{ justifyContent: 'flex-start', height: '100%', borderWidth: 0 }}>
                         {
                             <View>
                                 <ListItem
