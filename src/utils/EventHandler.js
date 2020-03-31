@@ -100,7 +100,7 @@ export const setLiveEventListener = (eventID, callback) => {
         if (liveStats) {
             callback({ status: liveStats.status, viewerCount: liveStats.viewerCount, startedAt: liveStats.startedAt });
         } else {
-            callback({ status: undefined, viewerCount: 0, startedAt: undefined })
+            callback({ status: app.EVENT_STATUS.SCHEDULED, viewerCount: 0, startedAt: undefined })
         }
     })
 }

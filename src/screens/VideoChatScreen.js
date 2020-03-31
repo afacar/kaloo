@@ -205,6 +205,16 @@ export default class VideoChatScreen extends Component {
         setLiveEventListener(eventID, ({ status, viewerCount, startedAt }) => {
             var time = 0;
             if (startedAt && status === app.EVENT_STATUS.IN_PROGRESS) {
+                if (clientRole === 1 && !this.state.joinSucceed) {
+                    RtcEngine.joinChannel(channelName, ticketID)
+                        .then((result) => {
+                            this.setState({
+                                joinSucceed: true
+                            })
+                        })
+                        .catch((error) => {
+                        });
+                }
                 time = parseInt(firebase.firestore.Timestamp.now().seconds) - parseInt(startedAt);
                 this.setState({ time });
                 if (!this.timer) {
@@ -218,12 +228,32 @@ export default class VideoChatScreen extends Component {
                     }, 1000)
                 }
             }
+            else if (status === app.EVENT_STATUS.COMPLETED) {
+                this.onEventCompleted();
+            }
             this.setState({ viewers: viewerCount, status: status })
         });
 
         // setup back button listener
         const { navigation } = this.props;
         handleAndroidBackButton(this.backButtonPressed);
+    }
+
+    onEventCompleted() {
+        Alert.alert(
+            "Event Finished",
+            "Host ended the meeting",
+            [
+
+                {
+                    text: 'OK', onPress: () => {
+                        navigation.goBack();
+                        return false;
+                    }
+                },
+            ],
+            { cancelable: false }
+        );
     }
 
     backButtonPressed() {
