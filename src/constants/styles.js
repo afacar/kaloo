@@ -78,5 +78,11 @@ export default StyleSheet.create({
         padding: 12,
         justifyContent: 'center',
         alignItems: 'center'
+    },
+    waitingBox: {
+        position: 'absolute',
+        alignSelf:'center',
+        top: deviceHeight / 2,
+        flexDirection: 'row'
     }
 });
