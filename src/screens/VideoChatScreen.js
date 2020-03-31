@@ -13,8 +13,8 @@ const { Agora } = NativeModules;
 
 const {
     FPS30,
-    AgoraAudioProfileSpeechStandard,
-    AgoraAudioScenarioChatRoomEntertainment,
+    AgoraAudioProfileMusicHighQuality,
+    AgoraAudioScenarioShowRoom,
     Adaptative
 } = Agora
 
@@ -81,8 +81,8 @@ export default class VideoChatScreen extends Component {
                 frameRate: FPS30,
                 orientationMode: Adaptative,
             },
-            audioProfile: AgoraAudioProfileSpeechStandard,
-            audioScenario: AgoraAudioScenarioChatRoomEntertainment
+            audioProfile: AgoraAudioProfileMusicHighQuality,
+            audioScenario: AgoraAudioScenarioShowRoom
         };
         // rtc object
 
