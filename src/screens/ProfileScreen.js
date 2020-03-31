@@ -7,6 +7,7 @@ import ImagePicker from "react-native-image-picker";
 
 const db = firebase.firestore();
 const auth = firebase.auth();
+const storage = firebase.storage();
 
 class ProfileScreen extends Component {
     static navigationOptions = ({ navigation }) => ({
@@ -29,45 +30,35 @@ class ProfileScreen extends Component {
         isAvatarChanged: false
     }
 
-    async componentDidMount() {
-        let { photoURL } = this.state;
-        console.log('Profile did mount', this.state)
-        //let userDoc = await db.doc(`users/${this.user.uid}`).get()
-        //let { isResizedPhoto } = userDoc.data()
-        if (!photoURL.startsWith('https')) {
-            // Check if there is resized avatar on storage
-            let avatarRef = firebase.storage().ref(`users/${this.user.uid}/avatar/${this.user.uid}_200x200.jpg`)
-            let resizedPhoto = await avatarRef.getDownloadURL();
-            if (resizedPhoto) {
-                // Replace resized image with original one
-                console.log('There is a resized image')
-                await firebase.auth().currentUser.updateProfile({ photoURL: resizedPhoto })
-                let userRef = db.doc(`users/${this.user.uid}`)
-                await userRef.set({ photoURL: resizedPhoto }, { merge: true });
-                this.setState({ photoURL: resizedPhoto })
-                console.log('Resized image is set')
-            }
-        }
-    }
+    componentDidMount() { }
 
     handleProfileUpdate = async () => {
         let { displayName, photoURL, isAvatarChanged, isNameChanged, pickerResponse } = this.state;
         let newProfile = {}
+        let isResizedImage = true;
         if (isAvatarChanged) {
             // Upload new Avatar to Storage
             newProfile.photoURL = photoURL
             console.log('uploading avatar...')
-            let avatarRef = firebase.storage().ref(`users/${this.user.uid}/avatar/${this.user.uid}.jpg`)
-            avatarRef.putFile(pickerResponse.path);
+            let avatarRef = storage.ref(`users/${this.user.uid}/avatar/${this.user.uid}.jpg`)
+            try {
+                await avatarRef.putFile(pickerResponse.path);
+                let newPhotoURL = await avatarRef.getDownloadURL()
+                newProfile.photoURL = newPhotoURL
+                isResizedImage = false
+            } catch (err) {
+                console.log('Err at New avatar upload!', err)
+            }
             console.log('New avatar is uploaded!')
         }
         if (isNameChanged) {
             newProfile.displayName = displayName
         }
         // Update user @Authentication 
-        await firebase.auth().currentUser.updateProfile(newProfile)
+        await auth.currentUser.updateProfile(newProfile)
         console.log('user auth updated!', firebase.auth().currentUser)
         // Update user @Firestore 
+        if(!isResizedImage) newProfile.isResizedImage = isResizedImage;
         let userRef = db.doc(`users/${this.user.uid}`)
         //newProfile.isResizedPhoto = false;
         await userRef.set({ ...newProfile }, { merge: true });

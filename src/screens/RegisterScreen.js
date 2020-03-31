@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { View, StyleSheet, Alert, Text, ScrollView } from 'react-native';
 import AppText from '../components/AppText';
 import { Input, Button, Avatar, CheckBox } from 'react-native-elements';
-import firebase from "react-native-firebase";
+import firebase, { functions } from "react-native-firebase";
 import ImagePicker from "react-native-image-picker";
 
 const db = firebase.firestore();
@@ -43,26 +43,42 @@ class RegisterScreen extends Component {
         await firebase.auth().createUserWithEmailAndPassword(email, password)
         const { currentUser } = firebase.auth()
         console.log('user is created', currentUser);
+        let isResizedImage = true;
         // Upload new profile pict if it is new
         if (photoURL !== DEFAULT_PROFILE_PIC) {
+            isResizedImage = false;
             console.log('uploading avatar...')
             let avatarRef = firebase.storage().ref(`users/${currentUser.uid}/avatar/${currentUser.uid}.jpg`)
-            avatarRef.putFile(imagePickerResponse.path)
+            await avatarRef.putFile(imagePickerResponse.path)
+            photoURL = await avatarRef.getDownloadURL()
             console.log('avatar is uploaded!')
-            //let newAvatarRef = firebase.storage().ref(`users/${currentUser.uid}/avatar/${currentUser.uid}_200x200.jpg`)
-            //photoURL = await newAvatarRef.getDownloadURL()
-            //this.setState({ photoURL })
         }
         // Update user profile @Authentication
         console.log('update profile', displayName, photoURL)
         await currentUser.updateProfile({ displayName, photoURL });
         // Create user @Firestore
         let userRef = db.doc(`users/${currentUser.uid}`)
-        await userRef.set({ email, displayName, photoURL }, { merge: true });
-        this.setState({ isWaiting: false })
+        let userStatsRef = db.doc('users/--stats--');
 
-        // Navigate user to Event List
-        this.props.navigation.navigate('EventList', { displayName })
+        db.runTransaction(async function (transaction) {
+            // This code may get re-run multiple times if there are conflicts.
+            return transaction.get(userStatsRef).then(function (userStatsDoc) {
+                // Set an initial value for event number
+                let userNumber = 0
+                if (userStatsDoc.exists) {
+                    userNumber = userStatsDoc.data().counter + 1;
+                }
+                // Increment counter and write user to @Firestore
+                transaction.set(userStatsRef, { counter: userNumber }, { merge: true });
+                transaction.set(userRef, { email, displayName, photoURL, userNumber, isResizedImage }, { merge: true });
+            });
+        }).then(() => {
+            // Navigate user to Event List
+            this.props.navigation.navigate('EventList', { displayName })
+        }).catch((error) => {
+            console.log("User create failed: ", error);
+        });
+        this.setState({ isWaiting: false })
     }
 
     checkAccount = async () => {
