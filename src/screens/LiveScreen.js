@@ -128,17 +128,15 @@ export default class LiveScreen extends Component {
         this.setState({
             uid: ticketID
         })
-        RtcEngine.joinChannel(channelName, ticketID)
-            .then((result) => {
-                if (clientRole == 2) {
-                    this.incrementViewers();
-                } else {
-                    // startLive(channelName);
-                }
-            })
-            .catch((error) => {
-            });
 
+        if (clientRole === 2) {
+            RtcEngine.joinChannel(channelName, ticketID)
+                .then((result) => {
+                    this.incrementViewers();
+                })
+                .catch((error) => {
+                });
+        }
         // setup listener for  watcherCount
         var eventID = this.props.navigation.getParam('eventID', 'agora_test');
         setLiveEventListener(eventID, ({ status, viewerCount, startedAt }) => {
@@ -166,6 +164,7 @@ export default class LiveScreen extends Component {
 
     startLive = () => {
         var channelName = this.props.navigation.getParam('eventID', 'agora_test');
+        var ticketID = this.props.navigation.getParam('ticketID', 0);
         Alert.alert(
             "Start broadcast",
             "Are you sure you want to start broadcasting?",
@@ -176,7 +175,12 @@ export default class LiveScreen extends Component {
                 },
                 {
                     text: 'Yes', onPress: () => {
-                        startLive(channelName);
+                        RtcEngine.joinChannel(channelName, ticketID)
+                            .then((result) => {
+                                startLive(channelName);
+                            })
+                            .catch((error) => {
+                            });
                     }
                 },
             ],
@@ -186,6 +190,7 @@ export default class LiveScreen extends Component {
 
     continueLive = () => {
         var channelName = this.props.navigation.getParam('eventID', 'agora_test');
+        var ticketID = this.props.navigation.getParam('ticketID', 0);
         Alert.alert(
             "Continue broadcast",
             "Are you sure you want to continue broadcasting?",
@@ -196,7 +201,12 @@ export default class LiveScreen extends Component {
                 },
                 {
                     text: 'Yes', onPress: () => {
-                        continueLive(channelName);
+                        RtcEngine.joinChannel(channelName, ticketID)
+                            .then((result) => {
+                                continueLive(channelName);
+                            })
+                            .catch((error) => {
+                            });
                     }
                 },
             ],
@@ -211,7 +221,7 @@ export default class LiveScreen extends Component {
     endLive = () => {
         Alert.alert(
             "Confirm End",
-            "Do you want to end your stream early",
+            "Do you want to end your stream early?",
             [
                 {
                     text: 'Cancel', onPress: () => { },
@@ -227,10 +237,6 @@ export default class LiveScreen extends Component {
             ],
             { cancelable: false }
         );
-    }
-
-    leaveLive = () => {
-        this.backButtonPressed();
     }
 
     backButtonPressed() {
@@ -252,7 +258,7 @@ export default class LiveScreen extends Component {
                     text: 'OK', onPress: () => {
                         if (clientRole === 1) {
                             suspendLive(eventID)
-                        } 
+                        }
                         navigation.goBack();
                         return false;
                     }
