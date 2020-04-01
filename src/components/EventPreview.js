@@ -3,6 +3,9 @@ import { View, StyleSheet, Image, Alert, ActivityIndicator } from 'react-native'
 import { Input, Button, Text, Card } from 'react-native-elements';
 
 class EventPreview extends Component {
+    state ={
+        isPublishing: false
+    }
 
     componentDidMount() { }
 
@@ -17,18 +20,22 @@ class EventPreview extends Component {
                     style: 'cancel'
                 },
                 {
-                    text: 'Yes, Publish', onPress: () => { this.props.publish() }
+                    text: 'Yes, Publish', onPress: () => { 
+                        this.setState({ isPublishing: true })
+                        this.props.publish() 
+                    }
                 },
             ]
         )
     }
 
     render() {
+        const { isPublishing } = this.state;
         const { displayName, image, title, description, duration, eventType, capacity, price, eventDate, eventLink, status, isWaiting } = this.props.event;
         console.log('event preview render', this.props)
         return (
             <View style={styles.container}>
-                <Card title={'Preview'} titleStyle={{ backgroundColor: '#ffff00', borderWidth: 1 }} containerStyle={{ margin: 0 }}>
+                <Card title={isPublishing? 'Creating Event...': 'Preview'} titleStyle={{ backgroundColor: isPublishing? 'green': '#ffff00', borderWidth: 1 }} containerStyle={{ margin: 0 }}>
                     <View style={{ flexDirection: 'row', justifyContent: 'space-evenly' }}>
                         <Image source={{ uri: image }} style={{ width: 100, height: 100 }} />
                         <View style={{ flexDirection: 'column', justifyContent: 'center' }}>
