@@ -136,12 +136,28 @@ export default class LiveScreen extends Component {
                 })
                 .catch((error) => {
                 });
+        } else if (clientRole === 1) {
+            RtcEngine.joinChannel(firebase.auth().currentUser.uid, 0)
+                .then((result) => {
+                })
+                .catch((error) => {
+                });
         }
         // setup listener for  watcherCount
         var eventID = this.props.navigation.getParam('eventID', 'agora_test');
         setLiveEventListener(eventID, ({ status, viewerCount, startedAt }) => {
             var time = 0;
-            if (startedAt) {
+            if (startedAt && status === app.EVENT_STATUS.IN_PROGRESS) {
+                if (clientRole === 1 && !this.state.joinSucceed) {
+                    RtcEngine.switchChannel(channelName)
+                        .then((result) => {
+                            this.setState({
+                                joinSucceed: true
+                            })
+                        })
+                        .catch((error) => {
+                        });
+                }
                 time = parseInt(firebase.firestore.Timestamp.now().seconds) - parseInt(startedAt);
                 this.setState({ time });
                 if (!this.timer) {
@@ -155,11 +171,31 @@ export default class LiveScreen extends Component {
                     }, 1000)
                 }
             }
+            else if (status === app.EVENT_STATUS.COMPLETED && clientRole === 2) {
+                this.onEventCompleted();
+            }
             this.setState({ viewers: viewerCount || 0, status: status })
         });
 
         // setup back button listener
         handleAndroidBackButton(this.backButtonPressed);
+    }
+
+    onEventCompleted() {
+        Alert.alert(
+            "Event Finished",
+            "Host ended the meeting",
+            [
+
+                {
+                    text: 'OK', onPress: () => {
+                        navigation.goBack();
+                        return false;
+                    }
+                },
+            ],
+            { cancelable: false }
+        );
     }
 
     startLive = () => {
@@ -175,7 +211,7 @@ export default class LiveScreen extends Component {
                 },
                 {
                     text: 'Yes', onPress: () => {
-                        RtcEngine.joinChannel(channelName, ticketID)
+                        RtcEngine.switchChannel(channelName)
                             .then((result) => {
                                 startLive(channelName);
                             })
@@ -201,7 +237,7 @@ export default class LiveScreen extends Component {
                 },
                 {
                     text: 'Yes', onPress: () => {
-                        RtcEngine.joinChannel(channelName, ticketID)
+                        RtcEngine.switchChannel(channelName)
                             .then((result) => {
                                 continueLive(channelName);
                             })
