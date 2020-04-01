@@ -49,8 +49,8 @@ class RegisterScreen extends Component {
             isResizedImage = false;
             console.log('uploading avatar...')
             let avatarRef = firebase.storage().ref(`users/${currentUser.uid}/avatar/${currentUser.uid}.jpg`)
-            await avatarRef.putFile(imagePickerResponse.path)
-            photoURL = await avatarRef.getDownloadURL()
+            avatarRef.putFile(imagePickerResponse.path)
+            //photoURL = await avatarRef.getDownloadURL()
             console.log('avatar is uploaded!')
         }
         // Update user profile @Authentication
