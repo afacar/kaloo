@@ -117,7 +117,7 @@ export default class VideoChatScreen extends Component {
                 },
                 {
                     text: 'Yes', onPress: () => {
-                        RtcEngine.joinChannel(channelName, ticketID)
+                        RtcEngine.switchChannel(channelName)
                             .then((result) => {
                                 startLive(channelName);
                             })
@@ -143,7 +143,7 @@ export default class VideoChatScreen extends Component {
                 },
                 {
                     text: 'Yes', onPress: () => {
-                        RtcEngine.joinChannel(channelName, ticketID)
+                        RtcEngine.switchChannel(channelName)
                             .then((result) => {
                                 continueLive(channelName);
                             })
@@ -193,8 +193,14 @@ export default class VideoChatScreen extends Component {
         this.setState({
             uid: ticketID
         })
-        if (clientRole == 2) {
+        if (clientRole === 2) {
             RtcEngine.joinChannel(channelName, ticketID)
+                .then((result) => {
+                })
+                .catch((error) => {
+                });
+        } else if (clientRole === 1) {
+            RtcEngine.joinChannel(firebase.auth().currentUser.uid, 0)
                 .then((result) => {
                 })
                 .catch((error) => {
@@ -206,7 +212,7 @@ export default class VideoChatScreen extends Component {
             var time = 0;
             if (startedAt && status === app.EVENT_STATUS.IN_PROGRESS) {
                 if (clientRole === 1 && !this.state.joinSucceed) {
-                    RtcEngine.joinChannel(channelName, ticketID)
+                    RtcEngine.switchChannel(channelName)
                         .then((result) => {
                             this.setState({
                                 joinSucceed: true
@@ -228,7 +234,7 @@ export default class VideoChatScreen extends Component {
                     }, 1000)
                 }
             }
-            else if (status === app.EVENT_STATUS.COMPLETED) {
+            else if (status === app.EVENT_STATUS.COMPLETED && clientRole === 2) {
                 this.onEventCompleted();
             }
             this.setState({ viewers: viewerCount, status: status })
