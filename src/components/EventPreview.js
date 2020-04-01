@@ -3,6 +3,9 @@ import { View, StyleSheet, Image, Alert, ActivityIndicator } from 'react-native'
 import { Input, Button, Text, Card } from 'react-native-elements';
 
 class EventPreview extends Component {
+    state ={
+        isPublishing: false
+    }
 
     componentDidMount() { }
 
@@ -17,35 +20,43 @@ class EventPreview extends Component {
                     style: 'cancel'
                 },
                 {
-                    text: 'Yes, Publish', onPress: () => { this.props.publish() }
+                    text: 'Yes, Publish', onPress: () => { 
+                        this.setState({ isPublishing: true })
+                        this.props.publish() 
+                    }
                 },
             ]
         )
     }
 
     render() {
-        const { image, title, description, duration, eventType, capacity, price, eventDate, eventLink, status, isWaiting } = this.props.event;
+        const { isPublishing } = this.state;
+        const { displayName, image, title, description, duration, eventType, capacity, price, eventDate, eventLink, status, isWaiting } = this.props.event;
         console.log('event preview render', this.props)
         return (
             <View style={styles.container}>
-                <Card title={eventLink ? `Event Published` : 'Preview'} titleStyle={{ backgroundColor: eventLink? 'green': 'grey' }} containerStyle={{ margin: 5 }}>
-                    <Image source={{ uri: image }} style={{ width: 100, height: 100 }} />
-                    <Text>Title: {title || 'No title'}</Text>
-                    <Text>description: {description || 'No description'}</Text>
+                <Card title={isPublishing? 'Creating Event...': 'Preview'} titleStyle={{ backgroundColor: isPublishing? 'green': '#ffff00', borderWidth: 1 }} containerStyle={{ margin: 0 }}>
+                    <View style={{ flexDirection: 'row', justifyContent: 'space-evenly' }}>
+                        <Image source={{ uri: image }} style={{ width: 100, height: 100 }} />
+                        <View style={{ flexDirection: 'column', justifyContent: 'center' }}>
+                            <Text>Host: {displayName || 'No displayName'}</Text>
+                            <Text>Title: {title || 'No title'}</Text>
+                            <Text>Description: {description || 'No description'}</Text>
+                        </View>
+                    </View>
                     <Text>Duration: {duration}</Text>
                     <Text>Capacity: {capacity}</Text>
                     <Text>Event Type: {eventType}</Text>
                     <Text>Price: {price}</Text>
                     <Text>Event Date: {eventDate.toLocaleString()}</Text>
-                    <Text>Event Link: {eventLink || 'https://inf.me/event/{eventID}'}</Text>
-                    <Button title='Share' onPress={this.onShare} />
+                    <Button title='Share' onPress={this.onShare} disabled />
                 </Card>
-                {
-                    !eventLink && (<View style={{ justifyContent: 'space-around', flexDirection: 'row' }}>
-                        <Button disabled={isWaiting} title='Edit' onPress={() => this.props.cancel()} />
-                        <Button disabled={isWaiting} title='Publish' onPress={() => this._confirmPublish()} />
-                    </View>)
-                }
+
+                <View style={{ justifyContent: 'space-around', flexDirection: 'row' }}>
+                    <Button disabled={isWaiting} title='Edit' onPress={() => this.props.cancel()} />
+                    <Button disabled={isWaiting} title='Publish' onPress={() => this._confirmPublish()} />
+                </View>
+
             </View>
         )
     }

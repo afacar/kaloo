@@ -6,7 +6,7 @@ import BalanceScreen from '../screens/BalanceScreen';
 import JoinMyEventScreen from '../screens/JoinMyEventScreen';
 import TicketScreen from '../screens/TicketScreen';
 import MyEventScreen from '../screens/MyEventScreen';
-import CreateEventScreen from '../screens/CreateEventScreen';
+//import CreateEventScreen from '../components/CreateEvent';
 import LiveScreen from '../screens/LiveScreen';
 import VideoChatScreen from '../screens/VideoChatScreen';
 
@@ -18,7 +18,7 @@ export default UserNavigatior = createStackNavigator(
     Profile: ProfileScreen,
     Balance: BalanceScreen,
     MyEvent: MyEventScreen,
-    CreateEvent: CreateEventScreen,
+    //CreateEvent: CreateEventScreen,
     Live: {
       screen: LiveScreen,
       navigationOptions: {

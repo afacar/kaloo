@@ -13,6 +13,8 @@ class MyEventScreen extends Component {
         console.log('MyEventScreen Mounted', this.state)
 
         setEventListener(this.event.eventNumber, (event) => {
+            console.log('Event from eventHandler', event)
+
             event.eventDate = event.eventDate.toDate()
             this.setState({ ...event })
         })
@@ -66,13 +68,19 @@ class MyEventScreen extends Component {
     }
 
     render() {
-        const { image, title, description, duration, eventType, capacity, price, eventDate, eventLink, status } = this.state;
+        const { displayName, image, title, description, duration, eventType, capacity, price, eventDate, eventLink, status } = this.state;
         return (
             <View style={styles.container}>
-                <Card title={title || 'Some event title'} containerStyle={{ margin: 5 }}>
+                <Card>
                     <View>
-                        <Image source={{ uri: image }} style={{ width: 100, height: 100 }} />
-                        <Text>description: {description || 'No description'}</Text>
+                        <View style={{ flexDirection: 'row', justifyContent: 'space-evenly' }}>
+                            <Image source={{ uri: image }} style={{ width: 100, height: 100 }} />
+                            <View style={{ flexDirection: 'column', justifyContent: 'center' }}>
+                                <Text>Host: {displayName || 'No displayName'}</Text>
+                                <Text>Title: {title || 'No title'}</Text>
+                                <Text>Description: {description || 'No description'}</Text>
+                            </View>
+                        </View>
                         <Text>Duration: {duration}</Text>
                         <Text>Capacity: {capacity}</Text>
                         <Text>Event Type: {eventType}</Text>
