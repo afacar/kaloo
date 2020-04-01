@@ -166,7 +166,9 @@ class EventListScreen extends Component {
     }
 
     onEventPublish = (event) => {
-        this.setState({ isCreateEvent: false })
+        let { events } = this.state;
+        events.push(event)
+        this.setState({ events, isCreateEvent: false })
         this.props.navigation.navigate('MyEvent', { event })
     }
 
