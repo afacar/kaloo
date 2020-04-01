@@ -1,8 +1,11 @@
 import React, { Component } from 'react';
 import { View, StyleSheet, PermissionsAndroid, FlatList, Text, ActivityIndicator, ScrollView } from 'react-native';
 import AppText from '../components/AppText';
-import { Input, Button, Card, ListItem, Icon, Image, Avatar } from 'react-native-elements';
+import { Input, Button, Card, ListItem, Icon, Overlay, Avatar } from 'react-native-elements';
 import firebase from "react-native-firebase";
+import PreviewAndCreate from "../components/PreviewAndCreate";
+import EventPreview from '../components/EventPreview';
+import CreateEventScreen from "../components/EventCreate";
 
 const db = firebase.firestore()
 const auth = firebase.auth()
@@ -47,7 +50,9 @@ class EventListScreen extends Component {
     });
 
     state = {
-        events: []
+        events: [],
+        isCreateEvent: false,
+        isLoading: false,
     }
 
     componentDidMount = async () => {
@@ -84,8 +89,9 @@ class EventListScreen extends Component {
     }
 
     checkMyEvents = async () => {
+        this.setState({ isLoading: true })
         var pathToEvents = `users/${auth.currentUser.uid}/myevents`;
-        let events = await db.collection(pathToEvents).get()
+        let events = await db.collection(pathToEvents).where('eventDate', '>=', new Date()).orderBy('eventDate').get()
             .then((querySnapshot) => {
                 var events = [];
                 querySnapshot.forEach(function (doc) {
@@ -112,7 +118,7 @@ class EventListScreen extends Component {
                 return events;
             });
         console.log('events here', events)
-        this.setState({ events })
+        this.setState({ events, isLoading: false })
     }
 
     checkAudioPermission = async () => {
@@ -159,51 +165,68 @@ class EventListScreen extends Component {
         }
     }
 
+    onEventPublish = (event) => {
+        this.setState({ isCreateEvent: false })
+        this.props.navigation.navigate('MyEvent', { event })
+    }
+
+    renderEventList = () => {
+        const { events, isLoading } = this.state;
+        if (isLoading) return <ActivityIndicator size='large' />
+
+        if (events.length > 0) {
+            return events.map((e, i) => {
+                return (
+                    <ListItem
+                        key={i}
+                        leftAvatar={{ source: { uri: e.image } }}
+                        rightIcon={{ type: 'material-community', name: 'chevron-right' }}
+                        roundAvatar
+                        title={e.title}
+                        subtitle={e.description || 'No description'}
+                        avatar={{ uri: e.image }}
+                        bottomDivider
+                        onPress={() => this.props.navigation.navigate('MyEvent', { event: e })}
+                    />
+                );
+            })
+        } else {
+            return <Text>No upcoming events!</Text>
+        }
+    }
+
     render() {
-        const { events } = this.state;
         return (
             <View style={styles.container}>
                 <Card containerStyle={{ borderWidth: 2, margin: 5, flex: 1, alignSelf: 'stretch' }} >
                     <View style={{ justifyContent: 'flex-start', height: '100%', borderWidth: 0 }}>
-                        {
-                            <View>
-                                <ListItem
-                                    key={'Create'}
-                                    leftIcon={{ type: 'MaterialCommunity', name: 'cast' }}
-                                    title={'Create Event'}
-                                    bottomDivider
-                                    onPress={() => this.props.navigation.navigate('CreateEvent')}
-                                />
-                                <ListItem
-                                    key={'Join'}
-                                    leftIcon={{ type: 'entypo', name: 'ticket' }}
-                                    title={'Join Event'}
-                                    bottomDivider
-                                    onPress={() => this.props.navigation.navigate('Ticket')}
-                                />
-                            </View>
-                        }
+                        <View style={{ flexDirection: 'row', justifyContent: 'space-evenly', borderBottomWidth: 1 }}>
+                            <Button
+                                type='clear'
+                                icon={{ type: 'material-community', name: 'ticket' }}
+                                title='Join Event'
+                                onPress={() => this.props.navigation.navigate('Ticket')} />
+                            <Button
+                                type='clear'
+                                icon={{ type: 'material-community', name: 'cast' }}
+                                title='Create Event'
+                                onPress={() => this.setState({ isCreateEvent: true })} />
+                        </View>
                         <ScrollView overScrollMode='never'>
-                            {
-                                events.length > 0 && events.map((e, i) => {
-                                    return (
-                                        <ListItem
-                                            key={i}
-                                            leftAvatar={{ source: { uri: e.image } }}
-                                            rightIcon={{ type: 'MaterialCommunity', name: 'chevron-right' }}
-                                            roundAvatar
-                                            title={e.title}
-                                            subtitle={e.description || 'No description'}
-                                            avatar={{ uri: e.image }}
-                                            bottomDivider
-                                            onPress={() => this.props.navigation.navigate('MyEvent', { event: e })}
-                                        />
-                                    );
-                                })
-                            }
+                            {this.renderEventList()}
                         </ScrollView>
                     </View>
                 </Card>
+                <Overlay
+                    isVisible={this.state.isCreateEvent}
+                    windowBackgroundColor="rgba(255, 255, 255, .5)"
+                    onBackdropPress={() => this.setState({ isCreateEvent: false })}
+                    fullScreen
+                >
+                    <PreviewAndCreate
+                        onPublish={this.onEventPublish}
+                    />
+                </Overlay>
             </View>
         )
     }

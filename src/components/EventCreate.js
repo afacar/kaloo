@@ -1,92 +1,11 @@
 import React, { Component } from 'react';
-import { View, StyleSheet, ActivityIndicator, Text } from 'react-native';
-import AppText from '../components/AppText';
-import { Input, Button, Card, Image, Avatar, CheckBox, Overlay, Icon } from 'react-native-elements';
-import { ScrollView, TouchableOpacity } from 'react-native-gesture-handler';
+import { View, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
+import { Input, Button, Card, Image, Avatar, CheckBox, Icon } from 'react-native-elements';
 import DateTimePickerModal from "react-native-modal-datetime-picker";
-import firebase from 'react-native-firebase';
 import ImagePicker from "react-native-image-picker";
-import { app } from '../constants';
 
-import EventPreview from '../components/EventPreview';
-
-const storage = firebase.storage()
-const auth = firebase.auth()
-const functions = firebase.functions()
-
-const DEFAULT_EVENT_PIC = 'https://firebasestorage.googleapis.com/v0/b/influenceme-dev.appspot.com/o/assets%2Fbroadcast-media.png?alt=media&token=608c9143-879d-4ff7-a30d-ac61ba319904'
-
-const INITIAL_STATE = {
-    image: DEFAULT_EVENT_PIC,
-    title: '',
-    description: '',
-    duration: '30',
-    eventType: 'live',
-    capacity: '5',
-    price: '1',
-    isDatePickerVisible: false,
-    eventDate: new Date(),
-    eventLink: '',
-    titleMessage: '',
-    dateMessage: '',
-    isAvatarChanged: false, // TODO: Currently they can't change event image
-    isPreview: false,
-    isWaiting: false,
-}
-
-class CreateEventScreen extends Component {
-    state = INITIAL_STATE
-
-    onDateChange = (selectedDate) => {
-        this.setState({ isDatePickerVisible: false, eventDate: selectedDate })
-    };
-
-    createEvent = async () => {
-        let { image, title, description, duration, eventType, capacity, price, eventDate } = this.state
-
-        let event = { image, title, description, duration, eventType, capacity, price, eventDate }
-        let createEvent = functions.httpsCallable('createEvent')
-        event.uid = auth.currentUser.uid;
-        event.displayName = auth.currentUser.displayName;
-        event.photoURL = auth.currentUser.photoURL;
-        event.status = app.EVENT_STATUS.SCHEDULED;
-        event.eventTimestamp = eventDate.getTime();
-
-        this.setState({ isWaiting: true })
-
-        // Check if new event image is set
-        if (image !== DEFAULT_EVENT_PIC) {
-            let imagePath = `events/${event.uid}/${event.eventTimestamp}.jpg`
-            console.log(`Uploading event image to: ${imagePath}`)
-            const imageRef = storage.ref(imagePath)
-            await imageRef.getDownloadURL().then((url) => {
-                // Another event created at the same timestamp
-                this.setState({ isWaiting: false, isPreview: false, dateMessage: 'There is already an event on this date!' })
-            }).catch(async (error) => {
-                if (error.code === 'storage/object-not-found') {
-                    await imageRef.putFile(this.state.pickerResponse.path)
-                    let newImage = await imageRef.getDownloadURL()
-                    console.log('New Image uploaded')
-                    event.image = newImage
-                    event.isResizedImage = false
-                    console.log('calling create event...', event);
-                    let { data: { eventNumber, eventLink } } = await createEvent(JSON.stringify(event));
-                    event.eventNumber = eventNumber
-                    event.eventLink = eventLink
-                    console.log('Recieved created event:=>', event)
-                    this.setState({ eventNumber, eventLink, isWaiting: false })
-                }
-            })
-        } else {
-            event.isResizedImage = true
-            console.log('calling create event...', event);
-            let { data: { eventNumber, eventLink } } = await createEvent(JSON.stringify(event));
-            event.eventNumber = eventNumber
-            event.eventLink = eventLink
-            console.log('Recieved created event:=>', event)
-            this.setState({ eventNumber, eventLink, isWaiting: false })
-        }
-    }
+class EventCreate extends Component {
+    state = { isDatePickerVisible: false }
 
     onImagePressed = () => {
         var customButtons = [];
@@ -131,31 +50,24 @@ class CreateEventScreen extends Component {
                 if (Platform.OS === 'ios')
                     response.path = response.uri.replace("file://", '');
                 console.log('event imagePicker response', response);
-                this.setState({ image: response.uri, pickerResponse: response })
+                //this.setState({ image: response.uri, pickerResponse: response })
+                this.props.setStateValues({ image: response.uri, pickerResponse: response })
             }
         });
     }
 
-    _eventPreview = () => {
-        if (this.state.title.length < 1)
-            return this.setState({ titleMessage: 'Title is a must!' })
-        this.setState({ isPreview: true })
-    }
-
-    _onPreviewClose = () => {
-        const { eventLink, isWaiting } = this.state
-        if (isWaiting) return;
-        if (eventLink) return this.setState({ ...INITIAL_STATE })
-        this.setState({ isPreview: false })
-    }
+    onDateChange = (selectedDate) => {
+        this.setState({ isDatePickerVisible: false })
+        this.props.setStateValues({ eventDate: selectedDate, dateMessage: '' })
+    };
 
     render() {
-        const { image, title, description, duration, eventType, capacity, price, eventDate } = this.state;
+        const { image, title, description, duration, eventType, capacity, price, eventDate, titleMessage, dateMessage } = this.props.event;
         return (
             <ScrollView>
                 <View style={styles.container}>
-                    <Card containerStyle={{ borderWidth: 1 }} >
-                        <TouchableOpacity onPress={this.onImagePressed} style={{ flexDirection: 'column', alignContent: 'center' }} >
+                    <Card containerStyle={{ borderWidth: 0 }} >
+                        <TouchableOpacity onPress={() => this.onImagePressed()} style={{ flexDirection: 'column', alignContent: 'center' }} >
                             <Image
                                 containerStyle={{ alignSelf: 'stretch', borderBottomWidth: 1, height: 100 }}
                                 source={{ uri: image }}
@@ -175,13 +87,13 @@ class CreateEventScreen extends Component {
                         </TouchableOpacity>
                         <Input
                             placeholder='Event title'
-                            onChangeText={title => this.setState({ title, titleMessage: ' ' })}
+                            onChangeText={(title) => this.props.setStateValues({ title, titleMessage: '' })}
                             value={title}
-                            errorMessage={this.state.titleMessage}
+                            errorMessage={titleMessage}
                         />
                         <Input
                             placeholder='Event description'
-                            onChangeText={description => this.setState({ description })}
+                            onChangeText={(description) => this.props.setStateValues({ description })}
                             value={description}
                             multiline
                         />
@@ -191,13 +103,13 @@ class CreateEventScreen extends Component {
                                     label='Date/Time of Event'
                                     value={eventDate.toLocaleString()}
                                     disabled
-                                    errorMessage={this.state.dateMessage}
+                                    errorMessage={dateMessage}
                                 />
                             </TouchableOpacity>
                             <Input
                                 label='Duration (min)'
                                 value={duration}
-                                onChangeText={(duration) => this.setState({ duration })}
+                                onChangeText={(duration) => this.props.setStateValues({ duration })}
                                 containerStyle={{ alignSelf: 'stretch', borderColor: 'brown' }}
                             />
                             <DateTimePickerModal
@@ -215,8 +127,8 @@ class CreateEventScreen extends Component {
                                 iconRight
                                 checkedIcon='dot-circle-o'
                                 uncheckedIcon='circle-o'
-                                checked={this.state.eventType === 'live'}
-                                onPress={() => this.setState({ eventType: 'live' })}
+                                checked={eventType === 'live'}
+                                onPress={() => this.props.setStateValues({ eventType: 'live' })}
                             />
                             <CheckBox
                                 center
@@ -224,14 +136,14 @@ class CreateEventScreen extends Component {
                                 iconRight
                                 checkedIcon='dot-circle-o'
                                 uncheckedIcon='circle-o'
-                                checked={this.state.eventType === 'call'}
-                                onPress={() => this.setState({ eventType: 'call', capacity: '1' })}
+                                checked={eventType === 'call'}
+                                onPress={() => this.props.setStateValues({ eventType: 'call', capacity: '1' })}
                             />
                         </View>
                         <View style={{ flexDirection: 'column', justifyContent: 'center', borderColor: 'orange', borderWidth: 2 }}>
                             <Input
                                 label='Capacity'
-                                onChangeText={(capacity) => this.setState({ capacity })}
+                                onChangeText={(capacity) => this.props.setStateValues({ capacity })}
                                 value={capacity}
                                 keyboardType='numeric'
                                 maxLength={3}
@@ -239,31 +151,20 @@ class CreateEventScreen extends Component {
                             />
                             <Input
                                 label='Ticket Price ($)'
-                                onChangeText={(price) => this.setState({ price })}
+                                onChangeText={(price) => this.props.setStateValues({ price })}
                                 value={price}
                                 keyboardType='numeric'
                                 maxLength={3}
                             />
                         </View>
-
-                        <Button title='Preview Event' type='outline' onPress={this._eventPreview} />
+                        <Button title='Preview Event' type='outline' onPress={this.props.previewEvent} />
                     </Card>
                 </View>
-                <Overlay
-                    isVisible={this.state.isPreview}
-                    windowBackgroundColor="rgba(255, 255, 255, .5)"
-                    onBackdropPress={this._onPreviewClose}
-                    fullScreen
-                >
-                    <EventPreview
-                        event={this.state}
-                        cancel={this._onPreviewClose}
-                        publish={() => this.createEvent()}
-                    />
-                </Overlay>
             </ScrollView>
         )
     }
+
+
 }
 
 const styles = StyleSheet.create({
@@ -274,4 +175,4 @@ const styles = StyleSheet.create({
     }
 })
 
-export default CreateEventScreen;
+export default EventCreate;
