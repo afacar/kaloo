@@ -107,6 +107,7 @@ export default class LiveScreen extends Component {
         };
         // rtc object
         RtcEngine.on('userJoined', (data) => {
+            console.warn("user joined")
             const { peerIds } = this.state;
             if (peerIds.indexOf(data.uid) === -1) {
                 this.setState({
@@ -132,6 +133,7 @@ export default class LiveScreen extends Component {
         if (clientRole === 2) {
             RtcEngine.joinChannel(channelName, ticketID)
                 .then((result) => {
+                    console.warn('joined', channelName)
                     this.incrementViewers();
                 })
                 .catch((error) => {
@@ -149,7 +151,8 @@ export default class LiveScreen extends Component {
             var time = 0;
             if (startedAt && status === app.EVENT_STATUS.IN_PROGRESS) {
                 if (clientRole === 1 && !this.state.joinSucceed) {
-                    RtcEngine.switchChannel(channelName)
+                    RtcEngine.leaveChannel();
+                    RtcEngine.joinChannel(channelName)
                         .then((result) => {
                             this.setState({
                                 joinSucceed: true
@@ -189,7 +192,7 @@ export default class LiveScreen extends Component {
 
                 {
                     text: 'OK', onPress: () => {
-                        navigation.goBack();
+                        this.props.navigation.goBack();
                         return false;
                     }
                 },
@@ -211,7 +214,8 @@ export default class LiveScreen extends Component {
                 },
                 {
                     text: 'Yes', onPress: () => {
-                        RtcEngine.switchChannel(channelName)
+                        RtcEngine.leaveChannel();
+                        RtcEngine.joinChannel(channelName)
                             .then((result) => {
                                 startLive(channelName);
                             })
@@ -237,7 +241,8 @@ export default class LiveScreen extends Component {
                 },
                 {
                     text: 'Yes', onPress: () => {
-                        RtcEngine.switchChannel(channelName)
+                        RtcEngine.leaveChannel();
+                        RtcEngine.joinChannel(channelName)
                             .then((result) => {
                                 continueLive(channelName);
                             })
@@ -392,7 +397,7 @@ export default class LiveScreen extends Component {
                                         </AppButton>
                                     )
                                 } */}
-                                <AppButton style={styles.videoQuitButton} onPress={this.leaveLive}>
+                                <AppButton style={styles.videoQuitButton} onPress={this.suspendLive}>
                                     <AppText style={{ color: '#FFFFFF', marginLeft: 8, fontSize: 16, fontWeight: 'bold' }}>Quit Show</AppText>
                                 </AppButton>
                                 <View style={styles.liveInfo}>

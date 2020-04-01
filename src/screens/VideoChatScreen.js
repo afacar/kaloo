@@ -117,7 +117,8 @@ export default class VideoChatScreen extends Component {
                 },
                 {
                     text: 'Yes', onPress: () => {
-                        RtcEngine.switchChannel(channelName)
+                        RtcEngine.leaveChannel();
+                        RtcEngine.joinChannel(channelName)
                             .then((result) => {
                                 startLive(channelName);
                             })
@@ -143,7 +144,8 @@ export default class VideoChatScreen extends Component {
                 },
                 {
                     text: 'Yes', onPress: () => {
-                        RtcEngine.switchChannel(channelName)
+                        RtcEngine.leaveChannel();
+                        RtcEngine.joinChannel(channelName)
                             .then((result) => {
                                 continueLive(channelName);
                             })
@@ -212,7 +214,8 @@ export default class VideoChatScreen extends Component {
             var time = 0;
             if (startedAt && status === app.EVENT_STATUS.IN_PROGRESS) {
                 if (clientRole === 1 && !this.state.joinSucceed) {
-                    RtcEngine.switchChannel(channelName)
+                    RtcEngine.leaveChannel();
+                    RtcEngine.joinChannel(channelName)
                         .then((result) => {
                             this.setState({
                                 joinSucceed: true
