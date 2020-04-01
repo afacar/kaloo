@@ -256,7 +256,7 @@ export default class VideoChatScreen extends Component {
 
                 {
                     text: 'OK', onPress: () => {
-                        navigation.goBack();
+                        this.props.navigation.goBack();
                         return false;
                     }
                 },
