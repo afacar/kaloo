@@ -54,15 +54,13 @@ class ProfileScreen extends Component {
         if (isNameChanged) {
             newProfile.displayName = displayName
         }
+
         // Update user @Authentication 
         await auth.currentUser.updateProfile(newProfile)
-        console.log('user auth updated!', firebase.auth().currentUser)
         // Update user @Firestore 
-        if(!isResizedImage) newProfile.isResizedImage = isResizedImage;
         let userRef = db.doc(`users/${this.user.uid}`)
-        //newProfile.isResizedPhoto = false;
-        await userRef.set({ ...newProfile }, { merge: true });
-        console.log('user @db updated');
+        await userRef.set({ ...newProfile, isResizedImage }, { merge: true });
+        console.log('user @db updated ', newProfile);
         this.setState({ isNameChanged: false, isAvatarChanged: false })
     }
 
