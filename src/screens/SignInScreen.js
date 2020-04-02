@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
-import { View, StyleSheet } from 'react-native';
+import { View, StyleSheet, KeyboardAvoidingView, ScrollView, TouchableOpacity } from 'react-native';
 import AppText from '../components/AppText';
-import { Input, Button, Text } from 'react-native-elements';
+import { Input, Button, Text, Avatar } from 'react-native-elements';
 import firebase from 'react-native-firebase';
 
 function ValidateEmail(email) {
@@ -12,28 +12,37 @@ function ValidateEmail(email) {
     return (false)
 }
 
+const DEFAULT_PROFILE_PIC = 'https://firebasestorage.googleapis.com/v0/b/influenceme-dev.appspot.com/o/assets%2Fprofile-icon.png?alt=media&token=89765144-f9cf-4539-abea-c9d5ac0b3d2d'
+
 class SignInScreen extends Component {
     email = this.props.navigation.getParam('email', '');
-    state = { 
-        email: this.email || 'user@influence.me', 
-        password: 'asdasd', 
+    state = {
+        email: this.email || 'user@influence.me',
+        password: 'asdasd',
         isWaiting: false,
-        emailError: ' ', 
-        passwordError: ' ' }
+        emailError: ' ',
+        passwordError: ' '
+    }
 
     handleSignIn = async () => {
         const { email, password } = this.state;
         console.log('email and password', email, password);
         this.setState({ isWaiting: true })
-        let user = await firebase.auth().signInWithEmailAndPassword(email, password);
-        console.log('The user', user)
+        try {
+            let user = await firebase.auth().signInWithEmailAndPassword(email, password);
+            if (user)
+                return this.props.navigation.navigate('EventList')
+            console.log('The user', user)
+        } catch (err) {
+            this.setState({ passwordError: err.message })
+        }
         this.setState({ isWaiting: false })
-        if (user)
-            return this.props.navigation.navigate('EventList')
     }
 
     _checkSignIn = () => {
         const { email, password } = this.state;
+        // Clear error messages
+        this.setState({ emailError: '', passwordError: '' })
         // Check email
         if (!ValidateEmail(email))
             return this.setState({ emailError: 'A proper email please!' })
@@ -47,36 +56,56 @@ class SignInScreen extends Component {
     }
 
     render() {
+        const { email, password, emailError, passwordError, isWaiting } = this.state;
         return (
-            <View style={styles.container}>
-                <Text>Sign in with your email and password</Text>
-                <View style={{ alignSelf: 'stretch', paddingHorizontal: 20 }}>
-                    <Input
-                        placeholder='Enter Email'
-                        leftIcon={{ type: 'font-awesome', name: 'chevron-right' }}
-                        onChangeText={email => this.setState({ email, emailError: ' ' })}
-                        value={this.state.email}
-                        disabled={this.state.isWaiting}
-                        errorMessage={this.state.emailError}
-                    />
-                    <Input
-                        placeholder='Enter Password'
-                        secureTextEntry
-                        leftIcon={{ type: 'font-awesome', name: 'chevron-right' }}
-                        onChangeText={password => this.setState({ password, passwordError: ' ' })}
-                        value={this.state.password}
-                        disabled={this.state.isWaiting}
-                        errorMessage={this.state.passwordError}
-                    />
-                    <View style={{ alignSelf: 'stretch', alignItems: 'flex-end' }}>
-                        <Button
-                            title="Sign in"
-                            onPress={this._checkSignIn}
-                            disabled={this.state.isWaiting}
-                        />
+            <KeyboardAvoidingView style={styles.container}>
+                <ScrollView contentContainerStyle={{ flexGrow: 1, justifyContent: 'space-between', paddingHorizontal: 40, paddingVertical: 10, alignItems: 'center' }} >
+                    <View style={{ alignContent: 'center', backgroundColor: '#9fa9a3', borderRadius: 10, paddingHorizontal: 10 }}>
+                        <Text style={{ textAlign: 'center' }}>If you’re here to join a show with a ticket, you don’t need to register.</Text>
                     </View>
-                </View>
-            </View>
+                    <View style={{ alignSelf: 'stretch', alignItems: 'center' }}>
+                        <Avatar
+                            onPress={this.onAvatarPressed}
+                            size='small'
+                            rounded={true}
+                            showEditButton={false}
+                            source={{ uri: DEFAULT_PROFILE_PIC }}
+                        />
+                        <Input
+                            placeholder='Enter Email'
+                            leftIcon={{ type: 'material-community', name: 'email' }}
+                            onChangeText={email => this.setState({ email, emailMessage: '' })}
+                            value={email}
+                            keyboardType='email-address'
+                            errorMessage={emailError}
+                            disabled={isWaiting}
+                        />
+                        <Input
+                            placeholder='Password'
+                            leftIcon={{ type: 'material-community', name: 'lock' }}
+                            onChangeText={password => this.setState({ password, passwordMessage: '' })}
+                            value={password}
+                            errorMessage={passwordError}
+                            secureTextEntry
+                            disabled={isWaiting}
+                        />
+                        <View style={{ alignSelf: 'stretch' }}>
+                            <Button
+                                buttonStyle={{ backgroundColor: 'grey' }}
+                                title="Sign in"
+                                onPress={this._checkSignIn}
+                                disabled={this.state.isWaiting}
+                            />
+                        </View>
+                    </View>
+                    <View style={{ alignItems: 'center', flexDirection: 'column' }}>
+                        <Text>Want to Register?</Text>
+                        <TouchableOpacity onPress={() => this.props.navigation.navigate('Register', { email })} >
+                            <Text style={{ textDecorationLine: 'underline' }}>Register Here</Text>
+                        </TouchableOpacity>
+                    </View>
+                </ScrollView>
+            </KeyboardAvoidingView>
         )
     }
 }
@@ -84,11 +113,6 @@ class SignInScreen extends Component {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-        borderWidth: 3,
-        borderColor: 'blue',
-
     }
 })
 

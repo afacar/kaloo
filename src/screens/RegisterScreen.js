@@ -1,12 +1,12 @@
 import React, { Component } from 'react';
-import { View, StyleSheet, Alert, Text, ScrollView } from 'react-native';
+import { View, StyleSheet, Alert, Text, ScrollView, TouchableOpacity, SafeAreaView, KeyboardAvoidingView } from 'react-native';
 import AppText from '../components/AppText';
 import { Input, Button, Avatar, CheckBox } from 'react-native-elements';
 import firebase, { functions } from "react-native-firebase";
 import ImagePicker from "react-native-image-picker";
 
 const db = firebase.firestore();
-const DEFAULT_PROFILE_PIC = 'https://firebasestorage.googleapis.com/v0/b/influenceme-dev.appspot.com/o/assets%2Fprofile.png?alt=media&token=16ac53b5-b273-4731-aeb5-50dee2533651'
+const DEFAULT_PROFILE_PIC = 'https://firebasestorage.googleapis.com/v0/b/influenceme-dev.appspot.com/o/assets%2Fprofile-icon.png?alt=media&token=89765144-f9cf-4539-abea-c9d5ac0b3d2d'
 
 function AlertUser(title, message) {
     Alert.alert(title, message,
@@ -33,6 +33,9 @@ class RegisterScreen extends Component {
         photoURL: DEFAULT_PROFILE_PIC,
         imagePickerResponse: null,
         isWaiting: false,
+        displayNameMessage: '',
+        emailMessage: '',
+        passwordMessage: '',
     }
 
     componentDidMount() { }
@@ -85,14 +88,17 @@ class RegisterScreen extends Component {
         const { displayName, email, password, repassword } = this.state;
         // Check display name
         if (!displayName)
-            return AlertUser('We need a name!', 'Any name to show people :>')
+            return this.setState({ displayNameMessage: 'We need a name!' })
+        //return AlertUser('We need a name!', 'Any name to show people :>')
         // Check email
         if (!ValidateEmail(email))
-            return AlertUser('Check email!', 'Your email seems a bit awkward, can you check it again :>')
+            return this.setState({ emailMessage: 'Check email!' })
+        //return AlertUser('Check email!', 'Your email seems a bit awkward, can you check it again :>')
 
         // Check password and repassword
         if (password !== repassword || password.length < 6)
-            return AlertUser('Check password!', 'Password shoud be at least 6 chars and same with repassword!')
+            return this.setState({ passwordMessage: 'Check password!' })
+        //return AlertUser('Check password!', 'Password shoud be at least 6 chars and same with repassword!')
 
         // Check if account exists already
         this.setState({ isWaiting: true })
@@ -158,71 +164,77 @@ class RegisterScreen extends Component {
     }
 
     render() {
-        const { displayName, email, password, repassword, photoURL, isWaiting } = this.state
+        const { displayName, email, password, repassword, photoURL, isWaiting, displayNameMessage, emailMessage, passwordMessage } = this.state
         return (
-            <ScrollView>
-                <View style={styles.container}>
-                    <Avatar
-                        onPress={this.onAvatarPressed}
-                        size='large'
-                        rounded={true}
-                        showEditButton={true}
-                        source={{ uri: photoURL || DEFAULT_PROFILE_PIC }}
-                    />
-                    <View style={{ alignSelf: 'stretch', paddingHorizontal: 20 }}>
+            <KeyboardAvoidingView style={styles.container}>
+                <ScrollView contentContainerStyle={{ flexGrow: 1, justifyContent: 'space-between', paddingHorizontal: 40, paddingVertical: 10, alignItems: 'center' }} >
+                    <View style={{ alignContent: 'center', backgroundColor: '#9fa9a3', borderRadius: 10, paddingHorizontal: 10 }}>
+                        <Text style={{ textAlign: 'center' }}>If you’re here to join a show with a ticket, you don’t need to register.</Text>
+                    </View>
+                    <View style={{ alignSelf: 'stretch', alignItems:'center' }}>
+                        <Avatar
+                            onPress={this.onAvatarPressed}
+                            size='large'
+                            rounded={true}
+                            showEditButton={true}
+                            source={{ uri: photoURL || DEFAULT_PROFILE_PIC }}
+                        />
                         <Input
                             placeholder='Display name'
-                            leftIcon={{ type: 'MaterialCommunity', name: 'account-circle' }}
-                            onChangeText={displayName => this.setState({ displayName })}
+                            leftIcon={{ type: 'material-community', name: 'account-circle' }}
+                            onChangeText={displayName => this.setState({ displayName, displayNameMessage: '' })}
                             value={displayName}
+                            errorMessage={displayNameMessage}
                             disabled={isWaiting}
                         />
                         <Input
                             placeholder='Enter Email'
-                            leftIcon={{ type: 'MaterialCommunity', name: 'email' }}
-                            onChangeText={email => this.setState({ email })}
+                            leftIcon={{ type: 'material-community', name: 'email' }}
+                            onChangeText={email => this.setState({ email, emailMessage: '' })}
                             value={email}
                             keyboardType='email-address'
+                            errorMessage={emailMessage}
                             disabled={isWaiting}
                         />
                         <Input
                             placeholder='Password'
-                            leftIcon={{ type: 'MaterialCommunity', name: 'lock' }}
-                            onChangeText={password => this.setState({ password })}
+                            leftIcon={{ type: 'material-community', name: 'lock' }}
+                            onChangeText={password => this.setState({ password, passwordMessage: '' })}
                             value={password}
+                            errorMessage={passwordMessage}
                             secureTextEntry
                             disabled={isWaiting}
                         />
                         <Input
                             placeholder='Repassword'
-                            leftIcon={{ type: 'MaterialCommunity', name: 'lock' }}
+                            leftIcon={{ type: 'material-community', name: 'lock' }}
                             onChangeText={repassword => this.setState({ repassword })}
                             value={repassword}
                             secureTextEntry
                             disabled={isWaiting}
                         />
+                        <View style={{ alignSelf: 'stretch', flexDirection: 'column', justifyContent: 'center' }}>
+                            <CheckBox
+                                title='I accept privacy and legal terms'
+                                checked={this.state.terms}
+                                onPress={() => this.setState({ terms: !this.state.terms })}
+                            />
+                            <Button
+                                buttonStyle={{ backgroundColor: 'grey', borderWidth: 2, borderColor: 'black' }}
+                                title="Create My Account"
+                                onPress={this.checkAccount}
+                                disabled={isWaiting}
+                            />
+                        </View>
                     </View>
-                    <View style={{ alignSelf: 'stretch', flexDirection: 'column', justifyContent: 'center' }}>
-                        <CheckBox
-                            title='I accept terms'
-                            checked={this.state.terms}
-                            onPress={() => this.setState({ terms: !this.state.terms })}
-                        />
-                        <Button
-                            title="Create My Account"
-                            onPress={this.checkAccount}
-                            disabled={isWaiting}
-                        />
+                    <View style={{ alignItems: 'center', flexDirection: 'column' }}>
+                        <Text>Already Registered?</Text>
+                        <TouchableOpacity onPress={() => this.props.navigation.navigate('SignIn', { email })} >
+                            <Text style={{ textDecorationLine: 'underline' }}>SignIn Here</Text>
+                        </TouchableOpacity>
                     </View>
-                    <View style={{ alignSelf: 'stretch', flexDirection: 'row', borderWidth: 2, justifyContent: 'space-evenly' }}>
-                        <Text>or Signin if you have account</Text>
-                        <Button
-                            title="Sign In"
-                            onPress={() => this.props.navigation.navigate('SignIn', { email })}
-                        />
-                    </View>
-                </View>
-            </ScrollView>
+                </ScrollView>
+            </KeyboardAvoidingView>
         )
     }
 }
@@ -230,9 +242,7 @@ class RegisterScreen extends Component {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        justifyContent: 'flex-start',
-        alignItems: 'center',
-        marginTop: 10
+        backgroundColor: 'white'
     }
 })
 

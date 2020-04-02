@@ -12,12 +12,18 @@ const storage = firebase.storage();
 class ProfileScreen extends Component {
     static navigationOptions = ({ navigation }) => ({
         headerRight: () => (
-            <Icon
-                type='material-community'
-                name='logout'
+            <Button
+                buttonStyle={{ backgroundColor: 'grey', marginRight: 10 }}
+                title='Signout'
+                iconRight
+                icon={<Icon
+                    type='material-community'
+                    name='logout'
+                    containerStyle={{ marginLeft: 10 }}
+                />}
                 onPress={() => auth.signOut()}
-                containerStyle={{ marginRight: 10 }}
             />
+
         )
     });
 
@@ -27,7 +33,8 @@ class ProfileScreen extends Component {
         displayName: this.user.displayName,
         photoURL: this.user.photoURL,
         isNameChanged: false,
-        isAvatarChanged: false
+        isAvatarChanged: false,
+        isWaiting: false,
     }
 
     componentDidMount() { }
@@ -36,6 +43,7 @@ class ProfileScreen extends Component {
         let { displayName, photoURL, isAvatarChanged, isNameChanged, pickerResponse } = this.state;
         let newProfile = {}
         let isResizedImage = true;
+        this.setState({ isWaiting: true })
         if (isAvatarChanged) {
             // Upload new Avatar to Storage
             newProfile.photoURL = photoURL
@@ -61,7 +69,7 @@ class ProfileScreen extends Component {
         let userRef = db.doc(`users/${this.user.uid}`)
         await userRef.set({ ...newProfile, isResizedImage }, { merge: true });
         console.log('user @db updated ', newProfile);
-        this.setState({ isNameChanged: false, isAvatarChanged: false })
+        this.setState({ isNameChanged: false, isAvatarChanged: false, isWaiting: false })
     }
 
     onAvatarPressed = () => {
@@ -113,7 +121,7 @@ class ProfileScreen extends Component {
     }
 
     render() {
-        const { photoURL } = this.state
+        const { photoURL, isAvatarChanged, isNameChanged, isWaiting } = this.state
         return (
             <View style={styles.container}>
                 <Avatar
@@ -125,7 +133,7 @@ class ProfileScreen extends Component {
                     showEditButton={true}
                     source={{ uri: photoURL }}
                 />
-                <View style={{ alignSelf: 'stretch', paddingHorizontal: 25 }}>
+                <View style={{ alignSelf: 'stretch', padding: 25 }}>
                     <Input
                         placeholder='Enter Email'
                         leftIcon={{ type: 'MaterialCommunity', name: 'email' }}
@@ -142,9 +150,10 @@ class ProfileScreen extends Component {
                 </View>
                 <View style={{ alignSelf: 'stretch', flexDirection: 'row', justifyContent: 'center' }}>
                     <Button
-                        title="Update"
+                        buttonStyle={{ backgroundColor: 'grey' }}
+                        title={isWaiting ? "Updating..." : 'Update'}
                         onPress={this.handleProfileUpdate}
-                        disabled={!this.state.isNameChanged && !this.state.isAvatarChanged}
+                        disabled={!isNameChanged && !isAvatarChanged || isWaiting}
                     />
                 </View>
             </View>
@@ -155,7 +164,8 @@ class ProfileScreen extends Component {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        justifyContent: 'center',
+        marginTop: 20,
+        justifyContent: 'flex-start',
         alignItems: 'center'
     }
 })
