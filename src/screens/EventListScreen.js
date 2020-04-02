@@ -23,13 +23,7 @@ class UserHeader extends React.Component {
                     size='small'
                     source={{ uri: this.currentUser.photoURL }}
                 />
-                <Button
-                    type='clear'
-                    onPress={() => this.props.navigation.navigate('Profile')}
-                    title={this.currentUser.displayName}
-                    icon={{ type: 'MaterialCommunity', name: 'settings', size: 15 }}
-                    iconRight
-                />
+                <Text style={{ paddingLeft: 10, fontSize: 20 }}>{this.currentUser.displayName}</Text>
             </View>
         );
     }
@@ -38,13 +32,15 @@ class UserHeader extends React.Component {
 
 class EventListScreen extends Component {
     static navigationOptions = ({ navigation }) => ({
-        headerTitle: () => <UserHeader navigation={navigation} />,
+        headerTitle: () => <UserHeader/>,
         headerRight: () => (
-            <Icon
-                type='material-community'
-                name='home-currency-usd'
-                onPress={() => navigation.navigate('Balance')}
-                containerStyle={{ marginRight: 10 }}
+            <Button
+                type='clear'
+                onPress={() => navigation.navigate('Profile')}
+                title={'Account'}
+                titleStyle={{ color: 'grey' }}
+                icon={{ type: 'material-community', name: 'settings', size: 15, color: 'grey' }}
+                iconRight
             />
         )
     });
@@ -200,7 +196,7 @@ class EventListScreen extends Component {
     render() {
         return (
             <View style={styles.container}>
-                <Card containerStyle={{ borderWidth: 2, margin: 5, flex: 1, alignSelf: 'stretch' }} >
+                <Card containerStyle={{ margin: 0, flex: 1, alignSelf: 'stretch' }} >
                     <View style={{ justifyContent: 'flex-start', height: '100%', borderWidth: 0 }}>
                         <View style={{ flexDirection: 'row', justifyContent: 'space-evenly', borderBottomWidth: 1 }}>
                             <Button
@@ -239,7 +235,6 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: 'flex-start',
         alignItems: 'center',
-        borderWidth: 2
     }
 })
 
