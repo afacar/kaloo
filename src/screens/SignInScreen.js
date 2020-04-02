@@ -39,7 +39,7 @@ class SignInScreen extends Component {
       let user = await firebase
         .auth()
         .signInWithEmailAndPassword(email, password);
-      if (user) return this.props.navigation.navigate('EventList');
+      if (user) return this.props.navigation.navigate('UserHome');
       console.log('The user', user);
     } catch (err) {
       this.setState({passwordError: err.message});

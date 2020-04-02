@@ -98,7 +98,7 @@ class RegisterScreen extends Component {
     })
       .then(() => {
         // Navigate user to Event List
-        this.props.navigation.navigate('EventList', {displayName});
+        this.props.navigation.navigate('UserHome', {displayName});
       })
       .catch(error => {
         console.log('User create failed: ', error);

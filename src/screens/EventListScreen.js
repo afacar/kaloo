@@ -53,7 +53,7 @@ class EventListScreen extends Component {
 
     componentDidMount = async () => {
         this.authListener = firebase.auth().onAuthStateChanged(user => {
-            console.log('EventList onAuthStateChange>', user);
+            console.log('UserHome onAuthStateChange>', user);
             if (user && !user.isAnonymous) {
                 this.props.navigation.navigate('User');
             } else {
@@ -203,7 +203,7 @@ class EventListScreen extends Component {
                                 type='clear'
                                 icon={{ type: 'material-community', name: 'ticket' }}
                                 title='Join Event'
-                                onPress={() => this.props.navigation.navigate('Ticket')} />
+                                onPress={() => this.props.navigation.navigate('MyTicket')} />
                             <Button
                                 type='clear'
                                 icon={{ type: 'material-community', name: 'cast' }}
