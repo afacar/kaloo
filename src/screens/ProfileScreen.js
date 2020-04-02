@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, StyleSheet, ActivityIndicator } from 'react-native';
+import { View, StyleSheet, Text, ActivityIndicator, KeyboardAvoidingView, ScrollView, TouchableOpacity } from 'react-native';
 import AppText from '../components/AppText';
 import { Input, Button, Avatar, Icon } from 'react-native-elements';
 import firebase from "react-native-firebase";
@@ -13,15 +13,18 @@ class ProfileScreen extends Component {
     static navigationOptions = ({ navigation }) => ({
         headerRight: () => (
             <Button
-                buttonStyle={{ backgroundColor: 'grey', marginRight: 10 }}
-                title='Signout'
+                buttonStyle={{ marginRight: 10 }}
+                title='Wallet'
+                titleStyle={{ color: 'grey' }}
+                type='clear'
                 iconRight
                 icon={<Icon
                     type='material-community'
-                    name='logout'
-                    containerStyle={{ marginLeft: 10 }}
+                    name='wallet-outline'
+                    color='grey'
+                    containerStyle={{ marginLeft: 5 }}
                 />}
-                onPress={() => auth.signOut()}
+                onPress={() => navigation.navigate('Balance')}
             />
 
         )
@@ -123,40 +126,47 @@ class ProfileScreen extends Component {
     render() {
         const { photoURL, isAvatarChanged, isNameChanged, isWaiting } = this.state
         return (
-            <View style={styles.container}>
-                <Avatar
-                    //onPress={this.onAvatarPressed}
-                    renderPlaceholderContent={<ActivityIndicator />}
-                    onEditPress={this.onAvatarPressed}
-                    size='xlarge'
-                    rounded={true}
-                    showEditButton={true}
-                    source={{ uri: photoURL }}
-                />
-                <View style={{ alignSelf: 'stretch', padding: 25 }}>
-                    <Input
-                        placeholder='Enter Email'
-                        leftIcon={{ type: 'MaterialCommunity', name: 'email' }}
-                        //onChangeText={email => this.setState({ email })}
-                        value={this.state.email}
-                        disabled
-                    />
-                    <Input
-                        placeholder='Display name'
-                        leftIcon={{ type: 'MaterialCommunity', name: 'account-circle' }}
-                        onChangeText={displayName => this.setState({ displayName, isNameChanged: true })}
-                        value={this.state.displayName}
-                    />
-                </View>
-                <View style={{ alignSelf: 'stretch', flexDirection: 'row', justifyContent: 'center' }}>
-                    <Button
-                        buttonStyle={{ backgroundColor: 'grey' }}
-                        title={isWaiting ? "Updating..." : 'Update'}
-                        onPress={this.handleProfileUpdate}
-                        disabled={!isNameChanged && !isAvatarChanged || isWaiting}
-                    />
-                </View>
-            </View>
+            <KeyboardAvoidingView style={styles.container}>
+                <ScrollView contentContainerStyle={{ flexGrow: 1, justifyContent: 'space-between', paddingHorizontal: 40, paddingVertical: 10, alignItems: 'center' }} >
+                    <View style={{ alignSelf: 'stretch', alignItems: 'center' }}>
+                        <Avatar
+                            //onPress={this.onAvatarPressed}
+                            renderPlaceholderContent={<ActivityIndicator />}
+                            onEditPress={this.onAvatarPressed}
+                            size='xlarge'
+                            rounded={true}
+                            showEditButton={true}
+                            source={{ uri: photoURL }}
+                        />
+                        <Input
+                            placeholder='Enter Email'
+                            leftIcon={{ type: 'material-community', name: 'email' }}
+                            //onChangeText={email => this.setState({ email })}
+                            value={this.state.email}
+                            disabled
+                        />
+                        <Input
+                            placeholder='Display name'
+                            leftIcon={{ type: 'material-community', name: 'account-circle' }}
+                            onChangeText={displayName => this.setState({ displayName, isNameChanged: true })}
+                            value={this.state.displayName}
+                        />
+                        <View style={{ alignSelf: 'stretch', marginTop: 15 }}>
+                            <Button
+                                buttonStyle={{ backgroundColor: 'grey' }}
+                                title={isWaiting ? "Updating..." : 'Update'}
+                                onPress={this.handleProfileUpdate}
+                                disabled={!isNameChanged && !isAvatarChanged || isWaiting}
+                            />
+                        </View>
+                    </View>
+                    <View style={{ alignItems: 'center', flexDirection: 'column' }}>
+                        <TouchableOpacity onPress={() => auth.signOut()} >
+                            <Text style={{ textDecorationLine: 'underline' }}>Log Out</Text>
+                        </TouchableOpacity>
+                    </View>
+                </ScrollView>
+            </KeyboardAvoidingView>
         )
     }
 }
@@ -164,9 +174,6 @@ class ProfileScreen extends Component {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        marginTop: 20,
-        justifyContent: 'flex-start',
-        alignItems: 'center'
     }
 })
 

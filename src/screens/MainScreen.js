@@ -54,12 +54,12 @@ class MainScreen extends Component {
                         title='LOGO'
                     />
                     <View style={{ alignSelf: 'stretch', alignItems: 'center' }}>
-                        <View style={{ alignContent: 'center', backgroundColor: '#9fa9a3', borderRadius: 10, paddingHorizontal: 10 }}>
+                        <View style={{ alignContent: 'center', backgroundColor: '#9fa9a3', borderRadius: 10, paddingHorizontal: 10, paddingVertical: 5 }}>
                             <Text style={{ textAlign: 'center' }}>Please enter your ticket number given after your purchase.</Text>
                         </View>
                         <Input
                             placeholder='Ticket Number'
-                            leftIcon={{ type: 'material-community', name: 'ticket' }}
+                            leftIcon={{ type: 'material-community', name: 'ticket', color: '#3b3a30' }}
                             onChangeText={ticket => this.setState({ ticket, ticketError: '' })}
                             value={ticket}
                             keyboardType='ascii-capable'

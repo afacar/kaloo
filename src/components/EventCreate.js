@@ -64,101 +64,99 @@ class EventCreate extends Component {
     render() {
         const { image, title, description, duration, eventType, capacity, price, eventDate, titleMessage, dateMessage } = this.props.event;
         return (
-            <ScrollView>
-                <View style={styles.container}>
-                    <Card containerStyle={{ borderWidth: 0 }} >
-                        <TouchableOpacity onPress={() => this.onImagePressed()} style={{ flexDirection: 'column', alignContent: 'center' }} >
-                            <Image
-                                containerStyle={{ alignSelf: 'stretch', borderBottomWidth: 1, height: 100 }}
-                                source={{ uri: image }}
-                                style={{ height: undefined, width: undefined }}
-                                resizeMode='contain'
-                            />
-                            <Icon
-                                reverse
-                                name='camera'
-                                type='material-community'
-                                size={10}
-                                containerStyle={{
-                                    position: 'absolute',
-                                    right: 5, bottom: 5
-                                }}
+            <ScrollView contentContainerStyle={styles.container}>
+                <View style={{ paddingVertical: 10, paddingHorizontal: 20 }}>
+                    <TouchableOpacity onPress={() => this.onImagePressed()} style={{ flexDirection: 'column', alignContent: 'center' }} >
+                        <Image
+                            containerStyle={{ alignSelf: 'stretch', height: 100 }}
+                            source={{ uri: image }}
+                            style={{ height: undefined, width: undefined }}
+                            resizeMode='contain'
+                        />
+                        <Icon
+                            reverse
+                            name='camera'
+                            type='material-community'
+                            size={10}
+                            containerStyle={{
+                                position: 'absolute',
+                                right: 5, bottom: 5
+                            }}
+                        />
+                    </TouchableOpacity>
+                    <Input
+                        placeholder='Event title'
+                        onChangeText={(title) => this.props.setStateValues({ title, titleMessage: '' })}
+                        value={title}
+                        errorMessage={titleMessage}
+                    />
+                    <Input
+                        placeholder='Event description'
+                        onChangeText={(description) => this.props.setStateValues({ description })}
+                        value={description}
+                        multiline
+                    />
+                    <View style={{ alignSelf: 'stretch', flexDirection: 'column', justifyContent: 'space-between', borderColor: 'blue', marginTop: 10 }}>
+                        <TouchableOpacity onPress={() => this.setState({ isDatePickerVisible: true })}>
+                            <Input
+                                label='Date/Time of Event'
+                                value={eventDate.toLocaleString()}
+                                disabled
+                                errorMessage={dateMessage}
                             />
                         </TouchableOpacity>
                         <Input
-                            placeholder='Event title'
-                            onChangeText={(title) => this.props.setStateValues({ title, titleMessage: '' })}
-                            value={title}
-                            errorMessage={titleMessage}
+                            label='Duration (min)'
+                            value={duration}
+                            onChangeText={(duration) => this.props.setStateValues({ duration })}
+                            containerStyle={{ alignSelf: 'stretch', borderColor: 'brown' }}
+                        />
+                        <DateTimePickerModal
+                            isVisible={this.state.isDatePickerVisible}
+                            mode='datetime'
+                            onConfirm={this.onDateChange}
+                            onCancel={() => this.setState({ isDatePickerVisible: false })}
+                            display='default'
+                        />
+                    </View>
+                    <View style={{ flexDirection: 'row', alignSelf: 'stretch' }}>
+                        <CheckBox
+                            center
+                            title='Broadcast'
+                            iconRight
+                            checkedIcon='dot-circle-o'
+                            uncheckedIcon='circle-o'
+                            checked={eventType === 'live'}
+                            onPress={() => this.props.setStateValues({ eventType: 'live' })}
+                        />
+                        <CheckBox
+                            center
+                            title='Video Call'
+                            iconRight
+                            checkedIcon='dot-circle-o'
+                            uncheckedIcon='circle-o'
+                            checked={eventType === 'call'}
+                            onPress={() => this.props.setStateValues({ eventType: 'call', capacity: '1' })}
+                        />
+                    </View>
+                    <View style={{ flexDirection: 'column', justifyContent: 'center', borderColor: 'orange', borderWidth: 2 }}>
+                        <Input
+                            label='Capacity'
+                            onChangeText={(capacity) => this.props.setStateValues({ capacity })}
+                            value={capacity}
+                            keyboardType='numeric'
+                            maxLength={3}
+                            disabled={eventType === 'call'}
                         />
                         <Input
-                            placeholder='Event description'
-                            onChangeText={(description) => this.props.setStateValues({ description })}
-                            value={description}
-                            multiline
+                            label='Ticket Price ($)'
+                            onChangeText={(price) => this.props.setStateValues({ price })}
+                            value={price}
+                            keyboardType='numeric'
+                            maxLength={3}
                         />
-                        <View style={{ alignSelf: 'stretch', flexDirection: 'column', justifyContent: 'space-between', borderColor: 'blue', marginTop: 10 }}>
-                            <TouchableOpacity onPress={() => this.setState({ isDatePickerVisible: true })}>
-                                <Input
-                                    label='Date/Time of Event'
-                                    value={eventDate.toLocaleString()}
-                                    disabled
-                                    errorMessage={dateMessage}
-                                />
-                            </TouchableOpacity>
-                            <Input
-                                label='Duration (min)'
-                                value={duration}
-                                onChangeText={(duration) => this.props.setStateValues({ duration })}
-                                containerStyle={{ alignSelf: 'stretch', borderColor: 'brown' }}
-                            />
-                            <DateTimePickerModal
-                                isVisible={this.state.isDatePickerVisible}
-                                mode='datetime'
-                                onConfirm={this.onDateChange}
-                                onCancel={() => this.setState({ isDatePickerVisible: false })}
-                                display='default'
-                            />
-                        </View>
-                        <View style={{ flexDirection: 'row', alignSelf: 'stretch' }}>
-                            <CheckBox
-                                center
-                                title='Broadcast'
-                                iconRight
-                                checkedIcon='dot-circle-o'
-                                uncheckedIcon='circle-o'
-                                checked={eventType === 'live'}
-                                onPress={() => this.props.setStateValues({ eventType: 'live' })}
-                            />
-                            <CheckBox
-                                center
-                                title='Video Call'
-                                iconRight
-                                checkedIcon='dot-circle-o'
-                                uncheckedIcon='circle-o'
-                                checked={eventType === 'call'}
-                                onPress={() => this.props.setStateValues({ eventType: 'call', capacity: '1' })}
-                            />
-                        </View>
-                        <View style={{ flexDirection: 'column', justifyContent: 'center', borderColor: 'orange', borderWidth: 2 }}>
-                            <Input
-                                label='Capacity'
-                                onChangeText={(capacity) => this.props.setStateValues({ capacity })}
-                                value={capacity}
-                                keyboardType='numeric'
-                                maxLength={3}
-                                disabled={eventType === 'call'}
-                            />
-                            <Input
-                                label='Ticket Price ($)'
-                                onChangeText={(price) => this.props.setStateValues({ price })}
-                                value={price}
-                                keyboardType='numeric'
-                                maxLength={3}
-                            />
-                        </View>
-                        <Button title='Preview Event' type='outline' onPress={this.props.previewEvent} />
-                    </Card>
+                    </View>
+                    <Button title='Preview Event' type='outline' onPress={this.props.previewEvent} />
                 </View>
             </ScrollView>
         )
@@ -170,8 +168,6 @@ class EventCreate extends Component {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        justifyContent: 'space-around',
-        alignItems: 'center'
     }
 })
 
