@@ -1,9 +1,11 @@
 import React, { Component } from 'react';
 import { View, StyleSheet, Image, Share } from 'react-native';
-import AppText from '../components/AppText';
-import { Input, Button, Text, Card } from 'react-native-elements';
+import { Input, Button, Text, Card, Rating } from 'react-native-elements';
 import { app } from '../constants';
 import { setEventListener, clearEventListener } from "../utils/EventHandler";
+import firebase from "react-native-firebase";
+
+const db = firebase.firestore()
 
 class JoinEventScreen extends Component {
     event = this.props.navigation.getParam('event', '')
@@ -62,6 +64,21 @@ class JoinEventScreen extends Component {
         }
     }
 
+    rateEvent = (rating) => {
+        const { ticket } = this.state;
+        console.log('state', this.state)
+        const [eventId, _t] = ticket.ticket.split('-')
+        let ticketPath = `events/${eventId}/tickets/${ticket.ticket}`
+        console.log('ticketPath', ticketPath)
+        const eventDoc = db.doc(ticketPath)
+        eventDoc.set({ rating }, { merge: true })
+            .then(() => {
+                this.setState({ isRatingComplete: true })
+                console.log('Rating complete!')
+            })
+            .catch(err => console.log('Rating error:', err.message))
+    }
+
     render() {
         const { image, title, description, duration, eventType, capacity, price, eventDate, eventLink, status } = this.state;
         console.warn('status ', status)
@@ -77,7 +94,9 @@ class JoinEventScreen extends Component {
                         <Text>Price: {price}</Text>
                         <Text>Event Date: {eventDate.toDate().toLocaleString()}</Text>
                         <Text>Event Link: {eventLink}</Text>
-                        <Button title='Share' onPress={this.onShare} />
+                        {
+                            status !== app.EVENT_STATUS.COMPLETED && <Button title='Share' onPress={this.onShare} />
+                        }
                         {
                             ((status === app.EVENT_STATUS.SCHEDULED) || (status === app.EVENT_STATUS.SUSPENDED)) && (
                                 <Button title='Waiting...' disabled />
@@ -85,7 +104,15 @@ class JoinEventScreen extends Component {
                         }
                         {
                             status === app.EVENT_STATUS.COMPLETED && (
-                                <Button title='Finished' disabled />
+                                <View style={{ alignSelf:'stretch', justifyContent: 'center', alignItems: 'center', borderWidth: 1 }}>
+                                    <Button title='Finished' disabled />
+                                    <Text>Rate your experience please!</Text>
+                                    <Rating
+                                        onFinishRating={(this.rateEvent)}
+                                        style={{ paddingVertical: 10 }}
+                                        readonly={this.state.isRatingComplete}
+                                    />
+                                </View>
                             )
                         }
                         {
