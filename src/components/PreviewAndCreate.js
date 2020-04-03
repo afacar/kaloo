@@ -107,7 +107,7 @@ class PreviewAndCreateEvent extends Component {
     render() {
         console.log('Preview&Create state', this.state)
         return (
-            <ScrollView>
+            <ScrollView style={styles.container}>
                 {
                     this.state.isPreview ? (
                         <EventPreview
@@ -120,6 +120,7 @@ class PreviewAndCreateEvent extends Component {
                                 event={this.state}
                                 setStateValues={this.setStateValues}
                                 previewEvent={this._eventPreview}
+                                cancel={() => this.props.onCancel()}
                             />
                         )
                 }
@@ -131,9 +132,7 @@ class PreviewAndCreateEvent extends Component {
 
 const styles = StyleSheet.create({
     container: {
-        flex: 1,
-        justifyContent: 'space-around',
-        alignItems: 'center'
+        flex: 1
     }
 })
 

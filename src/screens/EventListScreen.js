@@ -223,6 +223,7 @@ class EventListScreen extends Component {
                 >
                     <PreviewAndCreate
                         onPublish={this.onEventPublish}
+                        onCancel={() => this.setState({ isCreateEvent: false })}
                     />
                 </Overlay>
             </View>
