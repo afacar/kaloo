@@ -9,7 +9,7 @@ const storage = firebase.storage()
 const auth = firebase.auth()
 const functions = firebase.functions()
 
-const DEFAULT_EVENT_PIC = 'https://firebasestorage.googleapis.com/v0/b/influenceme-dev.appspot.com/o/assets%2Fbroadcast-media.png?alt=media&token=608c9143-879d-4ff7-a30d-ac61ba319904'
+const DEFAULT_EVENT_PIC = 'https://firebasestorage.googleapis.com/v0/b/influenceme-dev.appspot.com/o/assets%2Fevent-default-image_200x200.jpeg?alt=media&token=fd8979c0-d617-408d-b387-02fdb48f6c83'
 
 const INITIAL_STATE = {
     displayName: auth.currentUser ? auth.currentUser.displayName: '',
