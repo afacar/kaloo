@@ -96,13 +96,7 @@ class EventCreate extends Component {
                     <TouchableOpacity
                         onPress={() => this.onImagePressed()}
                         style={{ flexDirection: 'column', alignContent: 'center' }}>
-                        <Image
-                            containerStyle={{
-
-                                alignSelf: 'stretch',
-                                borderWidth:1,
-                                height: 150,
-                            }}
+                        <Image  containerStyle={{ alignSelf: 'stretch',borderWidth:1,height: 150}}
                             source={{ uri: image }}
                             style={{ flex:1 }}
                             //resizeMode="contain"
