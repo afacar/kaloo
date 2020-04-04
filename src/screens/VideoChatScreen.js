@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, Text, NativeModules, PermissionsAndroid, Alert, StatusBar, ActivityIndicator } from 'react-native';
+import { View, Platform, NativeModules, PermissionsAndroid, Alert, StatusBar, ActivityIndicator } from 'react-native';
 import app from '../constants/app';
 import { RtcEngine, AgoraView } from 'react-native-agora';
 import { styles, colors } from '../constants';
@@ -187,8 +187,10 @@ export default class VideoChatScreen extends Component {
         this.backButtonPressed();
     }
     componentDidMount() {
-        this.checkAudioPermission();
-        this.checkCameraPermission();
+        if (Platform.OS === 'android') {
+            this.checkCameraPermission();
+            this.checkAudioPermission();
+        }
         var channelName = this.props.navigation.getParam('eventID', 'agora_test');
         const clientRole = this.props.navigation.getParam('clientRole', 2);
         var ticketID = this.props.navigation.getParam('ticketID', Math.random() * 100);

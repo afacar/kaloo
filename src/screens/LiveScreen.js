@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, Text, NativeModules, PermissionsAndroid, Alert, StatusBar, TouchableOpacity, BackHandler, ToastAndroid } from 'react-native';
+import { View, Platform, NativeModules, PermissionsAndroid, Alert, StatusBar, TouchableOpacity, BackHandler, ToastAndroid } from 'react-native';
 import app from '../constants/app';
 import { RtcEngine, AgoraView } from 'react-native-agora';
 import { decrementViewer, clearLiveEventListener, setLiveEventListener, incrementViewer, startLive, endLive, suspendLive, continueLive } from '../utils/EventHandler';
@@ -121,8 +121,10 @@ export default class LiveScreen extends Component {
     }
 
     componentDidMount() {
-        this.checkAudioPermission();
-        this.checkCameraPermission();
+        if (Platform.OS === 'android') {
+            this.checkCameraPermission();
+            this.checkAudioPermission();
+        }
         var channelName = this.props.navigation.getParam('eventID', 'agora_test');
         const clientRole = this.props.navigation.getParam('clientRole', 2);
         var ticketID = this.props.navigation.getParam('ticketID', Math.random() * 100);
