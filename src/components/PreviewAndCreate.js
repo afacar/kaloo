@@ -30,7 +30,7 @@ const INITIAL_STATE = {
     isAvatarChanged: false, // TODO: Currently they can't change event image
     isPreview: false,
     isWaiting: false,
-    status= app.EVENT_STATUS.SCHEDULED
+    status: app.EVENT_STATUS.SCHEDULED,
 }
 
 class PreviewAndCreateEvent extends Component {
