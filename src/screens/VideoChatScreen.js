@@ -118,7 +118,7 @@ export default class VideoChatScreen extends Component {
                 {
                     text: 'Yes', onPress: () => {
                         RtcEngine.leaveChannel();
-                        RtcEngine.joinChannel(channelName)
+                        RtcEngine.joinChannel(channelName,0)
                             .then((result) => {
                                 startLive(channelName);
                             })
@@ -145,7 +145,7 @@ export default class VideoChatScreen extends Component {
                 {
                     text: 'Yes', onPress: () => {
                         RtcEngine.leaveChannel();
-                        RtcEngine.joinChannel(channelName)
+                        RtcEngine.joinChannel(channelName,0)
                             .then((result) => {
                                 continueLive(channelName);
                             })
@@ -217,8 +217,8 @@ export default class VideoChatScreen extends Component {
             if (startedAt && status === app.EVENT_STATUS.IN_PROGRESS) {
                 if (clientRole === 1 && !this.state.joinSucceed) {
                     RtcEngine.leaveChannel();
-                    RtcEngine.joinChannel(channelName)
-                        .then((result) => {
+                    RtcEngine.joinChannel(channelName,0)
+                    .then((result) => {
                             this.setState({
                                 joinSucceed: true
                             })
@@ -242,7 +242,7 @@ export default class VideoChatScreen extends Component {
             else if (status === app.EVENT_STATUS.COMPLETED && clientRole === 2) {
                 this.onEventCompleted();
             }
-            this.setState({ viewers: viewerCount, status: status })
+            this.setState({ viewers: viewerCount || 0, status: status || app.EVENT_STATUS.SCHEDULED })
         });
 
         // setup back button listener
@@ -285,7 +285,7 @@ export default class VideoChatScreen extends Component {
                 {
                     text: 'OK', onPress: () => {
                         if (clientRole === 1) {
-                            suspendLive(eventID);
+                            suspendLive(eventID, this.state.status);
                         }
                         navigation.goBack();
                         return false;
