@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, StyleSheet, PermissionsAndroid, FlatList, Text, ActivityIndicator, ScrollView } from 'react-native';
+import { View, StyleSheet, PermissionsAndroid, Text, ActivityIndicator, ScrollView, Platform } from 'react-native';
 import AppText from '../components/AppText';
 import { Input, Button, Card, ListItem, Icon, Overlay, Avatar } from 'react-native-elements';
 import firebase from "react-native-firebase";
@@ -62,8 +62,10 @@ class EventListScreen extends Component {
         });
         this.checkProfile()
         this.checkMyEvents()
-        this.checkCameraPermission();
-        this.checkAudioPermission();
+        if (Platform.OS === 'android') {
+            this.checkCameraPermission();
+            this.checkAudioPermission();
+        }
     }
 
     checkProfile = async () => {
