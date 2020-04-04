@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import {
   View,
   StyleSheet,
@@ -9,10 +9,9 @@ import {
   SafeAreaView,
   KeyboardAvoidingView,
 } from 'react-native';
-import AppText from '../components/AppText';
-import {Input, Button, Avatar, CheckBox} from 'react-native-elements';
-import firebase, {functions} from 'react-native-firebase';
-import ImagePicker from 'react-native-image-picker';
+import { Input, Button, Avatar, CheckBox } from 'react-native-elements';
+import firebase, { functions } from 'react-native-firebase';
+import ImagePicker from 'react-native-image-crop-picker';
 
 const db = firebase.firestore();
 const DEFAULT_PROFILE_PIC =
@@ -20,7 +19,7 @@ const DEFAULT_PROFILE_PIC =
 
 function AlertUser(title, message) {
   Alert.alert(title, message, [
-    {text: 'Ok! I will try my best', onPress: () => {}},
+    { text: 'Ok! I will try my best', onPress: () => { } },
   ]);
 }
 
@@ -46,7 +45,7 @@ class RegisterScreen extends Component {
     passwordMessage: '',
   };
 
-  componentDidMount() {}
+  componentDidMount() { }
 
   createAccount = async () => {
     let {
@@ -58,7 +57,7 @@ class RegisterScreen extends Component {
     } = this.state;
     console.log('creates account with email and password');
     await firebase.auth().createUserWithEmailAndPassword(email, password);
-    const {currentUser} = firebase.auth();
+    const { currentUser } = firebase.auth();
     console.log('user is created', currentUser);
     let isResizedImage = true;
     // Upload new profile pict if it is new
@@ -74,60 +73,60 @@ class RegisterScreen extends Component {
     }
     // Update user profile @Authentication
     console.log('update profile', displayName, photoURL);
-    await currentUser.updateProfile({displayName, photoURL});
+    await currentUser.updateProfile({ displayName, photoURL });
     // Create user @Firestore
     let userRef = db.doc(`users/${currentUser.uid}`);
     let userStatsRef = db.doc('users/--stats--');
 
-    db.runTransaction(async function(transaction) {
+    db.runTransaction(async function (transaction) {
       // This code may get re-run multiple times if there are conflicts.
-      return transaction.get(userStatsRef).then(function(userStatsDoc) {
+      return transaction.get(userStatsRef).then(function (userStatsDoc) {
         // Set an initial value for event number
         let userNumber = 0;
         if (userStatsDoc.exists) {
           userNumber = userStatsDoc.data().counter + 1;
         }
         // Increment counter and write user to @Firestore
-        transaction.set(userStatsRef, {counter: userNumber}, {merge: true});
+        transaction.set(userStatsRef, { counter: userNumber }, { merge: true });
         transaction.set(
           userRef,
-          {email, displayName, photoURL, userNumber, isResizedImage},
-          {merge: true},
+          { email, displayName, photoURL, userNumber, isResizedImage },
+          { merge: true },
         );
       });
     })
       .then(() => {
         // Navigate user to Event List
-        this.props.navigation.navigate('UserHome', {displayName});
+        this.props.navigation.navigate('UserHome', { displayName });
       })
       .catch(error => {
         console.log('User create failed: ', error);
       });
-    this.setState({isWaiting: false});
+    this.setState({ isWaiting: false });
   };
 
   checkAccount = async () => {
-    const {displayName, email, password, repassword} = this.state;
+    const { displayName, email, password, repassword } = this.state;
     // Check display name
     if (!displayName)
-      return this.setState({displayNameMessage: 'We need a name!'});
+      return this.setState({ displayNameMessage: 'We need a name!' });
     //return AlertUser('We need a name!', 'Any name to show people :>')
     // Check email
     if (!ValidateEmail(email))
-      return this.setState({emailMessage: 'Check email!'});
+      return this.setState({ emailMessage: 'Check email!' });
     //return AlertUser('Check email!', 'Your email seems a bit awkward, can you check it again :>')
 
     // Check password and repassword
     if (password !== repassword || password.length < 6)
-      return this.setState({passwordMessage: 'Check password!'});
+      return this.setState({ passwordMessage: 'Check password!' });
     //return AlertUser('Check password!', 'Password shoud be at least 6 chars and same with repassword!')
 
     // Check if account exists already
-    this.setState({isWaiting: true});
+    this.setState({ isWaiting: true });
     let result = await firebase.auth().fetchSignInMethodsForEmail(email);
     console.log('fetchSignInMethodsForEmail', result);
     if (result.length > 0) {
-      this.setState({isWaiting: false});
+      this.setState({ isWaiting: false });
       return AlertUser(
         'Consider Sign in!',
         `It looks like you already have account with ${email}`,
@@ -138,15 +137,9 @@ class RegisterScreen extends Component {
     this.createAccount();
   };
 
-  onAvatarPressed = () => {
+  /* onAvatarPressed = () => {
     if (this.state.isWaiting) return;
     var customButtons = [];
-    /* if (this.state.profile.photoURL !== strings.DEFAULT_PROFILE_PIC) {
-          customButtons = [{
-            name: 'DeleteButton',
-            title: 'Fotoğrafı Sil'
-          }]
-        } */
     const options = {
       title: 'Upload Foto',
       chooseFromLibraryButtonTitle: 'From Lib',
@@ -172,7 +165,7 @@ class RegisterScreen extends Component {
       if (response.didCancel) {
       } else if (response.error) {
       } else if (response.customButton) {
-        const {user} = this.props;
+        const { user } = this.props;
         user.photoURL = strings.DEFAULT_PROFILE_PIC;
         this.setState({
           disabled: false,
@@ -182,11 +175,22 @@ class RegisterScreen extends Component {
         if (Platform.OS === 'ios')
           response.path = response.uri.replace('file://', '');
         console.log('response', response);
-        this.setState({photoURL: response.uri, imagePickerResponse: response});
-        /*                  */
+        this.setState({ photoURL: response.uri, imagePickerResponse: response });
       }
     });
-  };
+  }; */
+
+  onImagePicker = () => {
+    ImagePicker.openPicker({
+      width: 300,
+      height: 400,
+      cropping: true
+    }).then(image => {
+      console.log(image);
+      this.setState({ photoURL: image.path, image });
+    });
+  }
+
 
   render() {
     const {
@@ -218,26 +222,26 @@ class RegisterScreen extends Component {
               paddingHorizontal: 10,
               paddingVertical: 10,
             }}>
-            <Text style={{textAlign: 'center'}}>
+            <Text style={{ textAlign: 'center' }}>
               If you’re here to join a show with a ticket, you don’t need to
               register.
             </Text>
           </View>
-          <View style={{alignSelf: 'stretch', alignItems: 'center'}}>
+          <View style={{ alignSelf: 'stretch', alignItems: 'center' }}>
             <Avatar
-              onPress={this.onAvatarPressed}
+              onPress={this.onImagePicker}
               size="large"
               rounded={true}
               showEditButton={true}
-              source={{uri: photoURL || DEFAULT_PROFILE_PIC}}
+              source={{ uri: photoURL || DEFAULT_PROFILE_PIC }}
             />
             <Input
               placeholder="Display name"
               placeholderTextColor="#b2c2bf"
-              leftIcon={{type: 'material-community', name: 'account-circle'}}
-              leftIconContainerStyle={{marginLeft: 0, paddingRight: 10}}
+              leftIcon={{ type: 'material-community', name: 'account-circle' }}
+              leftIconContainerStyle={{ marginLeft: 0, paddingRight: 10 }}
               onChangeText={displayName =>
-                this.setState({displayName, displayNameMessage: ''})
+                this.setState({ displayName, displayNameMessage: '' })
               }
               value={displayName}
               errorMessage={displayNameMessage}
@@ -246,9 +250,9 @@ class RegisterScreen extends Component {
             <Input
               placeholder="Enter Email"
               placeholderTextColor="#b2c2bf"
-              leftIcon={{type: 'material-community', name: 'email'}}
-              leftIconContainerStyle={{marginLeft: 0, paddingRight: 10}}
-              onChangeText={email => this.setState({email, emailMessage: ''})}
+              leftIcon={{ type: 'material-community', name: 'email' }}
+              leftIconContainerStyle={{ marginLeft: 0, paddingRight: 10 }}
+              onChangeText={email => this.setState({ email, emailMessage: '' })}
               value={email}
               keyboardType="email-address"
               errorMessage={emailMessage}
@@ -257,10 +261,10 @@ class RegisterScreen extends Component {
             <Input
               placeholder="Password"
               placeholderTextColor="#b2c2bf"
-              leftIcon={{type: 'material-community', name: 'lock'}}
-              leftIconContainerStyle={{marginLeft: 0, paddingRight: 10}}
+              leftIcon={{ type: 'material-community', name: 'lock' }}
+              leftIconContainerStyle={{ marginLeft: 0, paddingRight: 10 }}
               onChangeText={password =>
-                this.setState({password, passwordMessage: ''})
+                this.setState({ password, passwordMessage: '' })
               }
               value={password}
               errorMessage={passwordMessage}
@@ -270,9 +274,9 @@ class RegisterScreen extends Component {
             <Input
               placeholder="Repassword"
               placeholderTextColor="#b2c2bf"
-              leftIcon={{type: 'material-community', name: 'lock'}}
-              leftIconContainerStyle={{marginLeft: 0, paddingRight: 10}}
-              onChangeText={repassword => this.setState({repassword})}
+              leftIcon={{ type: 'material-community', name: 'lock' }}
+              leftIconContainerStyle={{ marginLeft: 0, paddingRight: 10 }}
+              onChangeText={repassword => this.setState({ repassword })}
               value={repassword}
               secureTextEntry
               disabled={isWaiting}
@@ -286,23 +290,23 @@ class RegisterScreen extends Component {
               <CheckBox
                 title="I accept privacy and legal terms"
                 checked={this.state.terms}
-                onPress={() => this.setState({terms: !this.state.terms})}
-                containerStyle={{backgroundColor: 'transparent',borderColor:'transparent'}}
+                onPress={() => this.setState({ terms: !this.state.terms })}
+                containerStyle={{ backgroundColor: 'transparent', borderColor: 'transparent' }}
                 checkedColor='#3b3a30'
               />
               <Button
-                buttonStyle={{backgroundColor: '#3b3a30'}}
+                buttonStyle={{ backgroundColor: '#3b3a30' }}
                 title="Create My Account"
                 onPress={this.checkAccount}
                 disabled={isWaiting}
               />
             </View>
           </View>
-          <View style={{alignItems: 'center', flexDirection: 'column'}}>
+          <View style={{ alignItems: 'center', flexDirection: 'column' }}>
             <Text>Already Registered?</Text>
             <TouchableOpacity
-              onPress={() => this.props.navigation.navigate('SignIn', {email})}>
-              <Text style={{textDecorationLine: 'underline'}}>SignIn Here</Text>
+              onPress={() => this.props.navigation.navigate('SignIn', { email })}>
+              <Text style={{ textDecorationLine: 'underline' }}>SignIn Here</Text>
             </TouchableOpacity>
           </View>
         </ScrollView>
