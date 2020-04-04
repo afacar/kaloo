@@ -6,7 +6,6 @@ import {
   ScrollView,
   TouchableOpacity,
 } from 'react-native';
-import AppText from '../components/AppText';
 import { Input, Button, Text, Avatar } from 'react-native-elements';
 import firebase from 'react-native-firebase';
 const db = firebase.firestore();
@@ -14,10 +13,9 @@ const db = firebase.firestore();
 const DEFAULT_LOGO = 'https://firebasestorage.googleapis.com/v0/b/influenceme-dev.appspot.com/o/assets%2Finfme-logo_200x200.PNG?alt=media&token=20d09ffe-46bb-4605-a777-567655ebfca2'
 
 class TicketScreen extends Component {
-  state = { ticket: '', isWaiting: false, ticketError: '' };
+  state = { ticket: '', isWaiting: false, ticketError: '', isTicketFormat: false };
 
   checkTicket = async () => {
-    if (!this._checkTicketFormat()) return;
     let { ticket } = this.state;
     ticket = ticket.trim();
     this.setState({ isWaiting: true });
@@ -39,19 +37,17 @@ class TicketScreen extends Component {
     }
   };
 
-  _checkTicketFormat = () => {
-    const { ticket } = this.state;
+  _checkTicketFormat = (ticket) => {
     const [eventId, ticketId] = ticket.split('-');
     if (eventId && ticketId && ticketId.length == 4) {
-      return true;
+      this.setState({ ticket, ticketError: '', isTicketFormat: true });
     } else {
-      this.setState({ ticketError: 'Ticket format is wrong!' });
-      return false;
+      this.setState({ ticket, ticketError: '', isTicketFormat: false });
     }
   };
 
   render() {
-    const { ticket, isWaiting, ticketError } = this.state;
+    const { ticket, isWaiting, ticketError, isTicketFormat } = this.state;
     return (
       <KeyboardAvoidingView style={styles.container}>
         <ScrollView
@@ -63,7 +59,6 @@ class TicketScreen extends Component {
             alignItems: 'center',
           }}>
           <Avatar
-            onPress={this.onAvatarPressed}
             source={{ uri: DEFAULT_LOGO }}
             size="large"
           />
@@ -86,7 +81,7 @@ class TicketScreen extends Component {
               leftIcon={{ type: 'material-community', name: 'ticket' }}
               leftIconContainerStyle={{ marginLeft: 0, paddingRight: 10 }}
               inputStyle={{ textAlign: 'center' }}
-              onChangeText={ticket => this.setState({ ticket, ticketError: '' })}
+              onChangeText={this._checkTicketFormat}
               value={ticket}
               keyboardType="ascii-capable"
               errorMessage={ticketError}
@@ -97,9 +92,9 @@ class TicketScreen extends Component {
             <View style={{ alignSelf: 'stretch' }}>
               <Button
                 buttonStyle={{ backgroundColor: '#3b3a30' }}
-                title="Go to Event"
+                title="Join Now"
                 onPress={this.checkTicket}
-                disabled={this.state.isWaiting}
+                disabled={!isTicketFormat || isWaiting}
               />
             </View>
           </View>
