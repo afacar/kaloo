@@ -104,7 +104,7 @@ class TicketScreen extends Component {
             </View>
           </View>
           <View style={{ alignItems: 'center', flexDirection: 'column' }}>
-            <Text>Are you going to stream?</Text>
+            <Text>Are you planning to cast your service</Text>
             <TouchableOpacity
               onPress={() => this.props.navigation.navigate('Register')}>
               <Text style={{ textDecorationLine: 'underline' }}>
