@@ -8,20 +8,13 @@ import {
   TouchableOpacity,
   SafeAreaView,
   KeyboardAvoidingView,
+  Platform,
 } from 'react-native';
 import { Input, Button, Avatar, CheckBox } from 'react-native-elements';
-import firebase, { functions } from 'react-native-firebase';
+import { functions, storage, auth } from 'react-native-firebase';
 import ImagePicker from 'react-native-image-crop-picker';
 
-const db = firebase.firestore();
-const DEFAULT_PROFILE_PIC =
-  'https://firebasestorage.googleapis.com/v0/b/influenceme-dev.appspot.com/o/assets%2Fprofile-icon.png?alt=media&token=89765144-f9cf-4539-abea-c9d5ac0b3d2d';
-
-function AlertUser(title, message) {
-  Alert.alert(title, message, [
-    { text: 'Ok! I will try my best', onPress: () => { } },
-  ]);
-}
+const DEFAULT_PROFILE_PIC = 'https://firebasestorage.googleapis.com/v0/b/influenceme-dev.appspot.com/o/assets%2Fprofile-icon.png?alt=media&token=89765144-f9cf-4539-abea-c9d5ac0b3d2d';
 
 function ValidateEmail(email) {
   if (/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(email)) {
@@ -55,54 +48,31 @@ class RegisterScreen extends Component {
       photoURL,
       imagePickerResponse,
     } = this.state;
-    console.log('creates account with email and password');
-    await firebase.auth().createUserWithEmailAndPassword(email, password);
-    const { currentUser } = firebase.auth();
+    await auth().createUserWithEmailAndPassword(email, password);
+    const { currentUser } = auth();
     console.log('user is created', currentUser);
+    const { uid } = currentUser
     let isResizedImage = true;
     // Upload new profile pict if it is new
     if (photoURL !== DEFAULT_PROFILE_PIC) {
       isResizedImage = false;
       console.log('uploading avatar...');
-      let avatarRef = firebase
-        .storage()
-        .ref(`users/${currentUser.uid}/avatar/${currentUser.uid}.jpg`);
-      avatarRef.putFile(imagePickerResponse.path);
-      //photoURL = await avatarRef.getDownloadURL()
+      let avatarRef = storage().ref(`users/${uid}/avatar/${uid}.jpg`);
+      await avatarRef.putFile(imagePickerResponse.path);
+      photoURL = await avatarRef.getDownloadURL()
       console.log('avatar is uploaded!');
     }
+
+    let createUser = functions().httpsCallable('createUser')
     // Update user profile @Authentication
     console.log('update profile', displayName, photoURL);
     await currentUser.updateProfile({ displayName, photoURL });
     // Create user @Firestore
-    let userRef = db.doc(`users/${currentUser.uid}`);
-    let userStatsRef = db.doc('users/--stats--');
-
-    db.runTransaction(async function (transaction) {
-      // This code may get re-run multiple times if there are conflicts.
-      return transaction.get(userStatsRef).then(function (userStatsDoc) {
-        // Set an initial value for event number
-        let userNumber = 0;
-        if (userStatsDoc.exists) {
-          userNumber = userStatsDoc.data().counter + 1;
-        }
-        // Increment counter and write user to @Firestore
-        transaction.set(userStatsRef, { counter: userNumber }, { merge: true });
-        transaction.set(
-          userRef,
-          { email, displayName, photoURL, userNumber, isResizedImage },
-          { merge: true },
-        );
-      });
-    })
-      .then(() => {
-        // Navigate user to Event List
-        this.props.navigation.navigate('UserHome', { displayName });
-      })
-      .catch(error => {
-        console.log('User create failed: ', error);
-      });
+    const newUser = { uid, displayName, photoURL, isResizedImage: isResizedImage }
+    let res = await createUser(newUser)
+    console.log('user creation completed ', res)
     this.setState({ isWaiting: false });
+    this.props.navigation.navigate('UserHome', { displayName });
   };
 
   checkAccount = async () => {
@@ -110,85 +80,40 @@ class RegisterScreen extends Component {
     // Check display name
     if (!displayName)
       return this.setState({ displayNameMessage: 'We need a name!' });
-    //return AlertUser('We need a name!', 'Any name to show people :>')
-    // Check email
+
+      // Check email
     if (!ValidateEmail(email))
       return this.setState({ emailMessage: 'Check email!' });
-    //return AlertUser('Check email!', 'Your email seems a bit awkward, can you check it again :>')
 
     // Check password and repassword
     if (password !== repassword || password.length < 6)
       return this.setState({ passwordMessage: 'Check password!' });
-    //return AlertUser('Check password!', 'Password shoud be at least 6 chars and same with repassword!')
 
     // Check if account exists already
     this.setState({ isWaiting: true });
-    let result = await firebase.auth().fetchSignInMethodsForEmail(email);
+    let result = await auth().fetchSignInMethodsForEmail(email);
     console.log('fetchSignInMethodsForEmail', result);
     if (result.length > 0) {
-      this.setState({ isWaiting: false });
-      return AlertUser(
-        'Consider Sign in!',
-        `It looks like you already have account with ${email}`,
-      );
+      return this.setState({ isWaiting: false, emailMessage: 'There is an account with this email' });
     }
 
     // Everything is ok, let's create account
     this.createAccount();
   };
 
-  /* onAvatarPressed = () => {
-    if (this.state.isWaiting) return;
-    var customButtons = [];
-    const options = {
-      title: 'Upload Foto',
-      chooseFromLibraryButtonTitle: 'From Lib',
-      takePhotoButtonTitle: 'Open Cam',
-      cancelButtonTitle: 'Close',
-
-      customButtons: customButtons,
-      mediaType: 'photo',
-      storageOptions: {
-        skipBackup: true,
-        path: 'images',
-        allowsEditing: true,
-        cameraRoll: true,
-        path:
-          Platform.OS == 'ios'
-            ? 'Documents/ConsultMe Images/ProfilePictures'
-            : 'Pictures/ ConsultMe Images/ProfilePictures',
-      },
-    };
-
-    ImagePicker.showImagePicker(options, async response => {
-      console.log('response', response);
-      if (response.didCancel) {
-      } else if (response.error) {
-      } else if (response.customButton) {
-        const { user } = this.props;
-        user.photoURL = strings.DEFAULT_PROFILE_PIC;
-        this.setState({
-          disabled: false,
-          saveButtonTitle: saveButtonEnabledTitle,
-        });
-      } else {
-        if (Platform.OS === 'ios')
-          response.path = response.uri.replace('file://', '');
-        console.log('response', response);
-        this.setState({ photoURL: response.uri, imagePickerResponse: response });
-      }
-    });
-  }; */
-
   onImagePicker = () => {
     ImagePicker.openPicker({
-      width: 300,
-      height: 400,
-      cropping: true
+      path: 'my-profile-image.jpg',
+      width: 200,
+      height: 200,
+      cropping: true,
     }).then(image => {
       console.log(image);
-      this.setState({ photoURL: image.path, image });
-    });
+      if (Platform.OS === 'ios')
+        image.path = image.path.replace('file://', '');
+      console.log('picked image', image);
+      this.setState({ photoURL: image.path, imagePickerResponse: image });
+    }).catch(err => console.log('image-picker err:', err))
   }
 
 
