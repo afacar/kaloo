@@ -42,13 +42,13 @@ class PreviewAndCreateEvent extends Component {
         event.displayName = auth.currentUser.displayName;
         event.photoURL = auth.currentUser.photoURL;
         event.status = app.EVENT_STATUS.SCHEDULED;
-        event.eventTimestamp = eventDate.getTime();
+        event.eventDate = eventDate.getTime();
 
         this.setState({ isWaiting: true })
 
         // Check if new event image is set
         if (image !== DEFAULT_EVENT_PIC) {
-            let imagePath = `events/${event.uid}/${event.eventTimestamp}.jpg`
+            let imagePath = `events/${event.uid}/${event.eventDate}.jpg`
             console.log(`Uploading event image to: ${imagePath}`)
             const imageRef = storage.ref(imagePath)
             await imageRef.getDownloadURL().then((url) => {
@@ -62,23 +62,28 @@ class PreviewAndCreateEvent extends Component {
                     event.image = newImage
                     event.isResizedImage = false
                     console.log('calling create event...', event);
-                    let { data: { eventNumber, eventLink } } = await createEvent(JSON.stringify(event));
-                    event.eventNumber = eventNumber
-                    event.eventLink = eventLink
-                    console.log('Recieved created event:=>', event)
-                    this.setState({ isWaiting: false })
-                    this.props.onPublish(event)
+                    let response = await createEvent(event);
+                    console.log('Recieved created event:=>', response);
+                    if(response && response.data && response.data.state === 'SUCCESS') {
+                        let { eventNumber, eventLink } = response.data;
+                        event.eventNumber = eventNumber;
+                        event.eventLink = eventLink;
+                        this.setState({ isWaiting: false })
+                        this.props.onPublish(event)
+                    }
                 }
             })
         } else {
             event.isResizedImage = true
             console.log('calling create event...', event);
-            let { data: { eventNumber, eventLink } } = await createEvent(JSON.stringify(event));
-            event.eventNumber = eventNumber
-            event.eventLink = eventLink
-            console.log('Recieved created event:=>', event)
-            this.props.onPublish(event)
-            //this.setState({ eventNumber, eventLink, isWaiting: false })
+            let response = await createEvent(event);
+            console.log('Recieved created event:=>', response);
+            if(response && response.data && response.data.state === 'SUCCESS') {
+                let { eventNumber, eventLink } = response.data;
+                event.eventNumber = eventNumber;
+                event.eventLink = eventLink;
+                this.props.onPublish(event)
+            }
         }
     }
 
