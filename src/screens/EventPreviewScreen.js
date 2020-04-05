@@ -42,7 +42,8 @@ function EventHeader(props) {
 
 const eventHeaderStyle = StyleSheet.create({
   container: {
-    height: 190
+    height: 190,
+    paddingVertical: 10,
   },
   userPhotoStyle: {
     height: 84,
@@ -68,6 +69,19 @@ const eventHeaderStyle = StyleSheet.create({
 })
 
 class EventPreviewScreen extends Component {
+  static navigationOptions = ({ navigation }) => ({
+    headerTitle: () => <Text>Preview Event</Text>,
+    headerRight: () => (
+      <Button
+        type='clear'
+        onPress={() => navigation.getParam('onPublish')()}
+        title={'Publish'}
+        titleStyle={{ color: '#196BFF' }}
+        containerStyle={{ paddingRight: 15 }}
+      />
+    )
+  });
+
   state = {
     isPublishing: false,
   };
@@ -75,26 +89,6 @@ class EventPreviewScreen extends Component {
   componentDidMount() { }
 
   componentWillUnmount() { }
-
-  _confirmPublish() {
-    console.log('confirm this.props', this.props);
-    Alert.alert('You will publish event', 'This can not be undone!', [
-      {
-        text: 'Cancel',
-        onPress: () => {
-          this.props.cancel();
-        },
-        style: 'cancel',
-      },
-      {
-        text: 'Yes, Publish',
-        onPress: () => {
-          this.setState({ isPublishing: true });
-          this.props.publish();
-        },
-      },
-    ]);
-  }
 
   render() {
     const {
@@ -108,12 +102,10 @@ class EventPreviewScreen extends Component {
       capacity,
       price,
       eventDate,
-      eventLink,
-      status,
       isWaiting,
       totalTicket,
       soldTicket,
-    } = this.props.navigation.getParams('event');
+    } = this.props.navigation.getParam('event');
     console.log('event preview render', this.props);
     return (
       <ScrollView contentContainerStyle={styles.container}>
@@ -143,9 +135,9 @@ class EventPreviewScreen extends Component {
           </View>
           <View style={{ paddingTop: 20 }}>
             <Button
-              title="Buy a ticket for $40"
+              title={`Buy a ticket for $${price}`}
               type="solid"
-              // onPress={this.props.previewEvent}
+              onPress={() => console.log('This is preview!')}
               buttonStyle={{
                 backgroundColor: '#196BFF',
                 borderRadius: 6,

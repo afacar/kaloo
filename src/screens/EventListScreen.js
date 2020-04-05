@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import { View, StyleSheet, PermissionsAndroid, Text, ActivityIndicator, ScrollView, Platform } from 'react-native';
 import { Button, Card, ListItem, Overlay, Avatar } from 'react-native-elements';
 import firebase from "react-native-firebase";
-import PreviewAndCreate from "./CreateEventScreen";
 const db = firebase.firestore()
 const auth = firebase.auth()
 const storage = firebase.storage()
