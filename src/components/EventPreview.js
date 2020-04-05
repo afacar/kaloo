@@ -11,9 +11,6 @@ import {
 } from 'react-native';
 import { Input, Button, Text, Card, Slider } from 'react-native-elements';
 import HighlightedText from './HighlightedText';
-import firebase from "react-native-firebase";
-
-const currentUser = firebase.auth().currentUser;
 
 const LabeledText = (props) => {
   const { label, text } = props;
@@ -56,10 +53,9 @@ class EventPreview extends Component {
   }
 
   render() {
-    const { isPublishing } = this.state;
-    console.log('currentUser', currentUser)
     const {
       displayName,
+      photoURL,
       image,
       title,
       description,
@@ -83,7 +79,7 @@ class EventPreview extends Component {
             <View style={{ flex: 1, marginBottom: 20 }}>
               <ImageBackground source={{ uri: image }} style={{ flex: 1, resizeMode: "cover", width: '100%', height: '75%', borderTopRadius:6 }} imageStyle={{ borderTopRightRadius:6, borderTopLeftRadius:6 }}>
                 <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'space-between' }}>
-                  <Image source={{ uri: currentUser.photoURL }} style={styles.imageStyle} />
+                  <Image source={{ uri: photoURL }} style={styles.imageStyle} />
                   <Text style={styles.eventTypeStyle}>{eventType}</Text>
                 </View>
               </ImageBackground>

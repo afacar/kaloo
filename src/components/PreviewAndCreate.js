@@ -9,10 +9,12 @@ const storage = firebase.storage()
 const auth = firebase.auth()
 const functions = firebase.functions()
 
-const DEFAULT_EVENT_PIC = 'https://firebasestorage.googleapis.com/v0/b/influenceme-dev.appspot.com/o/assets%2Fbroadcast-media.png?alt=media&token=608c9143-879d-4ff7-a30d-ac61ba319904'
+const DEFAULT_EVENT_PIC = 'https://firebasestorage.googleapis.com/v0/b/influenceme-dev.appspot.com/o/assets%2Fevent-default-image_200x200.jpeg?alt=media&token=fd8979c0-d617-408d-b387-02fdb48f6c83'
 
 const INITIAL_STATE = {
+    uid: auth.currentUser ? auth.currentUser.uid: '',
     displayName: auth.currentUser ? auth.currentUser.displayName: '',
+    photoURL: auth.currentUser ? auth.currentUser.photoURL: '',
     image: DEFAULT_EVENT_PIC,
     title: '',
     description: '',
@@ -28,20 +30,17 @@ const INITIAL_STATE = {
     isAvatarChanged: false, // TODO: Currently they can't change event image
     isPreview: false,
     isWaiting: false,
+    status: app.EVENT_STATUS.SCHEDULED,
 }
 
 class PreviewAndCreateEvent extends Component {
     state = INITIAL_STATE
 
     createEvent = async () => {
-        let { image, title, description, duration, eventType, capacity, price, eventDate } = this.state
+        let { uid, displayName, photoURL, image, title, description, duration, eventType, capacity, price, eventDate } = this.state
 
-        let event = { image, title, description, duration, eventType, capacity, price, eventDate }
+        let event = { uid, displayName, photoURL, image, title, description, duration, eventType, capacity, price, eventDate }
         let createEvent = functions.httpsCallable('createEvent')
-        event.uid = auth.currentUser.uid;
-        event.displayName = auth.currentUser.displayName;
-        event.photoURL = auth.currentUser.photoURL;
-        event.status = app.EVENT_STATUS.SCHEDULED;
         event.eventTimestamp = eventDate.getTime();
 
         this.setState({ isWaiting: true })
