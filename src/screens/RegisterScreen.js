@@ -143,7 +143,7 @@ class RegisterScreen extends Component {
       passwordMessage,
     } = this.state;
     return (
-      <KeyboardAvoidingView behavior="padding" style={styles.container}>
+      <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : ''} style={styles.container}>
         <ScrollView
           contentContainerStyle={{
             flexGrow: 1,
