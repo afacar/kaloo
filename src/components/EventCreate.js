@@ -19,6 +19,7 @@ import {
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import ImagePicker from 'react-native-image-picker';
 import { color } from 'react-native-reanimated';
+import HighlightedText from './HighlightedText';
 
 class EventCreate extends Component {
     state = { isDatePickerVisible: false };
@@ -87,20 +88,18 @@ class EventCreate extends Component {
             <SafeAreaView>
                 <ScrollView contentContainerStyle={styles.container}>
                     <Text style={{ fontSize: 20, fontWeight: 'bold', textAlign: 'center' }}>
-                        Create New Event
+                        Create Event
                     </Text>
+                    <HighlightedText text='You can preview before publishing.' />
+                    <Text style={styles.labelStyle}>Event Image</Text>
+                    <Text style={{paddingBottom:10}}>This image is going to be displayed on top of your event card. </Text>
                     <TouchableOpacity
                         onPress={() => this.onImagePressed()}
                         style={{ flexDirection: 'column', alignContent: 'center' }}>
-                        <Image
-                            containerStyle={{
-                                alignSelf: 'stretch',
-                                //borderBottomWidth: 1,
-                                height: 100,
-                            }}
+                        <Image  containerStyle={{ alignSelf: 'stretch',borderWidth:1,height: 150}}
                             source={{ uri: image }}
-                            style={{ height: undefined, width: undefined }}
-                            resizeMode="contain"
+                            style={{ flex:1 }}
+                            //resizeMode="contain"
                         />
                         <Icon
                             reverse
@@ -114,83 +113,36 @@ class EventCreate extends Component {
                             }}
                         />
                     </TouchableOpacity>
-                    <Text
-                        style={{
-                            fontSize: 15,
-                            fontWeight: '500',
-                            paddingVertical: 10,
-                            paddingHorizontal: 10,
-                        }}>
-                        Event title
-                    </Text>
+                    <Text style={styles.labelStyle}>Event title </Text>
                     <Input
                         placeholder="Event title"
                         placeholderTextColor="#c4c4c4"
-                        onChangeText={title =>
-                            this.props.setStateValues({ title, titleMessage: '' })
-                        }
+                        onChangeText={title => this.props.setStateValues({ title, titleMessage: '' })}
                         value={title}
                         errorMessage={titleMessage}
-                        inputContainerStyle={{
-                            borderWidth: 1,
-                            borderColor: '#3b3a30',
-                            borderRadius: 5,
-                            paddingHorizontal: 5,
-                        }}
+                        inputContainerStyle={styles.inputContainerStyle}
+                        containerStyle={{paddingHorizontal:0}}
                     />
-
+                    <Text style={styles.labelStyle}>Date/Time of Event</Text>
                     <View
                         style={{
                             alignSelf: 'stretch',
                             flexDirection: 'column',
                             justifyContent: 'space-between',
                             borderColor: 'blue',
-                            marginTop: 10,
                         }}>
                         <TouchableOpacity
                             onPress={() => this.setState({ isDatePickerVisible: true })}>
-                            <Text
-                                style={{
-                                    fontSize: 15,
-                                    fontWeight: '500',
-                                    paddingVertical: 10,
-                                    paddingHorizontal: 10,
-                                }}>
-                                Date/Time of Event
-                            </Text>
-                            <Text
-                                style={{
-                                    fontSize: 17,
-                                    borderWidth: 1,
-                                    borderColor: '#3b3a30',
-                                    borderRadius: 5,
-                                    marginHorizontal: 10,
-                                    paddingVertical: 12,
-                                    paddingHorizontal: 5,
-                                }}>
-                                {eventDate.toLocaleString()}
+                            <Text style={styles.timeTextStyle}>{eventDate.toLocaleString()}
                             </Text>
                         </TouchableOpacity>
-                        <Text
-                            style={{
-                                fontSize: 15,
-                                fontWeight: '500',
-                                paddingVertical: 10,
-                                paddingHorizontal: 10,
-                            }}>
-                            Duration (min)
-                        </Text>
+                        </View>
+                        <Text style={styles.labelStyle}>Duration (min)</Text>
                         <Input
-                            //label="Duration (min)"
                             value={duration}
                             onChangeText={duration => this.props.setStateValues({ duration })}
-                            //containerStyle={{alignSelf: 'stretch', borderColor: 'brown'}}
-                            inputContainerStyle={{
-                                borderWidth: 1,
-                                borderColor: '#3b3a30',
-                                borderRadius: 5,
-                                paddingHorizontal: 10,
-                            }}
+                            inputContainerStyle={styles.inputContainerStyle}
+                            containerStyle={{paddingHorizontal:0}}
                         />
                         <DateTimePickerModal
                             isVisible={this.state.isDatePickerVisible}
@@ -199,153 +151,81 @@ class EventCreate extends Component {
                             onCancel={() => this.setState({ isDatePickerVisible: false })}
                             display="default"
                         />
-                    </View>
-                    <Text
-                        style={{
-                            fontSize: 15,
-                            fontWeight: '500',
-                            paddingVertical: 10,
-                            paddingHorizontal: 10,
-                        }}>
-                        Event description
-                    </Text>
+                  
+                    <Text style={styles.labelStyle}>Event description</Text>
                     <Input
                         placeholder="Write about your event"
                         placeholderTextColor='#c4c4c4'
-                        onChangeText={description =>
-                            this.props.setStateValues({ description })
-                        }
+                        onChangeText={description => this.props.setStateValues({ description })}
                         value={description}
-                        multiline
-                        inputContainerStyle={{
-                            borderWidth: 1,
-                            borderColor: '#3b3a30',
-                            borderRadius: 5,
-                            paddingHorizontal: 5,
-                            height: 100,
-                            alignContent: "flex-start"
-                        }}
-                    />
-                    <Text
-                        style={{
-                            fontSize: 15,
-                            fontWeight: '500',
-                            paddingVertical: 10,
-                            paddingHorizontal: 10,
-                        }}>
-                        Event type
-                    </Text>
+                        multiline={true}
+                        inputContainerStyle={{...styles.inputContainerStyle, height:150}}
+                        containerStyle={{paddingHorizontal:0}}
+                        />
 
-                    <View
-                        style={{
-                            flex: 1,
-                            flexDirection: 'row',
-                            justifyContent: 'center',
-                            alignItems: 'center',
-                        }}>
+                    <Text style={styles.labelStyle}>Event type  </Text>
+
+                    <View style={styles.checkBoxStyle}>
                         <CheckBox
-                            //title="Broadcast"
                             iconRight
                             checkedIcon="dot-circle-o"
                             uncheckedIcon="circle-o"
                             checked={eventType === 'live'}
                             onPress={() => this.props.setStateValues({ eventType: 'live' })}
                             checkedColor="#3b3a30"
-                        />
-                        <View>
-                            <Text style={{ fontSize: 15, fontWeight: 'bold' }}>Broadcast</Text>
-                            <Text>Stream your show to a large audience</Text>
-                        </View>
+                            containerStyle={{paddingHorizontal:0}}/>
+                       
+                            <TouchableOpacity onPress={() => this.props.setStateValues({ eventType: 'live' })}>
+                                <Text style={{ fontSize: 15, fontWeight: 'bold' }}>Broadcast</Text>
+                                <Text style={{paddingRight:30}}>Stream to large audience. You won’t be hearing your audience, communcation is one way.</Text>
+                            </TouchableOpacity>
                     </View>
-
-                    <View
-                        style={{
-                            flex: 1,
-                            flexDirection: 'row',
-                            justifyContent: 'center',
-                            alignItems: 'center',
-                        }}>
+                    <View></View>
+                    <View style={styles.checkBoxStyle}>
                         <CheckBox
-                            //title="Video Call"
-                            containerStyle={{
-                                backgroundColor: 'transparent',
-                                borderColor: 'transparent',
-                            }}
-                            checkedColor="#3b3a30"
                             iconLeft
                             checkedIcon="dot-circle-o"
                             uncheckedIcon="circle-o"
                             checked={eventType === 'call'}
-                            onPress={() =>
-                                this.props.setStateValues({
-                                    eventType: 'call',
-                                    capacity: '1',
-                                })
-                            }
-                        />
+                            onPress={() => this.props.setStateValues({eventType: 'call', capacity: '1',})}
+                            checkedColor="#3b3a30"
+                            containerStyle={{paddingHorizontal:0}}/>
                         <View>
-                            <Text style={{ fontSize: 15, fontWeight: 'bold' }}>
-                                Privatecast
-                            </Text>
-                            <Text>Stream your show to a large audience</Text>
+                            <TouchableOpacity onPress={() => this.props.setStateValues({eventType: 'call', capacity: '1'})}>
+                            <Text style={{ fontSize: 15, fontWeight: 'bold' }}>Privatecast</Text>
+                            <Text style={{paddingRight:30}}>Stream to one to up to 5 viewers. Your viewer(s) can stream back to you and you can hear them back. </Text>
+                            </TouchableOpacity>
                         </View>
                     </View>
 
-                    <Text
-                        style={{
-                            fontSize: 15,
-                            fontWeight: '500',
-                            paddingVertical: 10,
-                            paddingHorizontal: 10,
-                        }}>
-                        Capacity
-                    </Text>
+                    <Text style={styles.labelStyle}> Capacity</Text>
                     <Input
-                        //label="Capacity"
                         onChangeText={capacity => this.props.setStateValues({ capacity })}
                         value={capacity}
                         keyboardType="numeric"
                         maxLength={3}
                         disabled={eventType === 'call'}
-                        inputContainerStyle={{
-                            borderWidth: 1,
-                            borderColor: '#3b3a30',
-                            borderRadius: 5,
-                            paddingHorizontal: 5,
-                        }}
-                    />
+                        inputContainerStyle={styles.inputContainerStyle}
+                        containerStyle={{paddingHorizontal:0}} />
 
-                    <Text
-                        style={{
-                            fontSize: 15,
-                            fontWeight: '500',
-                            paddingVertical: 10,
-                            paddingHorizontal: 10,
-                        }}>
-                        Ticket Price ($)
-                    </Text>
+                    <Text style={styles.labelStyle}>Ticket Price ($)</Text>
                     <Input
                         //label="Ticket Price ($)"
                         onChangeText={price => this.props.setStateValues({ price })}
                         value={price}
                         keyboardType="numeric"
                         maxLength={3}
-                        inputContainerStyle={{
-                            borderWidth: 1,
-                            borderColor: '#3b3a30',
-                            borderRadius: 5,
-                            paddingHorizontal: 10,
-                        }}
-                    />
+                        inputContainerStyle={styles.inputContainerStyle}
+                        containerStyle={{paddingHorizontal:0}}/>
                     <View style={{ paddingTop: 20 }}>
                         <Button
                             title="Preview Event"
                             type="solid"
                             onPress={this.props.previewEvent}
                             buttonStyle={{
-                                backgroundColor: '#3b3a30',
-                                borderRadius: 10,
-                                marginHorizontal: 5
+                                backgroundColor: '#196BFF',
+                                borderRadius: 6,
+                                paddingVertical:15
                             }}
                         />
                         <Button
@@ -370,9 +250,34 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         justifyContent: 'flex-start',
-        paddingHorizontal: 30,
+        paddingHorizontal: 20,
         paddingVertical: 10,
     },
+    labelStyle: {
+        fontSize: 17,
+        fontWeight: '600',
+        paddingVertical: 10,
+    },
+    inputContainerStyle: {
+        borderWidth: 1,
+        borderColor: '#3b3a30',
+        borderRadius: 6,
+        paddingHorizontal: 10,
+        marginHorizontal:0,
+        paddingVertical:5,
+        },
+    timeTextStyle: {
+        fontSize: 17,
+        borderWidth: 1,
+        borderColor: '#3b3a30',
+        borderRadius: 5,
+        paddingVertical: 12,
+        paddingHorizontal: 5,
+    },
+    checkBoxStyle: {
+        flex: 1,
+        flexDirection: 'row',
+    }
 });
 
 export default EventCreate;
