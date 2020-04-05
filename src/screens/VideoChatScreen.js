@@ -313,7 +313,12 @@ export default class VideoChatScreen extends Component {
                 <View style={{ flex: 1 }}>
                     <AgoraView mode={1} key={this.state.peerIds[0]} style={{ flex: 1 }} remoteUid={this.state.peerIds[0]} />
                 </View>
-                <Overlay overlayBackgroundColor="transparent" windowBackgroundColor="transparent" overlayStyle={{ padding: 0, position: 'absolute', bottom: 24, right: 24, }} containerStyle={{ padding: 0, }} isVisible={this.state.peerIds.length == 1} width={180} height={200}>
+                <Overlay
+                    overlayBackgroundColor="transparent"
+                    windowBackgroundColor="transparent"
+                    overlayStyle={{ padding: 0, position: 'absolute', bottom: 24, right: 24, }}
+                    containerStyle={{ padding: 0, }} isVisible={this.state.peerIds.length == 1}
+                    width={180} height={200} onBackdropPress={() => { this.backButtonPressed() }}>
                     <AgoraView style={{ flex: 1 }} mode={1} showLocalVideo={true} />
                 </Overlay>
             </View>
