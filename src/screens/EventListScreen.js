@@ -1,17 +1,11 @@
 import React, { Component } from 'react';
 import { View, StyleSheet, PermissionsAndroid, Text, ActivityIndicator, ScrollView, Platform } from 'react-native';
-import AppText from '../components/AppText';
-import { Input, Button, Card, ListItem, Icon, Overlay, Avatar } from 'react-native-elements';
+import { Button, Card, ListItem, Overlay, Avatar } from 'react-native-elements';
 import firebase from "react-native-firebase";
-import PreviewAndCreate from "../components/PreviewAndCreate";
-import EventPreview from '../components/EventPreview';
-import CreateEventScreen from "../components/EventCreate";
-
+import PreviewAndCreate from "./CreateEventScreen";
 const db = firebase.firestore()
 const auth = firebase.auth()
 const storage = firebase.storage()
-
-const DEFAULT_EVENT_PIC = 'https://firebasestorage.googleapis.com/v0/b/influenceme-dev.appspot.com/o/assets%2Fbroadcast-media.png?alt=media&token=608c9143-879d-4ff7-a30d-ac61ba319904'
 
 class UserHeader extends React.Component {
     currentUser = firebase.auth().currentUser
@@ -210,24 +204,13 @@ class EventListScreen extends Component {
                                 type='clear'
                                 icon={{ type: 'material-community', name: 'cast' }}
                                 title='Create Event'
-                                onPress={() => this.setState({ isCreateEvent: true })} />
+                                onPress={() => this.props.navigation.navigate('CreateEvent')} />
                         </View>
                         <ScrollView overScrollMode='never'>
                             {this.renderEventList()}
                         </ScrollView>
                     </View>
                 </Card>
-                <Overlay
-                    isVisible={this.state.isCreateEvent}
-                    windowBackgroundColor="rgba(255, 255, 255, .5)"
-                    onBackdropPress={() => this.setState({ isCreateEvent: false })}
-                    fullScreen
-                >
-                    <PreviewAndCreate
-                        onPublish={this.onEventPublish}
-                        onCancel={() => this.setState({ isCreateEvent: false })}
-                    />
-                </Overlay>
             </View>
         )
     }

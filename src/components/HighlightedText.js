@@ -13,8 +13,8 @@ export default function HighlightedText(props) {
                 justifyContent:"center",
                 backgroundColor: '#196BFF',
                 borderRadius: 6,
-                marginTop: 20,
-                marginBottom: 20,
+                //marginTop: 20,
+                //marginBottom: 20,
                 paddingHorizontal:30
             }}>
                 <Icon
