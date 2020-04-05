@@ -12,7 +12,7 @@ class MyEventScreen extends Component {
     componentDidMount() {
         console.log('MyEventScreen Mounted', this.state)
 
-        setEventListener(this.event.eventNumber, (event) => {
+        setEventListener(this.event.id, (event) => {
             console.log('Event from eventHandler', event)
 
             event.eventDate = event.eventDate.toDate()
