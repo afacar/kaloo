@@ -1,9 +1,8 @@
 import React, { Component } from 'react';
 import { View, StyleSheet, Text, ActivityIndicator, KeyboardAvoidingView, ScrollView, TouchableOpacity } from 'react-native';
-import AppText from '../components/AppText';
 import { Input, Button, Avatar, Icon } from 'react-native-elements';
 import firebase from "react-native-firebase";
-import ImagePicker from "react-native-image-picker";
+import ImagePicker from "react-native-image-crop-picker";
 
 const db = firebase.firestore();
 const auth = firebase.auth();
@@ -53,7 +52,7 @@ class ProfileScreen extends Component {
             console.log('uploading avatar...')
             let avatarRef = storage.ref(`users/${this.user.uid}/avatar/${this.user.uid}.jpg`)
             try {
-                await avatarRef.putFile(pickerResponse.path);
+                await avatarRef.putFile(photoURL);
                 let newPhotoURL = await avatarRef.getDownloadURL()
                 newProfile.photoURL = newPhotoURL
                 isResizedImage = false
@@ -75,56 +74,23 @@ class ProfileScreen extends Component {
         this.setState({ isNameChanged: false, isAvatarChanged: false, isWaiting: false })
     }
 
-    onAvatarPressed = () => {
-        var customButtons = [];
-        /* if (this.state.profile.photoURL !== strings.DEFAULT_PROFILE_PIC) {
-          customButtons = [{
-            name: 'DeleteButton',
-            title: 'Fotoğrafı Sil'
-          }]
-        } */
-        const options = {
-            title: 'Upload Foto',
-            chooseFromLibraryButtonTitle: 'From Lib',
-            takePhotoButtonTitle: 'Open Cam',
-            cancelButtonTitle: 'Close',
-
-            customButtons: customButtons,
-            mediaType: 'photo',
-            storageOptions: {
-                skipBackup: true,
-                path: 'images',
-                allowsEditing: true,
-                cameraRoll: true,
-                path: Platform.OS == 'ios' ? 'Documents/ConsultMe Images/ProfilePictures' : 'Pictures/ ConsultMe Images/ProfilePictures'
-            },
-        };
-
-        ImagePicker.showImagePicker(options, async (response) => {
-            console.log('response', response);
-            if (response.didCancel) {
-            }
-            else if (response.error) {
-            }
-            else if (response.customButton) {
-                const { user } = this.props;
-                user.photoURL = strings.DEFAULT_PROFILE_PIC;
-                this.setState({
-                    disabled: false,
-                    saveButtonTitle: saveButtonEnabledTitle
-                })
-            }
-            else {
-                if (Platform.OS === 'ios')
-                    response.path = response.uri.replace("file://", '');
-                console.log('response', response);
-                this.setState({ photoURL: response.uri, pickerResponse: response, isAvatarChanged: true })
-            }
-        });
+    onImagePicker = () => {
+        ImagePicker.openPicker({
+            path: 'my-profile-image.jpg',
+            width: 200,
+            height: 200,
+            cropping: true,
+        }).then(image => {
+            console.log(image);
+            if (Platform.OS === 'ios')
+                image.path = image.path.replace('file://', '');
+            console.log('picked image', image);
+            this.setState({ photoURL: image.path, imagePickerResponse: image, isAvatarChanged: true });
+        }).catch(err => console.log('image-picker err:', err))
     }
 
     render() {
-        const { photoURL, isAvatarChanged, isNameChanged, isWaiting } = this.state
+        const { email, displayName, photoURL, isAvatarChanged, isNameChanged, isWaiting } = this.state
         return (
             <KeyboardAvoidingView style={styles.container}>
                 <ScrollView contentContainerStyle={{ flexGrow: 1, justifyContent: 'space-between', paddingHorizontal: 40, paddingVertical: 10, alignItems: 'center' }} >
@@ -132,7 +98,7 @@ class ProfileScreen extends Component {
                         <Avatar
                             //onPress={this.onAvatarPressed}
                             renderPlaceholderContent={<ActivityIndicator />}
-                            onEditPress={this.onAvatarPressed}
+                            onEditPress={this.onImagePicker}
                             size='xlarge'
                             rounded={true}
                             showEditButton={true}
@@ -142,14 +108,14 @@ class ProfileScreen extends Component {
                             placeholder='Enter Email'
                             leftIcon={{ type: 'material-community', name: 'email' }}
                             //onChangeText={email => this.setState({ email })}
-                            value={this.state.email}
+                            value={email}
                             disabled
                         />
                         <Input
                             placeholder='Display name'
                             leftIcon={{ type: 'material-community', name: 'account-circle' }}
                             onChangeText={displayName => this.setState({ displayName, isNameChanged: true })}
-                            value={this.state.displayName}
+                            value={displayName}
                         />
                         <View style={{ alignSelf: 'stretch', marginTop: 15 }}>
                             <Button

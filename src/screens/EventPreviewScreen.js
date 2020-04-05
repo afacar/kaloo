@@ -119,8 +119,7 @@ class EventPreviewScreen extends Component {
           <Text style={{ fontSize: 17, color: 'gray' }}>{eventDate.toLocaleString()}</Text>
           <Text style={{ fontSize: 17, color: 'gray' }}>Duration: {duration} minutes</Text>
           <Text style={{ fontSize: 20, fontWeight: '500', marginVertical: 20 }}>{description || 'No description'}</Text>
-          <Text style={{ fontSize: 20, fontWeight: '600', marginBottom: 10 }}>Available Tickets</Text>
-
+          
           <View style={{}}>
             <Text style={{ alignSelf: 'center',  color: 'gray' }}>{capacity} ticket(s) left</Text>
             <Slider
