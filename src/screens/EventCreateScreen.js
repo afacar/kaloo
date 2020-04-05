@@ -69,31 +69,31 @@ class EventCreateScreen extends Component {
                     event.image = newImage
                     event.isResizedImage = false
                     console.log('calling create event...', event);
-                    let { data: { eventNumber, eventLink } } = await createEvent(event);
-                    event.eventNumber = eventNumber
-                    event.eventLink = eventLink
-                    console.log('Recieved created event:=>', event)
-                    this.setState({ isWaiting: false })
-                    this.props.navigation.navigate('MyEvent', { event })
+                    let response = await createEvent(event);
+                    console.log('Recieved created event:=>', response);
+                    if (response && response.data && response.data.state === 'SUCCESS') {
+                        let { eid, eventNumber, eventLink } = response.data.event;
+                        event.eid = eid;
+                        event.eventNumber = eventNumber;
+                        event.eventLink = eventLink;
+                        this.setState({ isWaiting: false })
+                        console.log('Sending event to MyEventScreen:=>', event);
+                        this.props.navigation.navigate('MyEvent', { event })
+                    }
                 }
             })
         } else {
             event.isResizedImage = true
             console.log('calling create event...', event);
-            let { data: { eventNumber, eventLink } } = await createEvent(event);
-            event.eventNumber = eventNumber
-            event.eventLink = eventLink
-            console.log('Recieved created event:=>', event)
-            this.props.navigation.navigate('MyEvent', { event })
-            //this.setState({ eventNumber, eventLink, isWaiting: false })
-        }
-    }
-
-    setStateValues = (newState) => {
-        console.log('setstatevalues', newState)
-        for (var key in newState) {
-            if (newState.hasOwnProperty(key)) {
-                this.setState({ [key]: newState[key] })
+            let response = await createEvent(event);
+            console.log('Recieved created event:=>', response);
+            if (response && response.data && response.data.state === 'SUCCESS') {
+                let { eid, eventNumber, eventLink } = response.data.event;
+                event.eid = eid;
+                event.eventNumber = eventNumber;
+                event.eventLink = eventLink;
+                this.setState({ isWaiting: false })
+                this.props.navigation.navigate('MyEvent', { event })
             }
         }
     }

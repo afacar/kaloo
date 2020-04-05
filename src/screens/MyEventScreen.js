@@ -26,7 +26,7 @@ class MyEventScreen extends Component {
         console.log('MyEventScreen Mounted', this.state)
         BackHandler.addEventListener('hardwareBackPress', this.handleBackButton);
 
-        setEventListener(this.event.id, (event) => {
+        setEventListener(this.state.eid, (event) => {
             console.log('Event from eventHandler', event)
 
             event.eventDate = event.eventDate.toDate()
