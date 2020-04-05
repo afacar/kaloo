@@ -106,26 +106,27 @@ class EventPreviewScreen extends Component {
       totalTicket,
       soldTicket,
     } = this.props.navigation.getParam('event');
-    console.log('event preview render', this.props);
+    console.log('event preview render', this.props.navigation.getParam('event'));
     return (
       <ScrollView contentContainerStyle={styles.container}>
         <HighlightedText text='Your event isn’t published yet. Event ticket is going to look like this when you publish.' />
 
         <EventHeader image={image} photoURL={photoURL} eventType={eventType} />
 
-        <View style={{ marginLeft: 10, borderWidth: 1 }}>
+        <View style={{ marginLeft: 10 }}>
           <Text style={{ fontSize: 20, fontWeight: 'bold', marginBottom: 10 }}>{displayName}</Text>
           <Text style={{ fontSize: 30, fontWeight: "normal" }}>{title}</Text>
           <Text style={{ fontSize: 17, color: 'gray' }}>{eventDate.toLocaleString()}</Text>
+          <Text style={{ fontSize: 17, color: 'gray' }}>Duration: {duration} minutes</Text>
           <Text style={{ fontSize: 20, fontWeight: '500', marginVertical: 20 }}>{description || 'No description'}</Text>
           <Text style={{ fontSize: 20, fontWeight: '600', marginBottom: 10 }}>Available Tickets</Text>
 
           <View style={{}}>
-            <Text style={{ left: 85 }}>{soldTicket || 15} left</Text>
+            <Text style={{ alignSelf: 'center',  color: 'gray' }}>{capacity} ticket(s) left</Text>
             <Slider
               trackStyle={{ height: 10, backgroundColor: '#196BFF', borderBottomRightRadius: 20, borderTopRightRadius: 20, borderBottomLeftRadius: 20, borderTopLeftRadius: 20 }}
-              value={soldTicket || 242}
-              maximumValue={totalTicket || 600}
+              value={capacity}
+              maximumValue={capacity}
               disabled
               thumbTintColor="transperant"
               maximumTrackTintColor="#E7E7E7"
@@ -145,20 +146,6 @@ class EventPreviewScreen extends Component {
               }}
             />
           </View>
-
-        </View>
-
-        <View style={{ justifyContent: 'space-around', flexDirection: 'row' }}>
-          <Button
-            disabled={isWaiting}
-            title="Edit"
-            onPress={() => this.props.cancel()}
-          />
-          <Button
-            disabled={isWaiting}
-            title="Publish"
-            onPress={() => this._confirmPublish()}
-          />
         </View>
       </ScrollView>
     );
@@ -171,9 +158,7 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-start',
     marginHorizontal: 10,
     padding: 10,
-    borderRadius: 15,
-    borderColor: 'blue',
-    borderWidth: 2
+    borderRadius: 15
   }
 });
 

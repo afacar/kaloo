@@ -20,10 +20,10 @@ const INITIAL_STATE = {
     image: DEFAULT_EVENT_PIC,
     title: '',
     description: '',
-    duration: '30',
+    duration: 30,
     eventType: 'live',
-    capacity: '5',
-    price: '1',
+    capacity: 5,
+    price: 1,
     isDatePickerVisible: false,
     eventDate: new Date(),
     eventLink: '',
@@ -154,22 +154,22 @@ class EventCreateScreen extends Component {
     _confirmPublish = () => {
         console.log('confirm this.props', this.props);
         Alert.alert('You will publish event', 'This can not be undone!', [
-          {
-            text: 'Cancel',
-            onPress: () => {
-              this.props.cancel();
+            {
+                text: 'Cancel',
+                onPress: () => {
+                    this.props.cancel();
+                },
+                style: 'cancel',
             },
-            style: 'cancel',
-          },
-          {
-            text: 'Yes, Publish',
-            onPress: () => {
-              this.setState({ isPublishing: true });
-              this.createEvent();
+            {
+                text: 'Yes, Publish',
+                onPress: () => {
+                    this.setState({ isPublishing: true });
+                    this.createEvent();
+                },
             },
-          },
         ]);
-      }
+    }
 
     render() {
         const { image, title, description, duration, eventType, capacity, price, eventDate, titleMessage, dateMessage } = this.state;
@@ -230,10 +230,12 @@ class EventCreateScreen extends Component {
                     </View>
                     <Text style={styles.labelStyle}>Duration (min)</Text>
                     <Input
-                        value={duration}
-                        onChangeText={duration => this.setState({ duration })}
+                        value={duration + ''}
+                        onChangeText={duration => this.setState({ duration: parseInt(duration) || 0 })}
                         inputContainerStyle={styles.inputContainerStyle}
                         containerStyle={{ paddingHorizontal: 0 }}
+                        keyboardType='numeric'
+                        maxLength={3}
                     />
                     <DateTimePickerModal
                         isVisible={this.state.isDatePickerVisible}
@@ -250,7 +252,7 @@ class EventCreateScreen extends Component {
                         onChangeText={description => this.setState({ description })}
                         value={description}
                         multiline={true}
-                        inputContainerStyle={{ ...styles.inputContainerStyle, height: 150 }}
+                        inputContainerStyle={{ ...styles.inputContainerStyle, height: 70 }}
                         containerStyle={{ paddingHorizontal: 0 }}
                     />
 
@@ -291,19 +293,20 @@ class EventCreateScreen extends Component {
 
                     <Text style={styles.labelStyle}> Capacity</Text>
                     <Input
-                        onChangeText={capacity => this.setState({ capacity })}
-                        value={capacity}
+                        onChangeText={capacity => this.setState({ capacity: parseInt(capacity) || 0 })}
+                        value={capacity + ''}
                         keyboardType="numeric"
                         maxLength={3}
                         disabled={eventType === 'call'}
                         inputContainerStyle={styles.inputContainerStyle}
-                        containerStyle={{ paddingHorizontal: 0 }} />
+                        containerStyle={{ paddingHorizontal: 0 }}
+                    />
 
                     <Text style={styles.labelStyle}>Ticket Price ($)</Text>
                     <Input
                         //label="Ticket Price ($)"
-                        onChangeText={price => this.setState({ price })}
-                        value={price}
+                        onChangeText={price => this.setState({ price: parseInt(price) || 0 })}
+                        value={price + ''}
                         keyboardType="numeric"
                         maxLength={3}
                         inputContainerStyle={styles.inputContainerStyle}
