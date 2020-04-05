@@ -3,9 +3,10 @@ import { StyleSheet, View, ScrollView, Text, TouchableOpacity, Alert } from 'rea
 import firebase from 'react-native-firebase';
 import { Input, Button, Image, CheckBox, Icon } from 'react-native-elements';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
-import ImagePicker from 'react-native-image-picker';
+import ImagePicker from 'react-native-image-crop-picker';
 import HighlightedText from '../components/HighlightedText';
 import { app } from '../constants';
+import { connect } from 'react-redux';
 
 const storage = firebase.storage()
 const auth = firebase.auth()
@@ -36,26 +37,18 @@ const INITIAL_STATE = {
 
 class EventCreateScreen extends Component {
     static navigationOptions = ({ navigation }) => ({
-        headerTitle: () => <Text>Create Event</Text>,
-        headerRight: () => (
-            <Button
-                type='clear'
-                onPress={() => navigation.navigate('Profile')}
-                title={'Account'}
-                titleStyle={{ color: 'grey' }}
-                icon={{ type: 'material-community', name: 'settings', size: 15, color: 'grey' }}
-                iconRight
-            />
-        )
+        headerTitle: () => <Text>Create Event</Text>
     });
 
-    state = INITIAL_STATE
+    state = { ...INITIAL_STATE, ...this.props.profile }
+
+    componentDidMount() { }
 
     createEvent = async () => {
-        let { uid, displayName, photoURL, image, title, description, duration, eventType, capacity, price, eventDate } = this.state
+        let { uid, displayName, userNumber, photoURL, image, title, description, duration, eventType, capacity, price, eventDate } = this.state
 
-        let event = { uid, displayName, photoURL, image, title, description, duration, eventType, capacity, price, eventDate }
-        let createEvent = functions.httpsCallable('createEvent')
+        let event = { uid, displayName, userNumber, photoURL, image, title, description, duration, eventType, capacity, price, eventDate }
+        let createEvent = functions.httpsCallable('createEvent');
         event.eventTimestamp = eventDate.getTime();
 
         this.setState({ isWaiting: true })
@@ -70,7 +63,7 @@ class EventCreateScreen extends Component {
                 this.setState({ isWaiting: false, isPreview: false, dateMessage: 'There is already an event on this date!' })
             }).catch(async (error) => {
                 if (error.code === 'storage/object-not-found') {
-                    await imageRef.putFile(this.state.pickerResponse.path)
+                    await imageRef.putFile(image)
                     let newImage = await imageRef.getDownloadURL()
                     console.log('New Image uploaded')
                     event.image = newImage
@@ -106,46 +99,19 @@ class EventCreateScreen extends Component {
     }
 
     onImagePressed = () => {
-        var customButtons = [];
-        /* if (this.state.profile.photoURL !== strings.DEFAULT_PROFILE_PIC) {
-              customButtons = [{
-                name: 'DeleteButton',
-                title: 'Fotoğrafı Sil'
-              }]
-            } */
-        const options = {
-            title: 'Upload Foto',
-            chooseFromLibraryButtonTitle: 'From Lib',
-            takePhotoButtonTitle: 'Open Cam',
-            cancelButtonTitle: 'Close',
-
-            customButtons: customButtons,
-            mediaType: 'photo',
-            storageOptions: {
-                skipBackup: true,
-                path: 'images',
-                allowsEditing: true,
-                cameraRoll: true,
-                path:
-                    Platform.OS == 'ios'
-                        ? 'Documents/ConsultMe Images/ProfilePictures'
-                        : 'Pictures/ ConsultMe Images/ProfilePictures',
-            },
-        };
-
-        ImagePicker.showImagePicker(options, async response => {
-            console.log('response', response);
-            if (response.didCancel) {
-            } else if (response.error) {
-            } else if (response.customButton) {
-            } else {
-                if (Platform.OS === 'ios')
-                    response.path = response.uri.replace('file://', '');
-                console.log('event imagePicker response', response);
-                this.setState({ image: response.uri, pickerResponse: response })
-            }
-        });
-    };
+        ImagePicker.openPicker({
+            path: 'my-profile-image.jpg',
+            width: 600,
+            height: 300,
+            cropping: true,
+        }).then(image => {
+            console.log(image);
+            if (Platform.OS === 'ios')
+                image.path = image.path.replace('file://', '');
+            console.log('picked image', image);
+            this.setState({ image: image.path, imagePickerResponse: image });
+        }).catch(err => console.log('image-picker err:', err))
+    }
 
     onDateChange = (selectedDate) => {
         this.setState({ isDatePickerVisible: false, eventDate: selectedDate, dateMessage: '' });
@@ -280,11 +246,11 @@ class EventCreateScreen extends Component {
                             checkedIcon="dot-circle-o"
                             uncheckedIcon="circle-o"
                             checked={eventType === 'call'}
-                            onPress={() => this.setState({ eventType: 'call', capacity: '1', })}
+                            onPress={() => this.setState({ eventType: 'call', capacity: 1, })}
                             checkedColor="#3b3a30"
                             containerStyle={{ paddingHorizontal: 0 }} />
                         <View>
-                            <TouchableOpacity onPress={() => this.setState({ eventType: 'call', capacity: '1' })}>
+                            <TouchableOpacity onPress={() => this.setState({ eventType: 'call', capacity: 1 })}>
                                 <Text style={{ fontSize: 15, fontWeight: 'bold' }}>Privatecast</Text>
                                 <Text style={{ paddingRight: 30 }}>Stream to one to up to 5 viewers. Your viewer(s) can stream back to you and you can hear them back. </Text>
                             </TouchableOpacity>
@@ -361,4 +327,10 @@ const styles = StyleSheet.create({
     }
 })
 
-export default EventCreateScreen;
+const mapStateToProps = ({ auth }) => {
+    console.log('mapstatatoprops', auth)
+    return { profile: auth.profile }
+}
+
+
+export default connect(mapStateToProps, null)(EventCreateScreen);
