@@ -133,7 +133,7 @@ class RegisterScreen extends Component {
       passwordMessage,
     } = this.state;
     return (
-      <KeyboardAvoidingView style={styles.container}>
+      <KeyboardAvoidingView behavior="padding" style={styles.container}>
         <ScrollView
           contentContainerStyle={{
             flexGrow: 1,
