@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, Platform, NativeModules, PermissionsAndroid, Alert, StatusBar, ActivityIndicator } from 'react-native';
+import { View, Platform, NativeModules, PermissionsAndroid, Alert, StatusBar, ActivityIndicator, Modal } from 'react-native';
 import app from '../constants/app';
 import { RtcEngine, AgoraView } from 'react-native-agora';
 import { styles, colors } from '../constants';
@@ -9,6 +9,7 @@ import { formatTime } from '../utils/Utils';
 import firebase from 'react-native-firebase';
 import AppButton from '../components/AppButton';
 import AppText from '../components/AppText';
+import { Overlay } from 'react-native-elements';
 const { Agora } = NativeModules;
 
 const {
@@ -17,6 +18,9 @@ const {
     AgoraAudioScenarioShowRoom,
     Adaptative
 } = Agora
+
+const HOST_UID = 1000;
+
 
 export default class VideoChatScreen extends Component {
 
@@ -85,9 +89,9 @@ export default class VideoChatScreen extends Component {
             audioScenario: AgoraAudioScenarioShowRoom
         };
         // rtc object
-
         RtcEngine.on('userJoined', (data) => {
             const { peerIds } = this.state;
+            console.warn('userJoined', data.uid);
             if (peerIds.indexOf(data.uid) === -1) {
                 this.setState({
                     peerIds: [...this.state.peerIds, data.uid]
@@ -106,7 +110,7 @@ export default class VideoChatScreen extends Component {
 
     startCall = () => {
         var channelName = this.props.navigation.getParam('eventID', 'agora_test');
-        var ticketID = this.props.navigation.getParam('ticketID', 0);
+        var ticketID = this.props.navigation.getParam('ticketID', HOST_UID);
         Alert.alert(
             "Start broadcast",
             "Are you sure you want to start meeting?",
@@ -118,7 +122,7 @@ export default class VideoChatScreen extends Component {
                 {
                     text: 'Yes', onPress: () => {
                         RtcEngine.leaveChannel();
-                        RtcEngine.joinChannel(channelName,0)
+                        RtcEngine.joinChannel(channelName, HOST_UID)
                             .then((result) => {
                                 startLive(channelName);
                             })
@@ -145,7 +149,7 @@ export default class VideoChatScreen extends Component {
                 {
                     text: 'Yes', onPress: () => {
                         RtcEngine.leaveChannel();
-                        RtcEngine.joinChannel(channelName,0)
+                        RtcEngine.joinChannel(channelName, HOST_UID)
                             .then((result) => {
                                 continueLive(channelName);
                             })
@@ -204,7 +208,7 @@ export default class VideoChatScreen extends Component {
                 .catch((error) => {
                 });
         } else if (clientRole === 1) {
-            RtcEngine.joinChannel(firebase.auth().currentUser.uid, 0)
+            RtcEngine.joinChannel(firebase.auth().currentUser.uid, HOST_UID)
                 .then((result) => {
                 })
                 .catch((error) => {
@@ -217,8 +221,8 @@ export default class VideoChatScreen extends Component {
             if (startedAt && status === app.EVENT_STATUS.IN_PROGRESS) {
                 if (clientRole === 1 && !this.state.joinSucceed) {
                     RtcEngine.leaveChannel();
-                    RtcEngine.joinChannel(channelName,0)
-                    .then((result) => {
+                    RtcEngine.joinChannel(channelName, HOST_UID)
+                        .then((result) => {
                             this.setState({
                                 joinSucceed: true
                             })
@@ -306,10 +310,12 @@ export default class VideoChatScreen extends Component {
     renderTwoVideos() {
         return (
             <View style={{ flex: 1 }}>
-                <View style={styles.localVideoBox}>
-                    <AgoraView style={{ flex: 1 }} mode={1} showLocalVideo={true} />
+                <View style={{ flex: 1 }}>
+                    <AgoraView mode={1} key={this.state.peerIds[0]} style={{ flex: 1 }} remoteUid={this.state.peerIds[0]} />
                 </View>
-                <AgoraView mode={1} key={this.state.peerIds[0]} style={{ flex: 1 }} remoteUid={this.state.peerIds[0]} />
+                <Overlay overlayBackgroundColor="transparent" windowBackgroundColor="transparent" overlayStyle={{ padding: 0, position: 'absolute', bottom: 24, right: 24, }} containerStyle={{ padding: 0, }} isVisible={this.state.peerIds.length == 1} width={180} height={200}>
+                    <AgoraView style={{ flex: 1 }} mode={1} showLocalVideo={true} />
+                </Overlay>
             </View>
         )
     }

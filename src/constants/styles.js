@@ -64,7 +64,7 @@ export default StyleSheet.create({
         width: 130,
         height: 140,
         bottom: 24,
-        right: 24
+        right: 24,
     },
     startButton: {
         position: 'absolute',
@@ -81,7 +81,7 @@ export default StyleSheet.create({
     },
     waitingBox: {
         position: 'absolute',
-        alignSelf:'center',
+        alignSelf: 'center',
         top: deviceHeight / 2,
         flexDirection: 'row'
     }
