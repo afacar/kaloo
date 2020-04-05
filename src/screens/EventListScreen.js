@@ -1,25 +1,22 @@
 import React, { Component } from 'react';
 import { View, StyleSheet, PermissionsAndroid, Text, ActivityIndicator, ScrollView, Platform } from 'react-native';
 import { Button, Card, ListItem, Avatar } from 'react-native-elements';
-import firebase from "react-native-firebase";
+import { firestore, auth } from "react-native-firebase";
 import { connect } from 'react-redux';
 import { setUserProfile } from "../appstate/actions/auth_actions";
 
-const db = firebase.firestore()
-const auth = firebase.auth()
-const storage = firebase.storage()
+const db = firestore()
 
 class UserHeader extends React.Component {
-    currentUser = firebase.auth().currentUser
     render() {
         return (
             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                 <Avatar
                     rounded={true}
                     size='small'
-                    source={{ uri: this.currentUser.photoURL }}
+                    source={{ uri: auth().currentUser.photoURL }}
                 />
-                <Text style={{ paddingLeft: 10, fontSize: 20 }}>{this.currentUser.displayName}</Text>
+                <Text style={{ paddingLeft: 10, fontSize: 20 }}>{auth().currentUser.displayName}</Text>
             </View>
         );
     }
@@ -48,7 +45,7 @@ class EventListScreen extends Component {
     }
 
     componentDidMount = async () => {
-        this.authListener = firebase.auth().onAuthStateChanged(user => {
+        this.authListener = auth().onAuthStateChanged(user => {
             console.log('UserHome onAuthStateChange>', user);
             if (user && !user.isAnonymous) {
                 this.props.navigation.navigate('User');
@@ -65,8 +62,9 @@ class EventListScreen extends Component {
     }
 
     checkMyEvents = async () => {
+        const { uid } = auth().currentUser
         this.setState({ isLoading: true })
-        var pathToEvents = `users/${auth.currentUser.uid}/myevents`;
+        var pathToEvents = `users/${uid}/myevents`;
         let events = await db.collection(pathToEvents).where('eventDate', '>=', new Date()).orderBy('eventDate').get()
             .then((querySnapshot) => {
                 var events = [];
@@ -74,20 +72,6 @@ class EventListScreen extends Component {
                     let event = doc.data()
                     // Convert Firebase Timestamp tp JS Date object
                     event.eventDate = event.eventDate.toDate()
-                    /* if (!event.isResizedImage) {
-                        let eventTimestamp = event.eventTimestamp || event.eventDate.getTime()
-                        let resizedImageFileName = eventTimestamp + '_200x200.jpg'
-                        let imagePath = `events/${auth.currentUser.uid}/${resizedImageFileName}`
-                        console.log(`Checking resized event images at: ${imagePath}`)
-                        const imageRef = storage.ref(imagePath)
-                        imageRef.getDownloadURL().then((url) => {
-                            // Set resized image as event image
-                            db.doc(`events/${event.eventNumber}`).update({ image: url, isResizedImage: true })
-                            db.doc(`users/${event.uid}/myevents/${event.eventNumber}`).update({ image: url, isResizedImage: true })
-                        }).catch(async (error) => {
-                            console.log('No resized event image yet')
-                        })
-                    } */
                     events.push(doc.data());
                 });
                 console.log("Current events fetched: ", events);
