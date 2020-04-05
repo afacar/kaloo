@@ -34,7 +34,8 @@ class WelcomeScreen extends Component {
             />
           </View>
         </View>
-        <View style={{ flex: 1, flexDirection: 'column', backgroundColor: '#F3F5F9', padding: 15 }}>
+        <View style={{
+          flex: 1, flexDirection: 'column', backgroundColor: '#F3F5F9', padding: 15, shadowColor: 'gray', shadowOpacity: 0.5}}>
           <Text>Are you planning to cast your service?</Text>
           <TouchableOpacity
             onPress={() => this.props.navigation.navigate('Register')}>
