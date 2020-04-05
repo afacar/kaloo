@@ -1,7 +1,10 @@
 import React, { Component } from 'react';
 import { View, StyleSheet, PermissionsAndroid, Text, ActivityIndicator, ScrollView, Platform } from 'react-native';
-import { Button, Card, ListItem, Overlay, Avatar } from 'react-native-elements';
+import { Button, Card, ListItem, Avatar } from 'react-native-elements';
 import firebase from "react-native-firebase";
+import { connect } from 'react-redux';
+import { setUserProfile } from "../appstate/actions/auth_actions";
+
 const db = firebase.firestore()
 const auth = firebase.auth()
 const storage = firebase.storage()
@@ -25,7 +28,7 @@ class UserHeader extends React.Component {
 
 class EventListScreen extends Component {
     static navigationOptions = ({ navigation }) => ({
-        headerTitle: () => <UserHeader/>,
+        headerTitle: () => <UserHeader />,
         headerRight: () => (
             <Button
                 type='clear'
@@ -53,29 +56,11 @@ class EventListScreen extends Component {
                 this.props.navigation.navigate('Splash');
             }
         });
-        this.checkProfile()
+        this.props.setUserProfile();
         this.checkMyEvents()
         if (Platform.OS === 'android') {
             this.checkCameraPermission();
             this.checkAudioPermission();
-        }
-    }
-
-    checkProfile = async () => {
-        let userDoc = await db.doc(`users/${auth.currentUser.uid}`).get()
-        let { isResizedImage } = userDoc.data()
-        if (!isResizedImage) {
-            // Check if there is resized avatar on storage
-            let avatarRef = storage.ref(`users/${auth.currentUser.uid}/avatar/${auth.currentUser.uid}_200x200.jpg`)
-            avatarRef.getDownloadURL()
-                .then(async (url) => {
-                    // Replace resized image with original one
-                    console.log('There is a resized image')
-                    await auth.currentUser.updateProfile({ photoURL: url })
-                    let userRef = db.doc(`users/${auth.currentUser.uid}`)
-                    await userRef.set({ photoURL: url, isResizedImage: true }, { merge: true });
-                    console.log('Resized image is set')
-                }).catch(err => console.log('No resized profile image', err))
         }
     }
 
@@ -223,4 +208,4 @@ const styles = StyleSheet.create({
     }
 })
 
-export default EventListScreen;
+export default connect(null, { setUserProfile })(EventListScreen);
