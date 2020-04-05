@@ -28,6 +28,16 @@ function ValidateEmail(email) {
 }
 
 class RegisterScreen extends Component {
+  static navigationOptions = ({ navigation }) => ({
+    headerRight: () => (
+      <Button
+        type='clear'
+        onPress={() => navigation.navigate('SignIn')}
+        title={'Sign in'}
+      />
+    )
+  });
+
   state = {
     displayName: '',
     email: '',
@@ -145,17 +155,17 @@ class RegisterScreen extends Component {
 
           <HighlightedText text="You don’t need an account to watch." />
           <View style={{ alignSelf: 'stretch', paddingVertical: 20 }}>
-          <LabelText label='Choose your profile picture' />
+            <LabelText label='Choose your profile picture' />
             <Avatar
               //title="⊕"
               onPress={this.onImagePicker}
               size="large"
-              avatarStyle={{ borderWidth:1, borderColor:'gray',borderRadius:6, overflow:'hidden'}}
-              overlayContainerStyle={{backgroundColor:"white"}}
-              imageProps={{borderRadius:6}}
-            //rounded={true}
+              avatarStyle={{ borderWidth: 1, borderColor: 'gray', borderRadius: 6, overflow: 'hidden' }}
+              overlayContainerStyle={{ backgroundColor: "white" }}
+              imageProps={{ borderRadius: 6 }}
+              //rounded={true}
               showEditButton={true}
-            source={{ uri: photoURL || DEFAULT_PROFILE_PIC }}
+              source={{ uri: photoURL || DEFAULT_PROFILE_PIC }}
             />
             <LabelText label='E-Mail' />
             <Input
