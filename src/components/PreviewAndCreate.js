@@ -12,7 +12,7 @@ const functions = firebase.functions()
 const DEFAULT_EVENT_PIC = 'https://firebasestorage.googleapis.com/v0/b/influenceme-dev.appspot.com/o/assets%2Fevent-default-image_200x200.jpeg?alt=media&token=fd8979c0-d617-408d-b387-02fdb48f6c83'
 
 const INITIAL_STATE = {
-    displayName: auth.currentUser ? auth.currentUser.displayName: '',
+    displayName: auth.currentUser ? auth.currentUser.displayName : '',
     image: DEFAULT_EVENT_PIC,
     title: '',
     description: '',
@@ -37,6 +37,10 @@ class PreviewAndCreateEvent extends Component {
         let { image, title, description, duration, eventType, capacity, price, eventDate } = this.state
 
         let event = { image, title, description, duration, eventType, capacity, price, eventDate }
+        console.log('before change state...', event)
+        await this.setState({ image: 'No image'})
+        console.log('after change state ...', event)
+
         let createEvent = functions.httpsCallable('createEvent')
         event.uid = auth.currentUser.uid;
         event.displayName = auth.currentUser.displayName;
@@ -64,10 +68,11 @@ class PreviewAndCreateEvent extends Component {
                     console.log('calling create event...', event);
                     let response = await createEvent(event);
                     console.log('Recieved created event:=>', response);
-                    if(response && response.data && response.data.state === 'SUCCESS') {
-                        let { eventNumber, eventLink } = response.data;
+                    if (response && response.data && response.data.state === 'SUCCESS') {
+                        let { eventNumber, eventLink, id } = response.data.event;
                         event.eventNumber = eventNumber;
                         event.eventLink = eventLink;
+                        event.id = id;
                         this.setState({ isWaiting: false })
                         this.props.onPublish(event)
                     }
@@ -78,10 +83,12 @@ class PreviewAndCreateEvent extends Component {
             console.log('calling create event...', event);
             let response = await createEvent(event);
             console.log('Recieved created event:=>', response);
-            if(response && response.data && response.data.state === 'SUCCESS') {
-                let { eventNumber, eventLink } = response.data;
+            if (response && response.data && response.data.state === 'SUCCESS') {
+                let { eventNumber, eventLink, id } = response.data.event;
                 event.eventNumber = eventNumber;
                 event.eventLink = eventLink;
+                event.id = id;
+                console.log('event ready', event)
                 this.props.onPublish(event)
             }
         }
