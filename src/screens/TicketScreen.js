@@ -49,37 +49,28 @@ class TicketScreen extends Component {
   render() {
     const { ticket, isWaiting, ticketError, isTicketFormat } = this.state;
     return (
-      <KeyboardAvoidingView style={styles.container}>
+      
         <ScrollView
           contentContainerStyle={{
             flexGrow: 1,
-            justifyContent: 'space-between',
-            paddingHorizontal: 40,
+            paddingHorizontal: 20,
             paddingVertical: 10,
-            alignItems: 'center',
+            backgroundColor: 'white',
           }}>
+            <KeyboardAvoidingView style={styles.container}>
           <Avatar
             source={{ uri: DEFAULT_LOGO }}
             size="large"
           />
           <View style={{ alignSelf: 'stretch', alignItems: 'center' }}>
-            <View
-              style={{
-                alignContent: 'center',
-                backgroundColor: '#b2c2bf',
-                borderRadius: 10,
-                paddingHorizontal: 10,
-                paddingVertical: 10,
-              }}>
-              <Text style={{ textAlign: 'center' }}>
-                Please enter your ticket number given after your purchase.
-              </Text>
+            <View style={{ alignSelf: "flex-start" ,paddingTop:100}}>
+              <Text style={{ fontSize: 17, fontWeight: '600' }}>Enter your ticket number</Text>
             </View>
             <Input
-              placeholder="Ticket Number"
+              placeholder="xxxx-xxxx-xxxx"
               placeholderTextColor="#b2c2bf"
-              leftIcon={{ type: 'material-community', name: 'ticket' }}
-              leftIconContainerStyle={{ marginLeft: 0, paddingRight: 10 }}
+              //leftIcon={{ type: 'material-community', name: 'ticket' }}
+              //leftIconContainerStyle={{ marginLeft: 0, paddingRight: 10 }}
               inputStyle={{ textAlign: 'center' }}
               onChangeText={this._checkTicketFormat}
               value={ticket}
@@ -87,28 +78,32 @@ class TicketScreen extends Component {
               errorMessage={ticketError}
               autoCapitalize="characters"
               disabled={isWaiting}
-              containerStyle={{ paddingVertical: 20 }}
+              containerStyle={{ paddingVertical: 10, paddingHorizontal: 0 }}
+              inputContainerStyle={{
+                borderWidth: 0.7,
+                borderColor: '#3b3a30',
+                borderRadius: 6,
+                paddingHorizontal: 10,
+                marginHorizontal: 0,
+                paddingVertical: 5,
+              }}
             />
             <View style={{ alignSelf: 'stretch' }}>
               <Button
-                buttonStyle={{ backgroundColor: '#3b3a30' }}
-                title="Join Now"
+                title="Watch Now"
+                buttonStyle={{
+                  backgroundColor: '#196BFF',
+                  borderRadius: 6,
+                  paddingVertical: 15
+                }} 
                 onPress={this.checkTicket}
                 disabled={!isTicketFormat || isWaiting}
               />
             </View>
           </View>
-          <View style={{ alignItems: 'center', flexDirection: 'column' }}>
-            <Text>Are you planning to cast your service</Text>
-            <TouchableOpacity
-              onPress={() => this.props.navigation.navigate('Register')}>
-              <Text style={{ textDecorationLine: 'underline' }}>
-                Sign Up / Login
-              </Text>
-            </TouchableOpacity>
-          </View>
+          </KeyboardAvoidingView>
+
         </ScrollView>
-      </KeyboardAvoidingView>
     );
   }
 }
@@ -117,7 +112,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     alignItems: 'center',
-    backgroundColor: 'white'
+    backgroundColor: 'white',
   },
 });
 
