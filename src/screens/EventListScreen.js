@@ -74,7 +74,7 @@ class EventListScreen extends Component {
                     let event = doc.data()
                     // Convert Firebase Timestamp tp JS Date object
                     event.eventDate = event.eventDate.toDate()
-                    if (!event.isResizedImage) {
+                    /* if (!event.isResizedImage) {
                         let eventTimestamp = event.eventTimestamp || event.eventDate.getTime()
                         let resizedImageFileName = eventTimestamp + '_200x200.jpg'
                         let imagePath = `events/${auth.currentUser.uid}/${resizedImageFileName}`
@@ -87,7 +87,7 @@ class EventListScreen extends Component {
                         }).catch(async (error) => {
                             console.log('No resized event image yet')
                         })
-                    }
+                    } */
                     events.push(doc.data());
                 });
                 console.log("Current events fetched: ", events);
