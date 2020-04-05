@@ -8,6 +8,7 @@ import {
 } from 'react-native';
 import { Input, Button, Text, Avatar } from 'react-native-elements';
 import firebase from 'react-native-firebase';
+import LabelText from '../components/LabelText';
 const db = firebase.firestore();
 
 const DEFAULT_LOGO = 'https://firebasestorage.googleapis.com/v0/b/influenceme-dev.appspot.com/o/assets%2Finfme-logo_200x200.PNG?alt=media&token=20d09ffe-46bb-4605-a777-567655ebfca2'
@@ -64,7 +65,7 @@ class TicketScreen extends Component {
           />
           <View style={{ alignSelf: 'stretch', alignItems: 'center' }}>
             <View style={{ alignSelf: "flex-start" ,paddingTop:100}}>
-              <Text style={{ fontSize: 17, fontWeight: '600' }}>Enter your ticket number</Text>
+              <LabelText label="Enter your ticket number" />
             </View>
             <Input
               placeholder="xxxx-xxxx-xxxx"
