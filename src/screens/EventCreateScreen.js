@@ -72,13 +72,10 @@ class EventCreateScreen extends Component {
                     let response = await createEvent(event);
                     console.log('Recieved created event:=>', response);
                     if (response && response.data && response.data.state === 'SUCCESS') {
-                        let { eid, eventNumber, eventLink } = response.data.event;
-                        event.eid = eid;
-                        event.eventNumber = eventNumber;
-                        event.eventLink = eventLink;
+                        let eventData = response.data.event;
                         this.setState({ isWaiting: false })
-                        console.log('Sending event to MyEventScreen:=>', event);
-                        this.props.navigation.navigate('MyEvent', { event })
+                        console.log('Sending event to MyEventScreen1:=>', eventData);
+                        this.props.navigation.navigate('MyEvent', { event: eventData })
                     }
                 }
             })
@@ -88,12 +85,10 @@ class EventCreateScreen extends Component {
             let response = await createEvent(event);
             console.log('Recieved created event:=>', response);
             if (response && response.data && response.data.state === 'SUCCESS') {
-                let { eid, eventNumber, eventLink } = response.data.event;
-                event.eid = eid;
-                event.eventNumber = eventNumber;
-                event.eventLink = eventLink;
+                let eventData = response.data.event;
                 this.setState({ isWaiting: false })
-                this.props.navigation.navigate('MyEvent', { event })
+                console.log('Sending event to MyEventScreen2:=>', eventData);
+                this.props.navigation.navigate('MyEvent', { event: eventData })
             }
         }
     }
@@ -122,9 +117,7 @@ class EventCreateScreen extends Component {
         Alert.alert('You will publish event', 'This can not be undone!', [
             {
                 text: 'Cancel',
-                onPress: () => {
-                    this.props.cancel();
-                },
+                onPress: () => {},
                 style: 'cancel',
             },
             {
