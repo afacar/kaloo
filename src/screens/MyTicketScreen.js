@@ -1,101 +1,99 @@
 import React, { Component } from 'react';
 import { View, StyleSheet, KeyboardAvoidingView, ScrollView, TouchableOpacity } from 'react-native';
-import { Input, Button, Text } from 'react-native-elements';
-import firebase from 'react-native-firebase';
-const db = firebase.firestore()
+import { Input, Button, Avatar } from 'react-native-elements';
+import { functions } from 'react-native-firebase';
+import LabelText from '../components/LabelText'
+
+const DEFAULT_LOGO = 'https://firebasestorage.googleapis.com/v0/b/influenceme-dev.appspot.com/o/assets%2Fdefault-logo.jpg?alt=media&token=20a6be6f-954f-417b-abfb-55e0ac75db02'
 
 class TicketScreen extends Component {
-    state = { ticket: '', isWaiting: false, ticketError: ' ', isFormatOk: false }
+    state = { ticket: '', isWaiting: false, ticketError: ' ' }
 
     checkTicket = async () => {
         //if (!this._checkTicketFormat()) return
         let { ticket } = this.state;
         ticket = ticket.trim()
         this.setState({ isWaiting: true })
-        const [userNumber, eventNumber, ticketNumber] = ticket.split('-')
-        let [eventData] = await db.collection('events').where("userNumber", "==", userNumber).where("eventNumber", "==", eventNumber)
-            .get()
-            .then(function (querySnapshot) {
-                let res = []
-                querySnapshot.forEach(function (doc) {
-                    // doc.data() is never undefined for query doc snapshots
-                    console.log(doc.id, " => ", doc.data());
-                    res.push(doc.data())
-                });
-                return res
-            })
-            .catch(function (error) {
-                console.log("Error getting tickets: ", error);
-            });
 
-        console.log('event data:', eventData)
-        if (eventData) {
-            // GET EVENT DOC
-            let ticketDoc = await db.doc(`events/${eventData.eid}/tickets/${ticketNumber}`).get()
-            let ticketData = ticketDoc.data()
-            eventData.ticket = { ...ticketData }
-            console.log('event dataxx:', eventData)
-            this.setState({ isWaiting: false })
-            this.props.navigation.navigate('JoinMyEvent', { event: eventData })
-        } else {
-            this.setState({ isWaiting: false, ticketError: 'No such a ticket!' })
+        try {
+            let validateTicket = functions().httpsCallable('validateTicket')
+            let response = await validateTicket({ ticketId: ticket })
+            console.log('ticketvalidation response', response)
+            if (response && response.data && response.data.state === 'SUCCESS') {
+                let eventData = response.data.event;
+                this.setState({ isWaiting: false })
+                this.props.navigation.navigate('MyEvent', { event: eventData })
+            } else {
+                this.setState({ isWaiting: false, ticketError: response.data.message })
+            }
+        } catch (error) {
+            this.setState({ isWaiting: false, ticketError: error.message })
         }
     }
 
-    _checkTicketFormat = (ticket) => {
-        const [userNumber, eventNumber, ticketNumber] = ticket.split('-');
-        if (userNumber && eventNumber && ticketNumber && ticketNumber.length == 4) {
-            this.setState({ ticket, ticketError: '', isTicketFormat: true });
-        } else {
-            this.setState({ ticket, ticketError: '', isTicketFormat: false });
-        }
-    };
-
     render() {
-        const { ticket, isWaiting, ticketError, isTicketFormat } = this.state
+        const { ticket, isWaiting, ticketError } = this.state
         return (
-            <KeyboardAvoidingView style={styles.container}>
-                <ScrollView contentContainerStyle={{ flexGrow: 1, justifyContent: 'space-between', paddingHorizontal: 40, paddingVertical: 10, alignItems: 'center' }} >
-                    <View></View>
+            <ScrollView
+                contentContainerStyle={{
+                    flexGrow: 1,
+                    paddingHorizontal: 20,
+                    paddingVertical: 10,
+                    backgroundColor: 'white',
+                }}>
+                <KeyboardAvoidingView style={styles.container}>
+                    <Avatar
+                        source={{ uri: DEFAULT_LOGO }}
+                        size="large"
+                    />
                     <View style={{ alignSelf: 'stretch', alignItems: 'center' }}>
-                        <View style={{ alignContent: 'center', backgroundColor: '#9fa9a3', borderRadius: 10, paddingHorizontal: 10, paddingVertical: 5 }}>
-                            <Text style={{ textAlign: 'center' }}>Please enter your ticket number given after your purchase.</Text>
+                        <View style={{ alignSelf: "flex-start", paddingTop: 100 }}>
+                            <LabelText label="Enter your ticket number" />
                         </View>
                         <Input
-                            placeholder='Ticket Number'
-                            leftIcon={{ type: 'material-community', name: 'ticket', color: '#3b3a30' }}
-                            onChangeText={this._checkTicketFormat}
+                            placeholder="xxxx-xxxx-xxxx"
+                            placeholderTextColor="#b2c2bf"
+                            inputStyle={{ textAlign: 'center' }}
+                            onChangeText={ticket => this.setState({ ticket, ticketError: '' })}
                             value={ticket}
-                            keyboardType='ascii-capable'
+                            keyboardType="ascii-capable"
                             errorMessage={ticketError}
-                            autoCapitalize='characters'
+                            autoCapitalize="characters"
                             disabled={isWaiting}
-                            containerStyle={{ paddingVertical: 20 }}
+                            containerStyle={{ paddingVertical: 10, paddingHorizontal: 0 }}
+                            inputContainerStyle={{
+                                borderWidth: 0.7,
+                                borderColor: '#3b3a30',
+                                borderRadius: 6,
+                                paddingHorizontal: 10,
+                                marginHorizontal: 0,
+                                paddingVertical: 5,
+                            }}
                         />
                         <View style={{ alignSelf: 'stretch' }}>
                             <Button
-                                buttonStyle={{ backgroundColor: 'grey' }}
-                                title="Go to Event"
+                                title={isWaiting ? 'Checking Ticket...' : "Watch Now"}
+                                buttonStyle={{
+                                    backgroundColor: '#196BFF',
+                                    borderRadius: 6,
+                                    paddingVertical: 15
+                                }}
                                 onPress={this.checkTicket}
-                                disabled={!isTicketFormat || isWaiting}
+                                disabled={isWaiting || ticket.length === 0}
                             />
                         </View>
                     </View>
-                    <View style={{ alignItems: 'center', flexDirection: 'column' }}>
-                        <Text>Having Trouble?</Text>
-                        <TouchableOpacity onPress={() => {/*TODO: Contact us*/ }} >
-                            <Text style={{ textDecorationLine: 'underline' }}>Contact Us</Text>
-                        </TouchableOpacity>
-                    </View>
-                </ScrollView>
-            </KeyboardAvoidingView>
+                </KeyboardAvoidingView>
+
+            </ScrollView>
         )
     }
 }
 
 const styles = StyleSheet.create({
     container: {
-        flex: 1
+        flex: 1,
+        alignItems: 'center'
     }
 })
 
