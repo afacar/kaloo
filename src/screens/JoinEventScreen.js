@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { View, StyleSheet, Image, Share } from 'react-native';
-import { Input, Button, Text, Card, Rating } from 'react-native-elements';
+import { Button, Text, Card, Rating } from 'react-native-elements';
 import { app } from '../constants';
 import { setEventListener, clearEventListener } from "../utils/EventHandler";
 import firebase from "react-native-firebase";
@@ -14,7 +14,7 @@ class JoinEventScreen extends Component {
     componentDidMount() {
         console.log('Event state is', this.state)
 
-        setEventListener(this.event.eventNumber, (event) => {
+        setEventListener(this.state.eid, (event) => {
             this.setState({ ...event })
         })
     }
