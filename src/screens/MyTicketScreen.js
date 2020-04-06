@@ -42,19 +42,17 @@ class TicketScreen extends Component {
         }
     }
 
-    _checkTicketFormat = () => {
-        const { ticket } = this.state;
-        const [eventId, ticketId] = ticket.split('-')
-        if (eventId && ticketId && ticketId.length == 4) {
-            return true
+    _checkTicketFormat = (ticket) => {
+        const [userNumber, eventNumber, ticketNumber] = ticket.split('-');
+        if (userNumber && eventNumber && ticketNumber && ticketNumber.length == 4) {
+            this.setState({ ticket, ticketError: '', isTicketFormat: true });
         } else {
-            this.setState({ ticketError: 'Ticket format is wrong!' })
-            return false;
+            this.setState({ ticket, ticketError: '', isTicketFormat: false });
         }
-    }
+    };
 
     render() {
-        const { ticket, isWaiting, ticketError } = this.state
+        const { ticket, isWaiting, ticketError, isTicketFormat } = this.state
         return (
             <KeyboardAvoidingView style={styles.container}>
                 <ScrollView contentContainerStyle={{ flexGrow: 1, justifyContent: 'space-between', paddingHorizontal: 40, paddingVertical: 10, alignItems: 'center' }} >
@@ -66,7 +64,7 @@ class TicketScreen extends Component {
                         <Input
                             placeholder='Ticket Number'
                             leftIcon={{ type: 'material-community', name: 'ticket', color: '#3b3a30' }}
-                            onChangeText={ticket => this.setState({ ticket, ticketError: '' })}
+                            onChangeText={this._checkTicketFormat}
                             value={ticket}
                             keyboardType='ascii-capable'
                             errorMessage={ticketError}
@@ -79,7 +77,7 @@ class TicketScreen extends Component {
                                 buttonStyle={{ backgroundColor: 'grey' }}
                                 title="Go to Event"
                                 onPress={this.checkTicket}
-                                disabled={this.state.isWaiting}
+                                disabled={!isTicketFormat || isWaiting}
                             />
                         </View>
                     </View>
