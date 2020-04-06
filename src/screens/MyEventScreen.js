@@ -40,7 +40,7 @@ class MyEventScreen extends Component {
 
     componentWillUnmount() {
         BackHandler.removeEventListener('hardwareBackPress', this.handleBackButton);
-        clearEventListener(this.event.eventNumber);
+        clearEventListener(this.event.eid);
     }
 
     onShare = async () => {
@@ -64,16 +64,16 @@ class MyEventScreen extends Component {
     };
 
     joinLive = () => {
-        var { eventNumber } = this.state;
+        var { eid } = this.state;
         // TODO send  ticketID
-        this.props.navigation.navigate('Live', { clientRole: 1, channelProfile: 1, eventID: eventNumber + '' })
+        this.props.navigation.navigate('Live', { clientRole: 1, channelProfile: 1, eventID: eid + '' })
     }
 
     // This method navigates to video call screen
     joinCall = () => {
-        var { eventNumber } = this.state;
+        var { eid } = this.state;
         // TODO send channelName and ticketID
-        this.props.navigation.navigate('VideoChat', { channelProfile: 0, eventID: eventNumber + '', clientRole: 1 })
+        this.props.navigation.navigate('VideoChat', { channelProfile: 0, eventID: eid + '', clientRole: 1 })
     }
 
     onCamera = () => {

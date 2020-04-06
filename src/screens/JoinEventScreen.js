@@ -14,13 +14,13 @@ class JoinEventScreen extends Component {
     componentDidMount() {
         console.log('Event state is', this.state)
 
-        setEventListener(this.event.eventNumber, (event) => {
+        setEventListener(this.event.eid, (event) => {
             this.setState({ ...event })
         })
     }
 
     componentWillUnmount() {
-        clearEventListener(this.event.eventNumber);
+        clearEventListener(this.event.eid);
     }
 
     onShare = async () => {
@@ -44,16 +44,16 @@ class JoinEventScreen extends Component {
     };
 
     joinLive = () => {
-        var { eventNumber } = this.state;
+        var { eid } = this.state;
         // TODO send  ticketID
-        this.props.navigation.navigate('Live', { clientRole: 2, channelProfile: 1, eventID: eventNumber + '' })
+        this.props.navigation.navigate('Live', { clientRole: 2, channelProfile: 1, eventID: eid + '' })
     }
 
     // This method navigates to video call screen
     joinCall = () => {
-        var { eventNumber } = this.state;
+        var { eid } = this.state;
         // TODO send ticketID
-        this.props.navigation.navigate('VideoChat', { channelProfile: 0, eventID: eventNumber + '', clientRole: 2 })
+        this.props.navigation.navigate('VideoChat', { channelProfile: 0, eventID: eid + '', clientRole: 2 })
     }
 
     onCamera = () => {
