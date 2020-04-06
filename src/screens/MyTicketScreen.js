@@ -8,23 +8,35 @@ class TicketScreen extends Component {
     state = { ticket: '', isWaiting: false, ticketError: ' ', isFormatOk: false }
 
     checkTicket = async () => {
-        if (!this._checkTicketFormat()) return
+        //if (!this._checkTicketFormat()) return
         let { ticket } = this.state;
         ticket = ticket.trim()
         this.setState({ isWaiting: true })
-        const [eventId, _t] = ticket.split('-')
-        let ticketPath = `events/${eventId}/tickets/${ticket}`
-        console.log('ticketPath', ticketPath)
-        let ticketDoc = await db.doc(ticketPath).get()
-        console.log('ticket data:', ticketDoc.data())
-        if (ticketDoc.exists) {
-            this.setState({ isWaiting: false })
+        const [userNumber, eventNumber, ticketNumber] = ticket.split('-')
+        let [eventData] = await db.collection('events').where("userNumber", "==", userNumber).where("eventNumber", "==", eventNumber)
+            .get()
+            .then(function (querySnapshot) {
+                let res = []
+                querySnapshot.forEach(function (doc) {
+                    // doc.data() is never undefined for query doc snapshots
+                    console.log(doc.id, " => ", doc.data());
+                    res.push(doc.data())
+                });
+                return res
+            })
+            .catch(function (error) {
+                console.log("Error getting tickets: ", error);
+            });
+
+        console.log('event data:', eventData)
+        if (eventData) {
             // GET EVENT DOC
-            let eventDoc = await db.doc(`events/${eventId}`).get()
-            let event = eventDoc.data()
-            event.ticket = { ...ticketDoc.data(), ticket }
-            console.log('event dataxx:', event)
-            this.props.navigation.navigate('JoinMyEvent', { event })
+            let ticketDoc = await db.doc(`events/${eventData.eid}/tickets/${ticketNumber}`).get()
+            let ticketData = ticketDoc.data()
+            eventData.ticket = { ...ticketData }
+            console.log('event dataxx:', eventData)
+            this.setState({ isWaiting: false })
+            this.props.navigation.navigate('JoinMyEvent', { event: eventData })
         } else {
             this.setState({ isWaiting: false, ticketError: 'No such a ticket!' })
         }
@@ -73,7 +85,7 @@ class TicketScreen extends Component {
                     </View>
                     <View style={{ alignItems: 'center', flexDirection: 'column' }}>
                         <Text>Having Trouble?</Text>
-                        <TouchableOpacity onPress={() => {/*TODO: Contact us*/}} >
+                        <TouchableOpacity onPress={() => {/*TODO: Contact us*/ }} >
                             <Text style={{ textDecorationLine: 'underline' }}>Contact Us</Text>
                         </TouchableOpacity>
                     </View>
