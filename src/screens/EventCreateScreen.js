@@ -45,9 +45,9 @@ class EventCreateScreen extends Component {
     componentDidMount() { }
 
     createEvent = async () => {
-        let { uid, displayName, userNumber, photoURL, image, title, description, duration, eventType, capacity, price, eventDate } = this.state
+        let { uid, displayName, userNumber, photoURL, image, title, description, duration, eventType, capacity, price, eventDate, status } = this.state
 
-        let event = { uid, displayName, userNumber, photoURL, image, title, description, duration, eventType, capacity, price, eventDate }
+        let event = { uid, displayName, userNumber, photoURL, image, title, description, duration, eventType, capacity, price, eventDate, status }
         let createEvent = functions.httpsCallable('createEvent');
         event.eventTimestamp = eventDate.getTime();
 
