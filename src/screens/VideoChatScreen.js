@@ -1,15 +1,17 @@
 import React, { Component } from 'react';
 import { View, Platform, NativeModules, PermissionsAndroid, Alert, StatusBar, ActivityIndicator, Modal } from 'react-native';
-import app from '../constants/app';
+import { Overlay } from 'react-native-elements';
+import KeepAwake from 'react-native-keep-awake';
 import { RtcEngine, AgoraView } from 'react-native-agora';
-import { styles, colors } from '../constants';
+import firebase from 'react-native-firebase';
 import { clearLiveEventListener, setLiveEventListener, startLive, endLive, suspendLive, continueLive } from '../utils/EventHandler';
 import { handleAndroidBackButton, removeAndroidBackButtonHandler } from '../utils/BackHandler';
 import { formatTime } from '../utils/Utils';
-import firebase from 'react-native-firebase';
 import AppButton from '../components/AppButton';
 import AppText from '../components/AppText';
-import { Overlay } from 'react-native-elements';
+import app from '../constants/app';
+import { styles, colors } from '../constants';
+
 const { Agora } = NativeModules;
 
 const {
@@ -395,6 +397,7 @@ export default class VideoChatScreen extends Component {
         return (
             <View style={{ flex: 1 }}>
                 <StatusBar hidden={true} />
+                <KeepAwake />
                 {
                     capacity === 0 && (
                         <View style={{ flex: 1 }}>

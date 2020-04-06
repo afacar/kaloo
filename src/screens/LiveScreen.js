@@ -1,16 +1,17 @@
 import React, { Component } from 'react';
 import { View, Platform, NativeModules, PermissionsAndroid, Alert, StatusBar, TouchableOpacity, BackHandler, ToastAndroid } from 'react-native';
-import app from '../constants/app';
+import KeepAwake from 'react-native-keep-awake';
+import firebase from 'react-native-firebase';
 import { RtcEngine, AgoraView } from 'react-native-agora';
+import AppButton from '../components/AppButton';
+import AppText from '../components/AppText';
 import { decrementViewer, clearLiveEventListener, setLiveEventListener, incrementViewer, startLive, endLive, suspendLive, continueLive } from '../utils/EventHandler';
 import { handleAndroidBackButton, removeAndroidBackButtonHandler } from '../utils/BackHandler';
-import AppButton from '../components/AppButton';
 import { styles } from '../constants';
-import AppText from '../components/AppText';
 import { formatTime } from '../utils/Utils';
-import firebase from 'react-native-firebase';
-const { Agora } = NativeModules;
+import app from '../constants/app';
 
+const { Agora } = NativeModules;
 const {
     FPS30,
     AgoraAudioProfileMusicHighQuality,
@@ -339,6 +340,7 @@ export default class LiveScreen extends Component {
         return (
             <TouchableOpacity activeOpacity={1} onPress={() => this.toggleShowState()} style={{ flex: 1 }}>
                 <View style={{ flex: 1 }}>
+                    <KeepAwake />
                     <StatusBar hidden={true} />
                     {
                         // The Host
