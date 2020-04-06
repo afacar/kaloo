@@ -11,36 +11,49 @@ import firebase from 'react-native-firebase';
 import LabelText from '../components/LabelText';
 const db = firebase.firestore();
 
-const DEFAULT_LOGO = 'https://firebasestorage.googleapis.com/v0/b/influenceme-dev.appspot.com/o/assets%2Finfme-logo_200x200.PNG?alt=media&token=20d09ffe-46bb-4605-a777-567655ebfca2'
+const DEFAULT_LOGO = 'https://firebasestorage.googleapis.com/v0/b/influenceme-dev.appspot.com/o/assets%2Fdefault-logo.jpg?alt=media&token=20a6be6f-954f-417b-abfb-55e0ac75db02'
 
 class TicketScreen extends Component {
   state = { ticket: '', isWaiting: false, ticketError: '', isTicketFormat: false };
 
   checkTicket = async () => {
+    //if (!this._checkTicketFormat()) return
     let { ticket } = this.state;
-    ticket = ticket.trim();
-    this.setState({ isWaiting: true });
-    const [eventId, _t] = ticket.split('-');
-    let ticketPath = `events/${eventId}/tickets/${ticket}`;
-    console.log('ticketPath', ticketPath);
-    let ticketDoc = await db.doc(ticketPath).get();
-    console.log('ticket data:', ticketDoc.data());
-    if (ticketDoc.exists) {
-      this.setState({ isWaiting: false });
-      // GET EVENT DOC
-      let eventDoc = await db.doc(`events/${eventId}`).get();
-      let event = eventDoc.data();
-      event.ticket = { ...ticketDoc.data(), ticket };
-      console.log('event dataxx:', event);
-      this.props.navigation.navigate('JoinEvent', { event });
+    ticket = ticket.trim()
+    this.setState({ isWaiting: true })
+    const [userNumber, eventNumber, ticketNumber] = ticket.split('-')
+    let [eventData] = await db.collection('events').where("userNumber", "==", userNumber).where("eventNumber", "==", eventNumber)
+        .get()
+        .then(function (querySnapshot) {
+            let res = []
+            querySnapshot.forEach(function (doc) {
+                // doc.data() is never undefined for query doc snapshots
+                console.log(doc.id, " => ", doc.data());
+                res.push(doc.data())
+            });
+            return res
+        })
+        .catch(function (error) {
+            console.log("Error getting tickets: ", error);
+        });
+
+    console.log('event data:', eventData)
+    if (eventData) {
+        // GET EVENT DOC
+        let ticketDoc = await db.doc(`events/${eventData.eid}/tickets/${ticketNumber}`).get()
+        let ticketData = ticketDoc.data()
+        eventData.ticket = { ...ticketData }
+        console.log('event dataxx:', eventData)
+        this.setState({ isWaiting: false })
+        this.props.navigation.navigate('JoinEvent', { event: eventData })
     } else {
-      this.setState({ isWaiting: false, ticketError: 'No such a ticket!' });
+        this.setState({ isWaiting: false, ticketError: 'No such a ticket!' })
     }
-  };
+}
 
   _checkTicketFormat = (ticket) => {
-    const [eventId, ticketId] = ticket.split('-');
-    if (eventId && ticketId && ticketId.length == 4) {
+    const [userNumber, eventNumber, ticketNumber] = ticket.split('-');
+    if (userNumber && eventNumber && ticketNumber && ticketNumber.length == 4) {
       this.setState({ ticket, ticketError: '', isTicketFormat: true });
     } else {
       this.setState({ ticket, ticketError: '', isTicketFormat: false });
