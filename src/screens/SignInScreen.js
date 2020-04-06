@@ -21,9 +21,6 @@ function ValidateEmail(email) {
   return false;
 }
 
-const DEFAULT_PROFILE_PIC =
-  'https://firebasestorage.googleapis.com/v0/b/influenceme-dev.appspot.com/o/assets%2Fprofile-icon.png?alt=media&token=89765144-f9cf-4539-abea-c9d5ac0b3d2d';
-
 class SignInScreen extends Component {
   static navigationOptions = ({ navigation }) => ({
     headerRight: () => (

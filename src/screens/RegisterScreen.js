@@ -17,7 +17,7 @@ import HighlightedText from '../components/HighlightedText';
 import LabelText from '../components/LabelText';
 
 
-const DEFAULT_PROFILE_PIC = 'https://firebasestorage.googleapis.com/v0/b/influenceme-dev.appspot.com/o/assets%2Fprofile-icon.png?alt=media&token=89765144-f9cf-4539-abea-c9d5ac0b3d2d';
+const DEFAULT_PROFILE = 'https://firebasestorage.googleapis.com/v0/b/influenceme-dev.appspot.com/o/assets%2Fdefault-profile.jpg?alt=media&token=be59b770-b549-4f76-95db-fa52ee9f78fe';
 
 function ValidateEmail(email) {
   if (/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(email)) {
@@ -43,7 +43,7 @@ class RegisterScreen extends Component {
     email: '',
     password: '',
     repassword: '',
-    photoURL: DEFAULT_PROFILE_PIC,
+    photoURL: DEFAULT_PROFILE,
     imagePickerResponse: null,
     isWaiting: false,
     displayNameMessage: '',
@@ -67,7 +67,7 @@ class RegisterScreen extends Component {
     const { uid } = currentUser
     let isResizedImage = true;
     // Upload new profile pict if it is new
-    if (photoURL !== DEFAULT_PROFILE_PIC) {
+    if (photoURL !== DEFAULT_PROFILE) {
       isResizedImage = false;
       console.log('uploading avatar...');
       let avatarRef = storage().ref(`users/${uid}/avatar/${uid}.jpg`);
@@ -165,7 +165,7 @@ class RegisterScreen extends Component {
               imageProps={{ borderRadius: 6 }}
               //rounded={true}
               showEditButton={true}
-              source={{ uri: photoURL || DEFAULT_PROFILE_PIC }}
+              source={{ uri: photoURL || DEFAULT_PROFILE }}
             />
             <LabelText label='E-Mail' />
             <Input

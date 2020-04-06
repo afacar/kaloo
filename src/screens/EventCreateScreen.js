@@ -12,13 +12,13 @@ const storage = firebase.storage()
 const auth = firebase.auth()
 const functions = firebase.functions()
 
-const DEFAULT_EVENT_PIC = 'https://firebasestorage.googleapis.com/v0/b/influenceme-dev.appspot.com/o/assets%2Fevent-default-image_200x200.jpeg?alt=media&token=fd8979c0-d617-408d-b387-02fdb48f6c83'
+const DEFAULT_EVENT = 'https://firebasestorage.googleapis.com/v0/b/influenceme-dev.appspot.com/o/assets%2Fdefault-event.jpg?alt=media&token=d9ce39ac-952c-43eb-9afc-2ed8d8f1167d'
 
 const INITIAL_STATE = {
     uid: auth.currentUser ? auth.currentUser.uid : '',
     displayName: auth.currentUser ? auth.currentUser.displayName : '',
     photoURL: auth.currentUser ? auth.currentUser.photoURL : '',
-    image: DEFAULT_EVENT_PIC,
+    image: DEFAULT_EVENT,
     title: '',
     description: '',
     duration: 30,
@@ -54,7 +54,7 @@ class EventCreateScreen extends Component {
         this.setState({ isWaiting: true })
 
         // Check if new event image is set
-        if (image !== DEFAULT_EVENT_PIC) {
+        if (image !== DEFAULT_EVENT) {
             let imagePath = `events/${event.uid}/${event.eventTimestamp}.jpg`
             console.log(`Uploading event image to: ${imagePath}`)
             const imageRef = storage.ref(imagePath)

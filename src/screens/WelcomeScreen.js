@@ -6,7 +6,7 @@ import {
 } from 'react-native';
 import { Button, Text, Avatar } from 'react-native-elements';
 
-const DEFAULT_LOGO = 'https://firebasestorage.googleapis.com/v0/b/influenceme-dev.appspot.com/o/assets%2Finfme-logo_200x200.PNG?alt=media&token=20d09ffe-46bb-4605-a777-567655ebfca2'
+const DEFAULT_LOGO = 'https://firebasestorage.googleapis.com/v0/b/influenceme-dev.appspot.com/o/assets%2Fdefault-logo.jpg?alt=media&token=20a6be6f-954f-417b-abfb-55e0ac75db02'
 
 class WelcomeScreen extends Component {
   static navigationOptions = { headerShown: false }
