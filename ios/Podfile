@@ -41,6 +41,8 @@ target 'InfluenceMe' do
 
 
 
+  pod 'react-native-keep-awake', :path => '../node_modules/react-native-keep-awake'
+
   target 'InfluenceMeTests' do
     inherit! :search_paths
     # Pods for testing
