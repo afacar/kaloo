@@ -1,18 +1,32 @@
 import React, { Component } from 'react';
-import { View, StyleSheet, Image, Share } from 'react-native';
-import AppText from '../components/AppText';
-import { Input, Button, Text, Card } from 'react-native-elements';
+import { View, StyleSheet, Image, Share, Platform, BackHandler } from 'react-native';
+import { Input, Button, Text, Card, Icon } from 'react-native-elements';
 import { app } from '../constants';
 import { setEventListener, clearEventListener } from '../utils/EventHandler';
 
 class MyEventScreen extends Component {
+    static navigationOptions = ({ navigation }) => ({
+        headerLeft: () => (
+            <Button
+                type='clear'
+                onPress={() => navigation.navigate('UserHome')}
+                icon={<Icon type="ionicon"
+                    name={Platform.OS === 'ios' ? 'ios-arrow-back' : 'md-arrow-back'}
+                    color="black"
+                //size={16}
+                />}
+            />
+        )
+    });
+
     event = this.props.navigation.getParam('event', '')
     state = { ...this.event }
 
     componentDidMount() {
         console.log('MyEventScreen Mounted', this.state)
+        BackHandler.addEventListener('hardwareBackPress', this.handleBackButton);
 
-        setEventListener(this.event.eid, (event) => {
+        setEventListener(this.state.eid, (event) => {
             console.log('Event from eventHandler', event)
 
             if (event) {
@@ -22,7 +36,12 @@ class MyEventScreen extends Component {
         })
     }
 
+    handleBackButton() {
+        return true
+    }
+
     componentWillUnmount() {
+        BackHandler.removeEventListener('hardwareBackPress', this.handleBackButton);
         clearEventListener(this.event.eid);
     }
 
@@ -47,16 +66,16 @@ class MyEventScreen extends Component {
     };
 
     joinLive = () => {
-        var { eventNumber } = this.state;
+        var { eid } = this.state;
         // TODO send  ticketID
-        this.props.navigation.navigate('Live', { clientRole: 1, channelProfile: 1, eventID: eventNumber + '' })
+        this.props.navigation.navigate('Live', { clientRole: 1, channelProfile: 1, eventID: eid + '' })
     }
 
     // This method navigates to video call screen
     joinCall = () => {
-        var { eventNumber } = this.state;
+        var { eid } = this.state;
         // TODO send channelName and ticketID
-        this.props.navigation.navigate('VideoChat', { channelProfile: 0, eventID: eventNumber + '', clientRole: 1 })
+        this.props.navigation.navigate('VideoChat', { channelProfile: 0, eventID: eid + '', clientRole: 1 })
     }
 
     onCamera = () => {

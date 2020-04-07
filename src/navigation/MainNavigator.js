@@ -2,7 +2,6 @@
 import { createStackNavigator } from 'react-navigation-stack';
 import TicketScreen from '../screens/TicketScreen';
 import WelcomeScreen from '../screens/WelcomeScreen';
-import SignUpScreen from '../screens/SignUpScreen';
 import SignInScreen from '../screens/SignInScreen';
 import JoinEventScreen from '../screens/JoinEventScreen';
 import RegisterScreen from '../screens/RegisterScreen';
@@ -14,7 +13,6 @@ export default MainNavigatior = createStackNavigator(
     Home: WelcomeScreen,
     Ticket: TicketScreen,
     JoinEvent: JoinEventScreen,
-    Signup: SignUpScreen,
     SignIn: SignInScreen,
     Register: RegisterScreen,
     Live: {

@@ -6,85 +6,59 @@ import {
   ScrollView,
   TouchableOpacity,
 } from 'react-native';
-import AppText from '../components/AppText';
 import { Input, Button, Text, Avatar } from 'react-native-elements';
-import firebase from 'react-native-firebase';
-const db = firebase.firestore();
+import { functions } from 'react-native-firebase';
+import LabelText from '../components/LabelText';
 
-const DEFAULT_LOGO = 'https://firebasestorage.googleapis.com/v0/b/influenceme-dev.appspot.com/o/assets%2Finfme-logo_200x200.PNG?alt=media&token=20d09ffe-46bb-4605-a777-567655ebfca2'
+const DEFAULT_LOGO = 'https://firebasestorage.googleapis.com/v0/b/influenceme-dev.appspot.com/o/assets%2Fdefault-logo.jpg?alt=media&token=20a6be6f-954f-417b-abfb-55e0ac75db02'
 
 class TicketScreen extends Component {
-  state = { ticket: '', isWaiting: false, ticketError: '' };
+  state = { ticket: '', isWaiting: false, ticketError: '', isTicketFormat: false };
 
   checkTicket = async () => {
-    if (!this._checkTicketFormat()) return;
     let { ticket } = this.state;
-    ticket = ticket.trim();
-    this.setState({ isWaiting: true });
-    const [eventId, _t] = ticket.split('-');
-    let ticketPath = `events/${eventId}/tickets/${ticket}`;
-    console.log('ticketPath', ticketPath);
-    let ticketDoc = await db.doc(ticketPath).get();
-    console.log('ticket data:', ticketDoc.data());
-    if (ticketDoc.exists) {
-      this.setState({ isWaiting: false });
-      // GET EVENT DOC
-      let eventDoc = await db.doc(`events/${eventId}`).get();
-      let event = eventDoc.data();
-      event.ticket = { ...ticketDoc.data(), ticket };
-      console.log('event dataxx:', event);
-      this.props.navigation.navigate('JoinEvent', { event });
-    } else {
-      this.setState({ isWaiting: false, ticketError: 'No such a ticket!' });
-    }
-  };
+    ticket = ticket.trim()
+    this.setState({ isWaiting: true })
 
-  _checkTicketFormat = () => {
-    const { ticket } = this.state;
-    const [eventId, ticketId] = ticket.split('-');
-    if (eventId && ticketId && ticketId.length == 4) {
-      return true;
-    } else {
-      this.setState({ ticketError: 'Ticket format is wrong!' });
-      return false;
+    try {
+      let validateTicket = functions().httpsCallable('validateTicket')
+      let response = await validateTicket({ ticketId: ticket })
+      console.log('ticketvalidation response', response)
+      if (response && response.data && response.data.state === 'SUCCESS') {
+        let eventData = response.data.event;
+        this.setState({ isWaiting: false })
+        this.props.navigation.navigate('MyEvent', { event: eventData })
+      } else {
+        this.setState({ isWaiting: false, ticketError: response.data.message })
+      }
+    } catch (error) {
+      this.setState({ isWaiting: false, ticketError: error.message })
     }
-  };
+  }
 
   render() {
     const { ticket, isWaiting, ticketError } = this.state;
     return (
-      <KeyboardAvoidingView style={styles.container}>
-        <ScrollView
-          contentContainerStyle={{
-            flexGrow: 1,
-            justifyContent: 'space-between',
-            paddingHorizontal: 40,
-            paddingVertical: 10,
-            alignItems: 'center',
-          }}>
+
+      <ScrollView
+        contentContainerStyle={{
+          flexGrow: 1,
+          paddingHorizontal: 20,
+          paddingVertical: 10,
+          backgroundColor: 'white',
+        }}>
+        <KeyboardAvoidingView style={styles.container}>
           <Avatar
-            onPress={this.onAvatarPressed}
             source={{ uri: DEFAULT_LOGO }}
             size="large"
           />
           <View style={{ alignSelf: 'stretch', alignItems: 'center' }}>
-            <View
-              style={{
-                alignContent: 'center',
-                backgroundColor: '#b2c2bf',
-                borderRadius: 10,
-                paddingHorizontal: 10,
-                paddingVertical: 10,
-              }}>
-              <Text style={{ textAlign: 'center' }}>
-                Please enter your ticket number given after your purchase.
-              </Text>
+            <View style={{ alignSelf: "flex-start", paddingTop: 100 }}>
+              <LabelText label="Enter your ticket number" />
             </View>
             <Input
-              placeholder="Ticket Number"
+              placeholder="xxxx-xxxx-xxxx"
               placeholderTextColor="#b2c2bf"
-              leftIcon={{ type: 'material-community', name: 'ticket' }}
-              leftIconContainerStyle={{ marginLeft: 0, paddingRight: 10 }}
               inputStyle={{ textAlign: 'center' }}
               onChangeText={ticket => this.setState({ ticket, ticketError: '' })}
               value={ticket}
@@ -92,28 +66,32 @@ class TicketScreen extends Component {
               errorMessage={ticketError}
               autoCapitalize="characters"
               disabled={isWaiting}
-              containerStyle={{ paddingVertical: 20 }}
+              containerStyle={{ paddingVertical: 10, paddingHorizontal: 0 }}
+              inputContainerStyle={{
+                borderWidth: 0.7,
+                borderColor: '#3b3a30',
+                borderRadius: 6,
+                paddingHorizontal: 10,
+                marginHorizontal: 0,
+                paddingVertical: 5,
+              }}
             />
             <View style={{ alignSelf: 'stretch' }}>
               <Button
-                buttonStyle={{ backgroundColor: '#3b3a30' }}
-                title="Go to Event"
+                title={isWaiting ? 'Checking Ticket...' : "Watch Now"}
+                buttonStyle={{
+                  backgroundColor: '#196BFF',
+                  borderRadius: 6,
+                  paddingVertical: 15
+                }}
                 onPress={this.checkTicket}
-                disabled={this.state.isWaiting}
+                disabled={isWaiting || ticket.length === 0}
               />
             </View>
           </View>
-          <View style={{ alignItems: 'center', flexDirection: 'column' }}>
-            <Text>Are you planning to cast your service</Text>
-            <TouchableOpacity
-              onPress={() => this.props.navigation.navigate('Register')}>
-              <Text style={{ textDecorationLine: 'underline' }}>
-                Sign Up / Login
-              </Text>
-            </TouchableOpacity>
-          </View>
-        </ScrollView>
-      </KeyboardAvoidingView>
+        </KeyboardAvoidingView>
+
+      </ScrollView>
     );
   }
 }
@@ -122,7 +100,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     alignItems: 'center',
-    backgroundColor: 'white'
+    backgroundColor: 'white',
   },
 });
 

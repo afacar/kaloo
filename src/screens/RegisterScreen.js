@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import {
   View,
   StyleSheet,
@@ -8,21 +8,16 @@ import {
   TouchableOpacity,
   SafeAreaView,
   KeyboardAvoidingView,
+  Platform,
 } from 'react-native';
-import AppText from '../components/AppText';
-import {Input, Button, Avatar, CheckBox} from 'react-native-elements';
-import firebase, {functions} from 'react-native-firebase';
-import ImagePicker from 'react-native-image-picker';
+import { Input, Button, Avatar, CheckBox } from 'react-native-elements';
+import { functions, storage, auth } from 'react-native-firebase';
+import ImagePicker from 'react-native-image-crop-picker';
+import HighlightedText from '../components/HighlightedText';
+import LabelText from '../components/LabelText';
 
-const db = firebase.firestore();
-const DEFAULT_PROFILE_PIC =
-  'https://firebasestorage.googleapis.com/v0/b/influenceme-dev.appspot.com/o/assets%2Fprofile-icon.png?alt=media&token=89765144-f9cf-4539-abea-c9d5ac0b3d2d';
 
-function AlertUser(title, message) {
-  Alert.alert(title, message, [
-    {text: 'Ok! I will try my best', onPress: () => {}},
-  ]);
-}
+const DEFAULT_PROFILE = 'https://firebasestorage.googleapis.com/v0/b/influenceme-dev.appspot.com/o/assets%2Fdefault-profile.jpg?alt=media&token=be59b770-b549-4f76-95db-fa52ee9f78fe';
 
 function ValidateEmail(email) {
   if (/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(email)) {
@@ -33,12 +28,22 @@ function ValidateEmail(email) {
 }
 
 class RegisterScreen extends Component {
+  static navigationOptions = ({ navigation }) => ({
+    headerRight: () => (
+      <Button
+        type='clear'
+        onPress={() => navigation.navigate('SignIn')}
+        title={'Sign in'}
+      />
+    )
+  });
+
   state = {
     displayName: '',
     email: '',
     password: '',
     repassword: '',
-    photoURL: DEFAULT_PROFILE_PIC,
+    photoURL: DEFAULT_PROFILE,
     imagePickerResponse: null,
     isWaiting: false,
     displayNameMessage: '',
@@ -46,7 +51,7 @@ class RegisterScreen extends Component {
     passwordMessage: '',
   };
 
-  componentDidMount() {}
+  componentDidMount() { }
 
   createAccount = async () => {
     let {
@@ -56,137 +61,74 @@ class RegisterScreen extends Component {
       photoURL,
       imagePickerResponse,
     } = this.state;
-    console.log('creates account with email and password');
-    await firebase.auth().createUserWithEmailAndPassword(email, password);
-    const {currentUser} = firebase.auth();
+    await auth().createUserWithEmailAndPassword(email, password);
+    const { currentUser } = auth();
     console.log('user is created', currentUser);
+    const { uid } = currentUser
     let isResizedImage = true;
     // Upload new profile pict if it is new
-    if (photoURL !== DEFAULT_PROFILE_PIC) {
+    if (photoURL !== DEFAULT_PROFILE) {
       isResizedImage = false;
       console.log('uploading avatar...');
-      let avatarRef = firebase
-        .storage()
-        .ref(`users/${currentUser.uid}/avatar/${currentUser.uid}.jpg`);
-      avatarRef.putFile(imagePickerResponse.path);
-      //photoURL = await avatarRef.getDownloadURL()
+      let avatarRef = storage().ref(`users/${uid}/avatar/${uid}.jpg`);
+      await avatarRef.putFile(imagePickerResponse.path);
+      photoURL = await avatarRef.getDownloadURL()
       console.log('avatar is uploaded!');
     }
+
+    let createUser = functions().httpsCallable('createUser')
     // Update user profile @Authentication
     console.log('update profile', displayName, photoURL);
-    await currentUser.updateProfile({displayName, photoURL});
+    await currentUser.updateProfile({ displayName, photoURL });
     // Create user @Firestore
-    let userRef = db.doc(`users/${currentUser.uid}`);
-    let userStatsRef = db.doc('users/--stats--');
-
-    db.runTransaction(async function(transaction) {
-      // This code may get re-run multiple times if there are conflicts.
-      return transaction.get(userStatsRef).then(function(userStatsDoc) {
-        // Set an initial value for event number
-        let userNumber = 0;
-        if (userStatsDoc.exists) {
-          userNumber = userStatsDoc.data().counter + 1;
-        }
-        // Increment counter and write user to @Firestore
-        transaction.set(userStatsRef, {counter: userNumber}, {merge: true});
-        transaction.set(
-          userRef,
-          {email, displayName, photoURL, userNumber, isResizedImage},
-          {merge: true},
-        );
-      });
-    })
-      .then(() => {
-        // Navigate user to Event List
-        this.props.navigation.navigate('UserHome', {displayName});
-      })
-      .catch(error => {
-        console.log('User create failed: ', error);
-      });
-    this.setState({isWaiting: false});
+    const newUser = { uid, displayName, photoURL, isResizedImage: isResizedImage }
+    let res = await createUser(newUser)
+    console.log('user creation completed ', res)
+    this.setState({ isWaiting: false });
+    this.props.navigation.navigate('UserHome', { displayName });
   };
 
   checkAccount = async () => {
-    const {displayName, email, password, repassword} = this.state;
+    const { displayName, email, password, repassword } = this.state;
     // Check display name
     if (!displayName)
-      return this.setState({displayNameMessage: 'We need a name!'});
-    //return AlertUser('We need a name!', 'Any name to show people :>')
+      return this.setState({ displayNameMessage: 'We need a name!' });
+
     // Check email
     if (!ValidateEmail(email))
-      return this.setState({emailMessage: 'Check email!'});
-    //return AlertUser('Check email!', 'Your email seems a bit awkward, can you check it again :>')
+      return this.setState({ emailMessage: 'Check email!' });
 
     // Check password and repassword
     if (password !== repassword || password.length < 6)
-      return this.setState({passwordMessage: 'Check password!'});
-    //return AlertUser('Check password!', 'Password shoud be at least 6 chars and same with repassword!')
+      return this.setState({ passwordMessage: 'Check password!' });
 
     // Check if account exists already
-    this.setState({isWaiting: true});
-    let result = await firebase.auth().fetchSignInMethodsForEmail(email);
+    this.setState({ isWaiting: true });
+    let result = await auth().fetchSignInMethodsForEmail(email);
     console.log('fetchSignInMethodsForEmail', result);
     if (result.length > 0) {
-      this.setState({isWaiting: false});
-      return AlertUser(
-        'Consider Sign in!',
-        `It looks like you already have account with ${email}`,
-      );
+      return this.setState({ isWaiting: false, emailMessage: 'There is an account with this email' });
     }
 
     // Everything is ok, let's create account
     this.createAccount();
   };
 
-  onAvatarPressed = () => {
-    if (this.state.isWaiting) return;
-    var customButtons = [];
-    /* if (this.state.profile.photoURL !== strings.DEFAULT_PROFILE_PIC) {
-          customButtons = [{
-            name: 'DeleteButton',
-            title: 'Fotoğrafı Sil'
-          }]
-        } */
-    const options = {
-      title: 'Upload Foto',
-      chooseFromLibraryButtonTitle: 'From Lib',
-      takePhotoButtonTitle: 'Open Cam',
-      cancelButtonTitle: 'Close',
+  onImagePicker = () => {
+    ImagePicker.openPicker({
+      path: 'my-profile-image.jpg',
+      width: 200,
+      height: 200,
+      cropping: true,
+    }).then(image => {
+      console.log(image);
+      if (Platform.OS === 'ios')
+        image.path = image.path.replace('file://', '');
+      console.log('picked image', image);
+      this.setState({ photoURL: image.path, imagePickerResponse: image });
+    }).catch(err => console.log('image-picker err:', err))
+  }
 
-      customButtons: customButtons,
-      mediaType: 'photo',
-      storageOptions: {
-        skipBackup: true,
-        path: 'images',
-        allowsEditing: true,
-        cameraRoll: true,
-        path:
-          Platform.OS == 'ios'
-            ? 'Documents/ConsultMe Images/ProfilePictures'
-            : 'Pictures/ ConsultMe Images/ProfilePictures',
-      },
-    };
-
-    ImagePicker.showImagePicker(options, async response => {
-      console.log('response', response);
-      if (response.didCancel) {
-      } else if (response.error) {
-      } else if (response.customButton) {
-        const {user} = this.props;
-        user.photoURL = strings.DEFAULT_PROFILE_PIC;
-        this.setState({
-          disabled: false,
-          saveButtonTitle: saveButtonEnabledTitle,
-        });
-      } else {
-        if (Platform.OS === 'ios')
-          response.path = response.uri.replace('file://', '');
-        console.log('response', response);
-        this.setState({photoURL: response.uri, imagePickerResponse: response});
-        /*                  */
-      }
-    });
-  };
 
   render() {
     const {
@@ -201,109 +143,93 @@ class RegisterScreen extends Component {
       passwordMessage,
     } = this.state;
     return (
-      <KeyboardAvoidingView style={styles.container}>
+      <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : ''} style={styles.container}>
         <ScrollView
           contentContainerStyle={{
             flexGrow: 1,
             justifyContent: 'space-between',
-            paddingHorizontal: 40,
+            paddingHorizontal: 30,
             paddingVertical: 10,
             alignItems: 'center',
           }}>
-          <View
-            style={{
-              alignContent: 'center',
-              backgroundColor: '#9fa9a3',
-              borderRadius: 10,
-              paddingHorizontal: 10,
-              paddingVertical: 10,
-            }}>
-            <Text style={{textAlign: 'center'}}>
-              If you’re here to join a show with a ticket, you don’t need to
-              register.
-            </Text>
-          </View>
-          <View style={{alignSelf: 'stretch', alignItems: 'center'}}>
+
+          <HighlightedText text="You don’t need an account to watch." />
+          <View style={{ alignSelf: 'stretch', paddingVertical: 20 }}>
+            <LabelText label='Choose your profile picture' />
             <Avatar
-              onPress={this.onAvatarPressed}
+              //title="⊕"
+              onPress={this.onImagePicker}
               size="large"
-              rounded={true}
+              avatarStyle={{ borderWidth: 1, borderColor: 'gray', borderRadius: 6, overflow: 'hidden' }}
+              overlayContainerStyle={{ backgroundColor: "white" }}
+              imageProps={{ borderRadius: 6 }}
+              //rounded={true}
               showEditButton={true}
-              source={{uri: photoURL || DEFAULT_PROFILE_PIC}}
+              source={{ uri: photoURL || DEFAULT_PROFILE }}
             />
+            <LabelText label='E-Mail' />
             <Input
-              placeholder="Display name"
+              placeholder="abc@abc.com"
               placeholderTextColor="#b2c2bf"
-              leftIcon={{type: 'material-community', name: 'account-circle'}}
-              leftIconContainerStyle={{marginLeft: 0, paddingRight: 10}}
-              onChangeText={displayName =>
-                this.setState({displayName, displayNameMessage: ''})
-              }
-              value={displayName}
-              errorMessage={displayNameMessage}
-              disabled={isWaiting}
-            />
-            <Input
-              placeholder="Enter Email"
-              placeholderTextColor="#b2c2bf"
-              leftIcon={{type: 'material-community', name: 'email'}}
-              leftIconContainerStyle={{marginLeft: 0, paddingRight: 10}}
-              onChangeText={email => this.setState({email, emailMessage: ''})}
+              onChangeText={email => this.setState({ email, emailMessage: '' })}
               value={email}
               keyboardType="email-address"
               errorMessage={emailMessage}
               disabled={isWaiting}
+              inputContainerStyle={styles.inputContainerStyle}
+              containerStyle={{ paddingHorizontal: 0 }}
             />
+
+            <LabelText label='Full Name' />
+            <Input
+              placeholder="Name Surname"
+              placeholderTextColor="#b2c2bf"
+              onChangeText={displayName => this.setState({ displayName, displayNameMessage: '' })}
+              value={displayName}
+              errorMessage={displayNameMessage}
+              disabled={isWaiting}
+              inputContainerStyle={styles.inputContainerStyle}
+              containerStyle={{ paddingHorizontal: 0 }}
+            />
+
+            <LabelText label='Password' />
             <Input
               placeholder="Password"
               placeholderTextColor="#b2c2bf"
-              leftIcon={{type: 'material-community', name: 'lock'}}
-              leftIconContainerStyle={{marginLeft: 0, paddingRight: 10}}
-              onChangeText={password =>
-                this.setState({password, passwordMessage: ''})
-              }
+              onChangeText={password => this.setState({ password, passwordMessage: '' })}
               value={password}
               errorMessage={passwordMessage}
               secureTextEntry
               disabled={isWaiting}
+              inputContainerStyle={styles.inputContainerStyle}
+              containerStyle={{ paddingHorizontal: 0 }}
             />
+            <LabelText label='Repeat Password' />
             <Input
               placeholder="Repassword"
               placeholderTextColor="#b2c2bf"
-              leftIcon={{type: 'material-community', name: 'lock'}}
-              leftIconContainerStyle={{marginLeft: 0, paddingRight: 10}}
-              onChangeText={repassword => this.setState({repassword})}
+              onChangeText={repassword => this.setState({ repassword })}
               value={repassword}
               secureTextEntry
               disabled={isWaiting}
+              inputContainerStyle={styles.inputContainerStyle}
+              containerStyle={{ paddingHorizontal: 0 }}
             />
-            <View
-              style={{
-                alignSelf: 'stretch',
-                flexDirection: 'column',
-                justifyContent: 'center',
-              }}>
+            <View style={styles.checkBoxStyle}>
               <CheckBox
                 title="I accept privacy and legal terms"
                 checked={this.state.terms}
-                onPress={() => this.setState({terms: !this.state.terms})}
-                containerStyle={{backgroundColor: 'transparent',borderColor:'transparent'}}
+                onPress={() => this.setState({ terms: !this.state.terms })}
+                containerStyle={{ backgroundColor: 'transparent', borderColor: 'transparent' }}
                 checkedColor='#3b3a30'
               />
               <Button
-                buttonStyle={{backgroundColor: '#3b3a30'}}
+                buttonStyle={styles.buttonStyle}
                 title="Create My Account"
                 onPress={this.checkAccount}
                 disabled={isWaiting}
               />
             </View>
-          </View>
-          <View style={{alignItems: 'center', flexDirection: 'column'}}>
-            <Text>Already Registered?</Text>
-            <TouchableOpacity
-              onPress={() => this.props.navigation.navigate('SignIn', {email})}>
-              <Text style={{textDecorationLine: 'underline'}}>SignIn Here</Text>
-            </TouchableOpacity>
           </View>
         </ScrollView>
       </KeyboardAvoidingView>
@@ -316,6 +242,24 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: 'white',
   },
+  inputContainerStyle: {
+    borderWidth: 0.7,
+    borderColor: '#3b3a30',
+    borderRadius: 6,
+    paddingHorizontal: 10,
+    marginHorizontal: 0,
+    paddingVertical: 5,
+  },
+  checkBoxStyle: {
+    alignSelf: 'stretch',
+    flexDirection: 'column',
+    justifyContent: 'center',
+  },
+  buttonStyle: {
+    backgroundColor: '#196BFF',
+    borderRadius: 6,
+    paddingVertical: 15
+  }
 });
 
 export default RegisterScreen;

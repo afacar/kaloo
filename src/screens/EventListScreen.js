@@ -1,29 +1,22 @@
 import React, { Component } from 'react';
 import { View, StyleSheet, PermissionsAndroid, Text, ActivityIndicator, ScrollView, Platform } from 'react-native';
-import AppText from '../components/AppText';
-import { Input, Button, Card, ListItem, Icon, Overlay, Avatar } from 'react-native-elements';
-import firebase from "react-native-firebase";
-import PreviewAndCreate from "../components/PreviewAndCreate";
-import EventPreview from '../components/EventPreview';
-import CreateEventScreen from "../components/EventCreate";
+import { Button, Card, ListItem, Avatar } from 'react-native-elements';
+import { firestore, auth } from "react-native-firebase";
+import { connect } from 'react-redux';
+import { setUserProfile } from "../appstate/actions/auth_actions";
 
-const db = firebase.firestore()
-const auth = firebase.auth()
-const storage = firebase.storage()
-
-const DEFAULT_EVENT_PIC = 'https://firebasestorage.googleapis.com/v0/b/influenceme-dev.appspot.com/o/assets%2Fbroadcast-media.png?alt=media&token=608c9143-879d-4ff7-a30d-ac61ba319904'
+const db = firestore()
 
 class UserHeader extends React.Component {
-    currentUser = firebase.auth().currentUser
     render() {
         return (
             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                 <Avatar
                     rounded={true}
                     size='small'
-                    source={{ uri: this.currentUser.photoURL }}
+                    source={{ uri: auth().currentUser.photoURL }}
                 />
-                <Text style={{ paddingLeft: 10, fontSize: 20 }}>{this.currentUser.displayName}</Text>
+                <Text style={{ paddingLeft: 10, fontSize: 20 }}>{auth().currentUser.displayName}</Text>
             </View>
         );
     }
@@ -32,7 +25,7 @@ class UserHeader extends React.Component {
 
 class EventListScreen extends Component {
     static navigationOptions = ({ navigation }) => ({
-        headerTitle: () => <UserHeader/>,
+        headerTitle: () => <UserHeader />,
         headerRight: () => (
             <Button
                 type='clear'
@@ -52,7 +45,7 @@ class EventListScreen extends Component {
     }
 
     componentDidMount = async () => {
-        this.authListener = firebase.auth().onAuthStateChanged(user => {
+        this.authListener = auth().onAuthStateChanged(user => {
             console.log('UserHome onAuthStateChange>', user);
             if (user && !user.isAnonymous) {
                 this.props.navigation.navigate('User');
@@ -60,7 +53,7 @@ class EventListScreen extends Component {
                 this.props.navigation.navigate('Splash');
             }
         });
-        this.checkProfile()
+        this.props.setUserProfile();
         this.checkMyEvents()
         if (Platform.OS === 'android') {
             this.checkCameraPermission();
@@ -68,27 +61,10 @@ class EventListScreen extends Component {
         }
     }
 
-    checkProfile = async () => {
-        let userDoc = await db.doc(`users/${auth.currentUser.uid}`).get()
-        let { isResizedImage } = userDoc.data()
-        if (!isResizedImage) {
-            // Check if there is resized avatar on storage
-            let avatarRef = storage.ref(`users/${auth.currentUser.uid}/avatar/${auth.currentUser.uid}_200x200.jpg`)
-            avatarRef.getDownloadURL()
-                .then(async (url) => {
-                    // Replace resized image with original one
-                    console.log('There is a resized image')
-                    await auth.currentUser.updateProfile({ photoURL: url })
-                    let userRef = db.doc(`users/${auth.currentUser.uid}`)
-                    await userRef.set({ photoURL: url, isResizedImage: true }, { merge: true });
-                    console.log('Resized image is set')
-                }).catch(err => console.log('No resized profile image', err))
-        }
-    }
-
     checkMyEvents = async () => {
+        const { uid } = auth().currentUser
         this.setState({ isLoading: true })
-        var pathToEvents = `users/${auth.currentUser.uid}/myevents`;
+        var pathToEvents = `users/${uid}/myevents`;
         let events = await db.collection(pathToEvents).where('eventDate', '>=', new Date()).orderBy('eventDate').get()
             .then((querySnapshot) => {
                 var events = [];
@@ -96,20 +72,6 @@ class EventListScreen extends Component {
                     let event = doc.data()
                     // Convert Firebase Timestamp tp JS Date object
                     event.eventDate = event.eventDate.toDate()
-                    if (!event.isResizedImage) {
-                        let eventTimestamp = event.eventTimestamp || event.eventDate.getTime()
-                        let resizedImageFileName = eventTimestamp + '_200x200.jpg'
-                        let imagePath = `events/${auth.currentUser.uid}/${resizedImageFileName}`
-                        console.log(`Checking resized event images at: ${imagePath}`)
-                        const imageRef = storage.ref(imagePath)
-                        imageRef.getDownloadURL().then((url) => {
-                            // Set resized image as event image
-                            db.doc(`events/${event.eid}`).update({ image: url, isResizedImage: true })
-                            db.doc(`users/${event.uid}/myevents/${event.eid}`).update({ image: url, isResizedImage: true })
-                        }).catch(async (error) => {
-                            console.log('No resized event image yet')
-                        })
-                    }
                     events.push(doc.data());
                 });
                 console.log("Current events fetched: ", events);
@@ -210,24 +172,13 @@ class EventListScreen extends Component {
                                 type='clear'
                                 icon={{ type: 'material-community', name: 'cast' }}
                                 title='Create Event'
-                                onPress={() => this.setState({ isCreateEvent: true })} />
+                                onPress={() => this.props.navigation.navigate('CreateEvent')} />
                         </View>
                         <ScrollView overScrollMode='never'>
                             {this.renderEventList()}
                         </ScrollView>
                     </View>
                 </Card>
-                <Overlay
-                    isVisible={this.state.isCreateEvent}
-                    windowBackgroundColor="rgba(255, 255, 255, .5)"
-                    onBackdropPress={() => this.setState({ isCreateEvent: false })}
-                    fullScreen
-                >
-                    <PreviewAndCreate
-                        onPublish={this.onEventPublish}
-                        onCancel={() => this.setState({ isCreateEvent: false })}
-                    />
-                </Overlay>
             </View>
         )
     }
@@ -241,4 +192,4 @@ const styles = StyleSheet.create({
     }
 })
 
-export default EventListScreen;
+export default connect(null, { setUserProfile })(EventListScreen);
