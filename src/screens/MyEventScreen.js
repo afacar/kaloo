@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { View, StyleSheet, Image, Share, Platform, BackHandler } from 'react-native';
-import { Input, Button, Text, Card, Icon } from 'react-native-elements';
+import { Button, Text, Card, Icon } from 'react-native-elements';
 import { app } from '../constants';
 import { setEventListener, clearEventListener } from '../utils/EventHandler';
 
@@ -24,11 +24,9 @@ class MyEventScreen extends Component {
 
     componentDidMount() {
         console.log('MyEventScreen Mounted', this.state)
-        BackHandler.addEventListener('hardwareBackPress', this.handleBackButton);
+        BackHandler.addEventListener('hardwareBackPress', () => this.handleBackButton(this.props.navigation));
 
         setEventListener(this.state.eid, (event) => {
-            console.log('Event from eventHandler', event)
-
             if (event) {
                 event.eventDate = event.eventDate.toDate()
                 this.setState({ ...event })
@@ -36,12 +34,13 @@ class MyEventScreen extends Component {
         })
     }
 
-    handleBackButton() {
+    handleBackButton(navigation) {
+        navigation.popToTop()
         return true
     }
 
     componentWillUnmount() {
-        BackHandler.removeEventListener('hardwareBackPress', this.handleBackButton);
+        BackHandler.removeEventListener('hardwareBackPress', () => this.handleBackButton(this.props.navigation));
         clearEventListener(this.event.eid);
     }
 
