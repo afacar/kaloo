@@ -17,6 +17,12 @@ export default StyleSheet.create({
     liveInfo: {
         position: 'absolute',
         top: 24,
+        left: 24,
+        backgroundColor: 'transparent',
+    },
+    timerNViewer: {
+        position: 'absolute',
+        top: 24,
         right: 24,
         backgroundColor: 'transparent',
     },
@@ -35,6 +41,16 @@ export default StyleSheet.create({
         fontSize: 12,
         color: 'white',
         backgroundColor: colors.RED,
+        borderRadius: 56,
+        textAlign: 'center',
+        padding: 8,
+        paddingHorizontal: 20
+    },
+    standybyText: {
+        marginLeft: 16,
+        fontSize: 12,
+        color: 'white',
+        backgroundColor: colors.GREEN,
         borderRadius: 56,
         textAlign: 'center',
         padding: 8,
@@ -69,7 +85,20 @@ export default StyleSheet.create({
     startButton: {
         position: 'absolute',
         alignSelf: 'center',
-        backgroundColor: colors.BLUE,
+        backgroundColor: colors.GREEN,
+        bottom: 24,
+        // width: 220,
+        // height: 46,
+        // borderWidth: 1,
+        borderRadius: 38,
+        padding: 12,
+        justifyContent: 'center',
+        alignItems: 'center'
+    },
+    endButton: {
+        position: 'absolute',
+        alignSelf: 'center',
+        backgroundColor: colors.RED,
         bottom: 24,
         // width: 220,
         // height: 46,

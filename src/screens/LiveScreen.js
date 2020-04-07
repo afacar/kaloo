@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, Platform, NativeModules, PermissionsAndroid, Alert, StatusBar, TouchableOpacity, BackHandler, ToastAndroid } from 'react-native';
+import { View, Platform, NativeModules, PermissionsAndroid, Alert, StatusBar, TouchableOpacity } from 'react-native';
 import app from '../constants/app';
 import { RtcEngine, AgoraView } from 'react-native-agora';
 import { decrementViewer, clearLiveEventListener, setLiveEventListener, incrementViewer, startLive, endLive, suspendLive, continueLive } from '../utils/EventHandler';
@@ -9,6 +9,7 @@ import { styles } from '../constants';
 import AppText from '../components/AppText';
 import { formatTime } from '../utils/Utils';
 import firebase from 'react-native-firebase';
+import Header from '../components/Header';
 const { Agora } = NativeModules;
 
 const {
@@ -334,83 +335,95 @@ export default class LiveScreen extends Component {
             clearInterval(this.timer);
     }
 
+    reportProblem() {
+        console.warn("Report a problem clicked");
+    }
+
     render() {
         const clientRole = this.props.navigation.getParam('clientRole', 1);
         return (
             <TouchableOpacity activeOpacity={1} onPress={() => this.toggleShowState()} style={{ flex: 1 }}>
                 <View style={{ flex: 1 }}>
                     <StatusBar hidden={true} />
-                    {
-                        // The Host
-                        clientRole === 1 && (
-                            <View style={{ flex: 1 }}>
-                                <AgoraView style={{ flex: 1 }} showLocalVideo={true} mode={1} />
-                                {/* {
+                    <Header
+                        buttonTitle={'Quit Call'}
+                        buttonTitleStyle={{ color: colors.BLUE, fontSize: 16 }}
+                        headerRight={(
+                            <TouchableOpacity onPress={this.reportProblem}>
+                                <Text style={{ fontSize: 16, fontWeight: 'bold', color: colors.BLUE }}>Report Problem</Text>
+                            </TouchableOpacity>
+                        )}
+                    />
+                    <View style={{ flex: 1 }}>
+                        {
+                            // The Host
+                            clientRole === 1 && (
+                                <View style={{ flex: 1 }}>
+                                    <AgoraView style={{ flex: 1 }} showLocalVideo={true} mode={1} />
+                                    {/* {
                                     this.state.showButtons && (
                                         <AppButton style={styles.videoQuitButton} onPress={this.endLive}>
                                             <AppText style={{ color: '#FFFFFF', marginLeft: 8, fontSize: 20 }}>End</AppText>
                                         </AppButton>
                                     )
                                 } */}
-                                <AppButton style={styles.videoQuitButton} onPress={this.suspendLive}>
-                                    <AppText style={{ color: '#FFFFFF', marginLeft: 8, fontSize: 16, fontWeight: 'bold' }}>Go back</AppText>
-                                </AppButton>
-                                <View style={styles.liveInfo}>
-                                    <View style={{ flex: 1, marginBottom: 10, justifyContent: 'center', alignItems: 'center' }}>
-                                        <AppText style={styles.viewerText}>{this.state.viewers + ' Viewers'}</AppText>
+                                    <View style={styles.timerNViewer}>
+                                        <View style={{ flex: 1, marginBottom: 10, justifyContent: 'center', alignItems: 'center' }}>
+                                            <AppText style={styles.viewerText}>{this.state.viewers + ' Viewers'}</AppText>
+                                        </View>
+                                        <View style={{ flex: 1 }}>
+                                            <AppText style={styles.timerCard}>{this.state.timeStr}</AppText>
+                                            {/* <AppText style={styles.liveText}>Live</AppText> */}
+                                        </View>
                                     </View>
-                                    <View style={{ flex: 1, flexDirection: 'row' }}>
-                                        <AppText style={styles.timerCard}>{this.state.timeStr}</AppText>
-                                        <AppText style={styles.liveText}>Live</AppText>
-                                    </View>
-                                </View>
 
-                                {
-                                    this.state.status === app.EVENT_STATUS.IN_PROGRESS && (
-                                        <AppButton style={styles.startButton} onPress={this.endLive}>
-                                            <AppText style={{ color: 'white', fontWeight: 'bold', fontSize: 16 }}>End Broadcasting</AppText>
-                                        </AppButton>
-                                    )
-                                }
-                                {
-                                    this.state.status === app.EVENT_STATUS.SUSPENDED && (
-                                        <AppButton style={styles.startButton} onPress={this.continueLive}>
-                                            <AppText style={{ color: 'white', fontWeight: 'bold', fontSize: 16 }}>Continue Broadcasting</AppText>
-                                        </AppButton>
-                                    )
-                                }
-                                {
-                                    this.state.status === app.EVENT_STATUS.SCHEDULED && (
-                                        <AppButton style={styles.startButton} onPress={this.startLive}>
-                                            <AppText style={{ color: 'white', fontWeight: 'bold', fontSize: 16 }}>Start Broadcasting</AppText>
-                                        </AppButton>
-                                    )
-                                }
-                            </View>
-                        )
-                    }
-                    {
-                        // Viewer
-                        clientRole === 2 && (
-                            <View style={{ flex: 1 }}>
-                                <AgoraView mode={1} key={HOST_UID} style={{ flex: 1 }} remoteUid={HOST_UID} />
-                                {/* {
+                                    {
+                                        this.state.status === app.EVENT_STATUS.IN_PROGRESS && (
+                                            <AppButton style={styles.endButton} onPress={this.endLive}>
+                                                <AppText style={{ color: 'white', fontWeight: 'bold', fontSize: 16 }}>End Broadcasting</AppText>
+                                            </AppButton>
+                                        )
+                                    }
+                                    {
+                                        this.state.status === app.EVENT_STATUS.SUSPENDED && (
+                                            <AppButton style={styles.startButton} onPress={this.continueLive}>
+                                                <AppText style={{ color: 'white', fontWeight: 'bold', fontSize: 16 }}>Continue Broadcasting</AppText>
+                                            </AppButton>
+                                        )
+                                    }
+                                    {
+                                        this.state.status === app.EVENT_STATUS.SCHEDULED && (
+                                            <AppButton style={styles.startButton} onPress={this.startLive}>
+                                                <AppText style={{ color: 'white', fontWeight: 'bold', fontSize: 16 }}>Start Broadcasting</AppText>
+                                            </AppButton>
+                                        )
+                                    }
+                                </View>
+                            )
+                        }
+                        {
+                            // Viewer
+                            clientRole === 2 && (
+                                <View style={{ flex: 1 }}>
+                                    <AgoraView mode={1} key={HOST_UID} style={{ flex: 1 }} remoteUid={HOST_UID} />
+                                    {/* {
                                     this.state.showButtons && (
                                         <AppButton style={styles.videoQuitButton} onPress={this.leaveLive}>
                                             <AppText style={{ color: '#FFFFFF', marginLeft: 8, fontSize: 20 }}>Leave</AppText>
                                         </AppButton>
                                     )
                                 } */}
-                                <AppButton style={styles.videoQuitButton} onPress={this.suspendLive}>
-                                    <AppText style={{ color: '#FFFFFF', marginLeft: 8, fontSize: 16, fontWeight: 'bold' }}>Quit Show</AppText>
-                                </AppButton>
-                                <View style={styles.liveInfo}>
-                                    <AppText style={styles.timerCard}>{this.state.timeStr}</AppText>
+                                    <AppButton style={styles.videoQuitButton} onPress={this.suspendLive}>
+                                        <AppText style={{ color: '#FFFFFF', marginLeft: 8, fontSize: 16, fontWeight: 'bold' }}>Quit Show</AppText>
+                                    </AppButton>
+                                    <View style={styles.liveInfo}>
+                                        <AppText style={styles.timerCard}>{this.state.timeStr}</AppText>
+                                    </View>
+                                    <AppText style={styles.viewerCard}>{this.state.viewers + ' Viewers'}</AppText>
                                 </View>
-                                <AppText style={styles.viewerCard}>{this.state.viewers + ' Viewers'}</AppText>
-                            </View>
-                        )
-                    }
+                            )
+                        }
+                    </View>
                 </View>
             </TouchableOpacity>
         )

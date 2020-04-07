@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, Platform, NativeModules, PermissionsAndroid, Alert, StatusBar, ActivityIndicator, Modal } from 'react-native';
+import { View, Platform, NativeModules, PermissionsAndroid, Alert, StatusBar, ActivityIndicator, Text, TouchableOpacity } from 'react-native';
 import app from '../constants/app';
 import { RtcEngine, AgoraView } from 'react-native-agora';
 import { styles, colors } from '../constants';
@@ -10,6 +10,7 @@ import firebase from 'react-native-firebase';
 import AppButton from '../components/AppButton';
 import AppText from '../components/AppText';
 import { Overlay } from 'react-native-elements';
+import Header from '../components/Header';
 const { Agora } = NativeModules;
 
 const {
@@ -350,20 +351,20 @@ export default class VideoChatScreen extends Component {
         const { status } = this.state;
         if (status === app.EVENT_STATUS.IN_PROGRESS) {
             return (
-                <AppButton style={styles.startButton} onPress={this.endCall}>
-                    <AppText style={{ color: 'white', fontWeight: 'bold', fontSize: 16 }}>End Meeting</AppText>
+                <AppButton style={styles.endButton} onPress={this.endCall}>
+                    <AppText style={{ color: 'white', fontWeight: 'bold', fontSize: 16 }}>End Call</AppText>
                 </AppButton>
             )
         } else if (status === app.EVENT_STATUS.SCHEDULED) {
             return (
                 <AppButton style={styles.startButton} onPress={this.startCall}>
-                    <AppText style={{ color: 'white', fontWeight: 'bold', fontSize: 16 }}>Start Meeting</AppText>
+                    <AppText style={{ color: 'white', fontWeight: 'bold', fontSize: 16 }}>Start Call</AppText>
                 </AppButton>
             )
         } else if (status === app.EVENT_STATUS.SUSPENDED) {
             return (
                 <AppButton style={styles.startButton} onPress={this.continueCall}>
-                    <AppText style={{ color: 'white', fontWeight: 'bold', fontSize: 16 }}>Continue Meeting</AppText>
+                    <AppText style={{ color: 'white', fontWeight: 'bold', fontSize: 16 }}>Continue Call</AppText>
                 </AppButton>
             )
         }
@@ -389,37 +390,71 @@ export default class VideoChatScreen extends Component {
         }
     }
 
+    renderLiveInfo() {
+        const { status } = this.state;
+        var clientRole = this.props.navigation.getParam('clientRole', 2);
+        if (status === app.EVENT_STATUS.SCHEDULED && clientRole === 1) {
+            return (
+                <View style={styles.liveInfo}>
+                    <AppText style={styles.standybyText}>Standby</AppText>
+                </View>
+            )
+        } else if (status === app.EVENT_STATUS.IN_PROGRESS) {
+            return (
+                <View style={styles.liveInfo}>
+                    <AppText style={styles.liveText}>Live</AppText>
+                </View>
+            )
+        }
+    }
+
+    reportProblem() {
+        console.warn("Report a problem clicked");
+    }
+
     render() {
         const capacity = this.state.peerIds.length;
         const clientRole = this.props.navigation.getParam('clientRole', 1);
         return (
             <View style={{ flex: 1 }}>
                 <StatusBar hidden={true} />
-                {
-                    capacity === 0 && (
-                        <View style={{ flex: 1 }}>
-                            <AgoraView style={{ flex: 1 }} mode={1} showLocalVideo={true} />
-                            {
-                                this.renderWaitingBox()
-                            }
-                        </View>
-                    )
-                }
-                {
-                    capacity === 1 && (
-                        this.renderTwoVideos()
-                    )
-                }
-                {
-                    clientRole === 1 && (
-                        this.renderStartButton()
-                    )
-                }
-                <AppButton style={styles.videoQuitButton} onPress={this.leaveCall}>
-                    <AppText style={{ color: '#FFFFFF', marginLeft: 8, fontSize: 16, fontWeight: 'bold' }}>Go back</AppText>
-                </AppButton>
-                <View style={styles.liveInfo}>
-                    <AppText style={styles.timerCard}>{this.state.timeStr}</AppText>
+                <Header
+                    buttonTitle={'Quit Call'}
+                    buttonTitleStyle={{ color: colors.BLUE, fontSize: 16 }}
+                    headerRight={(
+                        <TouchableOpacity onPress={this.reportProblem}>
+                            <Text style={{ fontSize: 16, fontWeight: 'bold', color: colors.BLUE }}>Report Problem</Text>
+                        </TouchableOpacity>
+                    )}
+                    onPress={this.backButtonPressed}
+                />
+                <View style={{ flex: 1 }}>
+                    {
+                        capacity === 0 && (
+                            <View style={{ flex: 1 }}>
+                                <AgoraView style={{ flex: 1 }} mode={1} showLocalVideo={true} />
+                                {
+                                    this.renderWaitingBox()
+                                }
+                            </View>
+                        )
+                    }
+                    {
+                        capacity === 1 && (
+                            this.renderTwoVideos()
+                        )
+                    }
+                    {
+                        clientRole === 1 && (
+                            this.renderStartButton()
+                        )
+                    }
+                    {
+                        this.renderLiveInfo()
+                    }
+                    <View style={styles.timerNViewer}>
+                        <AppText style={styles.timerCard}>{this.state.timeStr}</AppText>
+                    </View>
                 </View>
                 {/* {
                     capacity === 0 && (

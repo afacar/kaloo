@@ -14,13 +14,13 @@ class JoinEventScreen extends Component {
     componentDidMount() {
         console.log('Event state is', this.state)
 
-        setEventListener(this.event.eventNumber, (event) => {
+        setEventListener(this.event.eid, (event) => {
             this.setState({ ...event })
         })
     }
 
     componentWillUnmount() {
-        clearEventListener(this.event.eventNumber);
+        clearEventListener(this.event.eid);
     }
 
     onShare = async () => {

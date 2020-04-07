@@ -104,8 +104,8 @@ class EventListScreen extends Component {
                         const imageRef = storage.ref(imagePath)
                         imageRef.getDownloadURL().then((url) => {
                             // Set resized image as event image
-                            db.doc(`events/${event.eventNumber}`).update({ image: url, isResizedImage: true })
-                            db.doc(`users/${event.uid}/myevents/${event.eventNumber}`).update({ image: url, isResizedImage: true })
+                            db.doc(`events/${event.eid}`).update({ image: url, isResizedImage: true })
+                            db.doc(`users/${event.uid}/myevents/${event.eid}`).update({ image: url, isResizedImage: true })
                         }).catch(async (error) => {
                             console.log('No resized event image yet')
                         })

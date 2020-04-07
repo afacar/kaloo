@@ -12,7 +12,7 @@ class MyEventScreen extends Component {
     componentDidMount() {
         console.log('MyEventScreen Mounted', this.state)
 
-        setEventListener(this.event.eventNumber, (event) => {
+        setEventListener(this.event.eid, (event) => {
             console.log('Event from eventHandler', event)
 
             if (event) {
@@ -23,7 +23,7 @@ class MyEventScreen extends Component {
     }
 
     componentWillUnmount() {
-        clearEventListener(this.event.eventNumber);
+        clearEventListener(this.event.eid);
     }
 
     onShare = async () => {
