@@ -27,7 +27,7 @@ class TicketScreen extends Component {
       if (response && response.data && response.data.state === 'SUCCESS') {
         let eventData = response.data.event;
         this.setState({ isWaiting: false })
-        this.props.navigation.navigate('MyEvent', { event: eventData })
+        this.props.navigation.navigate('JoinEvent', { event: eventData })
       } else {
         this.setState({ isWaiting: false, ticketError: response.data.message })
       }

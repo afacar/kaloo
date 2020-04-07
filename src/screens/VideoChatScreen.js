@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { View, Platform, NativeModules, PermissionsAndroid, Alert, StatusBar, ActivityIndicator, Text, TouchableOpacity } from 'react-native';
 import app from '../constants/app';
 import { RtcEngine, AgoraView } from 'react-native-agora';
+import KeepAwake from 'react-native-keep-awake';
 import firebase from 'react-native-firebase';
 import { clearLiveEventListener, setLiveEventListener, startLive, endLive, suspendLive, continueLive } from '../utils/EventHandler';
 import { handleAndroidBackButton, removeAndroidBackButtonHandler } from '../utils/BackHandler';
@@ -10,6 +11,7 @@ import AppButton from '../components/AppButton';
 import AppText from '../components/AppText';
 import { Overlay } from 'react-native-elements';
 import Header from '../components/Header';
+import { colors, styles } from '../constants';
 const { Agora } = NativeModules;
 
 const {
@@ -91,7 +93,6 @@ export default class VideoChatScreen extends Component {
         // rtc object
         RtcEngine.on('userJoined', (data) => {
             const { peerIds } = this.state;
-            console.warn('userJoined', data.uid);
             if (peerIds.indexOf(data.uid) === -1) {
                 this.setState({
                     peerIds: [...this.state.peerIds, data.uid]
@@ -392,7 +393,7 @@ export default class VideoChatScreen extends Component {
     renderLiveInfo() {
         const { status } = this.state;
         var clientRole = this.props.navigation.getParam('clientRole', 2);
-        if (status === app.EVENT_STATUS.SCHEDULED && clientRole === 1) {
+        if ((status === app.EVENT_STATUS.SCHEDULED || status === app.EVENT_STATUS.SUSPENDED) && clientRole === 1) {
             return (
                 <View style={styles.liveInfo}>
                     <AppText style={styles.standybyText}>Standby</AppText>
@@ -417,6 +418,7 @@ export default class VideoChatScreen extends Component {
         return (
             <View style={{ flex: 1 }}>
                 <StatusBar hidden={true} />
+                <KeepAwake />
                 <Header
                     buttonTitle={'Quit Call'}
                     buttonTitleStyle={{ color: colors.BLUE, fontSize: 16 }}
