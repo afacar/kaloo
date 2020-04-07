@@ -8,6 +8,10 @@ import LabelText from '../components/LabelText'
 
 
 class TicketScreen extends Component {
+    static navigationOptions = ({ navigation }) => ({
+        title: 'Find your event'
+    });
+
     state = { ticket: '', isWaiting: false, ticketError: ' ' }
 
     checkTicket = async () => {

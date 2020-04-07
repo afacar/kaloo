@@ -6,14 +6,15 @@ import { setEventListener, clearEventListener } from '../utils/EventHandler';
 
 class MyEventScreen extends Component {
     static navigationOptions = ({ navigation }) => ({
+        title: `${navigation.getParam('event').title}`,
         headerLeft: () => (
             <Button
                 type='clear'
                 onPress={() => navigation.navigate('UserHome')}
+                containerStyle={{ marginLeft: 15 }}
                 icon={<Icon type="ionicon"
                     name={Platform.OS === 'ios' ? 'ios-arrow-back' : 'md-arrow-back'}
                     color="black"
-                //size={16}
                 />}
             />
         )

@@ -8,6 +8,10 @@ import LabelText from '../components/LabelText';
 
 
 class TicketScreen extends Component {
+  static navigationOptions = ({ navigation }) => ({
+    title: 'Find your event'
+  });
+
   state = { ticket: '', isWaiting: false, ticketError: '', isTicketFormat: false };
 
   checkTicket = async () => {
@@ -40,7 +44,8 @@ class TicketScreen extends Component {
         contentContainerStyle={{
           flexGrow: 1,
           paddingHorizontal: 20,
-          paddingVertical: 10
+          paddingVertical: 10,
+          backgroundColor: 'white'
         }}>
         <KeyboardAvoidingView style={styles.container}>
           <Avatar
@@ -94,8 +99,7 @@ class TicketScreen extends Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: 'center',
-    backgroundColor: 'white',
+    alignItems: 'center'
   },
 });
 
