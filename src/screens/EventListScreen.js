@@ -138,15 +138,15 @@ class EventListScreen extends Component {
 
         if (events.length > 0) {
             return events.map((e, i) => {
+                let description = e.description.substring(0, 20) || 'No description';
+                description = description + '\n' + e.eventDate.toLocaleString()
                 return (
                     <ListItem
                         key={i}
                         leftAvatar={{ source: { uri: e.image } }}
                         rightIcon={{ type: 'material-community', name: 'chevron-right' }}
-                        roundAvatar
                         title={e.title}
-                        subtitle={e.description || 'No description'}
-                        avatar={{ uri: e.image }}
+                        subtitle={description}
                         bottomDivider
                         onPress={() => this.props.navigation.navigate('MyEvent', { event: e })}
                     />
