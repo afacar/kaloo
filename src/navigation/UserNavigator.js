@@ -36,6 +36,8 @@ export default UserNavigatior = createStackNavigator(
   },
   {
     initialRouteName: "UserHome",
-  },
-
+    defaultNavigationOptions: {
+      cardStyle: { backgroundColor: 'white' }
+    }
+  }
 );

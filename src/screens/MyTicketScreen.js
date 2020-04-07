@@ -40,8 +40,7 @@ class TicketScreen extends Component {
                 contentContainerStyle={{
                     flexGrow: 1,
                     paddingHorizontal: 20,
-                    paddingVertical: 10,
-                    backgroundColor: 'white',
+                    paddingVertical: 10
                 }}>
                 <KeyboardAvoidingView style={styles.container}>
                     <Avatar
