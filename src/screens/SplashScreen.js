@@ -1,12 +1,16 @@
 import React, { Component } from 'react';
 import { View, StyleSheet } from 'react-native';
 import AppText from '../components/AppText';
-import firebase from 'react-native-firebase';
+import { auth } from 'react-native-firebase';
+
+import { loadAssets } from "../appstate/actions/app_actions";
+import { connect } from 'react-redux';
 
 class SplashScreen extends Component {
 
     componentDidMount() {
-        const user = firebase.auth().currentUser;
+        this.props.loadAssets()
+        const user = auth().currentUser;
         if (user) this.props.navigation.navigate('User');
         else this.props.navigation.navigate('Home');
     }
@@ -32,4 +36,4 @@ const styles = StyleSheet.create({
     }
 })
 
-export default SplashScreen;
+export default connect(null, { loadAssets })(SplashScreen);

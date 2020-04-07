@@ -1,11 +1,10 @@
 import React, { Component } from 'react';
-
 import { Provider } from 'react-redux';
 import AppContainer from './src/navigation/AppNavigator';
 import { SafeAreaView } from 'react-native';
+import firebase from 'react-native-firebase';
 
 import store from './src/appstate/store';
-import firebase from 'react-native-firebase';
 
 class App extends Component {
   componentDidMount() {
@@ -27,10 +26,10 @@ class App extends Component {
 
   render() {
     return (
-      <SafeAreaView style={{flex:1}}>
-      <Provider store={store}>
-        <AppContainer />
-      </Provider>
+      <SafeAreaView style={{ flex: 1 }}>
+        <Provider store={store}>
+          <AppContainer />
+        </Provider>
       </SafeAreaView>
     );
   }
