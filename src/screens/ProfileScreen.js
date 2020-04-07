@@ -1,12 +1,10 @@
 import React, { Component } from 'react';
 import { View, StyleSheet, Text, ActivityIndicator, KeyboardAvoidingView, ScrollView, TouchableOpacity } from 'react-native';
 import { Input, Button, Avatar, Icon } from 'react-native-elements';
-import firebase from "react-native-firebase";
+import { firestore, auth, storage } from "react-native-firebase";
 import ImagePicker from "react-native-image-crop-picker";
 
-const db = firebase.firestore();
-const auth = firebase.auth();
-const storage = firebase.storage();
+const db = firestore();
 
 class ProfileScreen extends Component {
     static navigationOptions = ({ navigation }) => ({
@@ -29,7 +27,7 @@ class ProfileScreen extends Component {
         )
     });
 
-    user = firebase.auth().currentUser
+    user = auth().currentUser
     state = {
         email: this.user.email,
         displayName: this.user.displayName,
@@ -42,15 +40,15 @@ class ProfileScreen extends Component {
     componentDidMount() { }
 
     handleProfileUpdate = async () => {
-        let { displayName, photoURL, isAvatarChanged, isNameChanged, pickerResponse } = this.state;
+        let { displayName, photoURL, isAvatarChanged, isNameChanged } = this.state;
         let newProfile = {}
         let isResizedImage = true;
         this.setState({ isWaiting: true })
         if (isAvatarChanged) {
-            // Upload new Avatar to Storage
+            // Upload new Avatar to @Storage
             newProfile.photoURL = photoURL
             console.log('uploading avatar...')
-            let avatarRef = storage.ref(`users/${this.user.uid}/avatar/${this.user.uid}.jpg`)
+            let avatarRef = storage().ref(`users/${this.user.uid}/avatar/${this.user.uid}.jpg`)
             try {
                 await avatarRef.putFile(photoURL);
                 let newPhotoURL = await avatarRef.getDownloadURL()
@@ -66,7 +64,7 @@ class ProfileScreen extends Component {
         }
 
         // Update user @Authentication 
-        await auth.currentUser.updateProfile(newProfile)
+        await auth().currentUser.updateProfile(newProfile)
         // Update user @Firestore 
         let userRef = db.doc(`users/${this.user.uid}`)
         await userRef.set({ ...newProfile, isResizedImage }, { merge: true });
@@ -127,7 +125,7 @@ class ProfileScreen extends Component {
                         </View>
                     </View>
                     <View style={{ alignItems: 'center', flexDirection: 'column' }}>
-                        <TouchableOpacity onPress={() => auth.signOut()} >
+                        <TouchableOpacity onPress={() => auth().signOut()} >
                             <Text style={{ textDecorationLine: 'underline' }}>Log Out</Text>
                         </TouchableOpacity>
                     </View>
