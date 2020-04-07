@@ -7,12 +7,16 @@ import { loadAssets } from "../appstate/actions/app_actions";
 import { connect } from 'react-redux';
 
 class SplashScreen extends Component {
-
-    componentDidMount() {
-        this.props.loadAssets()
-        const user = auth().currentUser;
-        if (user) this.props.navigation.navigate('User');
-        else this.props.navigation.navigate('Home');
+    async componentDidMount() {
+        try {
+            await this.props.loadAssets()
+            const user = auth().currentUser;
+            this.setState({ isWaiting: false })
+            if (user) this.props.navigation.navigate('User');
+            else this.props.navigation.navigate('Home');
+        } catch(error) {
+            this.setState({ isWaiting: false })
+        }
     }
 
     componentWillUnmount() {
