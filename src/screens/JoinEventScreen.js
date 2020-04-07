@@ -92,7 +92,7 @@ class JoinEventScreen extends Component {
                         <Text>Capacity: {capacity}</Text>
                         <Text>Event Type: {eventType}</Text>
                         <Text>Price: {price}</Text>
-                        <Text>Event Date: {eventDate.toDate().toLocaleString()}</Text>
+                        <Text>Event Date: {new Date(eventDate).toLocaleString()}</Text>
                         <Text>Event Link: {eventLink}</Text>
                         {
                             status !== app.EVENT_STATUS.COMPLETED && <Button title='Share' onPress={this.onShare} />
@@ -104,7 +104,7 @@ class JoinEventScreen extends Component {
                         }
                         {
                             status === app.EVENT_STATUS.COMPLETED && (
-                                <View style={{ alignSelf:'stretch', justifyContent: 'center', alignItems: 'center', borderWidth: 1 }}>
+                                <View style={{ alignSelf: 'stretch', justifyContent: 'center', alignItems: 'center', borderWidth: 1 }}>
                                     <Button title='Finished' disabled />
                                     <Text>Rate your experience please!</Text>
                                     <Rating

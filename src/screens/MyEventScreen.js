@@ -29,8 +29,10 @@ class MyEventScreen extends Component {
         setEventListener(this.state.eid, (event) => {
             console.log('Event from eventHandler', event)
 
-            event.eventDate = event.eventDate.toDate()
-            this.setState({ ...event })
+            if (event) {
+                event.eventDate = event.eventDate.toDate()
+                this.setState({ ...event })
+            }
         })
     }
 

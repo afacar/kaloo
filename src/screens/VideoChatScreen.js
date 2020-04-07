@@ -1,17 +1,17 @@
 import React, { Component } from 'react';
-import { View, Platform, NativeModules, PermissionsAndroid, Alert, StatusBar, ActivityIndicator, Modal } from 'react-native';
-import { Overlay } from 'react-native-elements';
-import KeepAwake from 'react-native-keep-awake';
+import { View, Platform, NativeModules, PermissionsAndroid, Alert, StatusBar, ActivityIndicator, Text, TouchableOpacity } from 'react-native';
+import app from '../constants/app';
 import { RtcEngine, AgoraView } from 'react-native-agora';
+import KeepAwake from 'react-native-keep-awake';
 import firebase from 'react-native-firebase';
 import { clearLiveEventListener, setLiveEventListener, startLive, endLive, suspendLive, continueLive } from '../utils/EventHandler';
 import { handleAndroidBackButton, removeAndroidBackButtonHandler } from '../utils/BackHandler';
 import { formatTime } from '../utils/Utils';
 import AppButton from '../components/AppButton';
 import AppText from '../components/AppText';
-import app from '../constants/app';
-import { styles, colors } from '../constants';
-
+import { Overlay } from 'react-native-elements';
+import Header from '../components/Header';
+import { colors, styles } from '../constants';
 const { Agora } = NativeModules;
 
 const {
@@ -93,7 +93,6 @@ export default class VideoChatScreen extends Component {
         // rtc object
         RtcEngine.on('userJoined', (data) => {
             const { peerIds } = this.state;
-            console.warn('userJoined', data.uid);
             if (peerIds.indexOf(data.uid) === -1) {
                 this.setState({
                     peerIds: [...this.state.peerIds, data.uid]
@@ -315,14 +314,16 @@ export default class VideoChatScreen extends Component {
                 <View style={{ flex: 1 }}>
                     <AgoraView mode={1} key={this.state.peerIds[0]} style={{ flex: 1 }} remoteUid={this.state.peerIds[0]} />
                 </View>
-                <Overlay
+                <View style={{ flex: 1 }}>
+                    <AgoraView style={{ flex: 1 }} mode={1} showLocalVideo={true} />
+                </View>
+                {/* <Overlay
                     overlayBackgroundColor="transparent"
                     windowBackgroundColor="transparent"
                     overlayStyle={{ padding: 0, position: 'absolute', bottom: 24, right: 24, }}
                     containerStyle={{ padding: 0, }} isVisible={this.state.peerIds.length == 1}
                     width={180} height={200} onBackdropPress={() => { this.backButtonPressed() }}>
-                    <AgoraView style={{ flex: 1 }} mode={1} showLocalVideo={true} />
-                </Overlay>
+                </Overlay> */}
             </View>
         )
     }
@@ -352,20 +353,20 @@ export default class VideoChatScreen extends Component {
         const { status } = this.state;
         if (status === app.EVENT_STATUS.IN_PROGRESS) {
             return (
-                <AppButton style={styles.startButton} onPress={this.endCall}>
-                    <AppText style={{ color: 'white', fontWeight: 'bold', fontSize: 16 }}>End Meeting</AppText>
+                <AppButton style={styles.endButton} onPress={this.endCall}>
+                    <AppText style={{ color: 'white', fontWeight: 'bold', fontSize: 16 }}>End Call</AppText>
                 </AppButton>
             )
         } else if (status === app.EVENT_STATUS.SCHEDULED) {
             return (
                 <AppButton style={styles.startButton} onPress={this.startCall}>
-                    <AppText style={{ color: 'white', fontWeight: 'bold', fontSize: 16 }}>Start Meeting</AppText>
+                    <AppText style={{ color: 'white', fontWeight: 'bold', fontSize: 16 }}>Start Call</AppText>
                 </AppButton>
             )
         } else if (status === app.EVENT_STATUS.SUSPENDED) {
             return (
                 <AppButton style={styles.startButton} onPress={this.continueCall}>
-                    <AppText style={{ color: 'white', fontWeight: 'bold', fontSize: 16 }}>Continue Meeting</AppText>
+                    <AppText style={{ color: 'white', fontWeight: 'bold', fontSize: 16 }}>Continue Call</AppText>
                 </AppButton>
             )
         }
@@ -391,6 +392,28 @@ export default class VideoChatScreen extends Component {
         }
     }
 
+    renderLiveInfo() {
+        const { status } = this.state;
+        var clientRole = this.props.navigation.getParam('clientRole', 2);
+        if ((status === app.EVENT_STATUS.SCHEDULED || status === app.EVENT_STATUS.SUSPENDED) && clientRole === 1) {
+            return (
+                <View style={styles.liveInfo}>
+                    <AppText style={styles.standybyText}>Standby</AppText>
+                </View>
+            )
+        } else if (status === app.EVENT_STATUS.IN_PROGRESS) {
+            return (
+                <View style={styles.liveInfo}>
+                    <AppText style={styles.liveText}>Live</AppText>
+                </View>
+            )
+        }
+    }
+
+    reportProblem() {
+        console.warn("Report a problem clicked");
+    }
+
     render() {
         const capacity = this.state.peerIds.length;
         const clientRole = this.props.navigation.getParam('clientRole', 1);
@@ -398,31 +421,43 @@ export default class VideoChatScreen extends Component {
             <View style={{ flex: 1 }}>
                 <StatusBar hidden={true} />
                 <KeepAwake />
-                {
-                    capacity === 0 && (
-                        <View style={{ flex: 1 }}>
-                            <AgoraView style={{ flex: 1 }} mode={1} showLocalVideo={true} />
-                            {
-                                this.renderWaitingBox()
-                            }
-                        </View>
-                    )
-                }
-                {
-                    capacity === 1 && (
-                        this.renderTwoVideos()
-                    )
-                }
-                {
-                    clientRole === 1 && (
-                        this.renderStartButton()
-                    )
-                }
-                <AppButton style={styles.videoQuitButton} onPress={this.leaveCall}>
-                    <AppText style={{ color: '#FFFFFF', marginLeft: 8, fontSize: 16, fontWeight: 'bold' }}>Go back</AppText>
-                </AppButton>
-                <View style={styles.liveInfo}>
-                    <AppText style={styles.timerCard}>{this.state.timeStr}</AppText>
+                <Header
+                    buttonTitle={'Quit Call'}
+                    buttonTitleStyle={{ color: colors.BLUE, fontSize: 16 }}
+                    headerRight={(
+                        <TouchableOpacity onPress={this.reportProblem}>
+                            <Text style={{ fontSize: 16, fontWeight: 'bold', color: colors.BLUE }}>Report Problem</Text>
+                        </TouchableOpacity>
+                    )}
+                    onPress={this.backButtonPressed}
+                />
+                <View style={{ flex: 1 }}>
+                    {
+                        capacity === 0 && (
+                            <View style={{ flex: 1 }}>
+                                <AgoraView style={{ flex: 1 }} mode={1} showLocalVideo={true} />
+                                {
+                                    this.renderWaitingBox()
+                                }
+                            </View>
+                        )
+                    }
+                    {
+                        capacity === 1 && (
+                            this.renderTwoVideos()
+                        )
+                    }
+                    {
+                        clientRole === 1 && (
+                            this.renderStartButton()
+                        )
+                    }
+                    {
+                        this.renderLiveInfo()
+                    }
+                    <View style={styles.timerNViewer}>
+                        <AppText style={styles.timerCard}>{this.state.timeStr}</AppText>
+                    </View>
                 </View>
                 {/* {
                     capacity === 0 && (

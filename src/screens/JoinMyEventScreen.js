@@ -75,14 +75,14 @@ class JoinMyEventScreen extends Component {
             .then(() => {
                 this.setState({ isRatingComplete: true })
                 console.log('Rating complete!')
-            } )
+            })
             .catch(err => console.log('Rating error:', err.message))
     }
 
     render() {
         const { image, title, description, duration, eventType, capacity, price, eventDate, eventLink, status } = this.state;
         console.log('eventDate is', eventDate)
-        console.log('eventDate typeOf is', eventDate.toDate())
+        console.log('eventDate typeOf is', new Date(eventDate))
         return (
             <View style={styles.container}>
                 <Card title={title} containerStyle={{ justifyContent: 'flex-start', alignSelf: 'stretch' }}>
@@ -93,7 +93,7 @@ class JoinMyEventScreen extends Component {
                         <Text>Capacity: {capacity}</Text>
                         <Text>Event Type: {eventType}</Text>
                         <Text>Price: {price}</Text>
-                        <Text>Event Date: {eventDate.toDate().toLocaleString()}</Text>
+                        <Text>Event Date: {new Date(eventDate).toLocaleString()}</Text>
                         <Text>Event Link: {eventLink}</Text>
                         {
                             status !== app.EVENT_STATUS.COMPLETED && <Button title='Share' onPress={this.onShare} />

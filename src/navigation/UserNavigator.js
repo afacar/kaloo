@@ -24,14 +24,14 @@ export default UserNavigatior = createStackNavigator(
     Live: {
       screen: LiveScreen,
       navigationOptions: {
-        headerShown: false
-      },
+        headerShown: false,
+      }
     },
     VideoChat: {
       screen: VideoChatScreen,
       navigationOptions: {
-        headerShown: false
-      },
+        headerShown: false,
+      }
     },
   },
   {
