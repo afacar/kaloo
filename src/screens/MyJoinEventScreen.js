@@ -7,7 +7,7 @@ import firebase from "react-native-firebase";
 
 const db = firebase.firestore()
 
-class JoinMyEventScreen extends Component {
+class MyJoinEventScreen extends Component {
     event = this.props.navigation.getParam('event', '')
     state = { ...this.event }
 
@@ -138,4 +138,4 @@ const styles = StyleSheet.create({
     }
 })
 
-export default JoinMyEventScreen;
+export default MyJoinEventScreen;

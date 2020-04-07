@@ -3,7 +3,7 @@ import { createStackNavigator } from 'react-navigation-stack';
 import EventListScreen from '../screens/EventListScreen';
 import ProfileScreen from '../screens/ProfileScreen';
 import BalanceScreen from '../screens/BalanceScreen';
-import JoinMyEventScreen from '../screens/JoinMyEventScreen';
+import MyJoinEventScreen from '../screens/MyJoinEventScreen';
 import MyTicketScreen from '../screens/MyTicketScreen';
 import MyEventScreen from '../screens/MyEventScreen';
 import EventCreateScreen from '../screens/EventCreateScreen';
@@ -17,7 +17,7 @@ export default UserNavigatior = createStackNavigator(
     CreateEvent: EventCreateScreen,
     PreviewEvent: EventPreviewScreen,
     MyTicket: MyTicketScreen,
-    JoinMyEvent: JoinMyEventScreen,
+    MyJoinEvent: MyJoinEventScreen,
     Profile: ProfileScreen,
     Balance: BalanceScreen,
     MyEvent: MyEventScreen,
