@@ -1,10 +1,11 @@
 import React, { Component } from 'react';
-import { View, StyleSheet, KeyboardAvoidingView, ScrollView, TouchableOpacity } from 'react-native';
+import { View, StyleSheet, KeyboardAvoidingView, ScrollView } from 'react-native';
 import { Input, Button, Avatar } from 'react-native-elements';
 import { functions } from 'react-native-firebase';
+import { connect } from "react-redux";
+
 import LabelText from '../components/LabelText'
 
-const DEFAULT_LOGO = 'https://firebasestorage.googleapis.com/v0/b/influenceme-dev.appspot.com/o/assets%2Fdefault-logo.jpg?alt=media&token=20a6be6f-954f-417b-abfb-55e0ac75db02'
 
 class TicketScreen extends Component {
     state = { ticket: '', isWaiting: false, ticketError: ' ' }
@@ -33,6 +34,7 @@ class TicketScreen extends Component {
 
     render() {
         const { ticket, isWaiting, ticketError } = this.state
+        const { TICKET_FORMAT, DEFAULT_LOGO_IMAGE } = this.props.assets;
         return (
             <ScrollView
                 contentContainerStyle={{
@@ -43,7 +45,7 @@ class TicketScreen extends Component {
                 }}>
                 <KeyboardAvoidingView style={styles.container}>
                     <Avatar
-                        source={{ uri: DEFAULT_LOGO }}
+                        source={{ uri: DEFAULT_LOGO_IMAGE }}
                         size="large"
                     />
                     <View style={{ alignSelf: 'stretch', alignItems: 'center' }}>
@@ -51,7 +53,7 @@ class TicketScreen extends Component {
                             <LabelText label="Enter your ticket number" />
                         </View>
                         <Input
-                            placeholder="xxxx-xxxx-xxxx"
+                            placeholder={TICKET_FORMAT || ''}
                             placeholderTextColor="#b2c2bf"
                             inputStyle={{ textAlign: 'center' }}
                             onChangeText={ticket => this.setState({ ticket, ticketError: '' })}
@@ -97,4 +99,9 @@ const styles = StyleSheet.create({
     }
 })
 
-export default TicketScreen;
+const mapStateToProps = ({ assets }) => {
+    console.log('MyTicket mapstatatoprops', assets)
+    return { assets: assets.assets }
+}
+
+export default connect(mapStateToProps, null)(TicketScreen);

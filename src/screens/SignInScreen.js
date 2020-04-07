@@ -4,20 +4,17 @@ import {
   StyleSheet,
   KeyboardAvoidingView,
   ScrollView,
-  TouchableOpacity,
 } from 'react-native';
-import AppText from '../components/AppText';
-import { Input, Button, Text, Avatar } from 'react-native-elements';
+import { Input, Button } from 'react-native-elements';
 import firebase from 'react-native-firebase';
 import HighlightedText from '../components/HighlightedText';
 import LabelText from '../components/LabelText';
 
 
-function ValidateEmail(email) {
+function validateEmail(email) {
   if (/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(email)) {
     return true;
   }
-  //AlertUser('Check  your email!', 'Your email seems a bit awkward!')
   return false;
 }
 
@@ -34,8 +31,8 @@ class SignInScreen extends Component {
 
   email = this.props.navigation.getParam('email', '');
   state = {
-    email: this.email || 'user@influence.me',
-    password: 'asdasd',
+    email: this.email || '',
+    password: '',
     isWaiting: false,
     emailError: ' ',
     passwordError: ' ',
@@ -62,7 +59,7 @@ class SignInScreen extends Component {
     // Clear error messages
     this.setState({ emailError: '', passwordError: '' });
     // Check email
-    if (!ValidateEmail(email))
+    if (!validateEmail(email))
       return this.setState({ emailError: 'A proper email please!' });
 
     // Check password and repassword
@@ -91,7 +88,7 @@ class SignInScreen extends Component {
           <View style={{ alignSelf: 'stretch', paddingVertical: 20 }}>
             <LabelText label='Username' />
             <Input
-              placeholder="abc@abc.com"
+              placeholder="user@email.com"
               placeholderTextColor="#b2c2bf"
               onChangeText={email => this.setState({ email, emailMessage: '' })}
               value={email}
@@ -103,7 +100,7 @@ class SignInScreen extends Component {
             />
             <LabelText label='Password' />
             <Input
-              placeholder="Password"
+              placeholder="******"
               placeholderTextColor="#b2c2bf"
               onChangeText={password =>
                 this.setState({ password, passwordMessage: '' })

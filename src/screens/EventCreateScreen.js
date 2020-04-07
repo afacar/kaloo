@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { StyleSheet, View, ScrollView, Text, TouchableOpacity, Alert } from 'react-native';
-import firebase from 'react-native-firebase';
+import { storage, auth, functions } from 'react-native-firebase';
 import { Input, Button, Image, CheckBox, Icon } from 'react-native-elements';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import ImagePicker from 'react-native-image-crop-picker';
@@ -8,17 +8,8 @@ import HighlightedText from '../components/HighlightedText';
 import { app } from '../constants';
 import { connect } from 'react-redux';
 
-const storage = firebase.storage()
-const auth = firebase.auth()
-const functions = firebase.functions()
-
-const DEFAULT_EVENT = 'https://firebasestorage.googleapis.com/v0/b/influenceme-dev.appspot.com/o/assets%2Fdefault-event.jpg?alt=media&token=d9ce39ac-952c-43eb-9afc-2ed8d8f1167d'
-
 const INITIAL_STATE = {
-    uid: auth.currentUser ? auth.currentUser.uid : '',
-    displayName: auth.currentUser ? auth.currentUser.displayName : '',
-    photoURL: auth.currentUser ? auth.currentUser.photoURL : '',
-    image: DEFAULT_EVENT,
+    image: null,
     title: '',
     description: '',
     duration: 30,
@@ -40,24 +31,27 @@ class EventCreateScreen extends Component {
         headerTitle: () => <Text>Create Event</Text>
     });
 
-    state = { ...INITIAL_STATE, ...this.props.profile }
+    state = { ...INITIAL_STATE, ...this.props.profile, image: this.props.assets.DEFAULT_EVENT_IMAGE }
 
-    componentDidMount() { }
+    componentDidMount() { 
+        console.log('EventCreateDidMiunt state', this.state)
+    }
 
     createEvent = async () => {
         let { uid, displayName, userNumber, photoURL, image, title, description, duration, eventType, capacity, price, eventDate, status } = this.state
+        const { DEFAULT_EVENT_IMAGE } = this.props.assets;
 
         let event = { uid, displayName, userNumber, photoURL, image, title, description, duration, eventType, capacity, price, eventDate, status }
-        let createEvent = functions.httpsCallable('createEvent');
+        let createEvent = functions().httpsCallable('createEvent');
         event.eventTimestamp = eventDate.getTime();
 
         this.setState({ isWaiting: true })
 
         // Check if new event image is set
-        if (image !== DEFAULT_EVENT) {
+        if (image !== DEFAULT_EVENT_IMAGE) {
             let imagePath = `events/${event.uid}/${event.eventTimestamp}.jpg`
             console.log(`Uploading event image to: ${imagePath}`)
-            const imageRef = storage.ref(imagePath)
+            const imageRef = storage().ref(imagePath)
             await imageRef.getDownloadURL().then((url) => {
                 // Another event created at the same timestamp
                 this.setState({ isWaiting: false, isPreview: false, dateMessage: 'There is already an event on this date!' })
@@ -117,7 +111,7 @@ class EventCreateScreen extends Component {
         Alert.alert('You will publish event', 'This can not be undone!', [
             {
                 text: 'Cancel',
-                onPress: () => {},
+                onPress: () => { },
                 style: 'cancel',
             },
             {
@@ -320,9 +314,9 @@ const styles = StyleSheet.create({
     }
 })
 
-const mapStateToProps = ({ auth }) => {
-    console.log('mapstatatoprops', auth)
-    return { profile: auth.profile }
+const mapStateToProps = ({ auth, assets }) => {
+    console.log('EventCreate mapstatatoprops', auth, assets)
+    return { profile: auth.profile, assets: assets.assets }
 }
 
 
