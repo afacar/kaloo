@@ -15,7 +15,7 @@ import HighlightedText from '../components/HighlightedText';
 import LabelText from '../components/LabelText';
 
 
-function ValidateEmail(email) {
+function validateEmail(email) {
   if (/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(email)) {
     return true;
   }
@@ -53,30 +53,33 @@ class RegisterScreen extends Component {
   createAccount = async () => {
     let { displayName, email, password, photoURL } = this.state;
     const { DEFAULT_PROFILE_IMAGE } = this.props.assets
+    this.setState({ isWaiting: true });
 
-    await auth().createUserWithEmailAndPassword(email, password);
-    const { currentUser } = auth();
-    console.log('user is created', currentUser);
-    const { uid } = currentUser
-    // Upload new profile pict if it is new
-    if (photoURL !== DEFAULT_PROFILE_IMAGE) {
-      console.log('uploading avatar...');
-      let avatarRef = storage().ref(`users/${uid}/avatar/${uid}.jpg`);
-      await avatarRef.putFile(photoURL);
-      photoURL = await avatarRef.getDownloadURL()
-      console.log('avatar is uploaded!');
+    try {
+      await auth().createUserWithEmailAndPassword(email, password);
+      const { currentUser } = auth();
+      const { uid } = currentUser
+
+      // Upload new profile image to @Storage
+      if (photoURL !== DEFAULT_PROFILE_IMAGE) {
+        let avatarRef = storage().ref(`users/${uid}/avatar/${uid}.jpg`);
+        await avatarRef.putFile(photoURL);
+        photoURL = await avatarRef.getDownloadURL()
+      }
+
+      // Update user profile @Authentication
+      await currentUser.updateProfile({ displayName, photoURL });
+      // Create user @Firestore
+      const newUser = { uid, displayName, photoURL }
+      let createUser = functions().httpsCallable('createUser')
+      await createUser(newUser)
+
+      this.setState({ isWaiting: false });
+      this.props.navigation.navigate('UserHome', { displayName });
+    } catch (error) {
+      this.setState({ isWaiting: false, termsMessage: error.message });
     }
 
-    let createUser = functions().httpsCallable('createUser')
-    // Update user profile @Authentication
-    console.log('update profile', displayName, photoURL);
-    await currentUser.updateProfile({ displayName, photoURL });
-    // Create user @Firestore
-    const newUser = { uid, displayName, photoURL }
-    let res = await createUser(newUser)
-    console.log('user creation completed ', res)
-    this.setState({ isWaiting: false });
-    this.props.navigation.navigate('UserHome', { displayName });
   };
 
   checkAccount = async () => {
@@ -89,7 +92,7 @@ class RegisterScreen extends Component {
       return this.setState({ termsMessage: 'You must accepts terms to continue!' });
 
     // Check email
-    if (!ValidateEmail(email))
+    if (!validateEmail(email))
       return this.setState({ emailMessage: 'Check email!' });
 
     // Check display name
@@ -99,14 +102,6 @@ class RegisterScreen extends Component {
     // Check password and repassword
     if (password !== repassword || password.length < 6)
       return this.setState({ passwordMessage: 'Check password!' });
-
-    // Check if account exists already
-    this.setState({ isWaiting: true });
-    let result = await auth().fetchSignInMethodsForEmail(email);
-    console.log('fetchSignInMethodsForEmail', result);
-    if (result.length > 0) {
-      return this.setState({ isWaiting: false, emailMessage: 'There is an account with this email' });
-    }
 
     // Everything is ok, let's create account
     this.createAccount();
@@ -207,7 +202,7 @@ class RegisterScreen extends Component {
               <CheckBox
                 title="I accept privacy and legal terms"
                 checked={this.state.terms}
-                onPress={() => this.setState({ terms: !this.state.terms })}
+                onPress={() => !isWaiting && this.setState({ terms: !this.state.terms })}
                 containerStyle={{ backgroundColor: 'transparent', borderColor: 'transparent' }}
                 checkedColor='#3b3a30'
               />
