@@ -35,6 +35,7 @@ export default class VideoChatScreen extends Component {
         uid: '',
         peerIds: [],
         joinSucceed: false,
+        duration: 0,
         time: 0,
         timeStr: '',
         status: undefined
@@ -198,6 +199,8 @@ export default class VideoChatScreen extends Component {
         }
         var channelName = this.props.navigation.getParam('eventID', 'agora_test');
         const clientRole = this.props.navigation.getParam('clientRole', 2);
+        const duration = this.props.navigation.getParam('duration', 60);
+        this.setState({ duration, timeStr: formatTime(duration * 60) })
         var ticketID = this.props.navigation.getParam('ticketID', Math.random() * 100);
         this.setState({
             uid: ticketID
@@ -216,6 +219,10 @@ export default class VideoChatScreen extends Component {
         var eventID = this.props.navigation.getParam('eventID', 'agora_test');
         setLiveEventListener(eventID, ({ status, viewerCount, startedAt }) => {
             var time = 0;
+            if (startedAt) {
+                time = parseInt(firebase.firestore.Timestamp.now().seconds) - parseInt(startedAt);
+                this.setState({ timeStr: formatTime(this.state.duration * 60 - time) });
+            }
             if (startedAt && status === app.EVENT_STATUS.IN_PROGRESS) {
                 if (clientRole === 1 && !this.state.joinSucceed) {
                     RtcEngine.stopPreview()
@@ -229,13 +236,13 @@ export default class VideoChatScreen extends Component {
                         });
                 }
                 time = parseInt(firebase.firestore.Timestamp.now().seconds) - parseInt(startedAt);
-                this.setState({ time });
+                this.setState({ time: this.state.duration * 60 - time });
                 if (!this.timer) {
                     this.timer = setInterval(() => {
                         var time = this.state.time;
                         var timeStr = formatTime(time);
                         this.setState({
-                            time: this.state.time + 1,
+                            time: this.state.time - 1,
                             timeStr
                         })
                     }, 1000)

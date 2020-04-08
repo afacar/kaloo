@@ -34,6 +34,7 @@ export default class LiveScreen extends Component {
         peerIds: [],
         joinSucceed: false,
         viewers: 0,
+        duration: 0,
         time: 0,
         timeStr: '',
         status: undefined
@@ -127,6 +128,8 @@ export default class LiveScreen extends Component {
             this.checkCameraPermission();
             this.checkAudioPermission();
         }
+        const duration = this.props.navigation.getParam('duration', 30);
+        this.setState({ duration, timeStr: formatTime(duration * 60) })
         var channelName = this.props.navigation.getParam('eventID', 'agora_test');
         const clientRole = this.props.navigation.getParam('clientRole', 2);
         var ticketID = this.props.navigation.getParam('ticketID', Math.random() * 100);
@@ -142,13 +145,17 @@ export default class LiveScreen extends Component {
                 .catch((error) => {
                 });
         } else if (clientRole === 1) {
-       
+
             RtcEngine.startPreview();
         }
         // setup listener for  watcherCount
         var eventID = this.props.navigation.getParam('eventID', 'agora_test');
         setLiveEventListener(eventID, ({ status, viewerCount, startedAt }) => {
             var time = 0;
+            if (startedAt) {
+                time = parseInt(firebase.firestore.Timestamp.now().seconds) - parseInt(startedAt);
+                this.setState({timeStr: formatTime(this.state.duration*60 - time)});
+            }
             if (startedAt && status === app.EVENT_STATUS.IN_PROGRESS) {
                 if (clientRole === 1 && !this.state.joinSucceed) {
                     RtcEngine.stopPreview();
@@ -162,13 +169,13 @@ export default class LiveScreen extends Component {
                         });
                 }
                 time = parseInt(firebase.firestore.Timestamp.now().seconds) - parseInt(startedAt);
-                this.setState({ time });
+                this.setState({ time: this.state.duration * 60 - time });
                 if (!this.timer) {
                     this.timer = setInterval(() => {
                         var time = this.state.time;
                         var timeStr = formatTime(time);
                         this.setState({
-                            time: this.state.time + 1,
+                            time: this.state.time - 1,
                             timeStr
                         })
                     }, 1000)
