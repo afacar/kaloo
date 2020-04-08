@@ -268,7 +268,7 @@ class EventCreateScreen extends Component {
                         <Button
                             title="Preview Event"
                             type="solid"
-                            onPress={() => this.props.navigation.navigate('PreviewEvent', { event: this.state, onPublish: this._confirmPublish })}
+                            onPress={() => this.props.navigation.navigate('EventPreview', { event: this.state, onPublish: this._confirmPublish })}
                             buttonStyle={{
                                 backgroundColor: '#196BFF',
                                 borderRadius: 6,

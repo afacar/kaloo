@@ -40,7 +40,6 @@ class EventListScreen extends Component {
 
     state = {
         events: [],
-        isCreateEvent: false,
         isLoading: false,
     }
 
@@ -128,7 +127,7 @@ class EventListScreen extends Component {
     onEventPublish = (event) => {
         let { events } = this.state;
         events.push(event)
-        this.setState({ events, isCreateEvent: false })
+        this.setState({ events })
         this.props.navigation.navigate('MyEvent', { event })
     }
 
@@ -172,7 +171,7 @@ class EventListScreen extends Component {
                                 type='clear'
                                 icon={{ type: 'material-community', name: 'cast' }}
                                 title='Create Event'
-                                onPress={() => this.props.navigation.navigate('CreateEvent')} />
+                                onPress={() => this.props.navigation.navigate('EventCreate')} />
                         </View>
                         <ScrollView overScrollMode='never'>
                             {this.renderEventList()}

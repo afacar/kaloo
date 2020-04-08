@@ -14,8 +14,8 @@ import VideoChatScreen from '../screens/VideoChatScreen';
 export default UserNavigatior = createStackNavigator(
   {
     UserHome: EventListScreen,
-    CreateEvent: EventCreateScreen,
-    PreviewEvent: EventPreviewScreen,
+    EventCreate: EventCreateScreen,
+    EventPreview: EventPreviewScreen,
     MyTicket: MyTicketScreen,
     MyJoinEvent: MyJoinEventScreen,
     Profile: ProfileScreen,
