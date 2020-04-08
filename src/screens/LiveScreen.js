@@ -142,11 +142,8 @@ export default class LiveScreen extends Component {
                 .catch((error) => {
                 });
         } else if (clientRole === 1) {
-            RtcEngine.joinChannel(firebase.auth().currentUser.uid, HOST_UID)
-                .then((result) => {
-                })
-                .catch((error) => {
-                });
+       
+            RtcEngine.startPreview();
         }
         // setup listener for  watcherCount
         var eventID = this.props.navigation.getParam('eventID', 'agora_test');
@@ -154,7 +151,7 @@ export default class LiveScreen extends Component {
             var time = 0;
             if (startedAt && status === app.EVENT_STATUS.IN_PROGRESS) {
                 if (clientRole === 1 && !this.state.joinSucceed) {
-                    RtcEngine.leaveChannel();
+                    RtcEngine.stopPreview();
                     RtcEngine.joinChannel(channelName, HOST_UID)
                         .then((result) => {
                             this.setState({
