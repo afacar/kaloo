@@ -9,7 +9,7 @@ import { handleAndroidBackButton, removeAndroidBackButtonHandler } from '../util
 import { formatTime } from '../utils/Utils';
 import AppButton from '../components/AppButton';
 import AppText from '../components/AppText';
-import { Overlay } from 'react-native-elements';
+import { Overlay, Icon } from 'react-native-elements';
 import Header from '../components/Header';
 import { colors, styles } from '../constants';
 const { Agora } = NativeModules;
@@ -313,6 +313,7 @@ export default class VideoChatScreen extends Component {
     }
 
     renderTwoVideos() {
+        console.log("rendering two video")
         return (
             <View style={{ flex: 1 }}>
                 <View style={{ flex: 1 }}>
@@ -321,13 +322,6 @@ export default class VideoChatScreen extends Component {
                 <View style={{ flex: 1 }}>
                     <AgoraView style={{ flex: 1 }} mode={1} showLocalVideo={true} />
                 </View>
-                {/* <Overlay
-                    overlayBackgroundColor="transparent"
-                    windowBackgroundColor="transparent"
-                    overlayStyle={{ padding: 0, position: 'absolute', bottom: 24, right: 24, }}
-                    containerStyle={{ padding: 0, }} isVisible={this.state.peerIds.length == 1}
-                    width={180} height={200} onBackdropPress={() => { this.backButtonPressed() }}>
-                </Overlay> */}
             </View>
         )
     }
@@ -358,39 +352,82 @@ export default class VideoChatScreen extends Component {
         if (status === app.EVENT_STATUS.IN_PROGRESS) {
             return (
                 <AppButton style={styles.endButton} onPress={this.endCall}>
-                    <AppText style={{ color: 'white', fontWeight: 'bold', fontSize: 16 }}>End Call</AppText>
+                    <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center' }}>
+                        <Icon
+                            type='material-community'
+                            name="video-off"
+                            size={16}
+                            color="white"
+                        />
+                        <AppText style={{ color: 'white', fontWeight: 'bold', fontSize: 16, marginLeft: 8 }}>End Call</AppText>
+                    </View>
                 </AppButton>
             )
         } else if (status === app.EVENT_STATUS.SCHEDULED) {
             return (
                 <AppButton style={styles.startButton} onPress={this.startCall}>
-                    <AppText style={{ color: 'white', fontWeight: 'bold', fontSize: 16 }}>Start Call</AppText>
+                    <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center' }}>
+                        <Icon
+                            type='font-awesome'
+                            name="video-camera"
+                            size={16}
+                            color="white"
+                        />
+                        <AppText style={{ color: 'white', fontWeight: 'bold', fontSize: 16, marginLeft: 8 }}>Start Call</AppText>
+                    </View>
                 </AppButton>
             )
         } else if (status === app.EVENT_STATUS.SUSPENDED) {
             return (
                 <AppButton style={styles.startButton} onPress={this.continueCall}>
-                    <AppText style={{ color: 'white', fontWeight: 'bold', fontSize: 16 }}>Continue Call</AppText>
+                    <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center' }}>
+                        <Icon
+                            type='font-awesome'
+                            name="video-camera"
+                            size={16}
+                            color="white"
+                        />
+                        <AppText style={{ color: 'white', fontWeight: 'bold', fontSize: 16, marginLeft: 8 }}>Continue Call</AppText>
+                    </View>
                 </AppButton>
             )
         }
     }
 
-    renderWaitingBox() {
+    renderWaitingComponent() {
         const { status } = this.state;
         var clientRole = this.props.navigation.getParam('clientRole', 2);
         if (status === app.EVENT_STATUS.IN_PROGRESS && clientRole === 1) {
             return (
                 <View style={styles.waitingBox}>
-                    <ActivityIndicator size="small" color={colors.GREY} />
-                    <AppText style={{ color: '#FFFFFF', marginLeft: 8, fontSize: 24, fontWeight: 'bold' }}>Waiting for your peer to rejoin...</AppText>
+                    <Icon
+                        type='simple-line-icon'
+                        name="globe"
+                        size={48}
+                        color='white'
+                    />
+                    <AppText style={{ color: '#FFFFFF', marginLeft: 8, fontSize: 24, fontWeight: 'bold', textAlign: 'center' }}>Your peer is connecting...</AppText>
+                    <View style={styles.localVideoBox}>
+                        <AgoraView style={{ flex: 1, borderRadius: 10 }} showLocalVideo={true} mode={1} />
+                    </View>
                 </View>
             )
         } else if (status === app.EVENT_STATUS.IN_PROGRESS && clientRole === 2) {
             return (
                 <View style={styles.waitingBox}>
-                    <ActivityIndicator size="small" color={colors.GREY} />
-                    <AppText style={{ color: '#FFFFFF', marginLeft: 8, fontSize: 24, fontWeight: 'bold' }}>Waiting for the host to rejoin...</AppText>
+                    <Icon
+                        type='simple-line-icon'
+                        name="globe"
+                        size={48}
+                        color='white'
+                    />
+                    <AppText style={{ color: '#FFFFFF', marginLeft: 8, fontSize: 24, fontWeight: 'bold', textAlign: 'center' }}>Your host is connecting...</AppText>
+                </View>
+            )
+        } else if (status === app.EVENT_STATUS.SCHEDULED || status === app.EVENT_STATUS.SUSPENDED && clientRole === 1) {
+            return (
+                <View style={{ flex: 1 }}>
+                    <AgoraView style={{ flex: 1 }} showLocalVideo={true} mode={1} />
                 </View>
             )
         }
@@ -438,12 +475,7 @@ export default class VideoChatScreen extends Component {
                 <View style={{ flex: 1 }}>
                     {
                         capacity === 0 && (
-                            <View style={{ flex: 1 }}>
-                                <AgoraView style={{ flex: 1 }} mode={1} showLocalVideo={true} />
-                                {
-                                    this.renderWaitingBox()
-                                }
-                            </View>
+                            this.renderWaitingComponent()
                         )
                     }
                     {

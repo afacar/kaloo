@@ -11,6 +11,7 @@ import { styles, colors } from '../constants';
 import { formatTime } from '../utils/Utils';
 import firebase from 'react-native-firebase';
 import Header from '../components/Header';
+import { Icon } from 'react-native-elements';
 const { Agora } = NativeModules;
 const {
     FPS30,
@@ -154,7 +155,7 @@ export default class LiveScreen extends Component {
             var time = 0;
             if (startedAt) {
                 time = parseInt(firebase.firestore.Timestamp.now().seconds) - parseInt(startedAt);
-                this.setState({timeStr: formatTime(this.state.duration*60 - time)});
+                this.setState({ timeStr: formatTime(this.state.duration * 60 - time) });
             }
             if (startedAt && status === app.EVENT_STATUS.IN_PROGRESS) {
                 if (clientRole === 1 && !this.state.joinSucceed) {
@@ -221,7 +222,7 @@ export default class LiveScreen extends Component {
                 },
                 {
                     text: 'Yes', onPress: () => {
-                        RtcEngine.leaveChannel();
+                        RtcEngine.stopPreview();
                         RtcEngine.joinChannel(channelName, HOST_UID)
                             .then((result) => {
                                 startLive(channelName);
@@ -411,21 +412,45 @@ export default class LiveScreen extends Component {
                                     {
                                         this.state.status === app.EVENT_STATUS.IN_PROGRESS && (
                                             <AppButton style={styles.endButton} onPress={this.endLive}>
-                                                <AppText style={{ color: 'white', fontWeight: 'bold', fontSize: 16 }}>End Broadcasting</AppText>
+                                                <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center' }}>
+                                                    <Icon
+                                                        type='material-community'
+                                                        name="video-off"
+                                                        size={16}
+                                                        color="white"
+                                                    />
+                                                    <AppText style={{ color: 'white', fontWeight: 'bold', fontSize: 16, marginLeft: 8 }}>End Broadcasting</AppText>
+                                                </View>
                                             </AppButton>
                                         )
                                     }
                                     {
                                         this.state.status === app.EVENT_STATUS.SUSPENDED && (
                                             <AppButton style={styles.startButton} onPress={this.continueLive}>
-                                                <AppText style={{ color: 'white', fontWeight: 'bold', fontSize: 16 }}>Continue Broadcasting</AppText>
+                                                <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center' }}>
+                                                    <Icon
+                                                        type='font-awesome'
+                                                        name="video-camera"
+                                                        size={16}
+                                                        color="white"
+                                                    />
+                                                    <AppText style={{ color: 'white', fontWeight: 'bold', fontSize: 16, marginLeft: 8 }}>Continue Broadcasting</AppText>
+                                                </View>
                                             </AppButton>
                                         )
                                     }
                                     {
                                         this.state.status === app.EVENT_STATUS.SCHEDULED && (
                                             <AppButton style={styles.startButton} onPress={this.startLive}>
-                                                <AppText style={{ color: 'white', fontWeight: 'bold', fontSize: 16 }}>Start Broadcasting</AppText>
+                                                <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center' }}>
+                                                    <Icon
+                                                        type='font-awesome'
+                                                        name="video-camera"
+                                                        size={16}
+                                                        color="white"
+                                                    />
+                                                    <AppText style={{ color: 'white', fontWeight: 'bold', fontSize: 16, marginLeft: 8 }}>Start Broadcasting</AppText>
+                                                </View>
                                             </AppButton>
                                         )
                                     }
