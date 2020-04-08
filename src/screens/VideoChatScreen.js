@@ -289,8 +289,8 @@ export default class VideoChatScreen extends Component {
                 },
                 {
                     text: 'OK', onPress: () => {
-                        if (clientRole === 1) {
-                            suspendLive(eventID, this.state.status);
+                        if (clientRole === 1 && this.state.status != app.EVENT_STATUS.SCHEDULED) {
+                            suspendLive(eventID);
                         }
                         navigation.goBack();
                         return false;
@@ -497,6 +497,11 @@ export default class VideoChatScreen extends Component {
     }
 
     componentWillUnmount() {
+        var eventID = this.props.navigation.getParam('eventID', 'agora_test');
+        var clientRole = this.props.navigation.getParam('clientRole', 2);
+        if (clientRole === 1 && this.state.status != app.EVENT_STATUS.SCHEDULED) {
+            suspendLive(eventID);
+        }
         removeAndroidBackButtonHandler(this.backButtonPressed);
         clearLiveEventListener();
         RtcEngine.leaveChannel()

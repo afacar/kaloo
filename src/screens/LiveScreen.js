@@ -300,8 +300,8 @@ export default class LiveScreen extends Component {
                 },
                 {
                     text: 'OK', onPress: () => {
-                        if (clientRole === 1) {
-                            suspendLive(eventID, this.state.status);
+                        if (clientRole === 1 && this.state.status != app.EVENT_STATUS.SCHEDULED) {
+                            suspendLive(eventID);
                         }
                         navigation.goBack();
                         return false;
