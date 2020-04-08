@@ -26,11 +26,17 @@ export const suspendLive = async (eventID) => {
     return 1;
 }
 
-export const continueLive = (eventID) => {
+export const continueLive = async (eventID) => {
     const eventRef = firebase.firestore().collection('events').doc(eventID);
     const liveStatsRef = firebase.firestore().collection('events').doc(eventID).collection('live').doc('--stats--');
+    var liveData = (await liveStatsRef.get()).data();
+    var { reconnectTimes } = liveData;
+    if (!reconnectTimes) {
+        reconnectTimes = [];
+    }
+    reconnectTimes.push(firestore.Timestamp.now().toDate());
     eventRef.set({ status: app.EVENT_STATUS.IN_PROGRESS }, { merge: true });
-    liveStatsRef.set({ status: app.EVENT_STATUS.IN_PROGRESS }, { merge: true });
+    liveStatsRef.set({ status: app.EVENT_STATUS.IN_PROGRESS, reconnectTimes }, { merge: true });
     return 1;
 }
 
