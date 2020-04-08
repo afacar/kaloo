@@ -1,8 +1,10 @@
 import React, { Component } from 'react';
-import { View, StyleSheet, Text, ActivityIndicator, KeyboardAvoidingView, ScrollView, TouchableOpacity } from 'react-native';
+import { View, StyleSheet, Text, ActivityIndicator, KeyboardAvoidingView, ScrollView, TouchableOpacity, Linking } from 'react-native';
 import { Input, Button, Avatar, Icon } from 'react-native-elements';
 import { firestore, auth, storage } from "react-native-firebase";
 import ImagePicker from "react-native-image-crop-picker";
+import HyperLink from '../components/HyperLink';
+import ButtonText from '../components/ButtonText';
 
 const db = firestore();
 
@@ -124,10 +126,9 @@ class ProfileScreen extends Component {
                             />
                         </View>
                     </View>
-                    <View style={{ alignItems: 'center', flexDirection: 'column' }}>
-                        <TouchableOpacity onPress={() => auth().signOut()} >
-                            <Text style={{ textDecorationLine: 'underline' }}>Log Out</Text>
-                        </TouchableOpacity>
+                    <View style={{ alignSelf: 'stretch', justifyContent: 'space-around', flexDirection: 'row' }}>
+                        <ButtonText text='Log out' onPress={() => auth().signOut()} />
+                        <HyperLink text='Need Help?' link={`mailto:support@speechtext.io?subject=${auth().currentUser.uid}`} />
                     </View>
                 </ScrollView>
             </KeyboardAvoidingView>
