@@ -68,8 +68,8 @@ class EventCreateScreen extends Component {
                     if (response && response.data && response.data.state === 'SUCCESS') {
                         let eventData = response.data.event;
                         this.setState({ isWaiting: false })
-                        console.log('Sending event to MyEventScreen1:=>', eventData);
-                        this.props.navigation.navigate('MyEvent', { event: eventData })
+                        console.log('Sending event to EventPublish1:=>', eventData);
+                        this.props.navigation.navigate('EventPublish', { event: eventData })
                     }
                 }
             })
@@ -81,8 +81,8 @@ class EventCreateScreen extends Component {
             if (response && response.data && response.data.state === 'SUCCESS') {
                 let eventData = response.data.event;
                 this.setState({ isWaiting: false })
-                console.log('Sending event to MyEventScreen2:=>', eventData);
-                this.props.navigation.navigate('MyEvent', { event: eventData })
+                console.log('Sending event to EventPublish2:=>', eventData);
+                this.props.navigation.navigate('EventPublish', { event: eventData })
             }
         }
     }

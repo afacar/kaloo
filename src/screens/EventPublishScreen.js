@@ -5,16 +5,18 @@ import { Button, Text } from 'react-native-elements';
 import HighlightedText from '../components/HighlightedText';
 import EventHeader from "../components/EventHeader";
 import EventBody from '../components/EventBody';
+import AppButton from '../components/AppButton';
+import EventShare from '../components/EventShare';
 
 
-class EventPreviewScreen extends Component {
+class EventPublishScreen extends Component {
   static navigationOptions = ({ navigation }) => ({
-    title: 'Preview Event',
+    title: 'Event ready!',
     headerRight: () => (
       <Button
         type='clear'
-        onPress={() => navigation.getParam('onPublish')()}
-        title={'Publish'}
+        onPress={() => navigation.navigate('UserHome')}
+        title={'Done'}
         titleStyle={{ color: '#196BFF' }}
         containerStyle={{ paddingRight: 15 }}
       />
@@ -26,20 +28,17 @@ class EventPreviewScreen extends Component {
   componentDidMount() { }
 
   render() {
-    const {
-      displayName, photoURL, image, title, description, duration, eventType, capacity, price, eventDate, status
-    } = this.props.navigation.getParam('event');
+    const myEvent = this.props.navigation.getParam('event');
 
     return (
       <ScrollView contentContainerStyle={styles.container}>
-        <HighlightedText
+        <EventShare
           text='Your event isn’t published yet. Event ticket is going to look like this when you publish.'
+          link={myEvent.eventLink}
         />
-        <EventHeader
-          eventHeader={{ image, photoURL, eventType }}
-        />
-        <EventBody
-          eventBody={{ displayName, title, eventDate, duration, description, capacity, price }}
+        <AppButton
+          title='Go to Event'
+          onPress={() => this.props.navigation.navigate('MyEvent', { event: myEvent })}
         />
       </ScrollView>
     );
@@ -56,4 +55,4 @@ const styles = StyleSheet.create({
   }
 });
 
-export default EventPreviewScreen;
+export default EventPublishScreen;

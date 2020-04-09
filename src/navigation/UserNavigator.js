@@ -8,6 +8,7 @@ import MyTicketScreen from '../screens/MyTicketScreen';
 import MyEventScreen from '../screens/MyEventScreen';
 import EventCreateScreen from '../screens/EventCreateScreen';
 import EventPreviewScreen from '../screens/EventPreviewScreen';
+import EventPublishScreen from "../screens/EventPublishScreen";
 import LiveScreen from '../screens/LiveScreen';
 import VideoChatScreen from '../screens/VideoChatScreen';
 
@@ -16,6 +17,7 @@ export default UserNavigatior = createStackNavigator(
     UserHome: EventListScreen,
     EventCreate: EventCreateScreen,
     EventPreview: EventPreviewScreen,
+    EventPublish: EventPublishScreen,
     MyTicket: MyTicketScreen,
     MyJoinEvent: MyJoinEventScreen,
     Profile: ProfileScreen,

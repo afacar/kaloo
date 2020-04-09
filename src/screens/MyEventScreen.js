@@ -1,8 +1,12 @@
 import React, { Component } from 'react';
-import { View, StyleSheet, Image, Share, Platform, BackHandler } from 'react-native';
-import { Button, Text, Card, Icon } from 'react-native-elements';
-import { app } from '../constants';
+import { ScrollView, StyleSheet, Share, Platform, BackHandler } from 'react-native';
+import { Button, Icon, ButtonGroup } from 'react-native-elements';
+import EventHeader from '../components/EventHeader';
+import EventBody from '../components/EventBody';
+
 import { setEventListener, clearEventListener } from '../utils/EventHandler';
+import EventShare from '../components/EventShare';
+import AppButton from '../components/AppButton';
 
 class MyEventScreen extends Component {
     static navigationOptions = ({ navigation }) => ({
@@ -45,25 +49,7 @@ class MyEventScreen extends Component {
         clearEventListener(this.event.eid);
     }
 
-    onShare = async () => {
-        try {
-            const result = await Share.share({
-                title: this.state.title,
-                message: this.state.description + ' ' + this.state.eventLink
-            });
-            if (result.action === Share.sharedAction) {
-                if (result.activityType) {
-                    // shared with activity type of result.activityType
-                } else {
-                    // shared
-                }
-            } else if (result.action === Share.dismissedAction) {
-                // dismissed
-            }
-        } catch (error) {
-            alert(error.message);
-        }
-    };
+
 
     joinLive = () => {
         var { eid } = this.state;
@@ -89,53 +75,35 @@ class MyEventScreen extends Component {
     }
 
     render() {
-        const { displayName, image, title, description, duration, eventType, capacity, price, eventDate, eventLink, status } = this.state;
+        const { displayName, image, photoURL, title, description, duration, eventType, capacity, price, eventDate, eventLink, status } = this.state;
         return (
-            <View style={styles.container}>
-                <Card>
-                    <View>
-                        <View style={{ flexDirection: 'row', justifyContent: 'space-evenly' }}>
-                            <Image source={{ uri: image }} style={{ width: 100, height: 100 }} />
-                            <View style={{ flexDirection: 'column', justifyContent: 'center' }}>
-                                <Text>Host: {displayName || 'No displayName'}</Text>
-                                <Text>Title: {title || 'No title'}</Text>
-                                <Text>Description: {description || 'No description'}</Text>
-                            </View>
-                        </View>
-                        <Text>Duration: {duration}</Text>
-                        <Text>Capacity: {capacity}</Text>
-                        <Text>Event Type: {eventType}</Text>
-                        <Text>Price: {price}</Text>
-                        <Text>Event Date: {eventDate.toLocaleString()}</Text>
-                        <Text>Event Link: {eventLink}</Text>
-                        <Button title='Share' onPress={this.onShare} />
-                        {
-                            ((status === app.EVENT_STATUS.SCHEDULED) || (status === app.EVENT_STATUS.SUSPENDED)) && (
-                                <Button title='Preview' onPress={this.onCamera} />
-                            )
-                        }
-                        {
-                            status === app.EVENT_STATUS.COMPLETED && (
-                                <Button title='Finished' disabled />
-                            )
-                        }
-                        {
-                            status === app.EVENT_STATUS.IN_PROGRESS && (
-                                <Button title='Continue' onPress={this.onCamera} />
-                            )
-                        }
-                    </View>
-                </Card>
-            </View >
+            <ScrollView contentContainerStyle={styles.container}>
+                <EventHeader
+                    eventHeader={{ image, photoURL, eventType }}
+                />
+                <EventBody
+                    eventBody={{ displayName, title, eventDate, duration, description, capacity, price }}
+                />
+                <EventShare
+                    text='Your event isn’t published yet. Event ticket is going to look like this when you publish.'
+                    link={eventLink}
+                />
+                <Button
+                    title='Preview audio and video'
+                    onPress={this.onCamera}
+                />
+            </ScrollView>
         )
     }
 }
 
 const styles = StyleSheet.create({
     container: {
-        flex: 1,
+        flexGrow: 1,
         justifyContent: 'flex-start',
-        alignItems: 'stretch'
+        marginHorizontal: 10,
+        padding: 10,
+        borderRadius: 15
     }
 })
 
