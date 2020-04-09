@@ -7,6 +7,7 @@ import ImagePicker from 'react-native-image-crop-picker';
 import HighlightedText from '../components/HighlightedText';
 import { app } from '../constants';
 import { connect } from 'react-redux';
+import { splitDate } from '../utils/Utils';
 
 const INITIAL_STATE = {
     image: null,
@@ -33,7 +34,7 @@ class EventCreateScreen extends Component {
 
     state = { ...INITIAL_STATE, ...this.props.profile, image: this.props.assets.DEFAULT_EVENT_IMAGE }
 
-    componentDidMount() { 
+    componentDidMount() {
         console.log('EventCreateDidMiunt state', this.state)
     }
 
@@ -67,6 +68,7 @@ class EventCreateScreen extends Component {
                     console.log('Recieved created event:=>', response);
                     if (response && response.data && response.data.state === 'SUCCESS') {
                         let eventData = response.data.event;
+                        eventData.eventDate = new Date(eventData.eventTimestamp)
                         this.setState({ isWaiting: false })
                         console.log('Sending event to EventPublish1:=>', eventData);
                         this.props.navigation.navigate('EventPublish', { event: eventData })
@@ -80,6 +82,7 @@ class EventCreateScreen extends Component {
             console.log('Recieved created event:=>', response);
             if (response && response.data && response.data.state === 'SUCCESS') {
                 let eventData = response.data.event;
+                eventData.eventDate = new Date(eventData.eventTimestamp)
                 this.setState({ isWaiting: false })
                 console.log('Sending event to EventPublish2:=>', eventData);
                 this.props.navigation.navigate('EventPublish', { event: eventData })
@@ -126,6 +129,7 @@ class EventCreateScreen extends Component {
 
     render() {
         const { image, title, description, duration, eventType, capacity, price, eventDate, titleMessage, dateMessage } = this.state;
+        const { date, time, gmt } = splitDate(eventDate)
         return (
             <ScrollView contentContainerStyle={styles.container}>
                 <View style={{ paddingHorizontal: 20, paddingVertical: 10 }}>
@@ -177,7 +181,7 @@ class EventCreateScreen extends Component {
                         <TouchableOpacity
                             onPress={() => this.setState({ isDatePickerVisible: true })}>
                             <Text style={styles.timeTextStyle}>
-                                {eventDate.toLocaleString()}
+                                {`${date}, ${time} (${gmt} GMT)`}
                             </Text>
                         </TouchableOpacity>
                     </View>

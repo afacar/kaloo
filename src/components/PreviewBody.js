@@ -1,17 +1,16 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { Slider, Button } from "react-native-elements";
-import AppButton from './AppButton';
+import EventTime from './EventTime';
 
-export default function EventBody(props) {
-  const { displayName, title, eventDate, duration, description, capacity, price } = props.eventBody
+export default function PreviewBody(props) {
+  const { displayName, title, eventDate, duration, description, capacity, price } = props.event
 
   return (
-    <View style={{ marginLeft: 10 }}>
-      <Text style={{ fontSize: 20, fontWeight: 'bold', marginBottom: 10 }}>{displayName}</Text>
+    <View style={{ marginLeft: 10, alignItems: 'stretch' }}>
+      <Text style={{ fontSize: 20, fontWeight: 'bold', marginBottom: 10 }}>by {displayName}</Text>
       <Text style={{ fontSize: 30, fontWeight: "normal" }}>{title}</Text>
-      <Text style={{ fontSize: 17, color: 'gray' }}>{eventDate.toLocaleString()}</Text>
-      <Text style={{ fontSize: 17, color: 'gray' }}>Duration: {duration} minutes</Text>
+      <EventTime eventTime={{ eventDate, duration }} />
       <Text style={{ fontSize: 20, fontWeight: '500', marginVertical: 20 }}>{description || 'No description'}</Text>
 
       <View>
@@ -26,9 +25,10 @@ export default function EventBody(props) {
           minimumTrackTintColor="#196BFF"
         />
       </View>
-      <View style={{ paddingTop: 20 }}>
+      <View style={{ paddingTop: 0 }}>
         <Button
           title={`Buy a ticket for $${price}`}
+          disabled
           onPress={() => console.log('This is preview!')}
         />
       </View>
@@ -39,6 +39,6 @@ export default function EventBody(props) {
 
 const styles = StyleSheet.create({
   container: {
-    
+
   },
 })

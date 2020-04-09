@@ -2,10 +2,6 @@ import React, { Component } from 'react';
 import { StyleSheet, ScrollView } from 'react-native';
 import { Button, Text } from 'react-native-elements';
 
-import HighlightedText from '../components/HighlightedText';
-import EventHeader from "../components/EventHeader";
-import EventBody from '../components/EventBody';
-import AppButton from '../components/AppButton';
 import EventShare from '../components/EventShare';
 
 
@@ -36,7 +32,7 @@ class EventPublishScreen extends Component {
           text='Your event isn’t published yet. Event ticket is going to look like this when you publish.'
           link={myEvent.eventLink}
         />
-        <AppButton
+        <Button
           title='Go to Event'
           onPress={() => this.props.navigation.navigate('MyEvent', { event: myEvent })}
         />

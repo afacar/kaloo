@@ -1,12 +1,12 @@
 import React, { Component } from 'react';
-import { ScrollView, StyleSheet, Share, Platform, BackHandler } from 'react-native';
+import { ScrollView, StyleSheet, Image, Platform, BackHandler, Text } from 'react-native';
 import { Button, Icon, ButtonGroup } from 'react-native-elements';
-import EventHeader from '../components/EventHeader';
-import EventBody from '../components/EventBody';
+import ClickableText from '../components/ClickableText';
 
 import { setEventListener, clearEventListener } from '../utils/EventHandler';
 import EventShare from '../components/EventShare';
-import AppButton from '../components/AppButton';
+import EventTime from '../components/EventTime';
+import EventHeader from '../components/EventHeader';
 
 class MyEventScreen extends Component {
     static navigationOptions = ({ navigation }) => ({
@@ -49,8 +49,6 @@ class MyEventScreen extends Component {
         clearEventListener(this.event.eid);
     }
 
-
-
     joinLive = () => {
         var { eid } = this.state;
         // TODO send  ticketID
@@ -75,22 +73,21 @@ class MyEventScreen extends Component {
     }
 
     render() {
-        const { displayName, image, photoURL, title, description, duration, eventType, capacity, price, eventDate, eventLink, status } = this.state;
+        const thisEvent = { ...this.state, isPublished: true }
         return (
             <ScrollView contentContainerStyle={styles.container}>
                 <EventHeader
-                    eventHeader={{ image, photoURL, eventType }}
-                />
-                <EventBody
-                    eventBody={{ displayName, title, eventDate, duration, description, capacity, price }}
+                    event={thisEvent}
+                    navigation={this.props.navigation}
                 />
                 <EventShare
                     text='Your event isn’t published yet. Event ticket is going to look like this when you publish.'
-                    link={eventLink}
+                    link={thisEvent.eventLink}
                 />
                 <Button
                     title='Preview audio and video'
                     onPress={this.onCamera}
+                    buttonStyle={{ backgroundColor: 'blue', borderRadius: 15 }}
                 />
             </ScrollView>
         )
@@ -103,7 +100,7 @@ const styles = StyleSheet.create({
         justifyContent: 'flex-start',
         marginHorizontal: 10,
         padding: 10,
-        borderRadius: 15
+        borderRadius: 15,
     }
 })
 

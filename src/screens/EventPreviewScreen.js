@@ -1,17 +1,17 @@
 import React, { Component } from 'react';
-import { StyleSheet, ScrollView } from 'react-native';
-import { Button, Text } from 'react-native-elements';
+import { StyleSheet, ScrollView, View } from 'react-native';
+import { Button, Text, Card } from 'react-native-elements';
 
 import HighlightedText from '../components/HighlightedText';
-import EventHeader from "../components/EventHeader";
-import EventBody from '../components/EventBody';
+import PreviewHeader from "../components/PreviewHeader";
+import PreviewBody from '../components/PreviewBody';
 
 
 class EventPreviewScreen extends Component {
   static navigationOptions = ({ navigation }) => ({
     title: 'Preview Event',
     headerRight: () => (
-      <Button
+      !navigation.getParam('event').isPublished && <Button
         type='clear'
         onPress={() => navigation.getParam('onPublish')()}
         title={'Publish'}
@@ -27,20 +27,22 @@ class EventPreviewScreen extends Component {
 
   render() {
     const {
-      displayName, photoURL, image, title, description, duration, eventType, capacity, price, eventDate, status
+      displayName, photoURL, image, title, description, duration, eventType, capacity, price, eventDate, status, isPublished
     } = this.props.navigation.getParam('event');
 
     return (
       <ScrollView contentContainerStyle={styles.container}>
-        <HighlightedText
+        {!isPublished && <HighlightedText
           text='Your event isn’t published yet. Event ticket is going to look like this when you publish.'
-        />
-        <EventHeader
-          eventHeader={{ image, photoURL, eventType }}
-        />
-        <EventBody
-          eventBody={{ displayName, title, eventDate, duration, description, capacity, price }}
-        />
+        />}
+        <Card containerStyle={{ marginHorizontal: 0, margin: 5 }}>
+          <PreviewHeader
+            event={{ image, photoURL, eventType }}
+          />
+          <PreviewBody
+            event={{ displayName, title, eventDate, duration, description, capacity, price }}
+          />
+        </Card>
       </ScrollView>
     );
   }
