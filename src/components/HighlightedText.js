@@ -6,27 +6,26 @@ import { Icon } from 'react-native-elements';
 export default function HighlightedText(props) {
     const { text } = props
     return (
-    
-            <View style={{
-                flexDirection: 'row', 
-                alignItems: 'center',
-                justifyContent:"center",
-                backgroundColor: '#196BFF',
-                borderRadius: 6,
-                //marginTop: 20,
-                //marginBottom: 20,
-                paddingHorizontal:30
-            }}>
-                <Icon
-                    name='lightbulb-on-outline'
-                    type='material-community'
-                    color='#fff'
-                    containerStyle={{paddingHorizontal:5}}
-                />
-                <Text style={{ textAlign: 'center', color: 'white', paddingVertical:15, fontSize:15 }}>
-                    {text}
-                </Text>
-            </View>
+        <View style={{
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: "center",
+            backgroundColor: '#196BFF',
+            borderRadius: 6,
+            //marginTop: 20,
+            //marginBottom: 20,
+            paddingHorizontal: 30
+        }}>
+            <Icon
+                name='lightbulb-on-outline'
+                type='material-community'
+                color='#fff'
+                containerStyle={{ paddingHorizontal: 5 }}
+            />
+            <Text style={{ textAlign: 'center', color: 'white', paddingVertical: 15, fontSize: 15 }}>
+                {text}
+            </Text>
+        </View>
     )
 
 }

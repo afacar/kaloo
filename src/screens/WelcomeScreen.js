@@ -5,19 +5,21 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import { Button, Text, Avatar } from 'react-native-elements';
+import { connect } from 'react-redux';
 
-const DEFAULT_LOGO = 'https://firebasestorage.googleapis.com/v0/b/influenceme-dev.appspot.com/o/assets%2Fdefault-logo.jpg?alt=media&token=20a6be6f-954f-417b-abfb-55e0ac75db02'
+//const DEFAULT_LOGO = 'https://firebasestorage.googleapis.com/v0/b/influenceme-dev.appspot.com/o/assets%2Fdefault-logo.jpg?alt=media&token=20a6be6f-954f-417b-abfb-55e0ac75db02'
 
 class WelcomeScreen extends Component {
   static navigationOptions = { headerShown: false }
 
   render() {
+    const { DEFAULT_LOGO_IMAGE } = this.props.assets;
     return (
       <View style={styles.container}>
         <View style={{ flex: 7, paddingHorizontal: 25, justifyContent: 'center', alignItems: 'center' }}>
           <View style={{ paddingBottom: 50, alignItems: 'center' }}>
             <Avatar
-              source={{ uri: DEFAULT_LOGO }}
+              source={{ uri: DEFAULT_LOGO_IMAGE }}
               size="large"
             />
             <Text style={{ fontSize: 25, fontWeight: 'bold' }}>
@@ -57,4 +59,7 @@ const styles = StyleSheet.create({
   },
 });
 
-export default WelcomeScreen;
+const mapStateToProps = ({ assets }) => {
+  return { assets: assets.assets }
+}
+export default connect(mapStateToProps, null)(WelcomeScreen);
