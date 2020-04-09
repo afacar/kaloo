@@ -30,7 +30,7 @@ export default StyleSheet.create({
         fontSize: 12,
         backgroundColor: 'white',
         color: 'black',
-        borderRadius: 56,
+        borderRadius: 6,
         textAlign: 'center',
         justifyContent: 'center',
         alignContent: 'center',
@@ -41,7 +41,7 @@ export default StyleSheet.create({
         fontSize: 12,
         color: 'white',
         backgroundColor: colors.RED,
-        borderRadius: 56,
+        borderRadius: 6,
         textAlign: 'center',
         padding: 8,
         paddingHorizontal: 20
@@ -51,7 +51,7 @@ export default StyleSheet.create({
         fontSize: 12,
         color: 'white',
         backgroundColor: colors.GREEN,
-        borderRadius: 56,
+        borderRadius: 6,
         textAlign: 'center',
         padding: 8,
         paddingHorizontal: 20
@@ -63,7 +63,7 @@ export default StyleSheet.create({
         backgroundColor: 'white',
         fontSize: 12,
         color: 'black',
-        borderRadius: 55,
+        borderRadius: 6,
         textAlign: 'center',
         padding: 8
     },
@@ -71,16 +71,16 @@ export default StyleSheet.create({
         backgroundColor: 'white',
         fontSize: 12,
         color: 'black',
-        borderRadius: 55,
+        borderRadius: 6,
         textAlign: 'center',
         padding: 8
     },
     localVideoBox: {
         position: 'absolute',
-        width: 130,
-        height: 140,
-        bottom: 24,
-        right: 24,
+        width: 140,
+        height: 160,
+        bottom: 72,
+        left: 24,
     },
     startButton: {
         position: 'absolute',
@@ -90,7 +90,7 @@ export default StyleSheet.create({
         // width: 220,
         // height: 46,
         // borderWidth: 1,
-        borderRadius: 38,
+        borderRadius: 6,
         padding: 12,
         justifyContent: 'center',
         alignItems: 'center'
@@ -103,15 +103,15 @@ export default StyleSheet.create({
         // width: 220,
         // height: 46,
         // borderWidth: 1,
-        borderRadius: 38,
+        borderRadius: 6,
         padding: 12,
         justifyContent: 'center',
         alignItems: 'center'
     },
     waitingBox: {
-        position: 'absolute',
-        alignSelf: 'center',
-        top: deviceHeight / 2,
-        flexDirection: 'row'
+        flex: 1,
+        backgroundColor: colors.BLUE,
+        justifyContent: 'center',
+        alignItems: 'center'
     }
 });

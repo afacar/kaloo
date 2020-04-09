@@ -50,16 +50,16 @@ class MyEventScreen extends Component {
     }
 
     joinLive = () => {
-        var { eid } = this.state;
+        var { eid, duration } = this.state;
         // TODO send  ticketID
-        this.props.navigation.navigate('Live', { clientRole: 1, channelProfile: 1, eventID: eid + '' })
+        this.props.navigation.navigate('Live', { clientRole: 1, channelProfile: 1, eventID: eid + '', duration })
     }
 
     // This method navigates to video call screen
     joinCall = () => {
-        var { eid } = this.state;
+        var { eid, duration } = this.state;
         // TODO send channelName and ticketID
-        this.props.navigation.navigate('VideoChat', { channelProfile: 0, eventID: eid + '', clientRole: 1 })
+        this.props.navigation.navigate('VideoChat', { channelProfile: 0, eventID: eid + '', clientRole: 1, duration })
     }
 
     onCamera = () => {

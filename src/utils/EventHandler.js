@@ -1,6 +1,5 @@
-import firebase from "react-native-firebase"
+import firebase, { firestore, auth } from "react-native-firebase"
 import { app } from "../constants";
-
 
 var liveEventListener = () => { };
 var eventListener = () => { };
@@ -13,21 +12,31 @@ export const startLive = (eventID) => {
     liveStatsRef.set({ status: app.EVENT_STATUS.IN_PROGRESS, startedAt: firebase.firestore.Timestamp.now().seconds.toString(), viewerCount: 0 }, { merge: true });
 }
 
-export const suspendLive = (eventID, eventStatus) => {
-    if (eventStatus != app.EVENT_STATUS.SCHEDULED) {
-        const eventRef = firebase.firestore().collection('events').doc(eventID);
-        const liveStatsRef = firebase.firestore().collection('events').doc(eventID).collection('live').doc('--stats--');
-        eventRef.set({ status: app.EVENT_STATUS.SUSPENDED }, { merge: true });
-        liveStatsRef.set({ status: app.EVENT_STATUS.SUSPENDED }, { merge: true });
+export const suspendLive = async (eventID) => {
+    const eventRef = firebase.firestore().collection('events').doc(eventID);
+    const liveStatsRef = firebase.firestore().collection('events').doc(eventID).collection('live').doc('--stats--');
+    var liveData = (await liveStatsRef.get()).data();
+    var { disconnectTimes } = liveData;
+    if (!disconnectTimes) {
+        disconnectTimes = [];
     }
+    disconnectTimes.push(firestore.Timestamp.now().toDate());
+    eventRef.set({ status: app.EVENT_STATUS.SUSPENDED }, { merge: true });
+    liveStatsRef.set({ status: app.EVENT_STATUS.SUSPENDED, disconnectTimes }, { merge: true });
     return 1;
 }
 
-export const continueLive = (eventID) => {
+export const continueLive = async (eventID) => {
     const eventRef = firebase.firestore().collection('events').doc(eventID);
     const liveStatsRef = firebase.firestore().collection('events').doc(eventID).collection('live').doc('--stats--');
+    var liveData = (await liveStatsRef.get()).data();
+    var { reconnectTimes } = liveData;
+    if (!reconnectTimes) {
+        reconnectTimes = [];
+    }
+    reconnectTimes.push(firestore.Timestamp.now().toDate());
     eventRef.set({ status: app.EVENT_STATUS.IN_PROGRESS }, { merge: true });
-    liveStatsRef.set({ status: app.EVENT_STATUS.IN_PROGRESS }, { merge: true });
+    liveStatsRef.set({ status: app.EVENT_STATUS.IN_PROGRESS, reconnectTimes }, { merge: true });
     return 1;
 }
 
