@@ -154,7 +154,7 @@ export default class LiveScreen extends Component {
         setLiveEventListener(eventID, ({ status, viewerCount, startedAt }) => {
             var time = 0;
             if (startedAt) {
-                time = parseInt(firebase.firestore.Timestamp.now().seconds) - parseInt(startedAt);
+                time = Date.now() - startedAt.getTime();
                 this.setState({ timeStr: formatTime(this.state.duration * 60 - time) });
             }
             if (startedAt && status === app.EVENT_STATUS.IN_PROGRESS) {
@@ -169,7 +169,7 @@ export default class LiveScreen extends Component {
                         .catch((error) => {
                         });
                 }
-                time = parseInt(firebase.firestore.Timestamp.now().seconds) - parseInt(startedAt);
+                time = Date.now() - startedAt.getTime();
                 this.setState({ time: this.state.duration * 60 - time });
                 if (!this.timer) {
                     this.timer = setInterval(() => {
@@ -224,8 +224,9 @@ export default class LiveScreen extends Component {
                     text: 'Yes', onPress: () => {
                         RtcEngine.stopPreview();
                         RtcEngine.joinChannel(channelName, HOST_UID)
-                            .then((result) => {
-                                startLive(channelName);
+                            .then(async (result) => {
+                                // TODO: Function response should be check if db update is SUCCESS
+                                let response = await startLive(channelName);
                             })
                             .catch((error) => {
                             });
@@ -292,7 +293,9 @@ export default class LiveScreen extends Component {
         const { navigation } = this.props;
         var clientRole = this.props.navigation.getParam('clientRole', 2);
         var eventID = this.props.navigation.getParam('eventID', 'agora_test');
-
+        if (this.state.status !== app.EVENT_STATUS.IN_PROGRESS) {
+            return navigation.goBack();
+        }
         Alert.alert(
             "Confirm Exit",
             "You can continue live from MyEvent page",
@@ -305,7 +308,7 @@ export default class LiveScreen extends Component {
                 },
                 {
                     text: 'OK', onPress: () => {
-                        if (clientRole === 1 && this.state.status != app.EVENT_STATUS.SCHEDULED) {
+                        if (clientRole === 1) {
                             suspendLive(eventID);
                         }
                         navigation.goBack();

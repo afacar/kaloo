@@ -1,51 +1,77 @@
-import firebase, { firestore, auth } from "react-native-firebase"
+import firebase, { firestore, functions } from "react-native-firebase"
 import { app } from "../constants";
 
 var liveEventListener = () => { };
 var eventListener = () => { };
 
-export const startLive = (eventID) => {
-    const eventRef = firebase.firestore().collection('events').doc(eventID);
-    const liveStatsRef = firebase.firestore().collection('events').doc(eventID).collection('live').doc('--stats--');
-    //TODO: change milliseconds to timestamp
-    eventRef.set({ status: app.EVENT_STATUS.IN_PROGRESS, startedAt: firebase.firestore.Timestamp.now().seconds.toString() }, { merge: true });
-    liveStatsRef.set({ status: app.EVENT_STATUS.IN_PROGRESS, startedAt: firebase.firestore.Timestamp.now().seconds.toString(), viewerCount: 0 }, { merge: true });
-}
-
-export const suspendLive = async (eventID) => {
-    const eventRef = firebase.firestore().collection('events').doc(eventID);
-    const liveStatsRef = firebase.firestore().collection('events').doc(eventID).collection('live').doc('--stats--');
-    var liveData = (await liveStatsRef.get()).data();
-    var { disconnectTimes } = liveData;
-    if (!disconnectTimes) {
-        disconnectTimes = [];
+export const startLive = async (eid) => {
+    console.log('startLive called!', eid)
+    try {
+        let startLive = functions().httpsCallable('startEvent')
+        let response = await startLive({ eid })
+        console.log('startLive response ', response)
+        if (response.data && response.data.state === 'SUCCESS') {
+            return true;
+        }
+        return false;
+    } catch (error) {
+        console.log('startLive err: ', error)
+        return false;
     }
-    disconnectTimes.push(firestore.Timestamp.now().toDate());
-    eventRef.set({ status: app.EVENT_STATUS.SUSPENDED }, { merge: true });
-    liveStatsRef.set({ status: app.EVENT_STATUS.SUSPENDED, disconnectTimes }, { merge: true });
-    return 1;
 }
 
-export const continueLive = async (eventID) => {
-    const eventRef = firebase.firestore().collection('events').doc(eventID);
-    const liveStatsRef = firebase.firestore().collection('events').doc(eventID).collection('live').doc('--stats--');
-    var liveData = (await liveStatsRef.get()).data();
-    var { reconnectTimes } = liveData;
-    if (!reconnectTimes) {
-        reconnectTimes = [];
+export const suspendLive = async (eid) => {
+    console.log('suspendLive called!')
+    try {
+        let suspendLive = functions().httpsCallable('suspendEvent')
+        let response = await suspendLive({ eid })
+        console.log('suspendLive response ', response)
+        if (response.data && response.data.state === 'SUCCESS') {
+            return true;
+        }
+        // TODO: Take action in case of error
+        return false;
+    } catch (error) {
+        console.log('suspendLive err: ', error)
+        // TODO: Take action in case of error
+        return false;
     }
-    reconnectTimes.push(firestore.Timestamp.now().toDate());
-    eventRef.set({ status: app.EVENT_STATUS.IN_PROGRESS }, { merge: true });
-    liveStatsRef.set({ status: app.EVENT_STATUS.IN_PROGRESS, reconnectTimes }, { merge: true });
-    return 1;
 }
 
-export const endLive = (eventID) => {
-    const eventRef = firebase.firestore().collection('events').doc(eventID);
-    const liveStatsRef = firebase.firestore().collection('events').doc(eventID).collection('live').doc('--stats--');
-    eventRef.set({ status: app.EVENT_STATUS.COMPLETED, endAt: firebase.firestore.Timestamp.now().seconds.toString() }, { merge: true });
-    liveStatsRef.set({ status: app.EVENT_STATUS.COMPLETED, endAt: firebase.firestore.Timestamp.now().seconds.toString() }, { merge: true });
-    return 1;
+export const continueLive = async (eid) => {
+    console.log('continueLive called!')
+    try {
+        let continueLive = functions().httpsCallable('continueEvent')
+        let response = await continueLive({ eid })
+        console.log('continueLive response ', response)
+        if (response.data && response.data.state === 'SUCCESS') {
+            return true;
+        }
+        // TODO: Take action in case of error
+        return false;
+    } catch (error) {
+        console.log('continueLive err: ', error)
+        // TODO: Take action in case of error
+        return false;
+    }
+}
+
+export const endLive = async (eid) => {
+    console.log('endLive called!')
+    try {
+        let endLive = functions().httpsCallable('endEvent')
+        let response = await endLive({ eid })
+        console.log('endEvent response ', response)
+        if (response.data && response.data.state === 'SUCCESS') {
+            return true;
+        }
+        // TODO: Take action in case of error
+        return false;
+    } catch (error) {
+        console.log('endEvent err: ', error)
+        // TODO: Take action in case of error
+        return false;
+    }
 }
 
 export const incrementViewer = (eventID) => {
@@ -109,7 +135,7 @@ export const setLiveEventListener = (eventID, callback) => {
         console.log('eventSnapshot ', eventSnapshot.data());
         const liveStats = eventSnapshot.data();
         if (liveStats) {
-            callback({ status: liveStats.status, viewerCount: liveStats.viewerCount, startedAt: liveStats.startedAt });
+            callback({ status: liveStats.status, viewerCount: liveStats.viewerCount, startedAt: liveStats.startDate.toDate() });
         } else {
             callback({ status: app.EVENT_STATUS.SCHEDULED, viewerCount: 0, startedAt: undefined })
         }
