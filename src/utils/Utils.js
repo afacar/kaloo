@@ -1,6 +1,12 @@
 import { months } from '../constants'
 
 export const formatTime = (seconds) => {
+    var negative = false;
+    console.warn(seconds)
+    if (seconds < 0) {
+        seconds *= -1;
+        negative = true;
+    }
     var sec_num = parseInt(seconds); // don't forget the second param
     var hours = Math.floor(sec_num / 3600);
     var minutes = Math.floor((sec_num - (hours * 3600)) / 60);
@@ -9,16 +15,25 @@ export const formatTime = (seconds) => {
     if (hours < 10) { hours = "0" + hours; }
     if (minutes < 10) { minutes = "0" + minutes; }
     if (seconds < 10) { seconds = "0" + seconds; }
-    if (hours > 0)
-        return hours + ':' + minutes + ':' + seconds;
-    else
-        return minutes + ':' + seconds;
+    if (hours > 0) {
+        if (negative)
+            return '-' + hours + ':' + minutes + ':' + seconds;
+        else
+            return hours + ':' + minutes + ':' + seconds;
+    }
+    else {
+        if (negative)
+            return '-' + minutes + ':' + seconds;
+        else
+            return minutes + ':' + seconds;
+
+    }
 }
 
 export function formatDuration(duration) {
     // Takes duration as minutes and return as a readible, rounded time format
     // Can be used to show remaining duratoin or duration for an event 
-    
+
     if (duration == 0)
         return ''
 
