@@ -446,13 +446,6 @@ export default class LiveScreen extends Component {
                             clientRole === 1 && (
                                 <View style={{ flex: 1 }}>
                                     <AgoraView style={{ flex: 1 }} showLocalVideo={true} mode={1} />
-                                    {/* {
-                                    this.state.showButtons && (
-                                        <AppButton style={styles.videoQuitButton} onPress={this.endLive}>
-                                            <AppText style={{ color: '#FFFFFF', marginLeft: 8, fontSize: 20 }}>End</AppText>
-                                        </AppButton>
-                                    )
-                                } */}
                                     {
                                         this.renderTimerNViewer()
                                     }

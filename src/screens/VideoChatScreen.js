@@ -438,6 +438,9 @@ export default class VideoChatScreen extends Component {
                         color='white'
                     />
                     <AppText style={{ color: '#FFFFFF', marginLeft: 8, fontSize: 24, fontWeight: 'bold', textAlign: 'center' }}>Your host is connecting...</AppText>
+                    <View style={styles.localVideoBox}>
+                        <AgoraView style={{ flex: 1, borderRadius: 10 }} showLocalVideo={true} mode={1} />
+                    </View>
                 </View>
             )
         } else if (status === app.EVENT_STATUS.SCHEDULED || status === app.EVENT_STATUS.SUSPENDED && clientRole === 1) {
@@ -467,19 +470,6 @@ export default class VideoChatScreen extends Component {
         }
     }
 
-    renderTimerNViewer() {
-        return (
-            <View style={styles.timerNViewer}>
-                <View style={{ flex: 1, marginBottom: 10, justifyContent: 'center', alignItems: 'center' }}>
-                    <AppText style={styles.viewerText}>{this.state.viewers + ' Viewers'}</AppText>
-                </View>
-                <View style={{ flex: 1 }}>
-                    <AppText style={styles.timerCard}>{this.state.timeStr}</AppText>
-                </View>
-            </View>
-        )
-    }
-
     reportProblem() {
         console.warn("Report a problem clicked");
     }
@@ -503,17 +493,14 @@ export default class VideoChatScreen extends Component {
                 />
 
                 <View style={{ flex: 1 }}>
-                    <View style={styles.timerNViewer}>
-                        <AppText style={styles.timerCard}>{this.state.timeStr}</AppText>
-                    </View>
-                    {
-                        capacity === 0 && (
-                            this.renderWaitingComponent()
-                        )
-                    }
                     {
                         capacity === 1 && (
                             this.renderTwoVideos()
+                        )
+                    }
+                    {
+                        capacity === 0 && (
+                            this.renderWaitingComponent()
                         )
                     }
                     {
@@ -524,6 +511,9 @@ export default class VideoChatScreen extends Component {
                     {
                         this.renderLiveInfo()
                     }
+                    <View style={styles.timerNViewer}>
+                        <AppText style={styles.timerCard}>{this.state.timeStr}</AppText>
+                    </View>
                 </View>
                 {/* {
                     capacity === 0 && (
