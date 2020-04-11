@@ -423,6 +423,53 @@ export default class LiveScreen extends Component {
         }
     }
 
+    renderBroadcastButton() {
+        const { status } = this.state;
+        if (status === app.EVENT_STATUS.COMPLETED) {
+            return (
+                <AppButton style={styles.startButton} onPress={this.startLive}>
+                    <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center' }}>
+                        <Icon
+                            type='font-awesome'
+                            name="video-camera"
+                            size={16}
+                            color="white"
+                        />
+                        <AppText style={{ color: 'white', fontWeight: 'bold', fontSize: 16, marginLeft: 8 }}>Start Broadcasting</AppText>
+                    </View>
+                </AppButton>
+            )
+        } else if (status === app.EVENT_STATUS.IN_PROGRESS) {
+            return (
+                <AppButton style={styles.endButton} onPress={this.endLive}>
+                    <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center' }}>
+                        <Icon
+                            type='material-community'
+                            name="video-off"
+                            size={16}
+                            color="white"
+                        />
+                        <AppText style={{ color: 'white', fontWeight: 'bold', fontSize: 16, marginLeft: 8 }}>End Broadcasting</AppText>
+                    </View>
+                </AppButton>
+            )
+        } else {
+            return (
+                <AppButton style={styles.startButton} onPress={this.continueLive}>
+                    <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center' }}>
+                        <Icon
+                            type='font-awesome'
+                            name="video-camera"
+                            size={16}
+                            color="white"
+                        />
+                        <AppText style={{ color: 'white', fontWeight: 'bold', fontSize: 16, marginLeft: 8 }}>Continue Broadcasting</AppText>
+                    </View>
+                </AppButton>
+            )
+        }
+    }
+
     render() {
         const clientRole = this.props.navigation.getParam('clientRole', 1);
         return (
@@ -453,49 +500,7 @@ export default class LiveScreen extends Component {
                                         this.renderLiveInfo()
                                     }
                                     {
-                                        this.state.status === app.EVENT_STATUS.IN_PROGRESS && (
-                                            <AppButton style={styles.endButton} onPress={this.endLive}>
-                                                <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center' }}>
-                                                    <Icon
-                                                        type='material-community'
-                                                        name="video-off"
-                                                        size={16}
-                                                        color="white"
-                                                    />
-                                                    <AppText style={{ color: 'white', fontWeight: 'bold', fontSize: 16, marginLeft: 8 }}>End Broadcasting</AppText>
-                                                </View>
-                                            </AppButton>
-                                        )
-                                    }
-                                    {
-                                        this.state.status === app.EVENT_STATUS.SUSPENDED && (
-                                            <AppButton style={styles.startButton} onPress={this.continueLive}>
-                                                <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center' }}>
-                                                    <Icon
-                                                        type='font-awesome'
-                                                        name="video-camera"
-                                                        size={16}
-                                                        color="white"
-                                                    />
-                                                    <AppText style={{ color: 'white', fontWeight: 'bold', fontSize: 16, marginLeft: 8 }}>Continue Broadcasting</AppText>
-                                                </View>
-                                            </AppButton>
-                                        )
-                                    }
-                                    {
-                                        this.state.status === app.EVENT_STATUS.SCHEDULED && (
-                                            <AppButton style={styles.startButton} onPress={this.startLive}>
-                                                <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center' }}>
-                                                    <Icon
-                                                        type='font-awesome'
-                                                        name="video-camera"
-                                                        size={16}
-                                                        color="white"
-                                                    />
-                                                    <AppText style={{ color: 'white', fontWeight: 'bold', fontSize: 16, marginLeft: 8 }}>Start Broadcasting</AppText>
-                                                </View>
-                                            </AppButton>
-                                        )
+                                        this.renderBroadcastButton()
                                     }
                                 </View>
                             )
