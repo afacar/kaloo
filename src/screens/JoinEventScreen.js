@@ -1,10 +1,18 @@
 import React, { Component } from 'react';
-import { View, StyleSheet, Image, Share } from 'react-native';
+import { View, StyleSheet, Image, Share,NativeModules } from 'react-native';
 import { Button, Text, Card, Rating } from 'react-native-elements';
+import { RtcEngine } from 'react-native-agora';
 import { app } from '../constants';
 import { setEventListener, clearEventListener } from "../utils/EventHandler";
 import firebase from "react-native-firebase";
+const { Agora } = NativeModules;
 
+const {
+    FPS30,
+    AgoraAudioProfileMusicHighQuality,
+    AgoraAudioScenarioShowRoom,
+    Adaptative
+} = Agora
 const db = firebase.firestore()
 
 class JoinEventScreen extends Component {
@@ -58,8 +66,38 @@ class JoinEventScreen extends Component {
 
     onCamera = () => {
         if (this.state.eventType === 'live') {
+            const options = {
+                appid: app.AGORA_APP_ID,
+                channelProfile: 1,
+                clientRole: 2,
+                videoEncoderConfig: {
+                    width: 360,
+                    height: 480,
+                    bitrate: 1,
+                    frameRate: FPS30,
+                    orientationMode: Adaptative,
+                },
+                audioProfile: AgoraAudioProfileMusicHighQuality,
+                audioScenario: AgoraAudioScenarioShowRoom
+            };
+            RtcEngine.init(options)
             this.joinLive();
         } else if (this.state.eventType === 'call') {
+            const options = {
+                appid: app.AGORA_APP_ID,
+                channelProfile: 0,
+                clientRole: 2,
+                videoEncoderConfig: {
+                    width: 360,
+                    height: 480,
+                    bitrate: 1,
+                    frameRate: FPS30,
+                    orientationMode: Adaptative,
+                },
+                audioProfile: AgoraAudioProfileMusicHighQuality,
+                audioScenario: AgoraAudioScenarioShowRoom
+            };
+            RtcEngine.init(options)
             this.joinCall();
         }
     }
