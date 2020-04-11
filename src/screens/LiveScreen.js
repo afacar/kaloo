@@ -92,37 +92,42 @@ export default class LiveScreen extends Component {
         }
     }
 
-    componentWillMount() {
-        // init RTCEngine
-        const channelProfile = this.props.navigation.getParam('channelProfile', 1);
-        const clientRole = this.props.navigation.getParam('clientRole', 2);
-        const options = {
-            appid: app.AGORA_APP_ID,
-            channelProfile,
-            clientRole,
-            videoEncoderConfig: {
-                width: 360,
-                height: 480,
-                bitrate: 1,
-                frameRate: FPS30,
-                orientationMode: Adaptative,
-            },
-            audioProfile: AgoraAudioProfileMusicHighQuality,
-            audioScenario: AgoraAudioScenarioShowRoom
-        };
-        // rtc object
-        RtcEngine.on('userJoined', (data) => {
-            const { peerIds } = this.state;
-            if (peerIds.indexOf(data.uid) === -1) {
-                this.setState({
-                    peerIds: [...this.state.peerIds, data.uid]
-                })
-            }
-        })
-        RtcEngine.on('error', (error) => {
-        })
-        RtcEngine.init(options);
-    }
+    // componentWillMount() {
+    //     // init RTCEngine
+    //     const channelProfile = this.props.navigation.getParam('channelProfile', 1);
+    //     const clientRole = this.props.navigation.getParam('clientRole', 2);
+    //     const options = {
+    //         appid: app.AGORA_APP_ID,
+    //         channelProfile,
+    //         clientRole,
+    //         videoEncoderConfig: {
+    //             width: 360,
+    //             height: 480,
+    //             bitrate: 1,
+    //             frameRate: FPS30,
+    //             orientationMode: Adaptative,
+    //         },
+    //         audioProfile: AgoraAudioProfileMusicHighQuality,
+    //         audioScenario: AgoraAudioScenarioShowRoom
+    //     };
+    //     // rtc object
+    //     RtcEngine.on('userJoined', (data) => {
+    //         const { peerIds } = this.state;
+    //         if (peerIds.indexOf(data.uid) === -1) {
+    //             this.setState({
+    //                 peerIds: [...this.state.peerIds, data.uid]
+    //             })
+    //         }
+    //     })
+    //     RtcEngine.on('userOffline', (data) => {
+    //         this.setState({
+    //             peerIds: this.state.peerIds.filter(uid => uid !== data.uid)
+    //         })
+    //     })
+    //     RtcEngine.on('error', (error) => {
+    //     })
+    //     RtcEngine.init(options);
+    // }
 
     componentDidMount() {
         if (Platform.OS === 'android') {
@@ -187,7 +192,22 @@ export default class LiveScreen extends Component {
             }
             this.setState({ viewers: viewerCount || 0, status: status || app.EVENT_STATUS.SCHEDULED })
         });
-
+        // rtc object
+        RtcEngine.on('userJoined', (data) => {
+            const { peerIds } = this.state;
+            if (peerIds.indexOf(data.uid) === -1) {
+                this.setState({
+                    peerIds: [...this.state.peerIds, data.uid]
+                })
+            }
+        })
+        RtcEngine.on('userOffline', (data) => {
+            this.setState({
+                peerIds: this.state.peerIds.filter(uid => uid !== data.uid)
+            })
+        })
+        RtcEngine.on('error', (error) => {
+        })
         // setup back button listener
         handleAndroidBackButton(this.backButtonPressed);
     }
@@ -373,6 +393,36 @@ export default class LiveScreen extends Component {
         )
     }
 
+    renderWaitingComponent() {
+        const { status } = this.state;
+        var clientRole = this.props.navigation.getParam('clientRole', 2);
+        if (status === app.EVENT_STATUS.SUSPENDED || status === app.EVENT_STATUS.IN_PROGRESS) {
+            return (
+                <View style={styles.waitingBox}>
+                    <Icon
+                        type='simple-line-icon'
+                        name="globe"
+                        size={48}
+                        color='white'
+                    />
+                    <AppText style={{ color: '#FFFFFF', marginLeft: 8, fontSize: 24, fontWeight: 'bold', textAlign: 'center' }}>Your Host is connecting...</AppText>
+                </View>
+            )
+        } else if (status === app.EVENT_STATUS.SCHEDULED) {
+            return (
+                <View style={styles.waitingBox}>
+                    <Icon
+                        type='simple-line-icon'
+                        name="globe"
+                        size={48}
+                        color='white'
+                    />
+                    <AppText style={{ color: '#FFFFFF', marginLeft: 8, fontSize: 24, fontWeight: 'bold', textAlign: 'center' }}>Wait for event to start..</AppText>
+                </View>
+            )
+        }
+    }
+
     render() {
         const clientRole = this.props.navigation.getParam('clientRole', 1);
         return (
@@ -461,19 +511,21 @@ export default class LiveScreen extends Component {
                             // Viewer
                             clientRole === 2 && (
                                 <View style={{ flex: 1 }}>
-                                    <AgoraView mode={1} key={HOST_UID} style={{ flex: 1 }} remoteUid={HOST_UID} />
-                                    {/* {
-                                    this.state.showButtons && (
-                                        <AppButton style={styles.videoQuitButton} onPress={this.leaveLive}>
-                                            <AppText style={{ color: '#FFFFFF', marginLeft: 8, fontSize: 20 }}>Leave</AppText>
-                                        </AppButton>
-                                    )
-                                } */}
+                                    {
+                                        this.state.peerIds.length !== 0 && (
+                                            <AgoraView mode={1} key={HOST_UID} style={{ flex: 1 }} remoteUid={HOST_UID} />
+                                        )
+                                    }
                                     {
                                         this.renderTimerNViewer()
                                     }
                                     {
                                         this.renderLiveInfo()
+                                    }
+                                    {
+                                        this.state.peerIds.length === 0 && (
+                                            this.renderWaitingComponent()
+                                        )
                                     }
                                 </View>
                             )
