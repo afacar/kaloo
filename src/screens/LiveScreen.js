@@ -470,6 +470,17 @@ export default class LiveScreen extends Component {
         }
     }
 
+    renderMainComponent() {
+        console.warn('Without this console warn render does not work properly. I do not know why.')
+        if (this.state.peerIds.length !== 0) {
+            return (
+                <AgoraView mode={1} key={HOST_UID} style={{ flex: 1 }} remoteUid={HOST_UID} />
+            )
+        } else {
+            return this.renderWaitingComponent()
+        }
+    }
+
     render() {
         const clientRole = this.props.navigation.getParam('clientRole', 1);
         return (
@@ -478,7 +489,7 @@ export default class LiveScreen extends Component {
                     <KeepAwake />
                     <StatusBar hidden={true} />
                     <Header
-                        buttonTitle={'Quit Call'}
+                        buttonTitle={'Quit Live'}
                         buttonTitleStyle={{ color: colors.BLUE, fontSize: 16 }}
                         headerRight={(
                             <TouchableOpacity onPress={this.reportProblem}>
@@ -510,20 +521,13 @@ export default class LiveScreen extends Component {
                             clientRole === 2 && (
                                 <View style={{ flex: 1 }}>
                                     {
-                                        this.state.peerIds.length !== 0 && (
-                                            <AgoraView mode={1} key={HOST_UID} style={{ flex: 1 }} remoteUid={HOST_UID} />
-                                        )
+                                        this.renderMainComponent()
                                     }
                                     {
                                         this.renderTimerNViewer()
                                     }
                                     {
                                         this.renderLiveInfo()
-                                    }
-                                    {
-                                        this.state.peerIds.length === 0 && (
-                                            this.renderWaitingComponent()
-                                        )
                                     }
                                 </View>
                             )

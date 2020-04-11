@@ -298,7 +298,7 @@ export default class VideoChatScreen extends Component {
         var eventID = this.props.navigation.getParam('eventID', 'agora_test');
         Alert.alert(
             "Confirm Exit",
-            "You can continue live from MyEvent page",
+            "You can continue call from MyEvent page",
             [
                 {
                     text: 'Cancel', onPress: () => {
