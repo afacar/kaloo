@@ -12,7 +12,7 @@ class MyJoinEventScreen extends Component {
     state = { ...this.event }
 
     componentDidMount() {
-        console.log('Event state is', this.state)
+        console.log('MYJoinEventScreen state is', this.state)
 
         setEventListener(this.state.eid, (event) => {
             this.setState({ ...event })
@@ -20,7 +20,7 @@ class MyJoinEventScreen extends Component {
     }
 
     componentWillUnmount() {
-        clearEventListener(this.event.eid);
+        clearEventListener(this.state.eid);
     }
 
     onShare = async () => {
@@ -81,8 +81,6 @@ class MyJoinEventScreen extends Component {
 
     render() {
         const { image, title, description, duration, eventType, capacity, price, eventDate, eventLink, status } = this.state;
-        console.log('eventDate is', eventDate)
-        console.log('eventDate typeOf is', new Date(eventDate))
         return (
             <View style={styles.container}>
                 <Card title={title} containerStyle={{ justifyContent: 'flex-start', alignSelf: 'stretch' }}>
@@ -93,7 +91,7 @@ class MyJoinEventScreen extends Component {
                         <Text>Capacity: {capacity}</Text>
                         <Text>Event Type: {eventType}</Text>
                         <Text>Price: {price}</Text>
-                        <Text>Event Date: {new Date(eventDate).toLocaleString()}</Text>
+                        <Text>Event Date: {eventDate.toLocaleString()}</Text>
                         <Text>Event Link: {eventLink}</Text>
                         {
                             status !== app.EVENT_STATUS.COMPLETED && <Button title='Share' onPress={this.onShare} />

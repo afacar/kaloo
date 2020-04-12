@@ -74,7 +74,23 @@ export const endLive = async (eid) => {
     }
 }
 
-export const incrementViewer = (eventID) => {
+export const joinEvent = async (eid, ticket) => {
+    console.log('joinEvent called!')
+    try {
+        let joinEvent = functions().httpsCallable('joinEvent')
+        let response = await joinEvent({ eid, ticket })
+        console.log('endEvent response ', response)
+        if (response.data && response.data.state === 'SUCCESS') {
+            return true;
+        }
+        // TODO: Take action in case of error
+        return false;
+    } catch (error) {
+        console.log('endEvent err: ', error)
+        // TODO: Take action in case of error
+        return false;
+    }
+
     const ref = firebase.firestore().collection('events').doc(eventID).collection('live').doc('--stats--');
 
     firebase.firestore().runTransaction(async transaction => {
@@ -148,9 +164,19 @@ export const clearLiveEventListener = () => {
 }
 
 export const setEventListener = (eventID, callback) => {
-    eventListener = firebase.firestore().collection('events').doc(eventID + '').onSnapshot(eventSnapshot => {
-        console.log('eventSnapshot ', eventSnapshot.data());
-        callback(eventSnapshot.data())
+    eventListener = firebase.firestore().collection('events').doc(eventID).onSnapshot(eventSnapshot => {
+        console.log('eventSnapshot 1', eventSnapshot.data());
+        // Convert Firebase Timestamp to JS Date
+        let event = eventSnapshot.data()
+        let date = event.eventDate
+        if (date instanceof firestore.Timestamp) {
+            date = date.toDate();
+        } else if (eventData.eventTimestamp) {
+            date = new Date(eventData.eventTimestamp)
+        }
+        event.eventDate = date
+
+        callback(event)
     })
 }
 
@@ -158,27 +184,3 @@ export const clearEventListener = () => {
     if (eventListener)
         eventListener();
 }
-
-// export const setViewerCountListener = (eventID, callback) => {
-//     viewerCountListener = firebase.firestore().collection('events').doc(eventID).collection('viewers').doc('--stats--');
-//     ref.onSnapshot(viewerCountSnapshot => {
-//         callback(viewerCountSnapshot.data().viewerCount);
-//     })
-// }
-
-// export const clearViewerCountListener = (eventID, callback) => {
-//     if (viewerCountListener)
-//         viewerCountListener();
-// }
-
-// export const setViewerCountListener = (eventID, callback) => {
-//     eventStatusListener = firebase.firestore().collection('events').doc(eventID);
-//     ref.onSnapshot(viewerCountSnapshot => {
-//         callback(viewerCountSnapshot.data().viewerCount);
-//     })
-// }
-
-// export const clearViewerCountListener = (eventID, callback) => {
-//     if (viewerCountListener)
-//         viewerCountListener();
-// }

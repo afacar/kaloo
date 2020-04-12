@@ -3,7 +3,6 @@ import { View, Text, StyleSheet } from 'react-native';
 import { splitDate, formatDuration } from "../utils/Utils";
 
 export default function EventTime(props) {
-  console.log('EventTime props', props)
   let { eventDate, duration } = props.eventTime
   const { date, time, gmt } = splitDate(eventDate)
   return (

@@ -64,20 +64,26 @@ class EventListScreen extends Component {
         const { uid } = auth().currentUser
         this.setState({ isLoading: true })
         var pathToEvents = `users/${uid}/myevents`;
+        // TODO: filter events based on status [All the events except COMPLETED]
         let events = await db.collection(pathToEvents).where('eventDate', '>=', new Date()).orderBy('eventDate').get()
             .then((querySnapshot) => {
                 var events = [];
                 querySnapshot.forEach(function (doc) {
                     let event = doc.data()
                     // Convert Firebase Timestamp tp JS Date object
-                    event.eventDate = event.eventDate.toDate()
-                    events.push(doc.data());
+                    let date = event.eventDate
+                    if (date instanceof firestore.Timestamp) {
+                        date = date.toDate();
+                    } else if (eventData.eventTimestamp) {
+                        date = new Date(eventData.eventTimestamp)
+                    }
+                    event.eventDate = date
+                    events.push(event);
                 });
-                console.log("Current events fetched: ", events);
                 return events;
             });
-        console.log('events here', events)
-        this.setState({ events, isLoading: false })
+            console.log('events here', events)
+            this.setState({ events, isLoading: false })
     }
 
     checkAudioPermission = async () => {
@@ -136,18 +142,18 @@ class EventListScreen extends Component {
         if (isLoading) return <ActivityIndicator size='large' />
 
         if (events.length > 0) {
-            return events.map((e, i) => {
-                let description = e.description.substring(0, 20) || 'No description';
-                description = description + '\n' + e.eventDate.toLocaleString()
+            return events.map((event, i) => {
+                let description = event.description.substring(0, 20) || 'No description';
+                description = description + '\n' + event.eventDate.toLocaleString()
                 return (
                     <ListItem
                         key={i}
-                        leftAvatar={{ source: { uri: e.image } }}
+                        leftAvatar={{ source: { uri: event.image } }}
                         rightIcon={{ type: 'material-community', name: 'chevron-right' }}
-                        title={e.title}
+                        title={event.title}
                         subtitle={description}
                         bottomDivider
-                        onPress={() => this.props.navigation.navigate('MyEvent', { event: e })}
+                        onPress={() => this.props.navigation.navigate('MyEvent', { event: event })}
                     />
                 );
             })

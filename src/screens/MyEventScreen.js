@@ -34,7 +34,6 @@ class MyEventScreen extends Component {
 
         setEventListener(this.state.eid, (event) => {
             if (event) {
-                event.eventDate = event.eventDate.toDate()
                 this.setState({ ...event })
             }
         })
