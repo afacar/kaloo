@@ -220,7 +220,7 @@ export default class VideoChatScreen extends Component {
         setLiveEventListener(eventID, ({ status, viewerCount, startedAt }) => {
             var time = 0;
             if (startedAt) {
-                time = parseInt(firebase.firestore.Timestamp.now().seconds) - parseInt(startedAt);
+                time = Date.now() - startedAt.getTime();
                 this.setState({ timeStr: formatTime(this.state.duration * 60 - time) });
             }
             if (startedAt && status === app.EVENT_STATUS.IN_PROGRESS) {
@@ -235,7 +235,7 @@ export default class VideoChatScreen extends Component {
                         .catch((error) => {
                         });
                 }
-                time = parseInt(firebase.firestore.Timestamp.now().seconds) - parseInt(startedAt);
+                time = Date.now() - startedAt.getTime();
                 this.setState({ time: this.state.duration * 60 - time });
                 if (!this.timer) {
                     this.timer = setInterval(() => {
@@ -280,6 +280,9 @@ export default class VideoChatScreen extends Component {
         const { navigation } = this.props;
         var clientRole = this.props.navigation.getParam('clientRole', 2);
         var eventID = this.props.navigation.getParam('eventID', 'agora_test');
+        if (this.state.status !== app.EVENT_STATUS.IN_PROGRESS) {
+            return navigation.goBack();
+        }
         Alert.alert(
             "Confirm Exit",
             "You can continue live from MyEvent page",
@@ -293,7 +296,7 @@ export default class VideoChatScreen extends Component {
                 },
                 {
                     text: 'OK', onPress: () => {
-                        if (clientRole === 1 && this.state.status != app.EVENT_STATUS.SCHEDULED) {
+                        if (clientRole === 1) {
                             suspendLive(eventID);
                         }
                         navigation.goBack();
@@ -495,39 +498,6 @@ export default class VideoChatScreen extends Component {
                         <AppText style={styles.timerCard}>{this.state.timeStr}</AppText>
                     </View>
                 </View>
-                {/* {
-                    capacity === 0 && (
-                        < AgoraView style={{ flex: 1 }} mode={1} showLocalVideo={true} />
-                    )
-                }
-                {
-                    capacity > 0 && (
-                        <View style={{ flex: 1 }}>
-                            <View style={{ flex: 1 }}>
-                                <AgoraView mode={1} key={this.state.peerIds[0]} style={{ flex: 1 }} remoteUid={this.state.peerIds[0]} />
-                                <AppButton style={styles.videoQuitButton} onPress={this.endCall}>
-                                    <AppText style={{ color: '#FFFFFF', marginLeft: 8, fontSize: 16, fontWeight: 'bold' }}>End</AppText>
-                                </AppButton>
-                                <AppText style={[styles.liveInfo, styles.timerCard]}>{this.state.timeStr}</AppText>
-                            </View>
-                            {
-                                capacity == 1 && (
-                                    this.renderTwoVideos()
-                                )
-                            }
-                            {
-                                capacity == 2 && (
-                                    this.renderThreeVideos()
-                                )
-                            }
-                            {
-                                capacity == 3 && (
-                                    this.renderFourVideos()
-                                )
-                            }
-                        </View>
-                    )
-                } */}
             </View>
         )
     }
@@ -536,7 +506,7 @@ export default class VideoChatScreen extends Component {
         var eventID = this.props.navigation.getParam('eventID', 'agora_test');
         var clientRole = this.props.navigation.getParam('clientRole', 2);
         if (clientRole === 1 && this.state.status != app.EVENT_STATUS.SCHEDULED) {
-            suspendLive(eventID);
+            //suspendLive(eventID);
         }
         removeAndroidBackButtonHandler(this.backButtonPressed);
         clearLiveEventListener();

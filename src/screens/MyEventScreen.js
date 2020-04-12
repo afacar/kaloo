@@ -7,6 +7,7 @@ import { setEventListener, clearEventListener } from '../utils/EventHandler';
 import EventShare from '../components/EventShare';
 import EventTime from '../components/EventTime';
 import EventHeader from '../components/EventHeader';
+import { app } from '../constants';
 
 class MyEventScreen extends Component {
     static navigationOptions = ({ navigation }) => ({
@@ -33,7 +34,6 @@ class MyEventScreen extends Component {
 
         setEventListener(this.state.eid, (event) => {
             if (event) {
-                event.eventDate = event.eventDate.toDate()
                 this.setState({ ...event })
             }
         })
@@ -74,6 +74,9 @@ class MyEventScreen extends Component {
 
     render() {
         const thisEvent = { ...this.state, isPublished: true }
+        const isComplete = this.state.status === app.EVENT_STATUS.COMPLETED
+        const isSuspended = this.state.status === app.EVENT_STATUS.SUSPENDED
+        const buttonTitle = isComplete ? 'Event Finished' : isSuspended ? 'Continue Casting' : 'Preview audio and video'
         return (
             <ScrollView contentContainerStyle={styles.container}>
                 <EventHeader
@@ -85,8 +88,9 @@ class MyEventScreen extends Component {
                     link={thisEvent.eventLink}
                 />
                 <Button
-                    title='Preview audio and video'
+                    title={buttonTitle}
                     onPress={this.onCamera}
+                    disabled={this.state.status === app.EVENT_STATUS.COMPLETED}
                     buttonStyle={{ backgroundColor: 'blue', borderRadius: 15 }}
                 />
             </ScrollView>

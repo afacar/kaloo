@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { StyleSheet, View, ScrollView, Text, TouchableOpacity, Alert } from 'react-native';
-import { storage, auth, functions } from 'react-native-firebase';
+import { storage, firestore, functions } from 'react-native-firebase';
 import { Input, Button, Image, CheckBox, Icon } from 'react-native-elements';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import ImagePicker from 'react-native-image-crop-picker';
@@ -62,13 +62,19 @@ class EventCreateScreen extends Component {
                     let newImage = await imageRef.getDownloadURL()
                     console.log('New Image uploaded')
                     event.image = newImage
-                    event.isResizedImage = false
                     console.log('calling create event...', event);
                     let response = await createEvent(event);
                     console.log('Recieved created event:=>', response);
                     if (response && response.data && response.data.state === 'SUCCESS') {
                         let eventData = response.data.event;
-                        eventData.eventDate = new Date(eventData.eventTimestamp)
+                        let date = eventData.eventDate
+                        if (date instanceof firestore.Timestamp) {
+                            console.log('finally Timestamp')
+                            date = date.toDate();
+                        } else if (eventData.eventTimestamp) {
+                            date = new Date(eventData.eventTimestamp);
+                        }
+                        eventData.eventDate = date
                         this.setState({ isWaiting: false })
                         console.log('Sending event to EventPublish1:=>', eventData);
                         this.props.navigation.navigate('EventPublish', { event: eventData })
@@ -76,13 +82,19 @@ class EventCreateScreen extends Component {
                 }
             })
         } else {
-            event.isResizedImage = true
             console.log('calling create event...', event);
             let response = await createEvent(event);
             console.log('Recieved created event:=>', response);
             if (response && response.data && response.data.state === 'SUCCESS') {
                 let eventData = response.data.event;
-                eventData.eventDate = new Date(eventData.eventTimestamp)
+                let date = eventData.eventDate
+                if (date instanceof firestore.Timestamp) {
+                    console.log('finally Timestamp')
+                    date = date.toDate();
+                } else if (eventData.eventTimestamp) {
+                    date = new Date(eventData.eventTimestamp);
+                }
+                eventData.eventDate = date
                 this.setState({ isWaiting: false })
                 console.log('Sending event to EventPublish2:=>', eventData);
                 this.props.navigation.navigate('EventPublish', { event: eventData })
@@ -199,7 +211,7 @@ class EventCreateScreen extends Component {
                         mode="datetime"
                         onConfirm={this.onDateChange}
                         onCancel={() => this.setState({ isDatePickerVisible: false })}
-                        display="default"
+                        display='spinner'
                     />
 
                     <Text style={styles.labelStyle}>Event description</Text>
@@ -319,7 +331,6 @@ const styles = StyleSheet.create({
 })
 
 const mapStateToProps = ({ auth, assets }) => {
-    console.log('EventCreate mapstatatoprops', auth, assets)
     return { profile: auth.profile, assets: assets.assets }
 }
 

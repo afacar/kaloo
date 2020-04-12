@@ -25,6 +25,13 @@ class TicketScreen extends Component {
       console.log('ticketvalidation response', response)
       if (response && response.data && response.data.state === 'SUCCESS') {
         let eventData = response.data.event;
+        let date = eventData.eventDate
+        if (date instanceof firestore.Timestamp) {
+          date = date.toDate()
+        } else if (eventData.eventTimestamp) {
+          date = new Date(eventData.eventTimestamp)
+        }
+        eventData.eventDate = date
         this.setState({ isWaiting: false })
         this.props.navigation.navigate('JoinEvent', { event: eventData })
       } else {
@@ -104,7 +111,6 @@ const styles = StyleSheet.create({
 });
 
 const mapStateToProps = ({ assets }) => {
-  console.log('Ticket mapstatatoprops', assets)
   return { assets: assets.assets }
 }
 

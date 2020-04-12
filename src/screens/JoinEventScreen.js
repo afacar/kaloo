@@ -92,7 +92,7 @@ class JoinEventScreen extends Component {
                         <Text>Capacity: {capacity}</Text>
                         <Text>Event Type: {eventType}</Text>
                         <Text>Price: {price}</Text>
-                        <Text>Event Date: {new Date(eventDate).toLocaleString()}</Text>
+                        <Text>Event Date: {eventDate.toLocaleString()}</Text>
                         <Text>Event Link: {eventLink}</Text>
                         {
                             status !== app.EVENT_STATUS.COMPLETED && <Button title='Share' onPress={this.onShare} />
