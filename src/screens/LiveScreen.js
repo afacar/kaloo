@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, Platform, NativeModules, PermissionsAndroid, Alert, StatusBar, TouchableOpacity, Text } from 'react-native';
+import { View, Platform, PermissionsAndroid, Alert, StatusBar, TouchableOpacity, Text } from 'react-native';
 import app from '../constants/app';
 import { RtcEngine, AgoraView } from 'react-native-agora';
 import KeepAwake from 'react-native-keep-awake';
@@ -9,16 +9,8 @@ import { decrementViewer, clearLiveEventListener, setLiveEventListener, incremen
 import { handleAndroidBackButton, removeAndroidBackButtonHandler } from '../utils/BackHandler';
 import { styles, colors } from '../constants';
 import { formatTime } from '../utils/Utils';
-import firebase from 'react-native-firebase';
 import Header from '../components/Header';
 import { Icon } from 'react-native-elements';
-const { Agora } = NativeModules;
-const {
-    FPS30,
-    AgoraAudioProfileMusicHighQuality,
-    AgoraAudioScenarioShowRoom,
-    Adaptative
-} = Agora
 
 const HOST_UID = 1000;
 
@@ -38,7 +30,7 @@ export default class LiveScreen extends Component {
         duration: 0,
         time: 0,
         timeStr: '',
-        status: undefined
+        status: app.EVENT_STATUS.SCHEDULED
     };
 
     checkCameraPermission = async () => {
@@ -91,43 +83,6 @@ export default class LiveScreen extends Component {
             this.decrementViewers();
         }
     }
-
-    // componentWillMount() {
-    //     // init RTCEngine
-    //     const channelProfile = this.props.navigation.getParam('channelProfile', 1);
-    //     const clientRole = this.props.navigation.getParam('clientRole', 2);
-    //     const options = {
-    //         appid: app.AGORA_APP_ID,
-    //         channelProfile,
-    //         clientRole,
-    //         videoEncoderConfig: {
-    //             width: 360,
-    //             height: 480,
-    //             bitrate: 1,
-    //             frameRate: FPS30,
-    //             orientationMode: Adaptative,
-    //         },
-    //         audioProfile: AgoraAudioProfileMusicHighQuality,
-    //         audioScenario: AgoraAudioScenarioShowRoom
-    //     };
-    //     // rtc object
-    //     RtcEngine.on('userJoined', (data) => {
-    //         const { peerIds } = this.state;
-    //         if (peerIds.indexOf(data.uid) === -1) {
-    //             this.setState({
-    //                 peerIds: [...this.state.peerIds, data.uid]
-    //             })
-    //         }
-    //     })
-    //     RtcEngine.on('userOffline', (data) => {
-    //         this.setState({
-    //             peerIds: this.state.peerIds.filter(uid => uid !== data.uid)
-    //         })
-    //     })
-    //     RtcEngine.on('error', (error) => {
-    //     })
-    //     RtcEngine.init(options);
-    // }
 
     componentDidMount() {
         if (Platform.OS === 'android') {
@@ -428,7 +383,7 @@ export default class LiveScreen extends Component {
 
     renderBroadcastButton() {
         const { status } = this.state;
-        if (status === app.EVENT_STATUS.COMPLETED) {
+        if (status === app.EVENT_STATUS.SCHEDULED) {
             return (
                 <AppButton style={styles.startButton} onPress={this.startLive}>
                     <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center' }}>
@@ -456,7 +411,7 @@ export default class LiveScreen extends Component {
                     </View>
                 </AppButton>
             )
-        } else {
+        } else if (status === app.EVENT_STATUS.SUSPENDED) {
             return (
                 <AppButton style={styles.startButton} onPress={this.continueLive}>
                     <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center' }}>
