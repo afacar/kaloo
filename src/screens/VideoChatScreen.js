@@ -76,39 +76,39 @@ export default class VideoChatScreen extends Component {
         }
     }
 
-    componentWillMount() {
-        const channelProfile = this.props.navigation.getParam('channelProfile', 1);
-        const options = {
-            appid: app.AGORA_APP_ID,
-            channelProfile,
-            videoEncoderConfig: {
-                width: 360,
-                height: 480,
-                bitrate: 1,
-                frameRate: FPS30,
-                orientationMode: Adaptative,
-            },
-            audioProfile: AgoraAudioProfileMusicHighQuality,
-            audioScenario: AgoraAudioScenarioShowRoom
-        };
-        // rtc object
-        RtcEngine.on('userJoined', (data) => {
-            const { peerIds } = this.state;
-            if (peerIds.indexOf(data.uid) === -1) {
-                this.setState({
-                    peerIds: [...this.state.peerIds, data.uid]
-                })
-            }
-        })
-        RtcEngine.on('userOffline', (data) => {
-            this.setState({
-                peerIds: this.state.peerIds.filter(uid => uid !== data.uid)
-            })
-        })
-        RtcEngine.on('error', (error) => {
-        })
-        RtcEngine.init(options);
-    }
+    // componentWillMount() {
+    //     const channelProfile = this.props.navigation.getParam('channelProfile', 1);
+    //     const options = {
+    //         appid: app.AGORA_APP_ID,
+    //         channelProfile,
+    //         videoEncoderConfig: {
+    //             width: 360,
+    //             height: 480,
+    //             bitrate: 1,
+    //             frameRate: FPS30,
+    //             orientationMode: Adaptative,
+    //         },
+    //         audioProfile: AgoraAudioProfileMusicHighQuality,
+    //         audioScenario: AgoraAudioScenarioShowRoom
+    //     };
+    //     // rtc object
+    //     RtcEngine.on('userJoined', (data) => {
+    //         const { peerIds } = this.state;
+    //         if (peerIds.indexOf(data.uid) === -1) {
+    //             this.setState({
+    //                 peerIds: [...this.state.peerIds, data.uid]
+    //             })
+    //         }
+    //     })
+    //     RtcEngine.on('userOffline', (data) => {
+    //         this.setState({
+    //             peerIds: this.state.peerIds.filter(uid => uid !== data.uid)
+    //         })
+    //     })
+    //     RtcEngine.on('error', (error) => {
+    //     })
+    //     RtcEngine.init(options);
+    // }
 
     startCall = () => {
         var channelName = this.props.navigation.getParam('eventID', 'agora_test');
@@ -254,6 +254,22 @@ export default class VideoChatScreen extends Component {
             this.setState({ viewers: viewerCount || 0, status: status || app.EVENT_STATUS.SCHEDULED })
         });
 
+        // rtc object
+        RtcEngine.on('userJoined', (data) => {
+            const { peerIds } = this.state;
+            if (peerIds.indexOf(data.uid) === -1) {
+                this.setState({
+                    peerIds: [...this.state.peerIds, data.uid]
+                })
+            }
+        })
+        RtcEngine.on('userOffline', (data) => {
+            this.setState({
+                peerIds: this.state.peerIds.filter(uid => uid !== data.uid)
+            })
+        })
+        RtcEngine.on('error', (error) => {
+        })
         // setup back button listener
         const { navigation } = this.props;
         handleAndroidBackButton(this.backButtonPressed);
@@ -285,7 +301,7 @@ export default class VideoChatScreen extends Component {
         }
         Alert.alert(
             "Confirm Exit",
-            "You can continue live from MyEvent page",
+            "You can continue call from MyEvent page",
             [
                 {
                     text: 'Cancel', onPress: () => {
@@ -415,7 +431,7 @@ export default class VideoChatScreen extends Component {
                     </View>
                 </View>
             )
-        } else if (status === app.EVENT_STATUS.IN_PROGRESS && clientRole === 2) {
+        } else if (status !== app.EVENT_STATUS.COMPLETED && clientRole === 2) {
             return (
                 <View style={styles.waitingBox}>
                     <Icon
@@ -425,6 +441,9 @@ export default class VideoChatScreen extends Component {
                         color='white'
                     />
                     <AppText style={{ color: '#FFFFFF', marginLeft: 8, fontSize: 24, fontWeight: 'bold', textAlign: 'center' }}>Your host is connecting...</AppText>
+                    <View style={styles.localVideoBox}>
+                        <AgoraView style={{ flex: 1, borderRadius: 10 }} showLocalVideo={true} mode={1} />
+                    </View>
                 </View>
             )
         } else if (status === app.EVENT_STATUS.SCHEDULED || status === app.EVENT_STATUS.SUSPENDED && clientRole === 1) {
@@ -475,15 +494,16 @@ export default class VideoChatScreen extends Component {
                     )}
                     onPress={this.backButtonPressed}
                 />
+
                 <View style={{ flex: 1 }}>
-                    {
-                        capacity === 0 && (
-                            this.renderWaitingComponent()
-                        )
-                    }
                     {
                         capacity === 1 && (
                             this.renderTwoVideos()
+                        )
+                    }
+                    {
+                        capacity === 0 && (
+                            this.renderWaitingComponent()
                         )
                     }
                     {

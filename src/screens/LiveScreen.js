@@ -92,37 +92,42 @@ export default class LiveScreen extends Component {
         }
     }
 
-    componentWillMount() {
-        // init RTCEngine
-        const channelProfile = this.props.navigation.getParam('channelProfile', 1);
-        const clientRole = this.props.navigation.getParam('clientRole', 2);
-        const options = {
-            appid: app.AGORA_APP_ID,
-            channelProfile,
-            clientRole,
-            videoEncoderConfig: {
-                width: 360,
-                height: 480,
-                bitrate: 1,
-                frameRate: FPS30,
-                orientationMode: Adaptative,
-            },
-            audioProfile: AgoraAudioProfileMusicHighQuality,
-            audioScenario: AgoraAudioScenarioShowRoom
-        };
-        // rtc object
-        RtcEngine.on('userJoined', (data) => {
-            const { peerIds } = this.state;
-            if (peerIds.indexOf(data.uid) === -1) {
-                this.setState({
-                    peerIds: [...this.state.peerIds, data.uid]
-                })
-            }
-        })
-        RtcEngine.on('error', (error) => {
-        })
-        RtcEngine.init(options);
-    }
+    // componentWillMount() {
+    //     // init RTCEngine
+    //     const channelProfile = this.props.navigation.getParam('channelProfile', 1);
+    //     const clientRole = this.props.navigation.getParam('clientRole', 2);
+    //     const options = {
+    //         appid: app.AGORA_APP_ID,
+    //         channelProfile,
+    //         clientRole,
+    //         videoEncoderConfig: {
+    //             width: 360,
+    //             height: 480,
+    //             bitrate: 1,
+    //             frameRate: FPS30,
+    //             orientationMode: Adaptative,
+    //         },
+    //         audioProfile: AgoraAudioProfileMusicHighQuality,
+    //         audioScenario: AgoraAudioScenarioShowRoom
+    //     };
+    //     // rtc object
+    //     RtcEngine.on('userJoined', (data) => {
+    //         const { peerIds } = this.state;
+    //         if (peerIds.indexOf(data.uid) === -1) {
+    //             this.setState({
+    //                 peerIds: [...this.state.peerIds, data.uid]
+    //             })
+    //         }
+    //     })
+    //     RtcEngine.on('userOffline', (data) => {
+    //         this.setState({
+    //             peerIds: this.state.peerIds.filter(uid => uid !== data.uid)
+    //         })
+    //     })
+    //     RtcEngine.on('error', (error) => {
+    //     })
+    //     RtcEngine.init(options);
+    // }
 
     componentDidMount() {
         if (Platform.OS === 'android') {
@@ -187,7 +192,22 @@ export default class LiveScreen extends Component {
             }
             this.setState({ viewers: viewerCount || 0, status: status || app.EVENT_STATUS.SCHEDULED })
         });
-
+        // rtc object
+        RtcEngine.on('userJoined', (data) => {
+            const { peerIds } = this.state;
+            if (peerIds.indexOf(data.uid) === -1) {
+                this.setState({
+                    peerIds: [...this.state.peerIds, data.uid]
+                })
+            }
+        })
+        RtcEngine.on('userOffline', (data) => {
+            this.setState({
+                peerIds: this.state.peerIds.filter(uid => uid !== data.uid)
+            })
+        })
+        RtcEngine.on('error', (error) => {
+        })
         // setup back button listener
         handleAndroidBackButton(this.backButtonPressed);
     }
@@ -376,6 +396,94 @@ export default class LiveScreen extends Component {
         )
     }
 
+    renderWaitingComponent() {
+        const { status } = this.state;
+        var clientRole = this.props.navigation.getParam('clientRole', 2);
+        if (status === app.EVENT_STATUS.SUSPENDED || status === app.EVENT_STATUS.IN_PROGRESS) {
+            return (
+                <View style={styles.waitingBox}>
+                    <Icon
+                        type='simple-line-icon'
+                        name="globe"
+                        size={48}
+                        color='white'
+                    />
+                    <AppText style={{ color: '#FFFFFF', marginLeft: 8, fontSize: 24, fontWeight: 'bold', textAlign: 'center' }}>Your Host is connecting...</AppText>
+                </View>
+            )
+        } else if (status === app.EVENT_STATUS.SCHEDULED) {
+            return (
+                <View style={styles.waitingBox}>
+                    <Icon
+                        type='simple-line-icon'
+                        name="globe"
+                        size={48}
+                        color='white'
+                    />
+                    <AppText style={{ color: '#FFFFFF', marginLeft: 8, fontSize: 24, fontWeight: 'bold', textAlign: 'center' }}>Wait for event to start..</AppText>
+                </View>
+            )
+        }
+    }
+
+    renderBroadcastButton() {
+        const { status } = this.state;
+        if (status === app.EVENT_STATUS.COMPLETED) {
+            return (
+                <AppButton style={styles.startButton} onPress={this.startLive}>
+                    <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center' }}>
+                        <Icon
+                            type='font-awesome'
+                            name="video-camera"
+                            size={16}
+                            color="white"
+                        />
+                        <AppText style={{ color: 'white', fontWeight: 'bold', fontSize: 16, marginLeft: 8 }}>Start Broadcasting</AppText>
+                    </View>
+                </AppButton>
+            )
+        } else if (status === app.EVENT_STATUS.IN_PROGRESS) {
+            return (
+                <AppButton style={styles.endButton} onPress={this.endLive}>
+                    <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center' }}>
+                        <Icon
+                            type='material-community'
+                            name="video-off"
+                            size={16}
+                            color="white"
+                        />
+                        <AppText style={{ color: 'white', fontWeight: 'bold', fontSize: 16, marginLeft: 8 }}>End Broadcasting</AppText>
+                    </View>
+                </AppButton>
+            )
+        } else {
+            return (
+                <AppButton style={styles.startButton} onPress={this.continueLive}>
+                    <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center' }}>
+                        <Icon
+                            type='font-awesome'
+                            name="video-camera"
+                            size={16}
+                            color="white"
+                        />
+                        <AppText style={{ color: 'white', fontWeight: 'bold', fontSize: 16, marginLeft: 8 }}>Continue Broadcasting</AppText>
+                    </View>
+                </AppButton>
+            )
+        }
+    }
+
+    renderMainComponent() {
+        console.warn('Without this console warn render does not work properly. I do not know why.')
+        if (this.state.peerIds.length !== 0) {
+            return (
+                <AgoraView mode={1} key={HOST_UID} style={{ flex: 1 }} remoteUid={HOST_UID} />
+            )
+        } else {
+            return this.renderWaitingComponent()
+        }
+    }
+
     render() {
         const clientRole = this.props.navigation.getParam('clientRole', 1);
         return (
@@ -384,7 +492,7 @@ export default class LiveScreen extends Component {
                     <KeepAwake />
                     <StatusBar hidden={true} />
                     <Header
-                        buttonTitle={'Quit Call'}
+                        buttonTitle={'Quit Live'}
                         buttonTitleStyle={{ color: colors.BLUE, fontSize: 16 }}
                         headerRight={(
                             <TouchableOpacity onPress={this.reportProblem}>
@@ -399,13 +507,6 @@ export default class LiveScreen extends Component {
                             clientRole === 1 && (
                                 <View style={{ flex: 1 }}>
                                     <AgoraView style={{ flex: 1 }} showLocalVideo={true} mode={1} />
-                                    {/* {
-                                    this.state.showButtons && (
-                                        <AppButton style={styles.videoQuitButton} onPress={this.endLive}>
-                                            <AppText style={{ color: '#FFFFFF', marginLeft: 8, fontSize: 20 }}>End</AppText>
-                                        </AppButton>
-                                    )
-                                } */}
                                     {
                                         this.renderTimerNViewer()
                                     }
@@ -413,49 +514,7 @@ export default class LiveScreen extends Component {
                                         this.renderLiveInfo()
                                     }
                                     {
-                                        this.state.status === app.EVENT_STATUS.IN_PROGRESS && (
-                                            <AppButton style={styles.endButton} onPress={this.endLive}>
-                                                <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center' }}>
-                                                    <Icon
-                                                        type='material-community'
-                                                        name="video-off"
-                                                        size={16}
-                                                        color="white"
-                                                    />
-                                                    <AppText style={{ color: 'white', fontWeight: 'bold', fontSize: 16, marginLeft: 8 }}>End Broadcasting</AppText>
-                                                </View>
-                                            </AppButton>
-                                        )
-                                    }
-                                    {
-                                        this.state.status === app.EVENT_STATUS.SUSPENDED && (
-                                            <AppButton style={styles.startButton} onPress={this.continueLive}>
-                                                <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center' }}>
-                                                    <Icon
-                                                        type='font-awesome'
-                                                        name="video-camera"
-                                                        size={16}
-                                                        color="white"
-                                                    />
-                                                    <AppText style={{ color: 'white', fontWeight: 'bold', fontSize: 16, marginLeft: 8 }}>Continue Broadcasting</AppText>
-                                                </View>
-                                            </AppButton>
-                                        )
-                                    }
-                                    {
-                                        this.state.status === app.EVENT_STATUS.SCHEDULED && (
-                                            <AppButton style={styles.startButton} onPress={this.startLive}>
-                                                <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center' }}>
-                                                    <Icon
-                                                        type='font-awesome'
-                                                        name="video-camera"
-                                                        size={16}
-                                                        color="white"
-                                                    />
-                                                    <AppText style={{ color: 'white', fontWeight: 'bold', fontSize: 16, marginLeft: 8 }}>Start Broadcasting</AppText>
-                                                </View>
-                                            </AppButton>
-                                        )
+                                        this.renderBroadcastButton()
                                     }
                                 </View>
                             )
@@ -464,14 +523,9 @@ export default class LiveScreen extends Component {
                             // Viewer
                             clientRole === 2 && (
                                 <View style={{ flex: 1 }}>
-                                    <AgoraView mode={1} key={HOST_UID} style={{ flex: 1 }} remoteUid={HOST_UID} />
-                                    {/* {
-                                    this.state.showButtons && (
-                                        <AppButton style={styles.videoQuitButton} onPress={this.leaveLive}>
-                                            <AppText style={{ color: '#FFFFFF', marginLeft: 8, fontSize: 20 }}>Leave</AppText>
-                                        </AppButton>
-                                    )
-                                } */}
+                                    {
+                                        this.renderMainComponent()
+                                    }
                                     {
                                         this.renderTimerNViewer()
                                     }

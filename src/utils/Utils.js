@@ -2,7 +2,6 @@ import { months } from '../constants'
 
 export const formatTime = (seconds) => {
     var negative = false;
-    console.warn(seconds)
     if (seconds < 0) {
         seconds *= -1;
         negative = true;

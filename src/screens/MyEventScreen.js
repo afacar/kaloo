@@ -1,14 +1,20 @@
 import React, { Component } from 'react';
-import { ScrollView, StyleSheet, Image, Platform, BackHandler, Text } from 'react-native';
+import { ScrollView, StyleSheet, Image, Platform, BackHandler, NativeModules } from 'react-native';
 import { Button, Icon, ButtonGroup } from 'react-native-elements';
 import ClickableText from '../components/ClickableText';
-
+import { RtcEngine } from 'react-native-agora';
 import { setEventListener, clearEventListener } from '../utils/EventHandler';
 import EventShare from '../components/EventShare';
-import EventTime from '../components/EventTime';
 import EventHeader from '../components/EventHeader';
 import { app } from '../constants';
+const { Agora } = NativeModules;
 
+const {
+    FPS30,
+    AgoraAudioProfileMusicHighQuality,
+    AgoraAudioScenarioShowRoom,
+    Adaptative
+} = Agora
 class MyEventScreen extends Component {
     static navigationOptions = ({ navigation }) => ({
         title: `${navigation.getParam('event').title}`,
@@ -66,17 +72,45 @@ class MyEventScreen extends Component {
         // TODO: Opening camera here
         console.log('We are live')
         if (this.state.eventType === 'live') {
+            const options = {
+                appid: app.AGORA_APP_ID,
+                channelProfile: 1,
+                clientRole: 1,
+                videoEncoderConfig: {
+                    width: 360,
+                    height: 480,
+                    bitrate: 1,
+                    frameRate: FPS30,
+                    orientationMode: Adaptative,
+                },
+                audioProfile: AgoraAudioProfileMusicHighQuality,
+                audioScenario: AgoraAudioScenarioShowRoom
+            };
+            RtcEngine.init(options)
             this.joinLive();
         } else if (this.state.eventType === 'call') {
+            const options = {
+                appid: app.AGORA_APP_ID,
+                channelProfile: 0,
+                clientRole: 1,
+                videoEncoderConfig: {
+                    width: 360,
+                    height: 480,
+                    bitrate: 1,
+                    frameRate: FPS30,
+                    orientationMode: Adaptative,
+                },
+                audioProfile: AgoraAudioProfileMusicHighQuality,
+                audioScenario: AgoraAudioScenarioShowRoom
+            };
+            RtcEngine.init(options)
             this.joinCall();
         }
     }
 
     render() {
         const thisEvent = { ...this.state, isPublished: true }
-        const isComplete = this.state.status === app.EVENT_STATUS.COMPLETED
-        const isSuspended = this.state.status === app.EVENT_STATUS.SUSPENDED
-        const buttonTitle = isComplete ? 'Event Finished' : isSuspended ? 'Continue Casting' : 'Preview audio and video'
+        var { status } = thisEvent;
         return (
             <ScrollView contentContainerStyle={styles.container}>
                 <EventHeader
@@ -88,7 +122,8 @@ class MyEventScreen extends Component {
                     link={thisEvent.eventLink}
                 />
                 <Button
-                    title={buttonTitle}
+                    title={status === app.EVENT_STATUS.COMPLETED ? 'Event Completed' : 'Preview audio and video'}
+                    disabled={status === app.EVENT_STATUS.COMPLETED}
                     onPress={this.onCamera}
                     disabled={this.state.status === app.EVENT_STATUS.COMPLETED}
                     buttonStyle={{ backgroundColor: 'blue', borderRadius: 15 }}
