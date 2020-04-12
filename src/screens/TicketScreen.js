@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { View, StyleSheet, KeyboardAvoidingView, ScrollView } from 'react-native';
 import { Input, Button, Avatar } from 'react-native-elements';
-import { functions } from 'react-native-firebase';
+import { functions, firestore } from 'react-native-firebase';
 import { connect } from "react-redux";
 
 import LabelText from '../components/LabelText';
@@ -42,6 +42,18 @@ class TicketScreen extends Component {
     }
   }
 
+  onTicketChange = (ticket) => {
+    let formattedTicket = ticket.trim().split('-').join('')
+    let first = formattedTicket.substr(0, 4)
+    let second = formattedTicket.substr(4, 4)
+    let third = formattedTicket.substr(8, 4)
+    if (first) formattedTicket = first
+    if (second) formattedTicket += '-' + second
+    if (third) formattedTicket += '-' + third
+
+    this.setState({ ticket: formattedTicket, ticketError: '' })
+}
+
   render() {
     const { ticket, isWaiting, ticketError } = this.state;
     const { TICKET_FORMAT, DEFAULT_LOGO_IMAGE } = this.props.assets;
@@ -67,7 +79,7 @@ class TicketScreen extends Component {
               placeholder={TICKET_FORMAT || ''}
               placeholderTextColor="#b2c2bf"
               inputStyle={{ textAlign: 'center' }}
-              onChangeText={ticket => this.setState({ ticket, ticketError: '' })}
+              onChangeText={this.onTicketChange}
               value={ticket}
               keyboardType="ascii-capable"
               errorMessage={ticketError}

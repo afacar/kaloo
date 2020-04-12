@@ -1,10 +1,12 @@
 import React, { Component } from 'react';
-import { View, StyleSheet, Image, Share,NativeModules } from 'react-native';
+import { View, StyleSheet, Image, Share, NativeModules, ScrollView } from 'react-native';
 import { Button, Text, Card, Rating } from 'react-native-elements';
 import { RtcEngine } from 'react-native-agora';
 import { app } from '../constants';
 import { setEventListener, clearEventListener } from "../utils/EventHandler";
-import firebase from "react-native-firebase";
+import { firestore } from "react-native-firebase";
+import PreviewHeader from '../components/PreviewHeader';
+import PreviewBody from '../components/PreviewBody';
 const { Agora } = NativeModules;
 
 const {
@@ -13,7 +15,7 @@ const {
     AgoraAudioScenarioShowRoom,
     Adaptative
 } = Agora
-const db = firebase.firestore()
+const db = firestore()
 
 class JoinEventScreen extends Component {
     event = this.props.navigation.getParam('event', '')
@@ -118,56 +120,50 @@ class JoinEventScreen extends Component {
     }
 
     render() {
-        const { image, title, description, duration, eventType, capacity, price, eventDate, eventLink, status } = this.state;
-        console.warn('status ', status)
+        const { image, photoURL, title, description, displayName, duration, eventType, eventDate, status } = this.state;
         return (
-            <View style={styles.container}>
-                <Card title={title} containerStyle={{ justifyContent: 'flex-start', alignSelf: 'stretch' }}>
-                    <View>
-                        <Image source={{ uri: image }} style={{ width: 100, height: 100 }} />
-                        <Text>description: {description}</Text>
-                        <Text>Duration: {duration}</Text>
-                        <Text>Capacity: {capacity}</Text>
-                        <Text>Event Type: {eventType}</Text>
-                        <Text>Price: {price}</Text>
-                        <Text>Event Date: {eventDate.toLocaleString()}</Text>
-                        <Text>Event Link: {eventLink}</Text>
-                        {
-                            status !== app.EVENT_STATUS.COMPLETED && <Button title='Share' onPress={this.onShare} />
-                        }
-                        {
-                            ((status === app.EVENT_STATUS.SCHEDULED) || (status === app.EVENT_STATUS.SUSPENDED)) && (
-                                <Button title='Waiting...' disabled />
-                            )
-                        }
-                        {
-                            status === app.EVENT_STATUS.COMPLETED && (
-                                <View style={{ alignSelf: 'stretch', justifyContent: 'center', alignItems: 'center', borderWidth: 1 }}>
-                                    <Button title='Finished' disabled />
-                                    <Text>Rate your experience please!</Text>
-                                    <Rating
-                                        onFinishRating={(this.rateEvent)}
-                                        style={{ paddingVertical: 10 }}
-                                        readonly={this.state.isRatingComplete}
-                                    />
-                                </View>
-                            )
-                        }
-                        {
-                            (status === app.EVENT_STATUS.IN_PROGRESS) && (
-                                <Button title='Join' onPress={this.onCamera} />
-                            )
-                        }
-                    </View>
+            <ScrollView contentContainerStyle={styles.container}>
+                <Card containerStyle={{ alignSelf: 'stretch' }}>
+                    <PreviewHeader
+                        event={{ image, photoURL, eventType }}
+                    />
+                    <PreviewBody
+                        event={{ displayName, title, eventDate, duration, description }}
+                    />
+                    {
+                        ((status === app.EVENT_STATUS.SCHEDULED) || (status === app.EVENT_STATUS.SUSPENDED)) && (
+                            <Button title='Waiting...' disabled />
+                        )
+                    }
+                    {
+                        status === app.EVENT_STATUS.COMPLETED && (
+                            <View>
+                                <Button title='Finished' disabled />
+                                <Rating
+                                    type='heart'
+                                    showRating
+                                    showReadOnlyText={true}
+                                    onFinishRating={(this.rateEvent)}
+                                    style={{ paddingVertical: 10 }}
+                                    readonly={this.state.isRatingComplete}
+                                />
+                            </View>
+                        )
+                    }
+                    {
+                        (status === app.EVENT_STATUS.IN_PROGRESS) && (
+                            <Button title='Join' onPress={this.onCamera} />
+                        )
+                    }
                 </Card>
-            </View >
+            </ScrollView>
         )
     }
 }
 
 const styles = StyleSheet.create({
     container: {
-        flex: 1,
+        flexGrow: 1,
         justifyContent: 'flex-start',
         alignItems: 'center'
     }

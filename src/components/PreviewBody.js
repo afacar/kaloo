@@ -13,7 +13,7 @@ export default function PreviewBody(props) {
       <EventTime eventTime={{ eventDate, duration }} />
       <Text style={{ fontSize: 20, fontWeight: '500', marginVertical: 20 }}>{description || 'No description'}</Text>
 
-      <View>
+      {capacity && <View>
         <Text style={{ alignSelf: 'center', color: 'gray' }}>{capacity} ticket(s) left</Text>
         <Slider
           trackStyle={{ height: 10, backgroundColor: '#196BFF', borderBottomRightRadius: 20, borderTopRightRadius: 20, borderBottomLeftRadius: 20, borderTopLeftRadius: 20 }}
@@ -24,14 +24,14 @@ export default function PreviewBody(props) {
           maximumTrackTintColor="#E7E7E7"
           minimumTrackTintColor="#196BFF"
         />
-      </View>
-      <View style={{ paddingTop: 0 }}>
+      </View>}
+      {price && <View style={{ paddingTop: 0 }}>
         <Button
           title={`Buy a ticket for $${price}`}
           disabled
           onPress={() => console.log('This is preview!')}
         />
-      </View>
+      </View>}
     </View>
   )
 }
