@@ -98,7 +98,6 @@ class MyJoinEventScreen extends Component {
     }
     render() {
         const { image, photoURL, title, description, displayName, duration, eventType, eventDate, status, ticket } = this.state;
-        console.warn(ticket.rate)
         return (
             <ScrollView contentContainerStyle={styles.container}>
                 <Card containerStyle={{ alignSelf: 'stretch' }}>

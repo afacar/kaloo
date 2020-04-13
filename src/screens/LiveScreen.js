@@ -130,7 +130,6 @@ export default class LiveScreen extends Component {
         else if (clientRole === 2) {
             this.setTicketListener();
         }
-        console.warn('state in did mount \n', this.state)
         setLiveEventListener(eventID, ({ status, viewerCount, startedAt }) => {
             var time = 0;
             if (startedAt) {
@@ -140,7 +139,6 @@ export default class LiveScreen extends Component {
             if (startedAt && status === app.EVENT_STATUS.IN_PROGRESS) {
                 if (clientRole === 1 && !this.state.joinSucceed) {
                     RtcEngine.stopPreview();
-                    console.warn('joining channel')
                     RtcEngine.joinChannel(eventID, HOST_UID)
                         .then((result) => {
                             this.setState({
@@ -210,15 +208,13 @@ export default class LiveScreen extends Component {
         setTicketListener(eventID, ticket, async (remoteID) => {
             var localID = await getDeviceID();
             if (localID != remoteID) {
+                this.props.navigation.goBack();
                 Alert.alert(
                     'Multiple Access',
                     'System detected using same ticket from different devices. You can only use you ticket from a single device at a given time',
                     [
                         {
-                            text: 'Leave', onPress: () => {
-                                this.props.navigation.goBack();
-                                return false;
-                            }
+                            text: 'OK', onPress: () => { }
                         }
                     ],
                     { cancelable: false }
@@ -229,7 +225,6 @@ export default class LiveScreen extends Component {
 
     startEvent = () => {
         const { eventID, ticketID } = this.state;
-        console.warn('channel name', eventID)
         /* var channelName = this.props.navigation.getParam('eventID', 'agora_test');
         var ticketID = this.props.navigation.getParam('ticketID', 0); */
         Alert.alert(

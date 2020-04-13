@@ -270,18 +270,16 @@ export default class VideoChatScreen extends Component {
 
     setTicketListener = () => {
         const { eventID, ticket } = this.state;
-        setTicketListener(eventID, ticket, async(remoteID) => {
+        setTicketListener(eventID, ticket, async (remoteID) => {
             var localID = await getDeviceID();
             if (localID != remoteID) {
+                this.props.navigation.goBack();
                 Alert.alert(
                     'Multiple Access',
                     'System detected using same ticket from different devices. You can only use you ticket from a single device at a given time',
                     [
                         {
-                            text: 'Leave', onPress: () => {
-                                this.props.navigation.goBack();
-                                return false;
-                            }
+                            text: 'OK', onPress: () => { }
                         }
                     ],
                     { cancelable: false }

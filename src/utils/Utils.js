@@ -1,5 +1,5 @@
 import { months } from '../constants'
-import { AsyncStorage } from 'react-native';
+import AsyncStorage from '@react-native-community/async-storage';
 
 export const formatTime = (seconds) => {
     var negative = false;
@@ -94,7 +94,7 @@ export function generateRandomString(length) {
 }
 
 export async function getDeviceID() {
-    var deviceID
+    var deviceID;
     await AsyncStorage.getItem('deviceID').then(value => {
         deviceID = value
     });

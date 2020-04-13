@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
-import { View, StyleSheet, AsyncStorage } from 'react-native';
+import { View, StyleSheet } from 'react-native';
+import AsyncStorage from '@react-native-community/async-storage';
+
 import AppText from '../components/AppText';
 import { auth } from 'react-native-firebase';
 
