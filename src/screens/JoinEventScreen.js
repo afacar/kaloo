@@ -3,7 +3,7 @@ import { View, StyleSheet, Image, Share, NativeModules, ScrollView } from 'react
 import { Button, Text, Card, Rating } from 'react-native-elements';
 import { RtcEngine } from 'react-native-agora';
 import { app } from '../constants';
-import { setEventListener, clearEventListener } from "../utils/EventHandler";
+import { setEventListener, clearEventListener, joinEvent, rateEvent } from "../utils/EventHandler";
 import { firestore } from "react-native-firebase";
 import PreviewHeader from '../components/PreviewHeader';
 import PreviewBody from '../components/PreviewBody';
@@ -15,6 +15,7 @@ const {
     AgoraAudioScenarioShowRoom,
     Adaptative
 } = Agora
+
 const db = firestore()
 
 class JoinEventScreen extends Component {
@@ -33,90 +34,58 @@ class JoinEventScreen extends Component {
         clearEventListener(this.event.eid);
     }
 
-    onShare = async () => {
-        try {
-            const result = await Share.share({
-                title: this.state.title,
-                message: this.state.description + ' ' + this.state.eventLink
-            });
-            if (result.action === Share.sharedAction) {
-                if (result.activityType) {
-                    // shared with activity type of result.activityType
-                } else {
-                    // shared
-                }
-            } else if (result.action === Share.dismissedAction) {
-                // dismissed
+    onCamera = async () => {
+        const { eventType, eid, duration, ticket } = this.state
+        console.log('MyJoint onCamera state', this.state)
+        const { navigate } = this.props.navigation
+        // live channelProfile: 1 & call channelProfile: 0
+        let channelProfile = eventType === 'live' ? 1 : 0
+        // Audience clientRole: 2
+        let clientRole = 2
+        const options = {
+            appid: app.AGORA_APP_ID,
+            channelProfile,
+            clientRole,
+            videoEncoderConfig: {
+                width: 360,
+                height: 480,
+                bitrate: 1,
+                frameRate: FPS30,
+                orientationMode: Adaptative,
+            },
+            audioProfile: AgoraAudioProfileMusicHighQuality,
+            audioScenario: AgoraAudioScenarioShowRoom
+        };
+        // Initialize RtcEngine
+        RtcEngine.init(options)
+        if (eventType === 'live') {
+            // call joinEvent
+            let res = await joinEvent(eid, ticket)
+            if (res) {
+                RtcEngine.joinChannel(channelName, ticket.tid)
+                    .then((result) => {
+                        // JoinEvent&Channel successful, redirect user 
+                        return navigate('Live', { liveData: { clientRole, channelProfile, eid, duration, ticket } })
+                    })
+                    .catch((error) => {
+                        console.log('RtcEngine.joinChannel live error', error)
+                    });
             }
-        } catch (error) {
-            alert(error.message);
-        }
-    };
-
-    joinLive = () => {
-        var { eid, duration } = this.state;
-        // TODO send  ticketID
-        this.props.navigation.navigate('Live', { clientRole: 2, channelProfile: 1, eventID: eid + '', duration })
-    }
-
-    // This method navigates to video call screen
-    joinCall = () => {
-        var { eid, duration } = this.state;
-        // TODO send ticketID
-        this.props.navigation.navigate('VideoChat', { channelProfile: 0, eventID: eid + '', clientRole: 2, duration })
-    }
-
-    onCamera = () => {
-        if (this.state.eventType === 'live') {
-            const options = {
-                appid: app.AGORA_APP_ID,
-                channelProfile: 1,
-                clientRole: 2,
-                videoEncoderConfig: {
-                    width: 360,
-                    height: 480,
-                    bitrate: 1,
-                    frameRate: FPS30,
-                    orientationMode: Adaptative,
-                },
-                audioProfile: AgoraAudioProfileMusicHighQuality,
-                audioScenario: AgoraAudioScenarioShowRoom
-            };
-            RtcEngine.init(options)
-            this.joinLive();
-        } else if (this.state.eventType === 'call') {
-            const options = {
-                appid: app.AGORA_APP_ID,
-                channelProfile: 0,
-                clientRole: 2,
-                videoEncoderConfig: {
-                    width: 360,
-                    height: 480,
-                    bitrate: 1,
-                    frameRate: FPS30,
-                    orientationMode: Adaptative,
-                },
-                audioProfile: AgoraAudioProfileMusicHighQuality,
-                audioScenario: AgoraAudioScenarioShowRoom
-            };
-            RtcEngine.init(options)
-            this.joinCall();
+            console.log('Could not join live', error)
+        } else if (eventType === 'call') {
+            RtcEngine.joinChannel(channelName, ticket.tid)
+                .then((result) => {
+                    return navigate('VideoChat', { clientRole, channelProfile, eventID: eid, duration })
+                })
+                .catch((error) => {
+                    console.log('Could not join call', error)
+                });
         }
     }
 
     rateEvent = (rating) => {
-        const { ticket } = this.state;
-        console.log('state', this.state)
-        const [eventId, _t] = ticket.ticket.split('-')
-        let ticketPath = `events/${eventId}/tickets/${ticket.ticket}`
-        console.log('ticketPath', ticketPath)
-        const eventDoc = db.doc(ticketPath)
-        eventDoc.set({ rating }, { merge: true })
-            .then(() => {
-                this.setState({ isRatingComplete: true })
-                console.log('Rating complete!')
-            })
-            .catch(err => console.log('Rating error:', err.message))
+        const { eid, ticket } = this.state;
+        rateEvent(eid, ticket, rating)
     }
 
     render() {

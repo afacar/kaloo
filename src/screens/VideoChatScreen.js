@@ -76,40 +76,6 @@ export default class VideoChatScreen extends Component {
         }
     }
 
-    // componentWillMount() {
-    //     const channelProfile = this.props.navigation.getParam('channelProfile', 1);
-    //     const options = {
-    //         appid: app.AGORA_APP_ID,
-    //         channelProfile,
-    //         videoEncoderConfig: {
-    //             width: 360,
-    //             height: 480,
-    //             bitrate: 1,
-    //             frameRate: FPS30,
-    //             orientationMode: Adaptative,
-    //         },
-    //         audioProfile: AgoraAudioProfileMusicHighQuality,
-    //         audioScenario: AgoraAudioScenarioShowRoom
-    //     };
-    //     // rtc object
-    //     RtcEngine.on('userJoined', (data) => {
-    //         const { peerIds } = this.state;
-    //         if (peerIds.indexOf(data.uid) === -1) {
-    //             this.setState({
-    //                 peerIds: [...this.state.peerIds, data.uid]
-    //             })
-    //         }
-    //     })
-    //     RtcEngine.on('userOffline', (data) => {
-    //         this.setState({
-    //             peerIds: this.state.peerIds.filter(uid => uid !== data.uid)
-    //         })
-    //     })
-    //     RtcEngine.on('error', (error) => {
-    //     })
-    //     RtcEngine.init(options);
-    // }
-
     startCall = () => {
         var channelName = this.props.navigation.getParam('eventID', 'agora_test');
         var ticketID = this.props.navigation.getParam('ticketID', HOST_UID);
@@ -192,6 +158,7 @@ export default class VideoChatScreen extends Component {
     leaveCall = () => {
         this.backButtonPressed();
     }
+
     componentDidMount() {
         if (Platform.OS === 'android') {
             this.checkCameraPermission();
@@ -206,11 +173,11 @@ export default class VideoChatScreen extends Component {
             uid: ticketID
         })
         if (clientRole === 2) {
-            RtcEngine.joinChannel(channelName, ticketID)
+            /* RtcEngine.joinChannel(channelName, ticketID)
                 .then((result) => {
                 })
                 .catch((error) => {
-                });
+                }); */
         } else if (clientRole === 1) {
 
             RtcEngine.startPreview()

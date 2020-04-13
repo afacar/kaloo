@@ -5,7 +5,15 @@ import { RtcEngine, AgoraView } from 'react-native-agora';
 import KeepAwake from 'react-native-keep-awake';
 import AppButton from '../components/AppButton';
 import AppText from '../components/AppText';
-import { decrementViewer, clearLiveEventListener, setLiveEventListener, incrementViewer, startLive, endLive, suspendLive, continueLive } from '../utils/EventHandler';
+import {
+    clearLiveEventListener,
+    setLiveEventListener,
+    startLive,
+    endLive,
+    suspendLive,
+    continueLive,
+    leaveEvent,
+} from '../utils/EventHandler';
 import { handleAndroidBackButton, removeAndroidBackButtonHandler } from '../utils/BackHandler';
 import { styles, colors } from '../constants';
 import { formatTime } from '../utils/Utils';
@@ -13,6 +21,17 @@ import Header from '../components/Header';
 import { Icon } from 'react-native-elements';
 
 const HOST_UID = 1000;
+const INITIAL_STATE = {
+    uid: Math.floor(Math.random() * 100),
+    showButtons: false,
+    peerIds: [],
+    joinSucceed: false,
+    viewers: 0,
+    duration: 0,
+    time: 0,
+    timeStr: '',
+    status: app.EVENT_STATUS.SCHEDULED
+};
 
 export default class LiveScreen extends Component {
 
@@ -20,18 +39,8 @@ export default class LiveScreen extends Component {
         super(props);
         this.backButtonPressed = this.backButtonPressed.bind(this);
     }
-
-    state = {
-        uid: Math.floor(Math.random() * 100),
-        showButtons: false,
-        peerIds: [],
-        joinSucceed: false,
-        viewers: 0,
-        duration: 0,
-        time: 0,
-        timeStr: '',
-        status: app.EVENT_STATUS.SCHEDULED
-    };
+    liveData = this.props.navigation.getParam('liveData', '')
+    state = { ...INITIAL_STATE, ...this.liveData };
 
     checkCameraPermission = async () => {
         try {
@@ -68,37 +77,38 @@ export default class LiveScreen extends Component {
         }
     }
 
-    incrementViewers() {
+    /* incrementViewers() {
         var eventID = this.props.navigation.getParam('eventID', 'agora_test');
         var result = incrementViewer(eventID);
         if (result == -1) {
             incrementViewer();
         }
-    }
+    } */
 
-    decrementViewers() {
+    /* decrementViewers() {
         var eventID = this.props.navigation.getParam('eventID', 'agora_test');
         var result = decrementViewer(eventID);
         if (result == -1) {
             this.decrementViewers();
         }
-    }
+    } */
 
     componentDidMount() {
+        console.log('LiveScreenDidMount', this.state)
         if (Platform.OS === 'android') {
             this.checkCameraPermission();
             this.checkAudioPermission();
         }
-        const duration = this.props.navigation.getParam('duration', 30);
-        this.setState({ duration, timeStr: formatTime(duration * 60) })
-        var channelName = this.props.navigation.getParam('eventID', 'agora_test');
+        //const duration = this.props.navigation.getParam('duration', 30);
+        this.setState({ timeStr: formatTime(this.state.duration * 60) })
+        /* var channelName = this.props.navigation.getParam('eventID', 'agora_test');
         const clientRole = this.props.navigation.getParam('clientRole', 2);
         var ticketID = this.props.navigation.getParam('ticketID', Math.random() * 100);
         this.setState({
             uid: ticketID
-        })
+        }) */
 
-        if (clientRole === 2) {
+        /* if (clientRole === 2) {
             RtcEngine.joinChannel(channelName, ticketID)
                 .then((result) => {
                     this.incrementViewers();
@@ -108,9 +118,10 @@ export default class LiveScreen extends Component {
         } else if (clientRole === 1) {
 
             RtcEngine.startPreview();
-        }
+        } */
         // setup listener for  watcherCount
-        var eventID = this.props.navigation.getParam('eventID', 'agora_test');
+        //var eventID = this.props.navigation.getParam('eventID', 'agora_test');
+
         setLiveEventListener(eventID, ({ status, viewerCount, startedAt }) => {
             var time = 0;
             if (startedAt) {
@@ -185,8 +196,9 @@ export default class LiveScreen extends Component {
     }
 
     startLive = () => {
-        var channelName = this.props.navigation.getParam('eventID', 'agora_test');
-        var ticketID = this.props.navigation.getParam('ticketID', 0);
+        const { channelName, ticketID } = this.state;
+        /* var channelName = this.props.navigation.getParam('eventID', 'agora_test');
+        var ticketID = this.props.navigation.getParam('ticketID', 0); */
         Alert.alert(
             "Start broadcast",
             "Are you sure you want to start broadcasting?",
@@ -213,30 +225,16 @@ export default class LiveScreen extends Component {
     }
 
     continueLive = () => {
-        var channelName = this.props.navigation.getParam('eventID', 'agora_test');
-        var ticketID = this.props.navigation.getParam('ticketID', 0);
-        Alert.alert(
-            "Continue broadcast",
-            "Are you sure you want to continue broadcasting?",
-            [
-                {
-                    text: 'No', onPress: () => { },
-                    style: 'cancel'
-                },
-                {
-                    text: 'Yes', onPress: () => {
-                        RtcEngine.leaveChannel();
-                        RtcEngine.joinChannel(channelName, HOST_UID)
-                            .then((result) => {
-                                continueLive(channelName);
-                            })
-                            .catch((error) => {
-                            });
-                    }
-                },
-            ],
-            { cancelable: false }
-        );
+        const { channelName, ticketID } = this.state
+/*         var channelName = this.props.navigation.getParam('eventID', 'agora_test');
+        var ticketID = this.props.navigation.getParam('ticketID', 0); */
+        RtcEngine.leaveChannel();
+        RtcEngine.joinChannel(channelName, HOST_UID)
+            .then((result) => {
+                continueLive(channelName);
+            })
+            .catch((error) => {
+            });
     }
 
     suspendLive = () => {
@@ -244,9 +242,10 @@ export default class LiveScreen extends Component {
     }
 
     endLive = () => {
+        const { eid } = this.state
         Alert.alert(
             "Confirm End",
-            "Do you want to end your stream early?",
+            "Do you want to totally end your stream?",
             [
                 {
                     text: 'Cancel', onPress: () => { },
@@ -255,7 +254,7 @@ export default class LiveScreen extends Component {
                 {
                     text: 'OK', onPress: () => {
                         RtcEngine.leaveChannel();
-                        endLive(this.props.navigation.getParam('eventID', 'agora_test'));
+                        endLive(eid);
                         this.props.navigation.goBack();
                     }
                 },
@@ -265,15 +264,16 @@ export default class LiveScreen extends Component {
     }
 
     backButtonPressed() {
+        const { clientRole, eid, status, ticket } = this.state
         const { navigation } = this.props;
-        var clientRole = this.props.navigation.getParam('clientRole', 2);
-        var eventID = this.props.navigation.getParam('eventID', 'agora_test');
-        if (this.state.status !== app.EVENT_STATUS.IN_PROGRESS) {
+/*         var clientRole = this.props.navigation.getParam('clientRole', 2);
+        var eventID = this.props.navigation.getParam('eventID', 'agora_test'); */
+        if (status !== app.EVENT_STATUS.IN_PROGRESS) {
             return navigation.goBack();
         }
         Alert.alert(
             "Confirm Exit",
-            "You can continue live from MyEvent page",
+            "You can continue show from event screen",
             [
                 {
                     text: 'Cancel', onPress: () => {
@@ -284,7 +284,11 @@ export default class LiveScreen extends Component {
                 {
                     text: 'OK', onPress: () => {
                         if (clientRole === 1) {
-                            suspendLive(eventID);
+                            // Suspend live event of host
+                            suspendLive(eid);
+                        } else if (clientRole === 0) {
+                            // Leave live event of audience
+                            leaveEvent(eid, ticket)
                         }
                         navigation.goBack();
                         return false;
@@ -297,7 +301,7 @@ export default class LiveScreen extends Component {
     }
 
 
-    toggleShowState = () => {
+    /* toggleShowState = () => {
         const { showButtons } = this.state;
         if (!showButtons) {
             this.setState({
@@ -309,7 +313,7 @@ export default class LiveScreen extends Component {
                 })
             }, 3000)
         }
-    }
+    } */
 
     clearTimer() {
         if (this.timer)
@@ -497,12 +501,14 @@ export default class LiveScreen extends Component {
     }
 
     componentWillUnmount() {
+        const { clientRole, eid, ticket } = this.state
         removeAndroidBackButtonHandler(this.backButtonPressed);
         clearLiveEventListener();
         RtcEngine.leaveChannel()
             .then(res => {
-                if (this.props.navigation.getParam('clientRole', 1) === 2)
-                    this.decrementViewers();
+                if (clientRole === 2)
+                    // TODO: leaveEvent func.
+                    leaveEvent(eid, ticket)
             });
         this.clearTimer();
     }
