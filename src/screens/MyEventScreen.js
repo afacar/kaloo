@@ -78,11 +78,10 @@ class MyEventScreen extends Component {
         };
         // TODO: Opening camera here
         RtcEngine.init(options)
-
         if (eventType === 'live') {
-            this.props.navigation.navigate('Live', { clientRole, channelProfile, eventID: eid + '', duration })
+            this.props.navigation.navigate('Live', { liveData: { clientRole, channelProfile, eventID: eid + '', duration } })
         } else if (eventType === 'call') {
-            this.props.navigation.navigate('VideoChat', { clientRole, channelProfile, eventID: eid + '', duration })
+            this.props.navigation.navigate('VideoChat', { liveData: { clientRole, channelProfile, eventID: eid + '', duration } })
         }
     }
 

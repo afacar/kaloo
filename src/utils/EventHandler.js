@@ -5,18 +5,18 @@ var liveEventListener = () => { };
 var eventListener = () => { };
 
 /* Host Funcions */
-export const startLive = async (eid) => {
-    console.log('startLive called!', eid)
+export const startEvent = async (eid) => {
+    console.log('startEvent called!', eid)
     try {
-        let startLive = functions().httpsCallable('startEvent')
-        let response = await startLive({ eid })
-        console.log('startLive response ', response)
+        let startEvent = functions().httpsCallable('startEvent')
+        let response = await startEvent({ eid })
+        console.log('startEvent response ', response)
         if (response.data && response.data.state === 'SUCCESS') {
             return true;
         }
         return false;
     } catch (error) {
-        console.log('startLive err: ', error)
+        console.log('startEvent err: ', error)
         return false;
     }
 }
@@ -81,16 +81,16 @@ export const joinEvent = async (eid, ticket) => {
     try {
         let joinEvent = functions().httpsCallable('joinEvent')
         let response = await joinEvent({ eid, ticket })
-        console.log('endEvent response ', response)
+        console.log('joinEvent response ', response)
         if (response.data && response.data.state === 'SUCCESS') {
-            return true;
+            return response.data;
         }
         // TODO: Take action in case of error
-        return false;
+        return response.data;
     } catch (error) {
-        console.log('endEvent err: ', error)
+        console.log('joinEventama  err: ', error)
         // TODO: Take action in case of error
-        return false;
+        return error;
     }
 
 }
@@ -100,14 +100,14 @@ export const leaveEvent = async (eid, ticket) => {
     try {
         let joinEvent = functions().httpsCallable('leaveEvent')
         let response = await joinEvent({ eid, ticket })
-        console.log('joinEvent response ', response)
+        console.log('leaveEvent response ', response)
         if (response.data && response.data.state === 'SUCCESS') {
             return true;
         }
         // TODO: Take action in case of error
         return false;
     } catch (error) {
-        console.log('joinEvent err: ', error)
+        console.log('leaveEvent err: ', error)
         // TODO: Take action in case of error
         return false;
     }
@@ -133,6 +133,7 @@ export const rateEvent = async (eid, ticket, rate) => {
 }
 
 export const setLiveEventListener = (eventID, callback) => {
+    console.log(eventID, " in listener")
     liveEventListener = firestore().collection('events').doc(eventID).collection('live').doc('--stats--').onSnapshot(eventSnapshot => {
         console.log('eventSnapshot ', eventSnapshot.data());
         const liveStats = eventSnapshot.data();

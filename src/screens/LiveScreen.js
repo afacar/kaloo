@@ -8,7 +8,7 @@ import AppText from '../components/AppText';
 import {
     clearLiveEventListener,
     setLiveEventListener,
-    startLive,
+    startEvent,
     endLive,
     suspendLive,
     continueLive,
@@ -18,7 +18,7 @@ import { handleAndroidBackButton, removeAndroidBackButtonHandler } from '../util
 import { styles, colors } from '../constants';
 import { formatTime } from '../utils/Utils';
 import Header from '../components/Header';
-import { Icon } from 'react-native-elements';
+import { Icon, Button } from 'react-native-elements';
 
 const HOST_UID = 1000;
 const INITIAL_STATE = {
@@ -30,7 +30,8 @@ const INITIAL_STATE = {
     duration: 0,
     time: 0,
     timeStr: '',
-    status: app.EVENT_STATUS.SCHEDULED
+    status: app.EVENT_STATUS.SCHEDULED,
+    startLoading: false
 };
 
 export default class LiveScreen extends Component {
@@ -100,7 +101,6 @@ export default class LiveScreen extends Component {
             this.checkAudioPermission();
         }
         //const duration = this.props.navigation.getParam('duration', 30);
-        this.setState({ timeStr: formatTime(this.state.duration * 60) })
         /* var channelName = this.props.navigation.getParam('eventID', 'agora_test');
         const clientRole = this.props.navigation.getParam('clientRole', 2);
         var ticketID = this.props.navigation.getParam('ticketID', Math.random() * 100);
@@ -119,19 +119,24 @@ export default class LiveScreen extends Component {
 
             RtcEngine.startPreview();
         } */
-        // setup listener for  watcherCount
-        //var eventID = this.props.navigation.getParam('eventID', 'agora_test');
 
+        // setup listener for  watcherCount
+        this.setState({ timeStr: formatTime(this.state.duration * 60) })
+        const { eventID, clientRole } = this.state;
+        if (clientRole === 1)
+            RtcEngine.startPreview();
+        console.warn('state in did mount \n', this.state)
         setLiveEventListener(eventID, ({ status, viewerCount, startedAt }) => {
             var time = 0;
             if (startedAt) {
-                time = Date.now() - startedAt.getTime();
+                time = Math.floor((Date.now() - startedAt.getTime()) / 1000);
                 this.setState({ timeStr: formatTime(this.state.duration * 60 - time) });
             }
             if (startedAt && status === app.EVENT_STATUS.IN_PROGRESS) {
                 if (clientRole === 1 && !this.state.joinSucceed) {
                     RtcEngine.stopPreview();
-                    RtcEngine.joinChannel(channelName, HOST_UID)
+                    console.warn('joining channel')
+                    RtcEngine.joinChannel(eventID, HOST_UID)
                         .then((result) => {
                             this.setState({
                                 joinSucceed: true
@@ -140,7 +145,7 @@ export default class LiveScreen extends Component {
                         .catch((error) => {
                         });
                 }
-                time = Date.now() - startedAt.getTime();
+                time = Math.floor((Date.now() - startedAt.getTime()) / 1000);
                 this.setState({ time: this.state.duration * 60 - time });
                 if (!this.timer) {
                     this.timer = setInterval(() => {
@@ -195,8 +200,9 @@ export default class LiveScreen extends Component {
         );
     }
 
-    startLive = () => {
-        const { channelName, ticketID } = this.state;
+    startEvent = () => {
+        const { eventID, ticketID } = this.state;
+        console.warn('channel name', eventID)
         /* var channelName = this.props.navigation.getParam('eventID', 'agora_test');
         var ticketID = this.props.navigation.getParam('ticketID', 0); */
         Alert.alert(
@@ -210,10 +216,30 @@ export default class LiveScreen extends Component {
                 {
                     text: 'Yes', onPress: () => {
                         RtcEngine.stopPreview();
-                        RtcEngine.joinChannel(channelName, HOST_UID)
+                        RtcEngine.joinChannel(eventID, HOST_UID)
                             .then(async (result) => {
                                 // TODO: Function response should be check if db update is SUCCESS
-                                let response = await startLive(channelName);
+                                this.setState({
+                                    startLoading: true
+                                })
+                                let response = await startEvent(eventID);
+                                if (!response) {
+                                    RtcEngine.leaveChannel();
+                                    Alert.alert(
+                                        'Error occured',
+                                        'Unknown error occured while starting your live. Please try again!',
+                                        [
+                                            {
+                                                text: 'Ok', onPress: () => { },
+                                                style: 'cancel'
+                                            },
+                                        ],
+                                        { cancelable: false }
+                                    )
+                                }
+                                this.setState({
+                                    startLoading: false
+                                })
                             })
                             .catch((error) => {
                             });
@@ -225,13 +251,32 @@ export default class LiveScreen extends Component {
     }
 
     continueLive = () => {
-        const { channelName, ticketID } = this.state
-/*         var channelName = this.props.navigation.getParam('eventID', 'agora_test');
-        var ticketID = this.props.navigation.getParam('ticketID', 0); */
-        RtcEngine.leaveChannel();
-        RtcEngine.joinChannel(channelName, HOST_UID)
-            .then((result) => {
-                continueLive(channelName);
+        const { eventID, ticketID } = this.state
+        /*         var channelName = this.props.navigation.getParam('eventID', 'agora_test');
+                var ticketID = this.props.navigation.getParam('ticketID', 0); */
+        RtcEngine.joinChannel(eventID, HOST_UID)
+            .then(async (result) => {
+                this.setState({
+                    startLoading: true
+                })
+                let response = await continueLive(eventID);
+                if (!response) {
+                    RtcEngine.leaveChannel();
+                    Alert.alert(
+                        'Error occured',
+                        'Unknown error occured while continuing your live. Please try again!',
+                        [
+                            {
+                                text: 'Ok', onPress: () => { },
+                                style: 'cancel'
+                            },
+                        ],
+                        { cancelable: false }
+                    )
+                }
+                this.setState({
+                    startLoading: false
+                })
             })
             .catch((error) => {
             });
@@ -242,7 +287,7 @@ export default class LiveScreen extends Component {
     }
 
     endLive = () => {
-        const { eid } = this.state
+        const { eventID } = this.state
         Alert.alert(
             "Confirm End",
             "Do you want to totally end your stream?",
@@ -254,7 +299,7 @@ export default class LiveScreen extends Component {
                 {
                     text: 'OK', onPress: () => {
                         RtcEngine.leaveChannel();
-                        endLive(eid);
+                        endLive(eventID);
                         this.props.navigation.goBack();
                     }
                 },
@@ -264,11 +309,19 @@ export default class LiveScreen extends Component {
     }
 
     backButtonPressed() {
-        const { clientRole, eid, status, ticket } = this.state
+        const { clientRole, eventID, status, ticket } = this.state
         const { navigation } = this.props;
-/*         var clientRole = this.props.navigation.getParam('clientRole', 2);
-        var eventID = this.props.navigation.getParam('eventID', 'agora_test'); */
+        /*         var clientRole = this.props.navigation.getParam('clientRole', 2);
+                var eventID = this.props.navigation.getParam('eventID', 'agora_test'); */
         if (status !== app.EVENT_STATUS.IN_PROGRESS) {
+            if (clientRole === 1) {
+                // Suspend live event of host
+                suspendLive(eventID);
+            } else if (clientRole === 2) {
+                //leave live event of audience
+                // TODO: leaveEvent func.
+                leaveEvent(eventID, ticket)
+            }
             return navigation.goBack();
         }
         Alert.alert(
@@ -285,10 +338,11 @@ export default class LiveScreen extends Component {
                     text: 'OK', onPress: () => {
                         if (clientRole === 1) {
                             // Suspend live event of host
-                            suspendLive(eid);
-                        } else if (clientRole === 0) {
-                            // Leave live event of audience
-                            leaveEvent(eid, ticket)
+                            suspendLive(eventID);
+                        } else if (clientRole === 2) {
+                            //leave live event of audience
+                            // TODO: leaveEvent func.
+                            leaveEvent(eventID, ticket)
                         }
                         navigation.goBack();
                         return false;
@@ -325,8 +379,7 @@ export default class LiveScreen extends Component {
     }
 
     renderLiveInfo() {
-        const { status } = this.state;
-        var clientRole = this.props.navigation.getParam('clientRole', 2);
+        const { status, clientRole } = this.state;
         if ((status === app.EVENT_STATUS.SCHEDULED || status === app.EVENT_STATUS.SUSPENDED) && clientRole === 1) {
             return (
                 <View style={styles.liveInfo}>
@@ -356,8 +409,7 @@ export default class LiveScreen extends Component {
     }
 
     renderWaitingComponent() {
-        const { status } = this.state;
-        var clientRole = this.props.navigation.getParam('clientRole', 2);
+        const { status, clientRole } = this.state;
         if (status === app.EVENT_STATUS.SUSPENDED || status === app.EVENT_STATUS.IN_PROGRESS) {
             return (
                 <View style={styles.waitingBox}>
@@ -367,7 +419,7 @@ export default class LiveScreen extends Component {
                         size={48}
                         color='white'
                     />
-                    <AppText style={{ color: '#FFFFFF', marginLeft: 8, fontSize: 24, fontWeight: 'bold', textAlign: 'center' }}>Your Host is connecting...</AppText>
+                    <AppText style={{ color: '#FFFFFF', marginLeft: 8, fontSize: 24, fontWeight: 'bold', textAlign: 'center' }}>Your host is connecting...</AppText>
                 </View>
             )
         } else if (status === app.EVENT_STATUS.SCHEDULED) {
@@ -389,45 +441,56 @@ export default class LiveScreen extends Component {
         const { status } = this.state;
         if (status === app.EVENT_STATUS.SCHEDULED) {
             return (
-                <AppButton style={styles.startButton} onPress={this.startLive}>
-                    <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center' }}>
+                <Button
+                    icon={
                         <Icon
                             type='font-awesome'
                             name="video-camera"
                             size={16}
+                            iconStyle={{ marginRight: 4 }}
                             color="white"
                         />
-                        <AppText style={{ color: 'white', fontWeight: 'bold', fontSize: 16, marginLeft: 8 }}>Start Broadcasting</AppText>
-                    </View>
-                </AppButton>
+                    }
+                    title='Start Broadcasting'
+                    buttonStyle={styles.startButton}
+                    onPress={this.startEvent}
+                    loading={this.state.startLoading}
+                />
             )
         } else if (status === app.EVENT_STATUS.IN_PROGRESS) {
             return (
-                <AppButton style={styles.endButton} onPress={this.endLive}>
-                    <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center' }}>
+                <Button
+                    icon={
                         <Icon
                             type='material-community'
                             name="video-off"
                             size={16}
+                            iconStyle={{ marginRight: 4 }}
                             color="white"
                         />
-                        <AppText style={{ color: 'white', fontWeight: 'bold', fontSize: 16, marginLeft: 8 }}>End Broadcasting</AppText>
-                    </View>
-                </AppButton>
+                    }
+                    title='End Broadcasting'
+                    buttonStyle={styles.endButton}
+                    onPress={this.endLive}
+                />
             )
         } else if (status === app.EVENT_STATUS.SUSPENDED) {
             return (
-                <AppButton style={styles.startButton} onPress={this.continueLive}>
-                    <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center' }}>
+                <Button
+                    icon={
                         <Icon
                             type='font-awesome'
                             name="video-camera"
                             size={16}
+                            iconStyle={{ marginRight: 4 }}
                             color="white"
                         />
-                        <AppText style={{ color: 'white', fontWeight: 'bold', fontSize: 16, marginLeft: 8 }}>Continue Broadcasting</AppText>
-                    </View>
-                </AppButton>
+                    }
+                    title='Continue Broadcasting'
+                    buttonStyle={styles.startButton}
+                    onPress={this.continueLive}
+                    loading={this.state.startLoading}
+                />
             )
         }
     }
@@ -444,71 +507,67 @@ export default class LiveScreen extends Component {
     }
 
     render() {
-        const clientRole = this.props.navigation.getParam('clientRole', 1);
+        const { clientRole } = this.state;
         return (
-            <TouchableOpacity activeOpacity={1} onPress={() => this.toggleShowState()} style={{ flex: 1 }}>
+            // <TouchableOpacity activeOpacity={1} onPress={() => this.toggleShowState()} style={{ flex: 1 }}>
+            <View style={{ flex: 1 }}>
+                <KeepAwake />
+                <StatusBar hidden={true} />
+                <Header
+                    buttonTitle={'Quit Live'}
+                    buttonTitleStyle={{ color: colors.BLUE, fontSize: 16 }}
+                    headerRight={(
+                        <TouchableOpacity onPress={this.reportProblem}>
+                            <Text style={{ fontSize: 16, fontWeight: 'bold', color: colors.BLUE }}>Report Problem</Text>
+                        </TouchableOpacity>
+                    )}
+                    onPress={this.backButtonPressed}
+                />
                 <View style={{ flex: 1 }}>
-                    <KeepAwake />
-                    <StatusBar hidden={true} />
-                    <Header
-                        buttonTitle={'Quit Live'}
-                        buttonTitleStyle={{ color: colors.BLUE, fontSize: 16 }}
-                        headerRight={(
-                            <TouchableOpacity onPress={this.reportProblem}>
-                                <Text style={{ fontSize: 16, fontWeight: 'bold', color: colors.BLUE }}>Report Problem</Text>
-                            </TouchableOpacity>
-                        )}
-                        onPress={this.backButtonPressed}
-                    />
-                    <View style={{ flex: 1 }}>
-                        {
-                            // The Host
-                            clientRole === 1 && (
-                                <View style={{ flex: 1 }}>
-                                    <AgoraView style={{ flex: 1 }} showLocalVideo={true} mode={1} />
-                                    {
-                                        this.renderTimerNViewer()
-                                    }
-                                    {
-                                        this.renderLiveInfo()
-                                    }
-                                    {
-                                        this.renderBroadcastButton()
-                                    }
-                                </View>
-                            )
-                        }
-                        {
-                            // Viewer
-                            clientRole === 2 && (
-                                <View style={{ flex: 1 }}>
-                                    {
-                                        this.renderMainComponent()
-                                    }
-                                    {
-                                        this.renderTimerNViewer()
-                                    }
-                                    {
-                                        this.renderLiveInfo()
-                                    }
-                                </View>
-                            )
-                        }
-                    </View>
+                    {
+                        // The Host
+                        clientRole === 1 && (
+                            <View style={{ flex: 1 }}>
+                                <AgoraView style={{ flex: 1 }} showLocalVideo={true} mode={1} />
+                                {
+                                    this.renderTimerNViewer()
+                                }
+                                {
+                                    this.renderLiveInfo()
+                                }
+                                {
+                                    this.renderBroadcastButton()
+                                }
+                            </View>
+                        )
+                    }
+                    {
+                        // Viewer
+                        clientRole === 2 && (
+                            <View style={{ flex: 1 }}>
+                                {
+                                    this.renderMainComponent()
+                                }
+                                {
+                                    this.renderTimerNViewer()
+                                }
+                                {
+                                    this.renderLiveInfo()
+                                }
+                            </View>
+                        )
+                    }
                 </View>
-            </TouchableOpacity>
+            </View>
+            // </TouchableOpacity>
         )
     }
 
     componentWillUnmount() {
-        const { clientRole, eid, ticket } = this.state
         removeAndroidBackButtonHandler(this.backButtonPressed);
         clearLiveEventListener();
         RtcEngine.leaveChannel()
             .then(res => {
-                if (clientRole === 2)
-                    // TODO: leaveEvent func.
-                    leaveEvent(eid, ticket)
             });
         this.clearTimer();
     }
