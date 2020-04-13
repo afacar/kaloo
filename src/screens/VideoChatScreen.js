@@ -1,17 +1,17 @@
 import React, { Component } from 'react';
 import { View, Platform, NativeModules, PermissionsAndroid, Alert, StatusBar, ActivityIndicator, Text, TouchableOpacity } from 'react-native';
-import app from '../constants/app';
+import  { getUniqueId } from "react-native-device-info";
 import { RtcEngine, AgoraView } from 'react-native-agora';
 import KeepAwake from 'react-native-keep-awake';
 import firebase from 'react-native-firebase';
-import { clearLiveEventListener, setLiveEventListener, startEvent, endLive, suspendLive, continueLive, leaveEvent } from '../utils/EventHandler';
+import { clearLiveEventListener, setLiveEventListener, startEvent, endLive, suspendLive, continueLive, leaveEvent, setTicketListener, clearTicketListener } from '../utils/EventHandler';
 import { handleAndroidBackButton, removeAndroidBackButtonHandler } from '../utils/BackHandler';
 import { formatTime } from '../utils/Utils';
 import AppButton from '../components/AppButton';
 import AppText from '../components/AppText';
 import { Overlay, Icon, Button } from 'react-native-elements';
 import Header from '../components/Header';
-import { colors, styles } from '../constants';
+import { colors, styles, app } from '../constants';
 const { Agora } = NativeModules;
 
 const {
@@ -205,9 +205,12 @@ export default class VideoChatScreen extends Component {
 
         // setup listener for  watcherCount
         this.setState({ timeStr: formatTime(this.state.duration * 60) })
-        const { eventID, clientRole } = this.state;
+        const { eventID, clientRole, ticket } = this.state;
         if (clientRole === 1)
             RtcEngine.startPreview();
+        else if (clientRole === 2) {
+            this.setTicketListener();
+        }
         setLiveEventListener(eventID, ({ status, viewerCount, startedAt }) => {
             var time = 0;
             if (startedAt) {
@@ -264,6 +267,27 @@ export default class VideoChatScreen extends Component {
         // setup back button listener
         const { navigation } = this.props;
         handleAndroidBackButton(this.backButtonPressed);
+    }
+
+    setTicketListener = () => {
+        const { eventID, ticket } = this.state;
+        setTicketListener(eventID, ticket, (deviceID) => {
+            if (deviceID != getUniqueId()) {
+                Alert.alert(
+                    'Multiple Access',
+                    'System detected using same ticket from different devices. You can only use you ticket from a single device at a given time',
+                    [
+                        {
+                            text: 'Leave', onPress: () => {
+                                this.props.navigation.goBack();
+                                return false;
+                            }
+                        }
+                    ],
+                    { cancelable: false }
+                )
+            }
+        })
     }
 
     onEventCompleted() {
@@ -536,6 +560,7 @@ export default class VideoChatScreen extends Component {
     componentWillUnmount() {
         removeAndroidBackButtonHandler(this.backButtonPressed);
         clearLiveEventListener();
+        clearTicketListener();
         RtcEngine.leaveChannel()
             .then(res => {
             });

@@ -1,8 +1,10 @@
 import firebase, { firestore, functions } from "react-native-firebase"
 import { app } from "../constants";
+import { getUniqueId } from "react-native-device-info";
 
 var liveEventListener = () => { };
 var eventListener = () => { };
+var ticketListener = () => { };
 
 /* Host Funcions */
 export const startEvent = async (eid) => {
@@ -78,9 +80,11 @@ export const endLive = async (eid) => {
 /* Audience Funcions */
 export const joinEvent = async (eid, ticket) => {
     console.log('joinEvent called!')
+    const deviceID = getUniqueId();
+    console.warn(deviceID)
     try {
         let joinEvent = functions().httpsCallable('joinEvent')
-        let response = await joinEvent({ eid, ticket })
+        let response = await joinEvent({ eid, ticket, deviceID })
         console.log('joinEvent response ', response)
         if (response.data && response.data.state === 'SUCCESS') {
             return response.data;
@@ -88,7 +92,7 @@ export const joinEvent = async (eid, ticket) => {
         // TODO: Take action in case of error
         return response.data;
     } catch (error) {
-        console.log('joinEventama  err: ', error)
+        console.log('joinEvent  err: ', error)
         // TODO: Take action in case of error
         return error;
     }
@@ -148,6 +152,20 @@ export const setLiveEventListener = (eventID, callback) => {
 export const clearLiveEventListener = () => {
     if (liveEventListener)
         liveEventListener();
+}
+
+export const setTicketListener = (eventID, ticket, callback) => {
+    ticketListener = firestore().collection('events').doc(eventID).collection('tickets').doc(ticket.tid).onSnapshot(ticketSnapshot => {
+        const ticketStats = ticketSnapshot.data();
+        if (ticketStats && ticketStats.deviceID) {
+            callback(ticketStats.deviceID)
+        }
+    })
+}
+
+export const clearTicketListener = () => {
+    if (ticketListener)
+        ticketListener();
 }
 
 export const setEventListener = (eventID, callback) => {
