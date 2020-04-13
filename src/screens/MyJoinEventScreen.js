@@ -71,7 +71,7 @@ class MyJoinEventScreen extends Component {
         RtcEngine.init(options)
         let result = await joinEvent(eid, ticket)
         if (result.state === 'SUCCESS') {
-            RtcEngine.joinChannel(eid, ticket.count)
+            RtcEngine.joinChannel(eid, parseInt(ticket.count))
                 .then((res) => {
                     if (eventType === 'live')
                         return navigate('Live', { liveData: { clientRole, channelProfile, eventID: eid, duration, ticket } })
