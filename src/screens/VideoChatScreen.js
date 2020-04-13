@@ -1,12 +1,11 @@
 import React, { Component } from 'react';
 import { View, Platform, NativeModules, PermissionsAndroid, Alert, StatusBar, ActivityIndicator, Text, TouchableOpacity } from 'react-native';
-import  { getUniqueId } from "react-native-device-info";
 import { RtcEngine, AgoraView } from 'react-native-agora';
 import KeepAwake from 'react-native-keep-awake';
 import firebase from 'react-native-firebase';
 import { clearLiveEventListener, setLiveEventListener, startEvent, endLive, suspendLive, continueLive, leaveEvent, setTicketListener, clearTicketListener } from '../utils/EventHandler';
 import { handleAndroidBackButton, removeAndroidBackButtonHandler } from '../utils/BackHandler';
-import { formatTime } from '../utils/Utils';
+import { formatTime, getDeviceID } from '../utils/Utils';
 import AppButton from '../components/AppButton';
 import AppText from '../components/AppText';
 import { Overlay, Icon, Button } from 'react-native-elements';
@@ -271,8 +270,9 @@ export default class VideoChatScreen extends Component {
 
     setTicketListener = () => {
         const { eventID, ticket } = this.state;
-        setTicketListener(eventID, ticket, (deviceID) => {
-            if (deviceID != getUniqueId()) {
+        setTicketListener(eventID, ticket, async(remoteID) => {
+            var localID = await getDeviceID();
+            if (localID != remoteID) {
                 Alert.alert(
                     'Multiple Access',
                     'System detected using same ticket from different devices. You can only use you ticket from a single device at a given time',

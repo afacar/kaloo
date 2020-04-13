@@ -18,10 +18,9 @@ import {
 } from '../utils/EventHandler';
 import { handleAndroidBackButton, removeAndroidBackButtonHandler } from '../utils/BackHandler';
 import { styles, colors } from '../constants';
-import { formatTime } from '../utils/Utils';
+import { formatTime, getDeviceID } from '../utils/Utils';
 import Header from '../components/Header';
 import { Icon, Button } from 'react-native-elements';
-import { getUniqueId } from 'react-native-device-info';
 
 const HOST_UID = 1000;
 const INITIAL_STATE = {
@@ -208,8 +207,9 @@ export default class LiveScreen extends Component {
 
     setTicketListener = () => {
         const { eventID, ticket } = this.state;
-        setTicketListener(eventID, ticket, (deviceID) => {
-            if (deviceID != getUniqueId()) {
+        setTicketListener(eventID, ticket, async (remoteID) => {
+            var localID = await getDeviceID();
+            if (localID != remoteID) {
                 Alert.alert(
                     'Multiple Access',
                     'System detected using same ticket from different devices. You can only use you ticket from a single device at a given time',

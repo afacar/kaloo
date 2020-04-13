@@ -1,6 +1,6 @@
 import firebase, { firestore, functions } from "react-native-firebase"
 import { app } from "../constants";
-import { getUniqueId } from "react-native-device-info";
+import { getDeviceID } from "./Utils";
 
 var liveEventListener = () => { };
 var eventListener = () => { };
@@ -80,8 +80,7 @@ export const endLive = async (eid) => {
 /* Audience Funcions */
 export const joinEvent = async (eid, ticket) => {
     console.log('joinEvent called!')
-    const deviceID = getUniqueId();
-    console.warn(deviceID)
+    const deviceID = await getDeviceID();
     try {
         let joinEvent = functions().httpsCallable('joinEvent')
         let response = await joinEvent({ eid, ticket, deviceID })
