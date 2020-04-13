@@ -29,7 +29,6 @@ class EventPublishScreen extends Component {
     return (
       <ScrollView contentContainerStyle={styles.container}>
         <EventShare
-          text='Your event isn’t published yet. Event ticket is going to look like this when you publish.'
           link={myEvent.eventLink}
         />
         <Button

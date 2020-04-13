@@ -1,20 +1,31 @@
 import React, { Component } from 'react';
 import { View, StyleSheet } from 'react-native';
+import AsyncStorage from '@react-native-community/async-storage';
+
 import AppText from '../components/AppText';
 import { auth } from 'react-native-firebase';
 
 import { loadAssets } from "../appstate/actions/app_actions";
 import { connect } from 'react-redux';
+import { generateRandomString } from '../utils/Utils';
 
 class SplashScreen extends Component {
     async componentDidMount() {
+        var deviceID
+        await AsyncStorage.getItem('deviceID').then(value => {
+            deviceID = value
+        });
+        if (!deviceID) {
+            deviceID = generateRandomString(5);
+            AsyncStorage.setItem('deviceID', deviceID);
+        }
         try {
             await this.props.loadAssets()
             const user = auth().currentUser;
             this.setState({ isWaiting: false })
             if (user) this.props.navigation.navigate('User');
             else this.props.navigation.navigate('Home');
-        } catch(error) {
+        } catch (error) {
             this.setState({ isWaiting: false })
         }
     }

@@ -1,17 +1,16 @@
 import React, { Component } from 'react';
 import { View, Platform, NativeModules, PermissionsAndroid, Alert, StatusBar, ActivityIndicator, Text, TouchableOpacity } from 'react-native';
-import app from '../constants/app';
 import { RtcEngine, AgoraView } from 'react-native-agora';
 import KeepAwake from 'react-native-keep-awake';
 import firebase from 'react-native-firebase';
-import { clearLiveEventListener, setLiveEventListener, startLive, endLive, suspendLive, continueLive } from '../utils/EventHandler';
+import { clearLiveEventListener, setLiveEventListener, startEvent, endLive, suspendLive, continueLive, leaveEvent, setTicketListener, clearTicketListener } from '../utils/EventHandler';
 import { handleAndroidBackButton, removeAndroidBackButtonHandler } from '../utils/BackHandler';
-import { formatTime } from '../utils/Utils';
+import { formatTime, getDeviceID } from '../utils/Utils';
 import AppButton from '../components/AppButton';
 import AppText from '../components/AppText';
-import { Overlay, Icon } from 'react-native-elements';
+import { Overlay, Icon, Button } from 'react-native-elements';
 import Header from '../components/Header';
-import { colors, styles } from '../constants';
+import { colors, styles, app } from '../constants';
 const { Agora } = NativeModules;
 
 const {
@@ -30,15 +29,18 @@ export default class VideoChatScreen extends Component {
         super(props);
         this.backButtonPressed = this.backButtonPressed.bind(this);
     }
+    liveData = this.props.navigation.getParam('liveData', '')
 
     state = {
+        ...this.liveData,
         uid: '',
         peerIds: [],
         joinSucceed: false,
         duration: 0,
         time: 0,
         timeStr: '',
-        status: undefined
+        status: undefined,
+        startLoading: false
     };
 
     checkCameraPermission = async () => {
@@ -76,43 +78,8 @@ export default class VideoChatScreen extends Component {
         }
     }
 
-    // componentWillMount() {
-    //     const channelProfile = this.props.navigation.getParam('channelProfile', 1);
-    //     const options = {
-    //         appid: app.AGORA_APP_ID,
-    //         channelProfile,
-    //         videoEncoderConfig: {
-    //             width: 360,
-    //             height: 480,
-    //             bitrate: 1,
-    //             frameRate: FPS30,
-    //             orientationMode: Adaptative,
-    //         },
-    //         audioProfile: AgoraAudioProfileMusicHighQuality,
-    //         audioScenario: AgoraAudioScenarioShowRoom
-    //     };
-    //     // rtc object
-    //     RtcEngine.on('userJoined', (data) => {
-    //         const { peerIds } = this.state;
-    //         if (peerIds.indexOf(data.uid) === -1) {
-    //             this.setState({
-    //                 peerIds: [...this.state.peerIds, data.uid]
-    //             })
-    //         }
-    //     })
-    //     RtcEngine.on('userOffline', (data) => {
-    //         this.setState({
-    //             peerIds: this.state.peerIds.filter(uid => uid !== data.uid)
-    //         })
-    //     })
-    //     RtcEngine.on('error', (error) => {
-    //     })
-    //     RtcEngine.init(options);
-    // }
-
     startCall = () => {
-        var channelName = this.props.navigation.getParam('eventID', 'agora_test');
-        var ticketID = this.props.navigation.getParam('ticketID', HOST_UID);
+        const { eventID } = this.state;
         Alert.alert(
             "Start broadcast",
             "Are you sure you want to start meeting?",
@@ -124,9 +91,28 @@ export default class VideoChatScreen extends Component {
                 {
                     text: 'Yes', onPress: () => {
                         RtcEngine.leaveChannel();
-                        RtcEngine.joinChannel(channelName, HOST_UID)
-                            .then((result) => {
-                                startLive(channelName);
+                        RtcEngine.joinChannel(eventID, HOST_UID)
+                            .then(async (result) => {
+                                this.setState({
+                                    startLoading: true
+                                })
+                                let response = await startEvent(eventID);
+                                if (!response) {
+                                    Alert.alert(
+                                        'Error occured',
+                                        'Unknown error occured while starting your call. Please try again!',
+                                        [
+                                            {
+                                                text: 'Ok', onPress: () => { },
+                                                style: 'cancel'
+                                            },
+                                        ],
+                                        { cancelable: false }
+                                    )
+                                }
+                                this.setState({
+                                    startLoading: false
+                                })
                             })
                             .catch((error) => {
                             });
@@ -138,8 +124,7 @@ export default class VideoChatScreen extends Component {
     }
 
     continueCall = () => {
-        var channelName = this.props.navigation.getParam('eventID', 'agora_test');
-        var ticketID = this.props.navigation.getParam('ticketID', 0);
+        const { eventID } = this.state;
         Alert.alert(
             "Continue broadcast",
             "Are you sure you want to continue meeting?",
@@ -151,9 +136,9 @@ export default class VideoChatScreen extends Component {
                 {
                     text: 'Yes', onPress: () => {
                         RtcEngine.leaveChannel();
-                        RtcEngine.joinChannel(channelName, HOST_UID)
+                        RtcEngine.joinChannel(eventID, HOST_UID)
                             .then((result) => {
-                                continueLive(channelName);
+                                continueLive(eventID);
                             })
                             .catch((error) => {
                             });
@@ -169,6 +154,7 @@ export default class VideoChatScreen extends Component {
     }
 
     endCall = () => {
+        const { eventID } = this.state;
         Alert.alert(
             "Confirm End",
             "Do you want to end your stream early?",
@@ -180,7 +166,7 @@ export default class VideoChatScreen extends Component {
                 {
                     text: 'OK', onPress: () => {
                         RtcEngine.leaveChannel();
-                        endLive(this.props.navigation.getParam('eventID', 'agora_test'));
+                        endLive(eventID);
                         this.props.navigation.goBack();
                     }
                 },
@@ -192,41 +178,48 @@ export default class VideoChatScreen extends Component {
     leaveCall = () => {
         this.backButtonPressed();
     }
+
     componentDidMount() {
         if (Platform.OS === 'android') {
             this.checkCameraPermission();
             this.checkAudioPermission();
         }
-        var channelName = this.props.navigation.getParam('eventID', 'agora_test');
-        const clientRole = this.props.navigation.getParam('clientRole', 2);
-        const duration = this.props.navigation.getParam('duration', 60);
-        this.setState({ duration, timeStr: formatTime(duration * 60) })
-        var ticketID = this.props.navigation.getParam('ticketID', Math.random() * 100);
-        this.setState({
-            uid: ticketID
-        })
-        if (clientRole === 2) {
-            RtcEngine.joinChannel(channelName, ticketID)
-                .then((result) => {
-                })
-                .catch((error) => {
-                });
-        } else if (clientRole === 1) {
+        // var channelName = this.props.navigation.getParam('eventID', 'agora_test');
+        // const clientRole = this.props.navigation.getParam('clientRole', 2);
+        // const duration = this.props.navigation.getParam('duration', 60);
+        // var ticketID = this.props.navigation.getParam('ticketID', Math.random() * 100);
+        // this.setState({
+        //     uid: ticketID
+        // })
+        // if (clientRole === 2) {
+        //     /* RtcEngine.joinChannel(channelName, ticketID)
+        //         .then((result) => {
+        //         })
+        //         .catch((error) => {
+        //         }); */
+        // } else if (clientRole === 1) {
 
-            RtcEngine.startPreview()
-        }
+        //     RtcEngine.startPreview()
+        // }
+
         // setup listener for  watcherCount
-        var eventID = this.props.navigation.getParam('eventID', 'agora_test');
+        this.setState({ timeStr: formatTime(this.state.duration * 60) })
+        const { eventID, clientRole, ticket } = this.state;
+        if (clientRole === 1)
+            RtcEngine.startPreview();
+        else if (clientRole === 2) {
+            this.setTicketListener();
+        }
         setLiveEventListener(eventID, ({ status, viewerCount, startedAt }) => {
             var time = 0;
             if (startedAt) {
-                time = Date.now() - startedAt.getTime();
+                time = Math.floor((Date.now() - startedAt.getTime()) / 1000);
                 this.setState({ timeStr: formatTime(this.state.duration * 60 - time) });
             }
             if (startedAt && status === app.EVENT_STATUS.IN_PROGRESS) {
                 if (clientRole === 1 && !this.state.joinSucceed) {
                     RtcEngine.stopPreview()
-                    RtcEngine.joinChannel(channelName, HOST_UID)
+                    RtcEngine.joinChannel(eventID, HOST_UID)
                         .then((result) => {
                             this.setState({
                                 joinSucceed: true
@@ -235,7 +228,7 @@ export default class VideoChatScreen extends Component {
                         .catch((error) => {
                         });
                 }
-                time = Date.now() - startedAt.getTime();
+                time = Math.floor((Date.now() - startedAt.getTime()) / 1000);
                 this.setState({ time: this.state.duration * 60 - time });
                 if (!this.timer) {
                     this.timer = setInterval(() => {
@@ -275,6 +268,26 @@ export default class VideoChatScreen extends Component {
         handleAndroidBackButton(this.backButtonPressed);
     }
 
+    setTicketListener = () => {
+        const { eventID, ticket } = this.state;
+        setTicketListener(eventID, ticket, async (remoteID) => {
+            var localID = await getDeviceID();
+            if (localID != remoteID) {
+                this.props.navigation.goBack();
+                Alert.alert(
+                    'Multiple Access',
+                    'System detected using same ticket from different devices. You can only use you ticket from a single device at a given time',
+                    [
+                        {
+                            text: 'OK', onPress: () => { }
+                        }
+                    ],
+                    { cancelable: false }
+                )
+            }
+        })
+    }
+
     onEventCompleted() {
         Alert.alert(
             "Event Finished",
@@ -294,9 +307,16 @@ export default class VideoChatScreen extends Component {
 
     backButtonPressed() {
         const { navigation } = this.props;
-        var clientRole = this.props.navigation.getParam('clientRole', 2);
-        var eventID = this.props.navigation.getParam('eventID', 'agora_test');
-        if (this.state.status !== app.EVENT_STATUS.IN_PROGRESS) {
+        const { clientRole, eventID, status, ticket } = this.state
+        if (status !== app.EVENT_STATUS.IN_PROGRESS) {
+            if (clientRole === 1) {
+                // Suspend live event of host
+                suspendLive(eventID);
+            } else if (clientRole === 2) {
+                //leave live event of audience
+                // TODO: leaveEvent func.
+                leaveEvent(eventID, ticket)
+            }
             return navigation.goBack();
         }
         Alert.alert(
@@ -313,7 +333,12 @@ export default class VideoChatScreen extends Component {
                 {
                     text: 'OK', onPress: () => {
                         if (clientRole === 1) {
+                            // Suspend live event of host
                             suspendLive(eventID);
+                        } else if (clientRole === 2) {
+                            //leave live event of audience
+                            // TODO: leaveEvent func.
+                            leaveEvent(eventID, ticket)
                         }
                         navigation.goBack();
                         return false;
@@ -370,52 +395,61 @@ export default class VideoChatScreen extends Component {
         const { status } = this.state;
         if (status === app.EVENT_STATUS.IN_PROGRESS) {
             return (
-                <AppButton style={styles.endButton} onPress={this.endCall}>
-                    <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center' }}>
+                <Button
+                    icon={
                         <Icon
                             type='material-community'
                             name="video-off"
                             size={16}
+                            iconStyle={{ marginRight: 4 }}
                             color="white"
                         />
-                        <AppText style={{ color: 'white', fontWeight: 'bold', fontSize: 16, marginLeft: 8 }}>End Call</AppText>
-                    </View>
-                </AppButton>
+                    }
+                    title='End Call'
+                    buttonStyle={styles.endButton}
+                    onPress={this.endCall}
+                />
             )
         } else if (status === app.EVENT_STATUS.SCHEDULED) {
             return (
-                <AppButton style={styles.startButton} onPress={this.startCall}>
-                    <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center' }}>
+                <Button
+                    icon={
                         <Icon
                             type='font-awesome'
                             name="video-camera"
                             size={16}
+                            iconStyle={{ marginRight: 4 }}
                             color="white"
                         />
-                        <AppText style={{ color: 'white', fontWeight: 'bold', fontSize: 16, marginLeft: 8 }}>Start Call</AppText>
-                    </View>
-                </AppButton>
+                    }
+                    title='Start Call'
+                    buttonStyle={styles.startButton}
+                    onPress={this.startCall}
+                    loading={this.state.startLoading}
+                />
             )
         } else if (status === app.EVENT_STATUS.SUSPENDED) {
             return (
-                <AppButton style={styles.startButton} onPress={this.continueCall}>
-                    <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center' }}>
+                <Button
+                    icon={
                         <Icon
                             type='font-awesome'
                             name="video-camera"
                             size={16}
+                            iconStyle={{ marginRight: 4 }}
                             color="white"
                         />
-                        <AppText style={{ color: 'white', fontWeight: 'bold', fontSize: 16, marginLeft: 8 }}>Continue Call</AppText>
-                    </View>
-                </AppButton>
+                    }
+                    title='Continue Call'
+                    buttonStyle={styles.startButton}
+                    onPress={this.continueCall}
+                />
             )
         }
     }
 
     renderWaitingComponent() {
-        const { status } = this.state;
-        var clientRole = this.props.navigation.getParam('clientRole', 2);
+        const { status, clientRole } = this.state;
         if (status === app.EVENT_STATUS.IN_PROGRESS && clientRole === 1) {
             return (
                 <View style={styles.waitingBox}>
@@ -456,8 +490,7 @@ export default class VideoChatScreen extends Component {
     }
 
     renderLiveInfo() {
-        const { status } = this.state;
-        var clientRole = this.props.navigation.getParam('clientRole', 2);
+        const { status, clientRole } = this.state;
         if ((status === app.EVENT_STATUS.SCHEDULED || status === app.EVENT_STATUS.SUSPENDED) && clientRole === 1) {
             return (
                 <View style={styles.liveInfo}>
@@ -478,8 +511,8 @@ export default class VideoChatScreen extends Component {
     }
 
     render() {
+        const { clientRole } = this.state;
         const capacity = this.state.peerIds.length;
-        const clientRole = this.props.navigation.getParam('clientRole', 1);
         return (
             <View style={{ flex: 1 }}>
                 <StatusBar hidden={true} />
@@ -523,13 +556,9 @@ export default class VideoChatScreen extends Component {
     }
 
     componentWillUnmount() {
-        var eventID = this.props.navigation.getParam('eventID', 'agora_test');
-        var clientRole = this.props.navigation.getParam('clientRole', 2);
-        if (clientRole === 1 && this.state.status != app.EVENT_STATUS.SCHEDULED) {
-            //suspendLive(eventID);
-        }
         removeAndroidBackButtonHandler(this.backButtonPressed);
         clearLiveEventListener();
+        clearTicketListener();
         RtcEngine.leaveChannel()
             .then(res => {
             });

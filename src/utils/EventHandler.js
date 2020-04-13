@@ -1,21 +1,24 @@
 import firebase, { firestore, functions } from "react-native-firebase"
 import { app } from "../constants";
+import { getDeviceID } from "./Utils";
 
 var liveEventListener = () => { };
 var eventListener = () => { };
+var ticketListener = () => { };
 
-export const startLive = async (eid) => {
-    console.log('startLive called!', eid)
+/* Host Funcions */
+export const startEvent = async (eid) => {
+    console.log('startEvent called!', eid)
     try {
-        let startLive = functions().httpsCallable('startEvent')
-        let response = await startLive({ eid })
-        console.log('startLive response ', response)
+        let startEvent = functions().httpsCallable('startEvent')
+        let response = await startEvent({ eid })
+        console.log('startEvent response ', response)
         if (response.data && response.data.state === 'SUCCESS') {
             return true;
         }
         return false;
     } catch (error) {
-        console.log('startLive err: ', error)
+        console.log('startEvent err: ', error)
         return false;
     }
 }
@@ -74,80 +77,67 @@ export const endLive = async (eid) => {
     }
 }
 
+/* Audience Funcions */
 export const joinEvent = async (eid, ticket) => {
     console.log('joinEvent called!')
+    const deviceID = await getDeviceID();
     try {
         let joinEvent = functions().httpsCallable('joinEvent')
+        let response = await joinEvent({ eid, ticket, deviceID })
+        console.log('joinEvent response ', response)
+        if (response.data && response.data.state === 'SUCCESS') {
+            return response.data;
+        }
+        // TODO: Take action in case of error
+        return response.data;
+    } catch (error) {
+        console.log('joinEvent  err: ', error)
+        // TODO: Take action in case of error
+        return error;
+    }
+
+}
+
+export const leaveEvent = async (eid, ticket) => {
+    console.log('leaveEvent called!')
+    try {
+        let joinEvent = functions().httpsCallable('leaveEvent')
         let response = await joinEvent({ eid, ticket })
-        console.log('endEvent response ', response)
+        console.log('leaveEvent response ', response)
         if (response.data && response.data.state === 'SUCCESS') {
             return true;
         }
         // TODO: Take action in case of error
         return false;
     } catch (error) {
-        console.log('endEvent err: ', error)
+        console.log('leaveEvent err: ', error)
         // TODO: Take action in case of error
         return false;
     }
 
-    const ref = firebase.firestore().collection('events').doc(eventID).collection('live').doc('--stats--');
-
-    firebase.firestore().runTransaction(async transaction => {
-        const doc = await transaction.get(ref);
-
-        // create if doesn't exist
-        if (!doc.exists) {
-            transaction.set(ref, { viewerCount: 1 })
-            return 1;
-        }
-
-        // increment number of viewers
-        const newCount = doc.data().viewerCount + 1;
-
-        transaction.update(ref, {
-            viewerCount: newCount
-        });
-    })
-        .then(newCount => {
-            return newCount;
-        })
-        .catch(error => {
-            console.warn('Error on incrementing watcher count ', error);
-            return -1;
-        })
 }
 
-export const decrementViewer = (eventID, ticketID) => {
-    const ref = firebase.firestore().collection('events').doc(eventID).collection('live').doc('--stats--');
-
-    firebase.firestore().runTransaction(async transaction => {
-        const doc = await transaction.get(ref);
-
-        // create if doesn't exist
-        if (!doc.exists) {
-            transaction.set(ref, { viewerCount: 1 })
-            return 1;
+export const rateEvent = async (eid, ticket, rate) => {
+    console.log('rateEvent called!')
+    try {
+        let rateEvent = functions().httpsCallable('rateEvent')
+        let response = await rateEvent({ eid, ticket, rate })
+        console.log('rateEvent response ', response)
+        if (response.data && response.data.state === 'SUCCESS') {
+            return true;
         }
-
-        // increment number of viewers
-        const newCount = doc.data().viewerCount - 1;
-
-        transaction.update(ref, {
-            viewerCount: newCount
-        });
-    })
-        .then(newCount => {
-            return newCount;
-        })
-        .catch(error => {
-            console.warn('Error on decrementing watcher count ', error);
-            return -1;
-        })
+        // TODO: Take action in case of error
+        return false;
+    } catch (error) {
+        console.log('rateEvent err: ', error)
+        // TODO: Take action in case of error
+        return false;
+    }
 }
 
 export const setLiveEventListener = (eventID, callback) => {
-    liveEventListener = firebase.firestore().collection('events').doc(eventID).collection('live').doc('--stats--').onSnapshot(eventSnapshot => {
+    console.log(eventID, " in listener")
+    liveEventListener = firestore().collection('events').doc(eventID).collection('live').doc('--stats--').onSnapshot(eventSnapshot => {
         console.log('eventSnapshot ', eventSnapshot.data());
         const liveStats = eventSnapshot.data();
         if (liveStats) {
@@ -163,8 +153,22 @@ export const clearLiveEventListener = () => {
         liveEventListener();
 }
 
+export const setTicketListener = (eventID, ticket, callback) => {
+    ticketListener = firestore().collection('events').doc(eventID).collection('tickets').doc(ticket.tid).onSnapshot(ticketSnapshot => {
+        const ticketStats = ticketSnapshot.data();
+        if (ticketStats && ticketStats.deviceID) {
+            callback(ticketStats.deviceID)
+        }
+    })
+}
+
+export const clearTicketListener = () => {
+    if (ticketListener)
+        ticketListener();
+}
+
 export const setEventListener = (eventID, callback) => {
-    eventListener = firebase.firestore().collection('events').doc(eventID).onSnapshot(eventSnapshot => {
+    eventListener = firestore().collection('events').doc(eventID).onSnapshot(eventSnapshot => {
         console.log('eventSnapshot 1', eventSnapshot.data());
         // Convert Firebase Timestamp to JS Date
         let event = eventSnapshot.data()
