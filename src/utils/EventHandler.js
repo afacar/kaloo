@@ -8,7 +8,6 @@ var ticketListener = () => { };
 
 /* Host Funcions */
 export const startEvent = async (eid) => {
-    console.log('startEvent called!', eid)
     try {
         let startEvent = functions().httpsCallable('startEvent')
         let response = await startEvent({ eid })
@@ -24,7 +23,6 @@ export const startEvent = async (eid) => {
 }
 
 export const suspendLive = async (eid) => {
-    console.log('suspendLive called!')
     try {
         let suspendLive = functions().httpsCallable('suspendEvent')
         let response = await suspendLive({ eid })
@@ -42,7 +40,6 @@ export const suspendLive = async (eid) => {
 }
 
 export const continueLive = async (eid) => {
-    console.log('continueLive called!')
     try {
         let continueLive = functions().httpsCallable('continueEvent')
         let response = await continueLive({ eid })
@@ -140,8 +137,9 @@ export const setLiveEventListener = (eventID, callback) => {
     liveEventListener = firestore().collection('events').doc(eventID).collection('live').doc('--stats--').onSnapshot(eventSnapshot => {
         console.log('eventSnapshot ', eventSnapshot.data());
         const liveStats = eventSnapshot.data();
+        let startedAt = liveStats && liveStats.startDate ? liveStats.startDate.toDate() : new Date()
         if (liveStats) {
-            callback({ status: liveStats.status, viewerCount: liveStats.viewerCount, startedAt: liveStats.startDate.toDate() });
+            callback({ status: liveStats.status, viewerCount: liveStats.viewerCount, startedAt });
         } else {
             callback({ status: app.EVENT_STATUS.SCHEDULED, viewerCount: 0, startedAt: undefined })
         }
@@ -174,7 +172,7 @@ export const setEventListener = (eventID, callback) => {
         let event = eventSnapshot.data()
         let date = event.eventDate
         if (date instanceof firestore.Timestamp) {
-            date = date.toDate();
+            date = date.toDate();            
         } else if (eventData.eventTimestamp) {
             date = new Date(eventData.eventTimestamp)
         }
