@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
-import { StyleSheet, ScrollView } from 'react-native';
-import { Button, Text } from 'react-native-elements';
+import { StyleSheet, ScrollView, BackHandler } from 'react-native';
+import { Button, Icon } from 'react-native-elements';
 
 import EventShare from '../components/EventShare';
 
@@ -8,6 +8,17 @@ import EventShare from '../components/EventShare';
 class EventPublishScreen extends Component {
   static navigationOptions = ({ navigation }) => ({
     title: 'Event ready!',
+    headerLeft: () => (
+      <Button
+        type='clear'
+        onPress={() => navigation.navigate('UserHome')}
+        containerStyle={{ marginLeft: 15 }}
+        icon={<Icon type="ionicon"
+          name={Platform.OS === 'ios' ? 'ios-arrow-back' : 'md-arrow-back'}
+          color="black"
+        />}
+      />
+    ),
     headerRight: () => (
       <Button
         type='clear'
@@ -21,7 +32,18 @@ class EventPublishScreen extends Component {
 
   state = {};
 
-  componentDidMount() { }
+  componentDidMount() {
+    BackHandler.addEventListener('hardwareBackPress', () => this.handleBackButton(this.props.navigation));
+  }
+
+  handleBackButton(navigation) {
+    navigation.popToTop()
+    return true
+  }
+
+  componentWillUnmount() {
+    BackHandler.removeEventListener('hardwareBackPress', () => this.handleBackButton(this.props.navigation));
+  }
 
   render() {
     const myEvent = this.props.navigation.getParam('event');

@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
-import { ScrollView, StyleSheet, Image, Platform, BackHandler, NativeModules } from 'react-native';
-import { Button, Icon, ButtonGroup } from 'react-native-elements';
-import ClickableText from '../components/ClickableText';
+import { ScrollView, StyleSheet, NativeModules } from 'react-native';
+import { Button } from 'react-native-elements';
 import { RtcEngine } from 'react-native-agora';
 import { setEventListener, clearEventListener } from '../utils/EventHandler';
 import EventShare from '../components/EventShare';
@@ -19,40 +18,19 @@ const {
 class MyEventScreen extends Component {
     static navigationOptions = ({ navigation }) => ({
         title: `${navigation.getParam('event').title}`,
-        headerLeft: () => (
-            <Button
-                type='clear'
-                onPress={() => navigation.navigate('UserHome')}
-                containerStyle={{ marginLeft: 15 }}
-                icon={<Icon type="ionicon"
-                    name={Platform.OS === 'ios' ? 'ios-arrow-back' : 'md-arrow-back'}
-                    color="black"
-                />}
-            />
-        )
     });
 
     event = this.props.navigation.getParam('event', '')
     state = { ...this.event }
 
     componentDidMount() {
-        console.log('MyEventScreen Mounted', this.state)
-        BackHandler.addEventListener('hardwareBackPress', () => this.handleBackButton(this.props.navigation));
-
         setEventListener(this.state.eid, (event) => {
             if (event) {
                 this.setState({ ...event })
             }
         })
     }
-
-    handleBackButton(navigation) {
-        navigation.popToTop()
-        return true
-    }
-
     componentWillUnmount() {
-        BackHandler.removeEventListener('hardwareBackPress', () => this.handleBackButton(this.props.navigation));
         clearEventListener(this.event.eid);
     }
 
