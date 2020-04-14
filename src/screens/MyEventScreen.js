@@ -15,6 +15,7 @@ const {
     AgoraAudioScenarioShowRoom,
     Adaptative
 } = Agora
+
 class MyEventScreen extends Component {
     static navigationOptions = ({ navigation }) => ({
         title: `${navigation.getParam('event').title}`,
@@ -55,56 +56,32 @@ class MyEventScreen extends Component {
         clearEventListener(this.event.eid);
     }
 
-    joinLive = () => {
-        var { eid, duration } = this.state;
-        // TODO send  ticketID
-        this.props.navigation.navigate('Live', { clientRole: 1, channelProfile: 1, eventID: eid + '', duration })
-    }
-
-    // This method navigates to video call screen
-    joinCall = () => {
-        var { eid, duration } = this.state;
-        // TODO send channelName and ticketID
-        this.props.navigation.navigate('VideoChat', { channelProfile: 0, eventID: eid + '', clientRole: 1, duration })
-    }
-
     onCamera = () => {
+        const { eventType, eid, duration } = this.state
+        // live channelProfile: 1 & call channelProfile: 0
+        let channelProfile = eventType === 'live' ? 1 : 0
+        // Host clientRole: 1
+        let clientRole = 1
+        const options = {
+            appid: app.AGORA_APP_ID,
+            channelProfile,
+            clientRole,
+            videoEncoderConfig: {
+                width: 360,
+                height: 480,
+                bitrate: 1,
+                frameRate: FPS30,
+                orientationMode: Adaptative,
+            },
+            audioProfile: AgoraAudioProfileMusicHighQuality,
+            audioScenario: AgoraAudioScenarioShowRoom
+        };
         // TODO: Opening camera here
-        console.log('We are live')
-        if (this.state.eventType === 'live') {
-            const options = {
-                appid: app.AGORA_APP_ID,
-                channelProfile: 1,
-                clientRole: 1,
-                videoEncoderConfig: {
-                    width: 360,
-                    height: 480,
-                    bitrate: 1,
-                    frameRate: FPS30,
-                    orientationMode: Adaptative,
-                },
-                audioProfile: AgoraAudioProfileMusicHighQuality,
-                audioScenario: AgoraAudioScenarioShowRoom
-            };
-            RtcEngine.init(options)
-            this.joinLive();
-        } else if (this.state.eventType === 'call') {
-            const options = {
-                appid: app.AGORA_APP_ID,
-                channelProfile: 0,
-                clientRole: 1,
-                videoEncoderConfig: {
-                    width: 360,
-                    height: 480,
-                    bitrate: 1,
-                    frameRate: FPS30,
-                    orientationMode: Adaptative,
-                },
-                audioProfile: AgoraAudioProfileMusicHighQuality,
-                audioScenario: AgoraAudioScenarioShowRoom
-            };
-            RtcEngine.init(options)
-            this.joinCall();
+        RtcEngine.init(options)
+        if (eventType === 'live') {
+            this.props.navigation.navigate('Live', { liveData: { clientRole, channelProfile, eventID: eid + '', duration } })
+        } else if (eventType === 'call') {
+            this.props.navigation.navigate('VideoChat', { liveData: { clientRole, channelProfile, eventID: eid + '', duration } })
         }
     }
 
@@ -118,7 +95,6 @@ class MyEventScreen extends Component {
                     navigation={this.props.navigation}
                 />
                 <EventShare
-                    text='Your event isn’t published yet. Event ticket is going to look like this when you publish.'
                     link={thisEvent.eventLink}
                 />
                 <Button

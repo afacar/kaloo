@@ -1,4 +1,5 @@
 import { months } from '../constants'
+import AsyncStorage from '@react-native-community/async-storage';
 
 export const formatTime = (seconds) => {
     var negative = false;
@@ -81,4 +82,21 @@ export function splitDate(dateObj) {
     const date = day + ' ' + month + ' ' + year
     const time = hour + ':' + minutes
     return { date, time, gmt }
+}
+
+export function generateRandomString(length) {
+    let alphabet = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ123456789';
+    let randomString = '';
+    for (var i = length; i > 0; i--) {
+        randomString += alphabet[Math.floor(Math.random() * alphabet.length)];
+    }
+    return randomString;
+}
+
+export async function getDeviceID() {
+    var deviceID;
+    await AsyncStorage.getItem('deviceID').then(value => {
+        deviceID = value
+    });
+    return deviceID;
 }
