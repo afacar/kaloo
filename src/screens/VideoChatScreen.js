@@ -418,7 +418,7 @@ export default class VideoChatScreen extends Component {
             )
         } else if (status === app.EVENT_STATUS.SCHEDULED || status === app.EVENT_STATUS.SUSPENDED && clientRole === 1) {
             return (
-                <View style={{ flex: 1, borderWidth: 2, borderColor: 'yellow' }}>
+                <View style={{ flex: 1 }}>
                     <AgoraView style={{ flex: 1 }} showLocalVideo={true} mode={1} />
                 </View>
             )
@@ -464,7 +464,7 @@ export default class VideoChatScreen extends Component {
                     onPress={this.backButtonPressed}
                 />
 
-                <View style={{ flex: 1, borderWidth: 2, borderColor: 'red' }}>
+                <View style={{ flex: 1 }}>
                     {
                         capacity === 1 && <View style={{ flex: 1 }}>
                             <View style={{ flex: 1 }}>
