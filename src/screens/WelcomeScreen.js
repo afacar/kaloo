@@ -36,15 +36,22 @@ class WelcomeScreen extends Component {
             />
           </View>
         </View>
-        <View style={{
-          flex: 1, flexDirection: 'column', backgroundColor: '#F3F5F9', padding: 15, shadowColor: 'gray', shadowOpacity: 0.5}}>
-          <Text>Are you planning to cast your service?</Text>
-          <TouchableOpacity
-            onPress={() => this.props.navigation.navigate('Register')}>
-            <Text style={{ fontSize: 19, fontWeight: 'bold' }}>
-              Sign up >
+        <View style={styles.footer}>
+          <Text>Do you want to host your paid meeting?</Text>
+          <View style={{ flexDirection: 'row', width: '70%', justifyContent: 'space-around', marginTop: 10 }}>
+            <TouchableOpacity
+              onPress={() => this.props.navigation.navigate('SignIn')}>
+              <Text style={{ fontSize: 15, fontWeight: 'bold' }}>
+                Sign in
               </Text>
-          </TouchableOpacity>
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => this.props.navigation.navigate('Register')}>
+              <Text style={{ fontSize: 15, fontWeight: 'bold' }}>
+                Register
+              </Text>
+            </TouchableOpacity>
+          </View>
         </View>
       </View>
     );
@@ -57,6 +64,17 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
     justifyContent: 'space-between',
   },
+  footer: {
+    alignItems: 'center', 
+    borderTopLeftRadius: 25, 
+    borderTopRightRadius: 25,
+    flex: 1, 
+    flexDirection: 'column', 
+    backgroundColor: '#F3F5F9', 
+    padding: 15, 
+    shadowColor: 'gray', 
+    shadowOpacity: 0.5
+  }
 });
 
 const mapStateToProps = ({ assets }) => {
