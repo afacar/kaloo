@@ -101,59 +101,61 @@ class MyJoinEventScreen extends Component {
         return (
             <ScrollView contentContainerStyle={styles.container}>
                 <Card containerStyle={{ alignSelf: 'stretch' }}>
-                    <PreviewHeader
-                        event={{ image, photoURL, eventType }}
-                    />
-                    <PreviewBody
-                        event={{ displayName, title, eventDate, duration, description }}
-                    />
-                    {
-                        ((status === app.EVENT_STATUS.SCHEDULED) || (status === app.EVENT_STATUS.SUSPENDED)) && (
-                            <Button title='Waiting...' disabled />
-                        )
-                    }
-                    {
-                        status === app.EVENT_STATUS.COMPLETED && (
-                            <View>
-                                <Button title='Finished' disabled />
-                                {
-                                    (!this.state.isRatingComplete && !ticket.rate) && (
-                                        <View>
-                                            <AirbnbRating
-                                                count={5}
-                                                reviews={["Terrible", "Bad", "OK", "Good", "Unbelievable"]}
-                                                defaultRating={3}
-                                                onFinishRating={this.changeRate}
-                                                size={20}
-                                            />
-                                            <Button
-                                                title="Submit"
-                                                buttonStyle={{ marginTop: 12, marginBottom: 12, width: 180, height: 40, alignSelf: 'center', borderRadius: 6 }}
-                                                onPress={this.rateEvent}
-                                            />
-                                        </View>
-                                    )
-                                }
-                                {
-                                    (this.state.isRatingComplete || ticket.rate) && (
-                                        <AppText style={{ fontSize: 16, alignSelf: 'center', marginTop: 12 }}>Thanks For Your Feedback</AppText>
-                                    )
-                                }
-                            </View>
-                        )
-                    }
-                    {
-                        (status === app.EVENT_STATUS.IN_PROGRESS) && (
-                            <View>
-                                <Button title='Join' onPress={this.onCamera} loading={this.state.joinLoading} />
-                                {
-                                    this.state.error && (
-                                        <AppText style={{ alignSelf: 'center', fontSize: 16, marginTop: 8, textAlign: 'left', color: 'red' }}>{this.state.error}</AppText>
-                                    )
-                                }
-                            </View>
-                        )
-                    }
+                    <View>
+                        <PreviewHeader
+                            event={{ image, photoURL, eventType }}
+                        />
+                        <PreviewBody
+                            event={{ displayName, title, eventDate, duration, description }}
+                        />
+                        {
+                            ((status === app.EVENT_STATUS.SCHEDULED) || (status === app.EVENT_STATUS.SUSPENDED)) && (
+                                <Button title='Waiting...' disabled />
+                            )
+                        }
+                        {
+                            status === app.EVENT_STATUS.COMPLETED && (
+                                <View>
+                                    <Button title='Finished' disabled />
+                                    {
+                                        (!this.state.isRatingComplete && !ticket.rate) && (
+                                            <View>
+                                                <AirbnbRating
+                                                    count={5}
+                                                    reviews={["Terrible", "Bad", "OK", "Good", "Unbelievable"]}
+                                                    defaultRating={3}
+                                                    onFinishRating={this.changeRate}
+                                                    size={20}
+                                                />
+                                                <Button
+                                                    title="Submit"
+                                                    buttonStyle={{ marginTop: 12, marginBottom: 12, width: 180, height: 40, alignSelf: 'center', borderRadius: 6 }}
+                                                    onPress={this.rateEvent}
+                                                />
+                                            </View>
+                                        )
+                                    }
+                                    {
+                                        (this.state.isRatingComplete || ticket.rate) && (
+                                            <AppText style={{ fontSize: 16, alignSelf: 'center', marginTop: 12 }}>Thanks For Your Feedback</AppText>
+                                        )
+                                    }
+                                </View>
+                            )
+                        }
+                        {
+                            (status === app.EVENT_STATUS.IN_PROGRESS) && (
+                                <View>
+                                    <Button title='Join' onPress={this.onCamera} loading={this.state.joinLoading} />
+                                    {
+                                        this.state.error && (
+                                            <AppText style={{ alignSelf: 'center', fontSize: 16, marginTop: 8, textAlign: 'left', color: 'red' }}>{this.state.error}</AppText>
+                                        )
+                                    }
+                                </View>
+                            )
+                        }
+                    </View>
                 </Card>
             </ScrollView>
         )
