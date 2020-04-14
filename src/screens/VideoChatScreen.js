@@ -11,14 +11,7 @@ import AppText from '../components/AppText';
 import { Overlay, Icon, Button } from 'react-native-elements';
 import Header from '../components/Header';
 import { colors, styles, app } from '../constants';
-const { Agora } = NativeModules;
-
-const {
-    FPS30,
-    AgoraAudioProfileMusicHighQuality,
-    AgoraAudioScenarioShowRoom,
-    Adaptative
-} = Agora
+import { EndCallButon, StartCallButon, ContinueCallButon } from '../components/Buttons';
 
 const HOST_UID = 1000;
 
@@ -184,23 +177,6 @@ export default class VideoChatScreen extends Component {
             this.checkCameraPermission();
             this.checkAudioPermission();
         }
-        // var channelName = this.props.navigation.getParam('eventID', 'agora_test');
-        // const clientRole = this.props.navigation.getParam('clientRole', 2);
-        // const duration = this.props.navigation.getParam('duration', 60);
-        // var ticketID = this.props.navigation.getParam('ticketID', Math.random() * 100);
-        // this.setState({
-        //     uid: ticketID
-        // })
-        // if (clientRole === 2) {
-        //     /* RtcEngine.joinChannel(channelName, ticketID)
-        //         .then((result) => {
-        //         })
-        //         .catch((error) => {
-        //         }); */
-        // } else if (clientRole === 1) {
-
-        //     RtcEngine.startPreview()
-        // }
 
         // setup listener for  watcherCount
         this.setState({ timeStr: formatTime(this.state.duration * 60) })
@@ -392,58 +368,18 @@ export default class VideoChatScreen extends Component {
     }
 
     renderStartButton = () => {
-        const { status } = this.state;
+        const { status, startLoading } = this.state;
         if (status === app.EVENT_STATUS.IN_PROGRESS) {
             return (
-                <Button
-                    icon={
-                        <Icon
-                            type='material-community'
-                            name="video-off"
-                            size={16}
-                            iconStyle={{ marginRight: 4 }}
-                            color="white"
-                        />
-                    }
-                    title='End Call'
-                    buttonStyle={styles.endButton}
-                    onPress={this.endCall}
-                />
+                <EndCallButon onPress={this.endCall} loading={startLoading} />
             )
         } else if (status === app.EVENT_STATUS.SCHEDULED) {
             return (
-                <Button
-                    icon={
-                        <Icon
-                            type='font-awesome'
-                            name="video-camera"
-                            size={16}
-                            iconStyle={{ marginRight: 4 }}
-                            color="white"
-                        />
-                    }
-                    title='Start Call'
-                    buttonStyle={styles.startButton}
-                    onPress={this.startCall}
-                    loading={this.state.startLoading}
-                />
+                <StartCallButon onPress={this.startCall} loading={startLoading} />
             )
         } else if (status === app.EVENT_STATUS.SUSPENDED) {
             return (
-                <Button
-                    icon={
-                        <Icon
-                            type='font-awesome'
-                            name="video-camera"
-                            size={16}
-                            iconStyle={{ marginRight: 4 }}
-                            color="white"
-                        />
-                    }
-                    title='Continue Call'
-                    buttonStyle={styles.startButton}
-                    onPress={this.continueCall}
-                />
+                <ContinueCallButon onPress={this.continueCall} />
             )
         }
     }
@@ -482,7 +418,7 @@ export default class VideoChatScreen extends Component {
             )
         } else if (status === app.EVENT_STATUS.SCHEDULED || status === app.EVENT_STATUS.SUSPENDED && clientRole === 1) {
             return (
-                <View style={{ flex: 1 }}>
+                <View style={{ flex: 1, borderWidth: 2, borderColor: 'yellow' }}>
                     <AgoraView style={{ flex: 1 }} showLocalVideo={true} mode={1} />
                 </View>
             )
@@ -528,11 +464,16 @@ export default class VideoChatScreen extends Component {
                     onPress={this.backButtonPressed}
                 />
 
-                <View style={{ flex: 1 }}>
+                <View style={{ flex: 1, borderWidth: 2, borderColor: 'red' }}>
                     {
-                        capacity === 1 && (
-                            this.renderTwoVideos()
-                        )
+                        capacity === 1 && <View style={{ flex: 1 }}>
+                            <View style={{ flex: 1 }}>
+                                <AgoraView mode={1} key={this.state.peerIds[0]} style={{ flex: 1 }} remoteUid={this.state.peerIds[0]} />
+                            </View>
+                            <View style={{ flex: 1 }}>
+                                <AgoraView style={{ flex: 1 }} mode={1} showLocalVideo={true} />
+                            </View>
+                        </View>
                     }
                     {
                         capacity === 0 && (

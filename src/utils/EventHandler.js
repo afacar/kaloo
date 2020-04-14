@@ -132,26 +132,44 @@ export const rateEvent = async (eid, ticket, rate) => {
     }
 }
 
-export const setLiveEventListener = (eventID, callback) => {
-    console.log(eventID, " in listener")
-    liveEventListener = firestore().collection('events').doc(eventID).collection('live').doc('--stats--').onSnapshot(eventSnapshot => {
+export const setEventListener = (eventID, callback) => {
+    console.log( 'setting event listener', eventID)
+    eventListener = firestore().collection('events').doc(eventID).onSnapshot(eventSnapshot => {
         console.log('eventSnapshot ', eventSnapshot.data());
-        const liveStats = eventSnapshot.data();
-        let startedAt = liveStats && liveStats.startDate ? liveStats.startDate.toDate() : new Date()
-        if (liveStats) {
-            callback({ status: liveStats.status, viewerCount: liveStats.viewerCount, startedAt });
-        } else {
-            callback({ status: app.EVENT_STATUS.SCHEDULED, viewerCount: 0, startedAt: undefined })
+        // Convert Firebase Timestamp to JS Date
+        let event = eventSnapshot.data()
+        if (event) {
+            let date = event.eventDate
+            if (date instanceof firestore.Timestamp) {
+                date = date.toDate();
+            } else if (eventData.eventTimestamp) {
+                date = new Date(eventData.eventTimestamp)
+            }
+            event.eventDate = date
+    
+            callback(event)    
         }
     })
 }
 
-export const clearLiveEventListener = () => {
-    if (liveEventListener)
-        liveEventListener();
+export const setLiveEventListener = (eventID, callback) => {
+    console.log( 'setting live listener', eventID)
+    liveEventListener = firestore().collection('events').doc(eventID).collection('live').doc('--stats--').onSnapshot(eventSnapshot => {
+        console.log('live Snapshot ', eventSnapshot.data());
+        const liveStats = eventSnapshot.data();
+        if (liveStats) {
+            let startedAt = liveStats.startDate ? liveStats.startDate.toDate() : new Date()
+            if (liveStats) {
+                callback({ status: liveStats.status, viewerCount: liveStats.viewerCount, startedAt });
+            } else {
+                callback({ status: app.EVENT_STATUS.SCHEDULED, viewerCount: 0, startedAt: undefined })
+            }
+        }
+    })
 }
 
 export const setTicketListener = (eventID, ticket, callback) => {
+    console.log( 'setting ticket listener', eventID)
     ticketListener = firestore().collection('events').doc(eventID).collection('tickets').doc(ticket.tid).onSnapshot(ticketSnapshot => {
         const ticketStats = ticketSnapshot.data();
         if (ticketStats && ticketStats.deviceID) {
@@ -160,29 +178,17 @@ export const setTicketListener = (eventID, ticket, callback) => {
     })
 }
 
-export const clearTicketListener = () => {
-    if (ticketListener)
-        ticketListener();
-}
-
-export const setEventListener = (eventID, callback) => {
-    eventListener = firestore().collection('events').doc(eventID).onSnapshot(eventSnapshot => {
-        console.log('eventSnapshot 1', eventSnapshot.data());
-        // Convert Firebase Timestamp to JS Date
-        let event = eventSnapshot.data()
-        let date = event.eventDate
-        if (date instanceof firestore.Timestamp) {
-            date = date.toDate();            
-        } else if (eventData.eventTimestamp) {
-            date = new Date(eventData.eventTimestamp)
-        }
-        event.eventDate = date
-
-        callback(event)
-    })
-}
-
 export const clearEventListener = () => {
     if (eventListener)
         eventListener();
+}
+
+export const clearLiveEventListener = () => {
+    if (liveEventListener)
+        liveEventListener();
+}
+
+export const clearTicketListener = () => {
+    if (ticketListener)
+        ticketListener();
 }
