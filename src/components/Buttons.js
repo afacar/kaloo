@@ -1,8 +1,31 @@
 import React, { Component } from 'react';
 import { Icon, Button } from 'react-native-elements';
-import { StyleSheet } from 'react-native';
+import { StyleSheet, TouchableOpacity } from 'react-native';
 
 import { colors } from '../constants'
+
+
+export function AppButton(props) {
+    return (
+        <TouchableOpacity style={props.style} onPress={() => props.onPress()}>
+            {props.children}
+        </TouchableOpacity>
+    )
+}
+
+export function BackButton(props) {
+    return (
+        <AppButton onPress={props.onPress}>
+            <Icon
+                type="MaterialIcons"
+                name="arrow-back"
+                color="black"
+                size={16}
+            />
+        </AppButton>
+    )
+}
+
 
 export function StartCallButon(props) {
     const { onPress, loading } = props

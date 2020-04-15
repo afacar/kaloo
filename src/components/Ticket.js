@@ -4,7 +4,7 @@ import { Input, Button, Avatar } from 'react-native-elements';
 import { functions, firestore } from 'react-native-firebase';
 import { connect } from "react-redux";
 
-import LabelText from './LabelText';
+import { Label } from './Labels';
 
 
 class Ticket extends Component {
@@ -70,7 +70,7 @@ class Ticket extends Component {
           />
           <View style={{ alignSelf: 'stretch', alignItems: 'center' }}>
             <View style={{ alignSelf: "flex-start", paddingTop: 100 }}>
-              <LabelText label="Enter your ticket number" />
+              <Label label="Enter your ticket number" />
             </View>
             <Input
               placeholder={TICKET_FORMAT || ''}

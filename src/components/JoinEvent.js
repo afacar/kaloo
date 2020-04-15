@@ -3,7 +3,7 @@ import { View, StyleSheet, Image, Share, NativeModules, ScrollView } from 'react
 import { Button, Text, Card, Rating, AirbnbRating } from 'react-native-elements';
 import { RtcEngine } from 'react-native-agora';
 import { app } from '../constants';
-import AppText from "./AppText";
+import { AppText } from "./Labels";
 import { setEventListener, clearEventListener, joinEvent, rateEvent } from "../utils/EventHandler";
 import PreviewHeader from './PreviewHeader';
 import PreviewBody from './PreviewBody';

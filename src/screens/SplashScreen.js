@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { View, StyleSheet } from 'react-native';
 import AsyncStorage from '@react-native-community/async-storage';
 
-import AppText from '../components/AppText';
+import { AppText } from '../components/Labels';
 import { auth } from 'react-native-firebase';
 
 import { loadAssets } from "../appstate/actions/app_actions";
