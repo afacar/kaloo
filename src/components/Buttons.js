@@ -59,7 +59,7 @@ export function EndCallButon(props) {
                     color="white"
                 />
             }
-            title='Continue Call'
+            title='End Call'
             buttonStyle={styles.endButton}
             onPress={onPress}
             loading={loading}
