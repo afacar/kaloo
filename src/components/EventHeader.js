@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, Image, StyleSheet } from 'react-native';
 import EventTime from './EventTime';
-import ClickableText from './ClickableText';
+import { ClickableText } from './Buttons';
 import { formatDuration } from '../utils/Utils';
 
 export default function EventHeader(props) {

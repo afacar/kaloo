@@ -4,7 +4,7 @@ import { storage, firestore, functions } from 'react-native-firebase';
 import { Input, Button, Image, CheckBox, Icon } from 'react-native-elements';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import ImagePicker from 'react-native-image-crop-picker';
-import HighlightedText from '../components/HighlightedText';
+import { HighlightedText } from '../components/Labels';
 import { app } from '../constants';
 import { connect } from 'react-redux';
 import { splitDate } from '../utils/Utils';

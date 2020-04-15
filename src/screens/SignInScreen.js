@@ -7,7 +7,7 @@ import {
 } from 'react-native';
 import { Input, Button } from 'react-native-elements';
 import firebase from 'react-native-firebase';
-import HighlightedText from '../components/HighlightedText';
+import { HighlightedText } from '../components/Labels';
 import { Label } from '../components/Labels';
 
 

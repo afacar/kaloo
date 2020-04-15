@@ -11,7 +11,7 @@ import { Input, Button, Avatar, CheckBox } from 'react-native-elements';
 import { functions, storage, auth } from 'react-native-firebase';
 import ImagePicker from 'react-native-image-crop-picker';
 import { connect } from "react-redux";
-import HighlightedText from '../components/HighlightedText';
+import { HighlightedText } from '../components/Labels';
 import { Label } from '../components/Labels';
 
 
