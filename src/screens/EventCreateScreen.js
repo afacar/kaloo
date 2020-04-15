@@ -238,11 +238,23 @@ class EventCreateScreen extends Component {
                             containerStyle={{ paddingHorizontal: 0 }} />
 
                         <TouchableOpacity onPress={() => this.setState({ eventType: 'live' })}>
-                            <Text style={{ fontSize: 15, fontWeight: 'bold' }}>Broadcast</Text>
+                            <Text style={{ fontSize: 15, fontWeight: 'bold' }}>Broadcasting Event</Text>
                             <Text style={{ paddingRight: 30 }}>Stream to large audience. You won’t be hearing your audience, communcation is one way.</Text>
                         </TouchableOpacity>
+
                     </View>
-                    <View></View>
+                    {eventType === 'live' && <View style={{ marginLeft: 35 }}>
+                        <Text style={{ fontWeight: 'bold' }}>How many viewers do you want?</Text>
+                        <Input
+                            onChangeText={capacity => this.setState({ capacity: parseInt(capacity) || 0 })}
+                            value={capacity + ''}
+                            keyboardType="numeric"
+                            maxLength={3}
+                            disabled={eventType === 'call'}
+                            inputContainerStyle={styles.inputContainerStyle}
+                            containerStyle={{ paddingHorizontal: 0 }}
+                        />
+                    </View>}
                     <View style={styles.checkBoxStyle}>
                         <CheckBox
                             iconLeft
@@ -254,24 +266,17 @@ class EventCreateScreen extends Component {
                             containerStyle={{ paddingHorizontal: 0 }} />
                         <View>
                             <TouchableOpacity onPress={() => this.setState({ eventType: 'call', capacity: 1 })}>
-                                <Text style={{ fontSize: 15, fontWeight: 'bold' }}>Privatecast</Text>
-                                <Text style={{ paddingRight: 30 }}>Stream to one to up to 5 viewers. Your viewer(s) can stream back to you and you can hear them back. </Text>
+                                <Text style={{ fontSize: 15, fontWeight: 'bold' }}>1-1 Meeting</Text>
+                                <Text style={{ paddingRight: 30 }}>
+                                    Create a private video call with just one person.
+                                </Text>
                             </TouchableOpacity>
                         </View>
                     </View>
 
-                    <Text style={styles.labelStyle}> Capacity</Text>
-                    <Input
-                        onChangeText={capacity => this.setState({ capacity: parseInt(capacity) || 0 })}
-                        value={capacity + ''}
-                        keyboardType="numeric"
-                        maxLength={3}
-                        disabled={eventType === 'call'}
-                        inputContainerStyle={styles.inputContainerStyle}
-                        containerStyle={{ paddingHorizontal: 0 }}
-                    />
 
-                    <Text style={styles.labelStyle}>Ticket Price ($)</Text>
+
+                    <Text style={styles.labelStyle}>Ticket Price (USD)</Text>
                     <Input
                         //label="Ticket Price ($)"
                         onChangeText={price => this.setState({ price: parseInt(price) || 0 })}
@@ -314,7 +319,7 @@ const styles = StyleSheet.create({
         borderRadius: 6,
         paddingHorizontal: 10,
         marginHorizontal: 0,
-        paddingVertical: 5,
+        //paddingVertical: 5,
     },
     timeTextStyle: {
         fontSize: 17,
@@ -327,6 +332,7 @@ const styles = StyleSheet.create({
     checkBoxStyle: {
         flex: 1,
         flexDirection: 'row',
+
     }
 })
 
