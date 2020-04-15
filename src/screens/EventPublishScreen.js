@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { StyleSheet, ScrollView, BackHandler } from 'react-native';
 import { Button, Icon } from 'react-native-elements';
 
+import { handleAndroidBackButton, removeAndroidBackButtonHandler } from '../utils/BackHandler'
 import EventShare from '../components/EventShare';
 
 
@@ -33,16 +34,16 @@ class EventPublishScreen extends Component {
   state = {};
 
   componentDidMount() {
-    BackHandler.addEventListener('hardwareBackPress', () => this.handleBackButton(this.props.navigation));
+    handleAndroidBackButton(this.handleBackButton)
   }
 
-  handleBackButton(navigation) {
-    navigation.popToTop()
+  handleBackButton = () => {
+    this.props.navigation.popToTop()
     return true
   }
 
   componentWillUnmount() {
-    BackHandler.removeEventListener('hardwareBackPress', () => this.handleBackButton(this.props.navigation));
+    removeAndroidBackButtonHandler(this.handleBackButton)
   }
 
   render() {
