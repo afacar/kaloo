@@ -1,9 +1,29 @@
 import React, { Component } from 'react';
+import { StyleSheet, TouchableOpacity, Text, View, Linking } from 'react-native';
 import { Icon, Button } from 'react-native-elements';
-import { StyleSheet, TouchableOpacity } from 'react-native';
 
 import { colors } from '../constants'
 
+export function HyperLink(props) {
+    const { text, link } = props
+  
+    return (
+      <TouchableOpacity onPress={() => Linking.openURL(link)} >
+        <Text style={{ color: '#196BFF' }}>{text}</Text>
+      </TouchableOpacity>
+    )
+  }
+
+export function ClickableText(props) {
+    const { text, onPress } = props
+    return (
+        <View style={{ padding: 5 }}>
+            <TouchableOpacity onPress={onPress} >
+                <Text style={{ textDecorationLine: 'underline' }}>{text}</Text>
+            </TouchableOpacity>
+        </View>
+    )
+}
 
 export function AppButton(props) {
     return (
