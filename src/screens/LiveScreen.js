@@ -3,8 +3,7 @@ import { View, Platform, PermissionsAndroid, Alert, StatusBar, TouchableOpacity,
 import app from '../constants/app';
 import { RtcEngine, AgoraView } from 'react-native-agora';
 import KeepAwake from 'react-native-keep-awake';
-import AppButton from '../components/AppButton';
-import AppText from '../components/AppText';
+import { AppText } from '../components/Labels';
 import {
     clearLiveEventListener,
     setLiveEventListener,

@@ -7,8 +7,8 @@ import {
 } from 'react-native';
 import { Input, Button } from 'react-native-elements';
 import firebase from 'react-native-firebase';
-import HighlightedText from '../components/HighlightedText';
-import LabelText from '../components/LabelText';
+import { HighlightedText } from '../components/Labels';
+import { Label } from '../components/Labels';
 
 
 function validateEmail(email) {
@@ -86,7 +86,7 @@ class SignInScreen extends Component {
 
           <HighlightedText text="You don’t need an account to watch." />
           <View style={{ alignSelf: 'stretch', paddingVertical: 20 }}>
-            <LabelText label='Username' />
+            <Label label='Username' />
             <Input
               placeholder="user@email.com"
               placeholderTextColor="#b2c2bf"
@@ -98,7 +98,7 @@ class SignInScreen extends Component {
               inputContainerStyle={styles.inputContainerStyle}
               containerStyle={{ paddingHorizontal: 0 }}
             />
-            <LabelText label='Password' />
+            <Label label='Password' />
             <Input
               placeholder="******"
               placeholderTextColor="#b2c2bf"

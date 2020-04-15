@@ -1,14 +1,12 @@
 import React, { Component } from 'react';
-import { View, Platform, NativeModules, PermissionsAndroid, Alert, StatusBar, ActivityIndicator, Text, TouchableOpacity } from 'react-native';
+import { View, Platform, PermissionsAndroid, Alert, StatusBar, Text, TouchableOpacity } from 'react-native';
 import { RtcEngine, AgoraView } from 'react-native-agora';
 import KeepAwake from 'react-native-keep-awake';
-import firebase from 'react-native-firebase';
 import { clearLiveEventListener, setLiveEventListener, startEvent, endLive, suspendLive, continueLive, leaveEvent, setTicketListener, clearTicketListener } from '../utils/EventHandler';
 import { handleAndroidBackButton, removeAndroidBackButtonHandler } from '../utils/BackHandler';
 import { formatTime, getDeviceID } from '../utils/Utils';
-import AppButton from '../components/AppButton';
-import AppText from '../components/AppText';
-import { Overlay, Icon, Button } from 'react-native-elements';
+import { AppText } from '../components/Labels';
+import { Icon } from 'react-native-elements';
 import Header from '../components/Header';
 import { colors, styles, app } from '../constants';
 import { EndCallButon, StartCallButon, ContinueCallButon } from '../components/Buttons';
@@ -284,17 +282,14 @@ export default class VideoChatScreen extends Component {
     backButtonPressed() {
         const { navigation } = this.props;
         const { clientRole, eventID, status, ticket } = this.state
-        if (status !== app.EVENT_STATUS.IN_PROGRESS) {
-            if (clientRole === 1) {
-                // Suspend live event of host
-                suspendLive(eventID);
-            } else if (clientRole === 2) {
-                //leave live event of audience
-                // TODO: leaveEvent func.
-                leaveEvent(eventID, ticket)
-            }
+
+        if (clientRole === 2 || status !== app.EVENT_STATUS.IN_PROGRESS) {
+            // Leave Video screen if it is audience
+            // or host stream status is not IN_PROGRESS
+            leaveEvent(eventID, ticket)
             return navigation.goBack();
         }
+        // Confirm host before suspend streaming
         Alert.alert(
             "Confirm Exit",
             "You can continue call from MyEvent page",
@@ -308,14 +303,8 @@ export default class VideoChatScreen extends Component {
                 },
                 {
                     text: 'OK', onPress: () => {
-                        if (clientRole === 1) {
-                            // Suspend live event of host
-                            suspendLive(eventID);
-                        } else if (clientRole === 2) {
-                            //leave live event of audience
-                            // TODO: leaveEvent func.
-                            leaveEvent(eventID, ticket)
-                        }
+                        // Suspend live event of host
+                        suspendLive(eventID)
                         navigation.goBack();
                         return false;
                     }
@@ -346,26 +335,24 @@ export default class VideoChatScreen extends Component {
         )
     }
 
-    renderThreeVideos() {
+    /* renderThreeVideos() {
         return (
             <View style={{ flex: 1, flexDirection: 'row' }}>
                 <AgoraView style={{ flex: 1 }} mode={1} showLocalVideo={true} />
                 <AgoraView mode={1} key={this.state.peerIds[1]} style={{ flex: 1 }} remoteUid={this.state.peerIds[1]} />
             </View>
         )
-    }
+    } */
 
-    renderFourVideos() {
+    /* renderFourVideos() {
         return (
             <View style={{ flex: 1, flexDirection: 'row' }}>
-                {/* <ScrollView horizontal={true} contentContainerStyle={{ flex: 1 }}> */}
                 <AgoraView style={{ flex: 1 }} mode={1} showLocalVideo={true} />
                 <AgoraView mode={1} key={this.state.peerIds[1]} style={{ flex: 1 }} remoteUid={this.state.peerIds[1]} />
                 <AgoraView mode={1} key={this.state.peerIds[2]} style={{ flex: 1 }} remoteUid={this.state.peerIds[2]} />
-                {/* </ScrollView> */}
             </View>
         )
-    }
+    } */
 
     renderStartButton = () => {
         const { status, startLoading } = this.state;

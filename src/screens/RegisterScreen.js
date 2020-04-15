@@ -11,8 +11,8 @@ import { Input, Button, Avatar, CheckBox } from 'react-native-elements';
 import { functions, storage, auth } from 'react-native-firebase';
 import ImagePicker from 'react-native-image-crop-picker';
 import { connect } from "react-redux";
-import HighlightedText from '../components/HighlightedText';
-import LabelText from '../components/LabelText';
+import { HighlightedText } from '../components/Labels';
+import { Label } from '../components/Labels';
 
 
 function validateEmail(email) {
@@ -140,7 +140,7 @@ class RegisterScreen extends Component {
 
           <HighlightedText text="You don’t need an account to watch." />
           <View style={{ alignSelf: 'stretch', paddingVertical: 20 }}>
-            <LabelText label='Choose your profile picture' />
+            <Label label='Choose your profile picture' />
             <Avatar
               onPress={this.onImagePicker}
               size="large"
@@ -150,7 +150,7 @@ class RegisterScreen extends Component {
               showEditButton={true}
               source={{ uri: photoURL }}
             />
-            <LabelText label='E-Mail' />
+            <Label label='E-Mail' />
             <Input
               placeholder="abc@abc.com"
               placeholderTextColor="#b2c2bf"
@@ -163,7 +163,7 @@ class RegisterScreen extends Component {
               containerStyle={{ paddingHorizontal: 0 }}
             />
 
-            <LabelText label='Full Name' />
+            <Label label='Full Name' />
             <Input
               placeholder="Name Surname"
               placeholderTextColor="#b2c2bf"
@@ -175,7 +175,7 @@ class RegisterScreen extends Component {
               containerStyle={{ paddingHorizontal: 0 }}
             />
 
-            <LabelText label='Password' />
+            <Label label='Password' />
             <Input
               placeholder="Password"
               placeholderTextColor="#b2c2bf"
@@ -187,7 +187,7 @@ class RegisterScreen extends Component {
               inputContainerStyle={styles.inputContainerStyle}
               containerStyle={{ paddingHorizontal: 0 }}
             />
-            <LabelText label='Repeat Password' />
+            <Label label='Repeat Password' />
             <Input
               placeholder="Repassword"
               placeholderTextColor="#b2c2bf"

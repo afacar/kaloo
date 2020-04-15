@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import { StyleSheet, ScrollView, View } from 'react-native';
-import { Button, Text, Card } from 'react-native-elements';
+import { Button, Card } from 'react-native-elements';
 
-import HighlightedText from '../components/HighlightedText';
+import { HighlightedText } from '../components/Labels';
 import PreviewHeader from "../components/PreviewHeader";
 import PreviewBody from '../components/PreviewBody';
 
