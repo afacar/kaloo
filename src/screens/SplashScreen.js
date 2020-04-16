@@ -12,7 +12,7 @@ import { generateRandomString } from '../utils/Utils';
 class SplashScreen extends Component {
     async componentDidMount() {
         var deviceID
-        await AsyncStorage.getItem('deviceID').then(value => {
+         AsyncStorage.getItem('deviceID').then(value => {
             deviceID = value
         });
         if (!deviceID) {
@@ -20,7 +20,7 @@ class SplashScreen extends Component {
             AsyncStorage.setItem('deviceID', deviceID);
         }
         try {
-            await this.props.loadAssets()
+            this.props.loadAssets()
             const user = auth().currentUser;
             this.setState({ isWaiting: false })
             if (user) this.props.navigation.navigate('User');

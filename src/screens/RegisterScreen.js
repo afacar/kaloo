@@ -12,7 +12,8 @@ import { functions, storage, auth } from 'react-native-firebase';
 import ImagePicker from 'react-native-image-crop-picker';
 import { connect } from "react-redux";
 import { HighlightedText } from '../components/Labels';
-import { Label } from '../components/Labels';
+import { Label, BoldLabel } from '../components/Labels';
+import { TouchableText, HyperLink, DefaultButton } from '../components/Buttons';
 
 
 function validateEmail(email) {
@@ -132,27 +133,27 @@ class RegisterScreen extends Component {
         <ScrollView
           contentContainerStyle={{
             flexGrow: 1,
-            justifyContent: 'space-between',
-            paddingHorizontal: 30,
-            paddingVertical: 10,
             alignItems: 'center',
+            backgroundColor: "#3598FE"
           }}>
-
-          <HighlightedText text="You don’t need an account to watch." />
-          <View style={{ alignSelf: 'stretch', paddingVertical: 20 }}>
-            <Label label='Choose your profile picture' />
-            <Avatar
-              onPress={this.onImagePicker}
-              size="large"
-              avatarStyle={{ borderWidth: 1, borderColor: 'gray', borderRadius: 6, overflow: 'hidden' }}
-              overlayContainerStyle={{ backgroundColor: "white" }}
-              imageProps={{ borderRadius: 6 }}
-              showEditButton={true}
-              source={{ uri: photoURL }}
-            />
-            <Label label='E-Mail' />
+          <View style={styles.componentStyle}>
+            <BoldLabel label='Register' />
+            <HighlightedText text="You only need an account if you’re planning to host a paid meeting. " />
+            <View style={{ flexDirection: 'row', alignItems: "center", marginBottom: 5 }}>
+              <Avatar
+                rounded
+                size="large"
+                //icon={{name: 'camera-outline', type: 'material-community', color:"#E7E7E7"}}
+                overlayContainerStyle={{ backgroundColor: 'white', borderWidth: 1, borderColor: "#E7E7E7" }}
+                onPress={this.onImagePicker}
+                containerStyle={{ marginRight: 20 }}
+                //showEditButton={true}
+                source={{ uri: photoURL }}
+              />
+              <TouchableText text="Pick a profile picture" onPress={this.onImagePicker} />
+            </View>
             <Input
-              placeholder="abc@abc.com"
+              placeholder="Enter Your email"
               placeholderTextColor="#b2c2bf"
               onChangeText={email => this.setState({ email, emailMessage: '' })}
               value={email}
@@ -160,24 +161,24 @@ class RegisterScreen extends Component {
               errorMessage={emailMessage}
               disabled={isWaiting}
               inputContainerStyle={styles.inputContainerStyle}
-              containerStyle={{ paddingHorizontal: 0 }}
+              containerStyle={{ paddingHorizontal: 0, marginTop: 10 }}
+              leftIcon={{ type: 'material-community', name: 'email-outline', color: "#909090" }}
+              leftIconContainerStyle={{ paddingHorizontal: 10, marginLeft: 0 }}
             />
-
-            <Label label='Full Name' />
             <Input
-              placeholder="Name Surname"
+              placeholder="Enter your display name"
               placeholderTextColor="#b2c2bf"
               onChangeText={displayName => this.setState({ displayName, displayNameMessage: '' })}
               value={displayName}
               errorMessage={displayNameMessage}
               disabled={isWaiting}
               inputContainerStyle={styles.inputContainerStyle}
-              containerStyle={{ paddingHorizontal: 0 }}
+              containerStyle={{ paddingHorizontal: 0, marginTop: 10 }}
+              leftIcon={{ type: 'material-community', name: 'account', color: "#909090" }}
+              leftIconContainerStyle={{ paddingHorizontal: 10, marginLeft: 0 }}
             />
-
-            <Label label='Password' />
             <Input
-              placeholder="Password"
+              placeholder="Enter Your password"
               placeholderTextColor="#b2c2bf"
               onChangeText={password => this.setState({ password, passwordMessage: '' })}
               value={password}
@@ -185,35 +186,42 @@ class RegisterScreen extends Component {
               secureTextEntry
               disabled={isWaiting}
               inputContainerStyle={styles.inputContainerStyle}
-              containerStyle={{ paddingHorizontal: 0 }}
+              containerStyle={{ paddingHorizontal: 0, marginTop: 10 }}
+              leftIcon={{ type: 'material-community', name: 'key-variant', color: "#909090" }}
+              leftIconContainerStyle={{ paddingHorizontal: 10, marginLeft: 0 }}
             />
-            <Label label='Repeat Password' />
             <Input
-              placeholder="Repassword"
+              placeholder="Repeat Your password"
               placeholderTextColor="#b2c2bf"
               onChangeText={repassword => this.setState({ repassword })}
               value={repassword}
               secureTextEntry
               disabled={isWaiting}
               inputContainerStyle={styles.inputContainerStyle}
-              containerStyle={{ paddingHorizontal: 0 }}
+              containerStyle={{ paddingHorizontal: 0, marginTop: 10 }}
+              leftIcon={{ type: 'material-community', name: 'key-variant', color: "#909090" }}
+              leftIconContainerStyle={{ paddingHorizontal: 10, marginLeft: 0 }}
             />
             <View style={styles.checkBoxStyle}>
               <CheckBox
-                title="I accept privacy and legal terms"
+                //title="By checking this box I aggree with terms and conditions."
                 checked={this.state.terms}
                 onPress={() => !isWaiting && this.setState({ terms: !this.state.terms })}
-                containerStyle={{ backgroundColor: 'transparent', borderColor: 'transparent' }}
-                checkedColor='#3b3a30'
+                containerStyle={{ backgroundColor: 'transparent', borderColor: 'transparent',marginLeft:0 }}
+                uncheckedColor='#3598FE'
+                checkedColor='#3598FE'
               />
-              <Text style={{ color: 'red' }}>{termsMessage || emailMessage}</Text>
-              <Button
-                buttonStyle={styles.buttonStyle}
-                title="Create My Account"
-                onPress={this.checkAccount}
-                disabled={isWaiting}
-              />
+              <View style={{justifyContent:'center'}}>
+              <Text>By checking this box I aggree with</Text>
+              <HyperLink text="terms and conditions"/>
+              </View>
             </View>
+
+            <Text style={{ color: 'red',paddingVertical:2 }}>{termsMessage || emailMessage}</Text>
+            <DefaultButton 
+              title="Register"
+              onPress={this.checkAccount}
+              disabled={isWaiting}/>
           </View>
         </ScrollView>
       </KeyboardAvoidingView>
@@ -235,15 +243,30 @@ const styles = StyleSheet.create({
     paddingVertical: 5,
   },
   checkBoxStyle: {
-    alignSelf: 'stretch',
-    flexDirection: 'column',
-    justifyContent: 'center',
+    flexDirection: 'row',
   },
   buttonStyle: {
     backgroundColor: '#196BFF',
     borderRadius: 6,
     paddingVertical: 15
-  }
+  },
+  componentStyle: {
+    flex: 1,
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    alignSelf: 'stretch',
+    paddingVertical: 20,
+    backgroundColor: "white",
+    borderTopRightRadius: 26,
+    borderTopLeftRadius: 26,
+  },
+  inputContainerStyle: {
+    borderWidth: 0.7,
+    borderColor: '#909090',
+    borderRadius: 6,
+    paddingVertical: 5,
+
+  },
 });
 
 const mapStateToProps = ({ auth, assets }) => {

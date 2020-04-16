@@ -9,12 +9,12 @@ export function HyperLink(props) {
   
     return (
       <TouchableOpacity onPress={() => Linking.openURL(link)} >
-        <Text style={{ color: '#196BFF' }}>{text}</Text>
+        <Text style={{ color: '#3598FE',textDecorationLine: 'underline', }}>{text}</Text>
       </TouchableOpacity>
     )
   }
 
-export function NeedHelp(props) {
+export function TouchableText(props) {
     const { text, onPress } = props
     return (
         <View style={{ padding: 5 }}>

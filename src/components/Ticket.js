@@ -6,7 +6,7 @@ import { connect } from "react-redux";
 import { SafeAreaView } from 'react-navigation';
 
 import { Label } from './Labels';
-import { NeedHelp, DefaultButton } from '../components/Buttons';
+import { TouchableText, DefaultButton } from '../components/Buttons';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 
 
@@ -100,7 +100,7 @@ class Ticket extends Component {
             </View>
             <View style={styles.contactUs}>
               <Text>Lost your ticket number?</Text>
-              <NeedHelp onPress={() => { }} text="Contact Us" />
+              <TouchableText onPress={() => { }} text="Contact Us" />
             </View>
           </KeyboardAvoidingView>
         </ScrollView>

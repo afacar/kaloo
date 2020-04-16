@@ -18,7 +18,7 @@ export function HighlightedText(props) {
             justifyContent: "center",
             backgroundColor: '#655FFF',
             borderRadius: 6,
-            paddingHorizontal: 30,
+            paddingHorizontal: 15,
             marginVertical:10
         }}>
             <Text style={{color: 'white', paddingVertical: 15, fontSize: 15 }}>
