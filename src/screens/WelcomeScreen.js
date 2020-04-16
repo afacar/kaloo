@@ -83,7 +83,7 @@ const styles = StyleSheet.create({
     borderTopRightRadius: 25,
     flexDirection: 'column',
     backgroundColor: '#F3F5F9',
-    padding: 35,
+    padding: 20,
     shadowColor: 'gray',
     shadowOpacity: 0.5,
     overflow: 'hidden',

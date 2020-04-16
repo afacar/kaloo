@@ -13,8 +13,8 @@ import ImagePicker from 'react-native-image-crop-picker';
 import { connect } from "react-redux";
 import { HighlightedText } from '../components/Labels';
 import { Label, BoldLabel } from '../components/Labels';
-import { TouchableText, HyperLink, DefaultButton } from '../components/Buttons';
-
+import { ClickableText, HyperLink, DefaultButton } from '../components/Buttons';
+import { SafeAreaView } from 'react-navigation';
 
 function validateEmail(email) {
   if (/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(email)) {
@@ -129,102 +129,109 @@ class RegisterScreen extends Component {
       displayName, email, password, repassword, photoURL, isWaiting, displayNameMessage, emailMessage, passwordMessage, termsMessage
     } = this.state;
     return (
-      <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : ''} style={styles.container}>
-        <ScrollView
-          contentContainerStyle={{
-            flexGrow: 1,
-            alignItems: 'center',
-            backgroundColor: "#3598FE"
-          }}>
-          <View style={styles.componentStyle}>
-            <BoldLabel label='Register' />
-            <HighlightedText text="You only need an account if you’re planning to host a paid meeting. " />
-            <View style={{ flexDirection: 'row', alignItems: "center", marginBottom: 5 }}>
-              <Avatar
-                rounded
-                size="large"
-                //icon={{name: 'camera-outline', type: 'material-community', color:"#E7E7E7"}}
-                overlayContainerStyle={{ backgroundColor: 'white', borderWidth: 1, borderColor: "#E7E7E7" }}
-                onPress={this.onImagePicker}
-                containerStyle={{ marginRight: 20 }}
-                //showEditButton={true}
-                source={{ uri: photoURL }}
+      <SafeAreaView style={{ flex: 1, backgroundColor: 'white' }}>
+        <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : ''} style={styles.container}>
+          <ScrollView
+            contentContainerStyle={{
+              flexGrow: 1,
+              alignItems: 'center',
+              backgroundColor: "#3598FE"
+            }}>
+            <View style={styles.componentStyle}>
+              <BoldLabel label='Register' />
+              <HighlightedText text="You only need an account if you’re planning to host a paid meeting. " />
+              <View style={{ flexDirection: 'row', alignItems: "center", marginBottom: 5 }}>
+                <Avatar
+                  rounded
+                  size="large"
+                  //icon={{name: 'camera-outline', type: 'material-community', color:"#E7E7E7"}}
+                  overlayContainerStyle={{ backgroundColor: 'white', borderWidth: 1, borderColor: "#E7E7E7" }}
+                  onPress={this.onImagePicker}
+                  containerStyle={{ marginRight: 20 }}
+                  //showEditButton={true}
+                  source={{ uri: photoURL }}
+                />
+                <ClickableText text="Pick a profile picture" onPress={this.onImagePicker} />
+              </View>
+              <Input
+                placeholder="Enter Your email"
+                placeholderTextColor="#b2c2bf"
+                onChangeText={email => this.setState({ email, emailMessage: '' })}
+                value={email}
+                keyboardType="email-address"
+                errorMessage={emailMessage}
+                disabled={isWaiting}
+                inputContainerStyle={styles.inputContainerStyle}
+                containerStyle={{ paddingHorizontal: 0, marginTop: 10 }}
+                leftIcon={{ type: 'material-community', name: 'email-outline', color: "#909090" }}
+                leftIconContainerStyle={{ paddingHorizontal: 10, marginLeft: 0 }}
               />
-              <TouchableText text="Pick a profile picture" onPress={this.onImagePicker} />
-            </View>
-            <Input
-              placeholder="Enter Your email"
-              placeholderTextColor="#b2c2bf"
-              onChangeText={email => this.setState({ email, emailMessage: '' })}
-              value={email}
-              keyboardType="email-address"
-              errorMessage={emailMessage}
-              disabled={isWaiting}
-              inputContainerStyle={styles.inputContainerStyle}
-              containerStyle={{ paddingHorizontal: 0, marginTop: 10 }}
-              leftIcon={{ type: 'material-community', name: 'email-outline', color: "#909090" }}
-              leftIconContainerStyle={{ paddingHorizontal: 10, marginLeft: 0 }}
-            />
-            <Input
-              placeholder="Enter your display name"
-              placeholderTextColor="#b2c2bf"
-              onChangeText={displayName => this.setState({ displayName, displayNameMessage: '' })}
-              value={displayName}
-              errorMessage={displayNameMessage}
-              disabled={isWaiting}
-              inputContainerStyle={styles.inputContainerStyle}
-              containerStyle={{ paddingHorizontal: 0, marginTop: 10 }}
-              leftIcon={{ type: 'material-community', name: 'account', color: "#909090" }}
-              leftIconContainerStyle={{ paddingHorizontal: 10, marginLeft: 0 }}
-            />
-            <Input
-              placeholder="Enter Your password"
-              placeholderTextColor="#b2c2bf"
-              onChangeText={password => this.setState({ password, passwordMessage: '' })}
-              value={password}
-              errorMessage={passwordMessage}
-              secureTextEntry
-              disabled={isWaiting}
-              inputContainerStyle={styles.inputContainerStyle}
-              containerStyle={{ paddingHorizontal: 0, marginTop: 10 }}
-              leftIcon={{ type: 'material-community', name: 'key-variant', color: "#909090" }}
-              leftIconContainerStyle={{ paddingHorizontal: 10, marginLeft: 0 }}
-            />
-            <Input
-              placeholder="Repeat Your password"
-              placeholderTextColor="#b2c2bf"
-              onChangeText={repassword => this.setState({ repassword })}
-              value={repassword}
-              secureTextEntry
-              disabled={isWaiting}
-              inputContainerStyle={styles.inputContainerStyle}
-              containerStyle={{ paddingHorizontal: 0, marginTop: 10 }}
-              leftIcon={{ type: 'material-community', name: 'key-variant', color: "#909090" }}
-              leftIconContainerStyle={{ paddingHorizontal: 10, marginLeft: 0 }}
-            />
-            <View style={styles.checkBoxStyle}>
-              <CheckBox
-                //title="By checking this box I aggree with terms and conditions."
-                checked={this.state.terms}
-                onPress={() => !isWaiting && this.setState({ terms: !this.state.terms })}
-                containerStyle={{ backgroundColor: 'transparent', borderColor: 'transparent',marginLeft:0 }}
-                uncheckedColor='#3598FE'
-                checkedColor='#3598FE'
+              <Input
+                placeholder="Enter your display name"
+                placeholderTextColor="#b2c2bf"
+                onChangeText={displayName => this.setState({ displayName, displayNameMessage: '' })}
+                value={displayName}
+                errorMessage={displayNameMessage}
+                disabled={isWaiting}
+                inputContainerStyle={styles.inputContainerStyle}
+                containerStyle={{ paddingHorizontal: 0, marginTop: 10 }}
+                leftIcon={{ type: 'material-community', name: 'account', color: "#909090" }}
+                leftIconContainerStyle={{ paddingHorizontal: 10, marginLeft: 0 }}
               />
-              <View style={{justifyContent:'center'}}>
-              <Text>By checking this box I aggree with</Text>
-              <HyperLink text="terms and conditions"/>
+              <Input
+                placeholder="Enter Your password"
+                placeholderTextColor="#b2c2bf"
+                onChangeText={password => this.setState({ password, passwordMessage: '' })}
+                value={password}
+                errorMessage={passwordMessage}
+                secureTextEntry
+                disabled={isWaiting}
+                inputContainerStyle={styles.inputContainerStyle}
+                containerStyle={{ paddingHorizontal: 0, marginTop: 10 }}
+                leftIcon={{ type: 'material-community', name: 'key-variant', color: "#909090" }}
+                leftIconContainerStyle={{ paddingHorizontal: 10, marginLeft: 0 }}
+              />
+              <Input
+                placeholder="Repeat Your password"
+                placeholderTextColor="#b2c2bf"
+                onChangeText={repassword => this.setState({ repassword })}
+                value={repassword}
+                secureTextEntry
+                disabled={isWaiting}
+                inputContainerStyle={styles.inputContainerStyle}
+                containerStyle={{ paddingHorizontal: 0, marginTop: 10 }}
+                leftIcon={{ type: 'material-community', name: 'key-variant', color: "#909090" }}
+                leftIconContainerStyle={{ paddingHorizontal: 10, marginLeft: 0 }}
+              />
+              <View style={styles.checkBoxStyle}>
+                <CheckBox
+                  //title="By checking this box I aggree with terms and conditions."
+                  checked={this.state.terms}
+                  onPress={() => !isWaiting && this.setState({ terms: !this.state.terms })}
+                  containerStyle={{ backgroundColor: 'transparent', borderColor: 'transparent', marginLeft: 0 }}
+                  uncheckedColor='#3598FE'
+                  checkedColor='#3598FE'
+                />
+                <View style={{ justifyContent: 'center' }}>
+                  <Text>By checking this box I aggree with</Text>
+                  <HyperLink text="terms and conditions" />
+                </View>
+              </View>
+
+              <Text style={{ color: 'red', paddingVertical: 2 }}>{termsMessage || emailMessage}</Text>
+              <View style={{ paddingBottom: 20 }}>
+                <DefaultButton
+                  title="Register"
+                  onPress={this.checkAccount}
+                  disabled={isWaiting} />
+              </View>
+              <View style={styles.contactUs}>
+                <ClickableText onPress={() => { }} text="Have a problem?" />
               </View>
             </View>
-
-            <Text style={{ color: 'red',paddingVertical:2 }}>{termsMessage || emailMessage}</Text>
-            <DefaultButton 
-              title="Register"
-              onPress={this.checkAccount}
-              disabled={isWaiting}/>
-          </View>
-        </ScrollView>
-      </KeyboardAvoidingView>
+          </ScrollView>
+        </KeyboardAvoidingView>
+      </SafeAreaView>
     );
   }
 }
@@ -267,6 +274,13 @@ const styles = StyleSheet.create({
     paddingVertical: 5,
 
   },
+  contactUs: {
+    position: 'absolute', //Here is the trick
+    bottom: 0, //Here is the trick
+    alignItems: 'center',
+    alignSelf: 'center',
+    marginTop: 10
+  }
 });
 
 const mapStateToProps = ({ auth, assets }) => {

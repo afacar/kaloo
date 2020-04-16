@@ -9,7 +9,8 @@ import { Input, Button } from 'react-native-elements';
 import firebase from 'react-native-firebase';
 import { HighlightedText } from '../components/Labels';
 import { Label, BoldLabel } from '../components/Labels';
-import { DefaultButton } from '../components/Buttons';
+import { DefaultButton,ClickableText } from '../components/Buttons';
+import { SafeAreaView } from 'react-navigation';
 
 
 function validateEmail(email) {
@@ -76,6 +77,7 @@ class SignInScreen extends Component {
   render() {
     const { email, password, emailError, passwordError, isWaiting } = this.state;
     return (
+      <SafeAreaView style={{flex:1,backgroundColor:'white'}}>
       <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : ''} style={styles.container}>
         <ScrollView
           contentContainerStyle={{
@@ -119,9 +121,13 @@ class SignInScreen extends Component {
               onPress={this._checkSignIn} 
               disabled={this.state.isWaiting}/>
             </View>
+            <View style={styles.contactUs}>
+              <ClickableText onPress={() => { }} text="Have a problem?" />
+            </View>
           </View>
         </ScrollView>
       </KeyboardAvoidingView>
+      </SafeAreaView>
     );
   }
 }
@@ -151,6 +157,13 @@ const styles = StyleSheet.create({
     backgroundColor: '#196BFF',
     borderRadius: 6,
     paddingVertical: 15
+  },
+  contactUs: {
+    position: 'absolute', //Here is the trick
+    bottom: 0, //Here is the trick
+    alignItems: 'center',
+    alignSelf:'center',
+    
   }
 });
 

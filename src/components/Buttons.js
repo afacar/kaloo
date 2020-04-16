@@ -14,7 +14,7 @@ export function HyperLink(props) {
     )
   }
 
-export function TouchableText(props) {
+export function ClickableText(props) {
     const { text, onPress } = props
     return (
         <View style={{ padding: 5 }}>
@@ -146,7 +146,7 @@ const styles = StyleSheet.create({
     defaultButtonColor:{
         backgroundColor:"#3BCDE2",
         borderRadius:16,
-        height:51
+        height:50
 
     }
 })
