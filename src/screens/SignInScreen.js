@@ -8,7 +8,8 @@ import {
 import { Input, Button } from 'react-native-elements';
 import firebase from 'react-native-firebase';
 import { HighlightedText } from '../components/Labels';
-import { Label } from '../components/Labels';
+import { Label, BoldLabel } from '../components/Labels';
+import { DefaultButton } from '../components/Buttons';
 
 
 function validateEmail(email) {
@@ -34,8 +35,8 @@ class SignInScreen extends Component {
     email: this.email || '',
     password: '',
     isWaiting: false,
-    emailError: ' ',
-    passwordError: ' ',
+    emailError: '',
+    passwordError: '',
   };
 
   handleSignIn = async () => {
@@ -79,16 +80,15 @@ class SignInScreen extends Component {
         <ScrollView
           contentContainerStyle={{
             flexGrow: 1,
-            paddingHorizontal: 20,
-            paddingVertical: 10,
             alignItems: 'center',
+            backgroundColor: "#3598FE"
           }}>
 
-          <HighlightedText text="You don’t need an account to watch." />
-          <View style={{ alignSelf: 'stretch', paddingVertical: 20 }}>
-            <Label label='Username' />
+          <View style={styles.componentStyle}>
+            <BoldLabel label='Sign In' />
+            <HighlightedText text='You don’t need an account if you want to join a meeting.' />
             <Input
-              placeholder="user@email.com"
+              placeholder="Enter Your email"
               placeholderTextColor="#b2c2bf"
               onChangeText={email => this.setState({ email, emailMessage: '' })}
               value={email}
@@ -96,30 +96,28 @@ class SignInScreen extends Component {
               errorMessage={emailError}
               disabled={isWaiting}
               inputContainerStyle={styles.inputContainerStyle}
-              containerStyle={{ paddingHorizontal: 0 }}
+              containerStyle={{ paddingHorizontal: 0, marginTop:10}}
+              leftIcon={{ type: 'material-community', name: 'email-outline', color:"#909090"}}
+              leftIconContainerStyle={{paddingHorizontal:10,marginLeft:0}}
             />
-            <Label label='Password' />
             <Input
-              placeholder="******"
+              placeholder="Enter Your password"
               placeholderTextColor="#b2c2bf"
-              onChangeText={password =>
-                this.setState({ password, passwordMessage: '' })
-              }
+              onChangeText={password => this.setState({ password, passwordMessage: '' })}
               value={password}
               errorMessage={passwordError}
               secureTextEntry
               disabled={isWaiting}
               inputContainerStyle={styles.inputContainerStyle}
-              containerStyle={{ paddingHorizontal: 0 }}
+              containerStyle={{ paddingHorizontal: 0, marginTop:10}}
+              leftIcon={{ type: 'material-community', name: 'key-variant', color:"#909090"}}
+              leftIconContainerStyle={{paddingHorizontal:10,marginLeft:0}}
             />
-            <View style={{ alignSelf: 'stretch' }}>
-              <Button
-                buttonStyle={styles.buttonStyle}
-                title="Sign in"
-                onPress={this._checkSignIn}
-                disabled={this.state.isWaiting}
-
-              />
+            <View style={{ alignSelf: 'stretch',marginTop:15 }}>
+              <DefaultButton 
+              title="Sign in"
+              onPress={this._checkSignIn} 
+              disabled={this.state.isWaiting}/>
             </View>
           </View>
         </ScrollView>
@@ -132,13 +130,22 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
+  componentStyle: {
+    flex: 1,
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    alignSelf: 'stretch',
+    paddingVertical: 20,
+    backgroundColor: "white",
+    borderTopRightRadius: 26,
+    borderTopLeftRadius: 26,
+  },
   inputContainerStyle: {
     borderWidth: 0.7,
-    borderColor: '#3b3a30',
+    borderColor: '#909090',
     borderRadius: 6,
-    paddingHorizontal: 10,
-    marginHorizontal: 0,
     paddingVertical: 5,
+
   },
   buttonStyle: {
     backgroundColor: '#196BFF',

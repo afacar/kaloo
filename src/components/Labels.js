@@ -16,17 +16,12 @@ export function HighlightedText(props) {
             flexDirection: 'row',
             alignItems: 'center',
             justifyContent: "center",
-            backgroundColor: '#196BFF',
+            backgroundColor: '#655FFF',
             borderRadius: 6,
-            paddingHorizontal: 30
+            paddingHorizontal: 30,
+            marginVertical:10
         }}>
-            <Icon
-                name='lightbulb-on-outline'
-                type='material-community'
-                color='#fff'
-                containerStyle={{ paddingHorizontal: 5 }}
-            />
-            <Text style={{ textAlign: 'center', color: 'white', paddingVertical: 15, fontSize: 15 }}>
+            <Text style={{color: 'white', paddingVertical: 15, fontSize: 15 }}>
                 {text}
             </Text>
         </View>
@@ -57,7 +52,7 @@ export function ContactUs(props) {
 export function BoldLabel(props) {
     const { label } = props
     return (
-        <Text style={{ fontSize: 17, fontWeight: '600', paddingVertical: 10, }}>{label}</Text>
+        <Text style={{ fontSize: 28, fontWeight: '600', paddingVertical: 10, }}>{label}</Text>
     )
 }
 
