@@ -408,16 +408,30 @@ export default class LiveScreen extends Component {
     }
 
     renderTimerNViewer() {
-        return (
-            <View style={styles.timerNViewer}>
-                <View style={{ flex: 1, marginBottom: 10, justifyContent: 'center', alignItems: 'center' }}>
-                    <AppText style={styles.viewerText}>{this.state.viewers + ' Viewers'}</AppText>
+        const { time } = this.state;
+        if (time < 0) {
+            return (
+                <View style={styles.timerNViewer}>
+                    <View style={{ flex: 1, marginBottom: 10, justifyContent: 'center', alignItems: 'center' }}>
+                        <AppText style={styles.viewerText}>{this.state.viewers + ' Viewers'}</AppText>
+                    </View>
+                    <View style={{ flex: 1 }}>
+                        <AppText style={styles.timerCard}>{this.state.timeStr}</AppText>
+                    </View>
                 </View>
-                <View style={{ flex: 1 }}>
-                    <AppText style={styles.timerCard}>{this.state.timeStr}</AppText>
+            )
+        } else {
+            return (
+                <View style={styles.timerNViewer}>
+                    <View style={{ flex: 1, marginBottom: 10, justifyContent: 'center', alignItems: 'center' }}>
+                        <AppText style={styles.viewerText}>{this.state.viewers + ' Viewers'}</AppText>
+                    </View>
+                    <View style={{ flex: 1 }}>
+                        <AppText style={styles.timerCardRed}>{this.state.timeStr}</AppText>
+                    </View>
                 </View>
-            </View>
-        )
+            )
+        }
     }
 
     renderWaitingComponent() {

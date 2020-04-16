@@ -6,13 +6,13 @@ import { colors } from '../constants'
 
 export function HyperLink(props) {
     const { text, link } = props
-  
+
     return (
-      <TouchableOpacity onPress={() => Linking.openURL(link)} >
-        <Text style={{ color: '#196BFF' }}>{text}</Text>
-      </TouchableOpacity>
+        <TouchableOpacity onPress={() => Linking.openURL(link)} >
+            <Text style={{ color: '#196BFF' }}>{text}</Text>
+        </TouchableOpacity>
     )
-  }
+}
 
 export function ClickableText(props) {
     const { text, onPress } = props
@@ -84,7 +84,7 @@ export function ContinueCallButon(props) {
             title='Continue Call'
             buttonStyle={styles.startButton}
             onPress={onPress}
-        //loading={loading}
+            loading={loading}
         />
     )
 }

@@ -127,8 +127,27 @@ export default class VideoChatScreen extends Component {
                     text: 'Yes', onPress: () => {
                         RtcEngine.leaveChannel();
                         RtcEngine.joinChannel(eventID, HOST_UID)
-                            .then((result) => {
-                                continueLive(eventID);
+                            .then(async (result) => {
+                                this.setState({
+                                    startLoading: true
+                                })
+                                let response = await continueLive(eventID);
+                                if (!response) {
+                                    Alert.alert(
+                                        'Error occured',
+                                        'Unknown error occured while starting your call. Please try again!',
+                                        [
+                                            {
+                                                text: 'Ok', onPress: () => { },
+                                                style: 'cancel'
+                                            },
+                                        ],
+                                        { cancelable: false }
+                                    )
+                                }
+                                this.setState({
+                                    startLoading: false
+                                })
                             })
                             .catch((error) => {
                             });
@@ -187,7 +206,7 @@ export default class VideoChatScreen extends Component {
             var time = 0;
             if (startedAt) {
                 time = Math.floor((Date.now() - startedAt.getTime()) / 1000);
-                this.setState({ timeStr: formatTime(this.state.duration * 60 - time) });
+                this.setState({ timeStr: formatTime(this.state.duration * 60 - time), time: this.state.duration * 60 - time });
             }
             if (startedAt && status === app.EVENT_STATUS.IN_PROGRESS) {
                 if (clientRole === 1 && !this.state.joinSucceed) {
@@ -202,7 +221,7 @@ export default class VideoChatScreen extends Component {
                         });
                 }
                 time = Math.floor((Date.now() - startedAt.getTime()) / 1000);
-                this.setState({ time: this.state.duration * 60 - time });
+                this.setState({ time: this.state.duration * 60 - time, time: this.state.duration * 60 - time });
                 if (!this.timer) {
                     this.timer = setInterval(() => {
                         var time = this.state.time;
@@ -331,6 +350,23 @@ export default class VideoChatScreen extends Component {
         )
     }
 
+    renderTimer() {
+        const { time, timeStr } = this.state;
+        if (time < 0) {
+            return (
+                <View style={styles.timerNViewer}>
+                    <AppText style={styles.timerCardRed}>{this.state.timeStr}</AppText>
+                </View>
+            )
+        } else {
+            return (
+                <View style={styles.timerNViewer}>
+                    <AppText style={styles.timerCard}>{this.state.timeStr}</AppText>
+                </View>
+            )
+        }
+    }
+
     /* renderThreeVideos() {
         return (
             <View style={{ flex: 1, flexDirection: 'row' }}>
@@ -362,7 +398,7 @@ export default class VideoChatScreen extends Component {
             )
         } else if (status === app.EVENT_STATUS.SUSPENDED) {
             return (
-                <ContinueCallButon onPress={this.continueCall} />
+                <ContinueCallButon onPress={this.continueCall} loading={startLoading} />
             )
         }
     }
@@ -466,9 +502,10 @@ export default class VideoChatScreen extends Component {
                     {
                         this.renderLiveInfo()
                     }
-                    <View style={styles.timerNViewer}>
-                        <AppText style={styles.timerCard}>{this.state.timeStr}</AppText>
-                    </View>
+                    {
+                        this.renderTimer()
+                    }
+
                 </View>
             </View>
         )
