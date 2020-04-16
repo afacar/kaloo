@@ -300,11 +300,12 @@ export default class VideoChatScreen extends Component {
     backButtonPressed() {
         const { navigation } = this.props;
         const { clientRole, eventID, status, ticket } = this.state
-
-        if (clientRole === 2 || status !== app.EVENT_STATUS.IN_PROGRESS) {
+        if (status !== app.EVENT_STATUS.IN_PROGRESS) {
+            if (clientRole === 2)
+                leaveEvent(eventID, ticket)
             return navigation.goBack();
         }
-        // Confirm host before suspend streaming
+        // Confirm
         Alert.alert(
             "Confirm Exit",
             "You can continue call from MyEvent page",
@@ -318,8 +319,13 @@ export default class VideoChatScreen extends Component {
                 },
                 {
                     text: 'OK', onPress: () => {
-                        // Suspend live event of host
-                        suspendLive(eventID)
+                        if (clientRole === 1) {
+                            // Suspend live event of host
+                            suspendLive(eventID);
+                        } else if (clientRole === 2) {
+                            //leave live event of audience
+                            leaveEvent(eventID, ticket)
+                        }
                         navigation.goBack();
                         return false;
                     }

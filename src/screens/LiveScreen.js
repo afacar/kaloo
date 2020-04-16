@@ -334,6 +334,8 @@ export default class LiveScreen extends Component {
         /*         var clientRole = this.props.navigation.getParam('clientRole', 2);
                 var eventID = this.props.navigation.getParam('eventID', 'agora_test'); */
         if (status !== app.EVENT_STATUS.IN_PROGRESS) {
+            if (clientRole === 2)
+                leaveEvent(eventID, ticket)
             return navigation.goBack();
         }
         Alert.alert(
@@ -353,7 +355,6 @@ export default class LiveScreen extends Component {
                             suspendLive(eventID);
                         } else if (clientRole === 2) {
                             //leave live event of audience
-                            // TODO: leaveEvent func.
                             leaveEvent(eventID, ticket)
                         }
                         navigation.goBack();
