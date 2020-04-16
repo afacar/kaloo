@@ -11,17 +11,10 @@ import { Input, Button, Avatar, CheckBox } from 'react-native-elements';
 import { functions, storage, auth } from 'react-native-firebase';
 import ImagePicker from 'react-native-image-crop-picker';
 import { connect } from "react-redux";
-import { HighlightedText } from '../components/Labels';
-import { Label } from '../components/Labels';
 
+import { HighlightedText, Label } from '../components/Labels';
+import { validateEmail } from '../utils/Utils'
 
-function validateEmail(email) {
-  if (/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(email)) {
-    return true;
-  }
-  //AlertUser('Check  your email!', 'Your email seems a bit awkward!')
-  return false;
-}
 
 class RegisterScreen extends Component {
   static navigationOptions = ({ navigation }) => ({
