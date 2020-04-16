@@ -1,5 +1,6 @@
-import { months } from '../constants'
+import { Platform, PermissionsAndroid } from "react-native";
 import AsyncStorage from '@react-native-community/async-storage';
+import { months } from '../constants'
 
 export const formatTime = (seconds) => {
     var negative = false;
@@ -103,7 +104,48 @@ export async function getDeviceID() {
 
 export function validateEmail(email) {
     if (/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(email)) {
-      return true;
+        return true;
     }
     return false;
-  }
+}
+
+export const checkAudioPermission = async () => {
+    if (Platform.OS === 'android') {
+        try {
+            const granted = await PermissionsAndroid.request(
+                PermissionsAndroid.PERMISSIONS.RECORD_AUDIO,
+                {
+                    title: 'Microphone Permission',
+                    message:
+                        'InfluenceMe needs access to your microphone',
+                    buttonNeutral: 'Ask Me Later',
+                    buttonNegative: 'Cancel',
+                    buttonPositive: 'OK',
+                },
+            );
+            if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+                // granted
+            } else {
+                // not granted
+            }
+        } catch (err) {
+            // console.warn(err);
+        }
+    }
+}
+
+export const checkCameraPermission = async () => {
+    if (Platform.OS === 'android') {
+        try {
+            const granted = await PermissionsAndroid.request(
+                PermissionsAndroid.PERMISSIONS.CAMERA);
+            if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+                console.log('You can use the camera');
+            } else {
+                console.log('Camera permission denied');
+            }
+        } catch (err) {
+            console.warn(err);
+        }
+    }
+}

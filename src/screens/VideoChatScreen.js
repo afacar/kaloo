@@ -1,10 +1,10 @@
 import React, { Component } from 'react';
-import { View, Platform, PermissionsAndroid, Alert, StatusBar, Text, TouchableOpacity } from 'react-native';
+import { View, Alert, StatusBar, Text, TouchableOpacity } from 'react-native';
 import { RtcEngine, AgoraView } from 'react-native-agora';
 import KeepAwake from 'react-native-keep-awake';
 import { clearLiveEventListener, setLiveEventListener, startEvent, endLive, suspendLive, continueLive, leaveEvent, setTicketListener, clearTicketListener } from '../utils/EventHandler';
 import { handleAndroidBackButton, removeAndroidBackButtonHandler } from '../utils/BackHandler';
-import { formatTime, getDeviceID } from '../utils/Utils';
+import { formatTime, getDeviceID, checkCameraPermission, checkAudioPermission } from '../utils/Utils';
 import { AppText } from '../components/Labels';
 import { Icon } from 'react-native-elements';
 import Header from '../components/Header';
@@ -15,11 +15,11 @@ const HOST_UID = 1000;
 
 
 export default class VideoChatScreen extends Component {
-
     constructor(props) {
         super(props);
         this.backButtonPressed = this.backButtonPressed.bind(this);
     }
+
     liveData = this.props.navigation.getParam('liveData', '')
 
     state = {
@@ -33,41 +33,6 @@ export default class VideoChatScreen extends Component {
         status: undefined,
         startLoading: false
     };
-
-    checkCameraPermission = async () => {
-        try {
-            const granted = await PermissionsAndroid.request(
-                PermissionsAndroid.PERMISSIONS.CAMERA);
-            if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-                // granted
-            } else {
-                // not granted
-            }
-        } catch (err) {
-        }
-    }
-
-    checkAudioPermission = async () => {
-        try {
-            const granted = await PermissionsAndroid.request(
-                PermissionsAndroid.PERMISSIONS.RECORD_AUDIO,
-                {
-                    title: 'Microphone Permission',
-                    message:
-                        'InfluenceMe needs access to your camera',
-                    buttonNeutral: 'Ask Me Later',
-                    buttonNegative: 'Cancel',
-                    buttonPositive: 'OK',
-                },
-            );
-            if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-                // granted
-            } else {
-                // not granted
-            }
-        } catch (err) {
-        }
-    }
 
     startCall = () => {
         const { eventID } = this.state;
@@ -171,10 +136,8 @@ export default class VideoChatScreen extends Component {
     }
 
     componentDidMount() {
-        if (Platform.OS === 'android') {
-            this.checkCameraPermission();
-            this.checkAudioPermission();
-        }
+        checkAudioPermission()
+        checkCameraPermission()
 
         // setup listener for  watcherCount
         this.setState({ timeStr: formatTime(this.state.duration * 60) })

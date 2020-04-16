@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, Platform, PermissionsAndroid, Alert, StatusBar, TouchableOpacity, Text } from 'react-native';
+import { View, Alert, StatusBar, TouchableOpacity, Text } from 'react-native';
 import app from '../constants/app';
 import { RtcEngine, AgoraView } from 'react-native-agora';
 import KeepAwake from 'react-native-keep-awake';
@@ -17,7 +17,7 @@ import {
 } from '../utils/EventHandler';
 import { handleAndroidBackButton, removeAndroidBackButtonHandler } from '../utils/BackHandler';
 import { styles, colors } from '../constants';
-import { formatTime, getDeviceID } from '../utils/Utils';
+import { formatTime, getDeviceID, checkAudioPermission, checkCameraPermission } from '../utils/Utils';
 import Header from '../components/Header';
 import { Icon, Button } from 'react-native-elements';
 
@@ -44,82 +44,9 @@ export default class LiveScreen extends Component {
     liveData = this.props.navigation.getParam('liveData', '')
     state = { ...INITIAL_STATE, ...this.liveData };
 
-    checkCameraPermission = async () => {
-        try {
-            const granted = await PermissionsAndroid.request(
-                PermissionsAndroid.PERMISSIONS.CAMERA);
-            if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-                // granted
-            } else {
-                // not granted
-            }
-        } catch (err) {
-        }
-    }
-
-    checkAudioPermission = async () => {
-        try {
-            const granted = await PermissionsAndroid.request(
-                PermissionsAndroid.PERMISSIONS.RECORD_AUDIO,
-                {
-                    title: 'Microphone Permission',
-                    message:
-                        'InfluenceMe needs access to your camera',
-                    buttonNeutral: 'Ask Me Later',
-                    buttonNegative: 'Cancel',
-                    buttonPositive: 'OK',
-                },
-            );
-            if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-                // granted
-            } else {
-                // not granted
-            }
-        } catch (err) {
-        }
-    }
-
-    /* incrementViewers() {
-        var eventID = this.props.navigation.getParam('eventID', 'agora_test');
-        var result = incrementViewer(eventID);
-        if (result == -1) {
-            incrementViewer();
-        }
-    } */
-
-    /* decrementViewers() {
-        var eventID = this.props.navigation.getParam('eventID', 'agora_test');
-        var result = decrementViewer(eventID);
-        if (result == -1) {
-            this.decrementViewers();
-        }
-    } */
-
     componentDidMount() {
-        console.log('LiveScreenDidMount', this.state)
-        if (Platform.OS === 'android') {
-            this.checkCameraPermission();
-            this.checkAudioPermission();
-        }
-        //const duration = this.props.navigation.getParam('duration', 30);
-        /* var channelName = this.props.navigation.getParam('eventID', 'agora_test');
-        const clientRole = this.props.navigation.getParam('clientRole', 2);
-        var ticketID = this.props.navigation.getParam('ticketID', Math.random() * 100);
-        this.setState({
-            uid: ticketID
-        }) */
-
-        /* if (clientRole === 2) {
-            RtcEngine.joinChannel(channelName, ticketID)
-                .then((result) => {
-                    this.incrementViewers();
-                })
-                .catch((error) => {
-                });
-        } else if (clientRole === 1) {
-
-            RtcEngine.startPreview();
-        } */
+        checkAudioPermission()
+        checkCameraPermission()
 
         // setup listener for  watcherCount
         this.setState({ timeStr: formatTime(this.state.duration * 60) })
