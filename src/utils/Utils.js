@@ -1,4 +1,4 @@
-import { Platform, PermissionsAndroid } from "react-native";
+import { Platform, PermissionsAndroid, Alert } from "react-native";
 import AsyncStorage from '@react-native-community/async-storage';
 import { months } from '../constants'
 
@@ -148,4 +148,31 @@ export const checkCameraPermission = async () => {
             console.warn(err);
         }
     }
+}
+
+export function ConfirmModal(title, message, confirmText, canceltext, onConfirm) {
+    Alert.alert(title, message, [
+        {
+            text: canceltext || 'Cancel',
+            onPress: () => { },
+            style: 'cancel',
+        },
+        {
+            text: confirmText || 'Confirm',
+            onPress: onConfirm,
+        },
+    ],
+        { cancelable: false }
+    );
+}
+
+export function InfoModal(title, message, confirmText, onConfirm) {
+    Alert.alert(title, message, [
+        {
+            text: confirmText || 'Ok',
+            onPress: onConfirm,
+        },
+    ],
+        { cancelable: false }
+    );
 }

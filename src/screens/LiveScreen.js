@@ -17,7 +17,7 @@ import {
 } from '../utils/EventHandler';
 import { handleAndroidBackButton, removeAndroidBackButtonHandler } from '../utils/BackHandler';
 import { styles, colors } from '../constants';
-import { formatTime, getDeviceID, checkAudioPermission, checkCameraPermission } from '../utils/Utils';
+import { formatTime, getDeviceID, checkAudioPermission, checkCameraPermission, InfoModal, ConfirmModal } from '../utils/Utils';
 import Header from '../components/Header';
 import { Icon, Button } from 'react-native-elements';
 
@@ -113,20 +113,12 @@ export default class LiveScreen extends Component {
     }
 
     onEventCompleted() {
-        Alert.alert(
-            "Event Finished",
-            "Host ended the meeting",
-            [
+        let title = 'Event Finished',
+            message = 'Host ended the meeting',
+            confirmText = 'Ok',
+            onConfirm = () => { this.props.navigation.goBack() };
 
-                {
-                    text: 'OK', onPress: () => {
-                        this.props.navigation.goBack();
-                        return false;
-                    }
-                },
-            ],
-            { cancelable: false }
-        );
+        InfoModal(title, message, confirmText, onConfirm)
     }
 
     setTicketListener = () => {
@@ -135,96 +127,56 @@ export default class LiveScreen extends Component {
             var localID = await getDeviceID();
             if (localID != remoteID) {
                 this.props.navigation.goBack();
-                Alert.alert(
-                    'Multiple Access',
-                    'System detected using same ticket from different devices. You can only use you ticket from a single device at a given time',
-                    [
-                        {
-                            text: 'OK', onPress: () => { }
-                        }
-                    ],
-                    { cancelable: false }
-                )
+                let title = 'Multiple Access',
+                    message = 'System detected using same ticket from different devices. You can only use you ticket from a single device',
+                    confirmText = 'Ok',
+                    onConfirm = () => { };
+                InfoModal(title, message, confirmText, onConfirm)
             }
         })
     }
 
-    startEvent = () => {
+    onStartLive = () => {
         const { eventID, ticketID } = this.state;
-        /* var channelName = this.props.navigation.getParam('eventID', 'agora_test');
-        var ticketID = this.props.navigation.getParam('ticketID', 0); */
-        Alert.alert(
-            "Start broadcast",
-            "Are you sure you want to start broadcasting?",
-            [
-                {
-                    text: 'No', onPress: () => { },
-                    style: 'cancel'
-                },
-                {
-                    text: 'Yes', onPress: () => {
-                        RtcEngine.stopPreview();
-                        RtcEngine.joinChannel(eventID, HOST_UID)
-                            .then(async (result) => {
-                                // TODO: Function response should be check if db update is SUCCESS
-                                this.setState({
-                                    startLoading: true
-                                })
-                                let response = await startEvent(eventID);
-                                if (!response) {
-                                    RtcEngine.leaveChannel();
-                                    Alert.alert(
-                                        'Error occured',
-                                        'Unknown error occured while starting your live. Please try again!',
-                                        [
-                                            {
-                                                text: 'Ok', onPress: () => { },
-                                                style: 'cancel'
-                                            },
-                                        ],
-                                        { cancelable: false }
-                                    )
-                                }
-                                this.setState({
-                                    startLoading: false
-                                })
-                            })
-                            .catch((error) => {
-                            });
-                    }
-                },
-            ],
-            { cancelable: false }
-        );
-    }
-
-    continueLive = () => {
-        const { eventID, ticketID } = this.state
-        /*         var channelName = this.props.navigation.getParam('eventID', 'agora_test');
-                var ticketID = this.props.navigation.getParam('ticketID', 0); */
+        RtcEngine.stopPreview();
         RtcEngine.joinChannel(eventID, HOST_UID)
             .then(async (result) => {
-                this.setState({
-                    startLoading: true
-                })
+                this.setState({ startLoading: true })
+                let response = await startEvent(eventID);
+                if (!response) {
+                    RtcEngine.leaveChannel();
+                    let title = 'Error occured!',
+                        message = 'Unknown error occured while starting your live. Please try again!',
+                        onConfirm = () => { }
+                    InfoModal(title, message, 'Ok', onConfirm)
+                }
+                this.setState({ startLoading: false })
+            })
+            .catch((error) => {
+            });
+    }
+
+    _startLive = () => {
+        let title = 'Start broadcasting?',
+            message = 'You will be live!';
+        ConfirmModal(title, message, 'I am ready!', 'Not ready!', this.onStartLive)
+    }
+
+    _continueLive = () => {
+        const { eventID, ticketID } = this.state
+
+        RtcEngine.joinChannel(eventID, HOST_UID)
+            .then(async (result) => {
+                this.setState({ startLoading: true })
                 let response = await continueLive(eventID);
                 if (!response) {
                     RtcEngine.leaveChannel();
-                    Alert.alert(
-                        'Error occured',
-                        'Unknown error occured while continuing your live. Please try again!',
-                        [
-                            {
-                                text: 'Ok', onPress: () => { },
-                                style: 'cancel'
-                            },
-                        ],
-                        { cancelable: false }
-                    )
+                    let title = 'Error occured',
+                        message = 'Unknown error occured while continuing your live. Please try again!',
+                        onConfirm = () => { }
+                    InfoModal(title, message, 'Ok', onConfirm)
                 }
-                this.setState({
-                    startLoading: false
-                })
+                this.setState({ startLoading: false })
             })
             .catch((error) => {
             });
@@ -234,26 +186,17 @@ export default class LiveScreen extends Component {
         this.backButtonPressed();
     }
 
-    endLive = () => {
+    onEndLive = () => {
         const { eventID } = this.state
-        Alert.alert(
-            "Confirm End",
-            "Do you want to totally end your stream?",
-            [
-                {
-                    text: 'Cancel', onPress: () => { },
-                    style: 'cancel'
-                },
-                {
-                    text: 'OK', onPress: () => {
-                        RtcEngine.leaveChannel();
-                        endLive(eventID);
-                        this.props.navigation.goBack();
-                    }
-                },
-            ],
-            { cancelable: false }
-        );
+        RtcEngine.leaveChannel();
+        endLive(eventID);
+        this.props.navigation.goBack();
+    }
+
+    _endLive = () => {
+        let title = 'Confirm',
+            message = 'Do you want to end your stream?';
+        ConfirmModal(title, message, 'Ok', 'Cancel', this.onEndLive);
     }
 
     backButtonPressed() {
@@ -401,7 +344,7 @@ export default class LiveScreen extends Component {
                     }
                     title='Start Broadcasting'
                     buttonStyle={styles.startButton}
-                    onPress={this.startEvent}
+                    onPress={this._startLive}
                     loading={this.state.startLoading}
                 />
             )
@@ -419,7 +362,7 @@ export default class LiveScreen extends Component {
                     }
                     title='End Broadcasting'
                     buttonStyle={styles.endButton}
-                    onPress={this.endLive}
+                    onPress={this._endLive}
                 />
             )
         } else if (status === app.EVENT_STATUS.SUSPENDED) {
@@ -436,7 +379,7 @@ export default class LiveScreen extends Component {
                     }
                     title='Continue Broadcasting'
                     buttonStyle={styles.startButton}
-                    onPress={this.continueLive}
+                    onPress={this._continueLive}
                     loading={this.state.startLoading}
                 />
             )
