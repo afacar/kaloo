@@ -26,7 +26,7 @@ class App extends Component {
 
   render() {
     return (
-      <SafeAreaView style={{ flex: 1 }}>
+      <SafeAreaView forceInset={{ top: 'always', bottom:'always' }} style={{ flex: 1,backgroundColor: 'green'}}>
         <Provider store={store}>
           <AppContainer />
         </Provider>

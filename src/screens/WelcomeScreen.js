@@ -3,42 +3,54 @@ import {
   View,
   StyleSheet,
   TouchableOpacity,
+  Dimensions
 } from 'react-native';
 import { Button, Text, Avatar } from 'react-native-elements';
 import { connect } from 'react-redux';
+import { DefaultButtonColor } from '../components/Buttons';
+import Video from "react-native-video";
 
 //const DEFAULT_LOGO = 'https://firebasestorage.googleapis.com/v0/b/influenceme-dev.appspot.com/o/assets%2Fdefault-logo.jpg?alt=media&token=20a6be6f-954f-417b-abfb-55e0ac75db02'
 
+const { width, height } = Dimensions.get("window");
+
 class WelcomeScreen extends Component {
   static navigationOptions = { headerShown: false }
+
 
   render() {
     const { DEFAULT_LOGO_IMAGE } = this.props.assets;
     return (
       <View style={styles.container}>
-        <View style={{ flex: 7, paddingHorizontal: 25, justifyContent: 'center', alignItems: 'center' }}>
-          <View style={{ paddingBottom: 50, alignItems: 'center' }}>
+        <View style={{ flex: 8, justifyContent: 'center', alignItems: 'center' }}>
+          <Video
+            source={{ uri: 'http://d23dyxeqlo5psv.cloudfront.net/big_buck_bunny.mp4' }}
+            muted={true}
+            repeat={true}
+            resizeMode={"cover"}
+            repeat
+            style={styles.video}
+          />
+          <View style={{ paddingBottom: 30, alignItems: 'center' }}>
             <Avatar
-              source={{ uri: DEFAULT_LOGO_IMAGE }}
+              //source={{ uri: DEFAULT_LOGO_IMAGE }}
               size="large"
             />
-            <Text style={{ fontSize: 25, fontWeight: 'bold' }}>
-              Streamio
+            <Text style={{ fontSize: 25, fontWeight: 'bold', marginVertical: 10, color: 'white' }}>
+              Kaloo
             </Text>
-            <Text>
-              Get in touch anywhere
-              </Text>
+            <Text style={{ width: 250, textAlign: 'center', color: 'white' }}> Access premium meetings to get together online</Text>
           </View>
-          <View style={{ alignSelf: 'stretch' }}>
-            <Button
-              title="Access your stream"
+          <View style={{margin:25, alignSelf: 'stretch' }}>
+            <DefaultButtonColor
+              title={"Join your meeting"}
               onPress={() => this.props.navigation.navigate('Ticket')}
             />
+
           </View>
-        </View>
-        <View style={styles.footer}>
+          <View style={styles.footer}>
           <Text>Do you want to host your paid meeting?</Text>
-          <View style={{ flexDirection: 'row', width: '70%', justifyContent: 'space-around', marginTop: 10 }}>
+          <View style={{ flexDirection: 'row', width: '70%', justifyContent: 'space-around', marginTop: 15 }}>
             <TouchableOpacity
               onPress={() => this.props.navigation.navigate('SignIn')}>
               <Text style={{ fontSize: 15, fontWeight: 'bold' }}>
@@ -53,6 +65,8 @@ class WelcomeScreen extends Component {
             </TouchableOpacity>
           </View>
         </View>
+        
+        </View>
       </View>
     );
   }
@@ -62,19 +76,28 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: 'white',
-    justifyContent: 'space-between',
   },
   footer: {
-    alignItems: 'center', 
-    borderTopLeftRadius: 25, 
+    alignItems: 'center',
+    borderTopLeftRadius: 25,
     borderTopRightRadius: 25,
-    flex: 1, 
-    flexDirection: 'column', 
-    backgroundColor: '#F3F5F9', 
-    padding: 15, 
-    shadowColor: 'gray', 
-    shadowOpacity: 0.5
-  }
+    flexDirection: 'column',
+    backgroundColor: '#F3F5F9',
+    padding: 30,
+    shadowColor: 'gray',
+    shadowOpacity: 0.5,
+    overflow: 'hidden',
+    width:'100%',
+    position: 'absolute', //Here is the trick
+    bottom: 0, //Here is the trick
+  },
+  video: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    bottom: 0,
+    right: 0,
+  },
 });
 
 const mapStateToProps = ({ assets }) => {

@@ -110,6 +110,17 @@ export function EndCallButon(props) {
     )
 }
 
+export function DefaultButtonColor(props){
+    const {onPress,title} = props
+    return(
+        <Button
+            title={title}
+            onPress = {onPress}
+            buttonStyle={styles.defaultButtonColor}
+        />
+    )
+}
+
 const styles = StyleSheet.create({
     startButton: {
         position: 'absolute',
@@ -131,4 +142,10 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center'
     },
+    defaultButtonColor:{
+        backgroundColor:"#3BCDE2",
+        borderRadius:16,
+        height:51
+
+    }
 })
