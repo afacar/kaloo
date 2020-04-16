@@ -1,10 +1,13 @@
 import React, { Component } from 'react';
-import { View, StyleSheet, KeyboardAvoidingView, ScrollView } from 'react-native';
+import { View, StyleSheet, KeyboardAvoidingView, ScrollView, Image, Text } from 'react-native';
 import { Input, Button, Avatar } from 'react-native-elements';
 import { functions, firestore } from 'react-native-firebase';
 import { connect } from "react-redux";
+import { SafeAreaView } from 'react-navigation';
 
 import { Label } from './Labels';
+import { NeedHelp, DefaultButton } from '../components/Buttons';
+import { TouchableOpacity } from 'react-native-gesture-handler';
 
 
 class Ticket extends Component {
@@ -56,25 +59,22 @@ class Ticket extends Component {
     const { TICKET_FORMAT, DEFAULT_LOGO_IMAGE } = this.props.assets;
 
     return (
-      <ScrollView
-        contentContainerStyle={{
-          flexGrow: 1,
-          paddingHorizontal: 20,
-          paddingVertical: 10,
-          backgroundColor: 'white'
-        }}>
-        <KeyboardAvoidingView style={styles.container}>
-          <Avatar
-            source={{ uri: DEFAULT_LOGO_IMAGE }}
-            size="large"
-          />
-          <View style={{ alignSelf: 'stretch', alignItems: 'center' }}>
-            <View style={{ alignSelf: "flex-start", paddingTop: 100 }}>
-              <Label label="Enter your ticket number" />
-            </View>
+      <SafeAreaView style={{ flex: 1, backgroundColor: 'white' }}>
+        <ScrollView
+          contentContainerStyle={{
+            flexGrow: 1,
+            paddingHorizontal: 20,
+            backgroundColor: 'white',
+          }}>
+          <KeyboardAvoidingView style={styles.container}>
+            <Image
+              source={require('../assets/5.png')}
+              style={{ width: 150, height: 150 }}
+            />
+            <Label label="Get your ticket ready!" />
             <Input
               placeholder={TICKET_FORMAT || ''}
-              placeholderTextColor="#b2c2bf"
+              placeholderTextColor="gray"
               inputStyle={{ textAlign: 'center' }}
               onChangeText={this.onTicketChange}
               value={ticket}
@@ -86,28 +86,25 @@ class Ticket extends Component {
               inputContainerStyle={{
                 borderWidth: 0.7,
                 borderColor: '#3b3a30',
-                borderRadius: 6,
+                borderRadius: 8,
                 paddingHorizontal: 10,
                 marginHorizontal: 0,
                 paddingVertical: 5,
               }}
             />
             <View style={{ alignSelf: 'stretch' }}>
-              <Button
+              <DefaultButton
                 title={isWaiting ? 'Checking Ticket...' : "Watch Now"}
-                buttonStyle={{
-                  backgroundColor: '#196BFF',
-                  borderRadius: 6,
-                  paddingVertical: 15
-                }}
                 onPress={this.checkTicket}
-                disabled={isWaiting || ticket.length === 0}
-              />
+                disabled={isWaiting || ticket.length === 0} />
             </View>
-          </View>
-        </KeyboardAvoidingView>
-
-      </ScrollView>
+            <View style={styles.contactUs}>
+              <Text>Lost your ticket number?</Text>
+              <NeedHelp onPress={() => { }} text="Contact Us" />
+            </View>
+          </KeyboardAvoidingView>
+        </ScrollView>
+      </SafeAreaView>
     );
   }
 }
@@ -115,8 +112,14 @@ class Ticket extends Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: 'center'
+    alignItems: 'center',
+    justifyContent: 'center',
   },
+  contactUs: {
+    position: 'absolute', //Here is the trick
+    bottom: 0, //Here is the trick
+    alignItems: 'center',
+  }
 });
 
 const mapStateToProps = ({ assets }) => {

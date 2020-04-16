@@ -14,12 +14,12 @@ export function HyperLink(props) {
     )
   }
 
-export function ClickableText(props) {
+export function NeedHelp(props) {
     const { text, onPress } = props
     return (
         <View style={{ padding: 5 }}>
             <TouchableOpacity onPress={onPress} >
-                <Text style={{ textDecorationLine: 'underline' }}>{text}</Text>
+                <Text style={{fontSize: 14, color:'#3598FE'}}>{text}</Text>
             </TouchableOpacity>
         </View>
     )
@@ -110,13 +110,14 @@ export function EndCallButon(props) {
     )
 }
 
-export function DefaultButtonColor(props){
-    const {onPress,title} = props
+export function DefaultButton(props){
+    const {onPress,title,disabled} = props
     return(
         <Button
             title={title}
             onPress = {onPress}
             buttonStyle={styles.defaultButtonColor}
+            disabled={disabled}
         />
     )
 }

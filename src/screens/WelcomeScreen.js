@@ -8,7 +8,7 @@ import {
 } from 'react-native';
 import { Button, Text, Avatar } from 'react-native-elements';
 import { connect } from 'react-redux';
-import { DefaultButtonColor } from '../components/Buttons';
+import { DefaultButton } from '../components/Buttons';
 import Video from "react-native-video";
 
 //const DEFAULT_LOGO = 'https://firebasestorage.googleapis.com/v0/b/influenceme-dev.appspot.com/o/assets%2Fdefault-logo.jpg?alt=media&token=20a6be6f-954f-417b-abfb-55e0ac75db02'
@@ -43,7 +43,7 @@ class WelcomeScreen extends Component {
             <Text style={{ width: 250, textAlign: 'center', color: 'white' }}> Access premium meetings to get together online</Text>
           </View>
           <View style={{margin:25, alignSelf: 'stretch' }}>
-            <DefaultButtonColor
+            <DefaultButton
               title={"Join your meeting"}
               onPress={() => this.props.navigation.navigate('Ticket')}
             />

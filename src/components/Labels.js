@@ -37,7 +37,20 @@ export function HighlightedText(props) {
 export function Label(props) {
     const { label } = props
     return (
-        <Text style={{ fontSize: 17, fontWeight: '600', paddingVertical: 10, }}>{label}</Text>
+        <Text style={{ fontSize: 17,paddingVertical:5 }}>{label}</Text>
+    )
+}
+
+export function BottomText(props) {
+    const { label } = props
+    return (
+        <Text style={{ fontSize: 14, color:'#333333' }}>{label}</Text>
+    )
+}
+export function ContactUs(props) {
+    const { label } = props
+    return (
+        <Text style={{ fontSize: 14, color:'#3598FE' }}>{label}</Text>
     )
 }
 
