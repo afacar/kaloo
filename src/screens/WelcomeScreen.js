@@ -3,7 +3,8 @@ import {
   View,
   StyleSheet,
   TouchableOpacity,
-  Dimensions
+  Dimensions,
+  Image
 } from 'react-native';
 import { Button, Text, Avatar } from 'react-native-elements';
 import { connect } from 'react-redux';
@@ -31,12 +32,12 @@ class WelcomeScreen extends Component {
             repeat
             style={styles.video}
           />
-          <View style={{ paddingBottom: 30, alignItems: 'center' }}>
-            <Avatar
-              //source={{ uri: DEFAULT_LOGO_IMAGE }}
-              size="large"
+          <View style={{alignItems: 'center' }}>
+            <Image
+              source={require('../assets/5.png')}
+              style={{ width: 150, height: 150 }}
             />
-            <Text style={{ fontSize: 25, fontWeight: 'bold', marginVertical: 10, color: 'white' }}>
+            <Text style={{ fontSize: 25, fontWeight: 'bold', color: 'white' }}>
               Kaloo
             </Text>
             <Text style={{ width: 250, textAlign: 'center', color: 'white' }}> Access premium meetings to get together online</Text>
@@ -46,11 +47,10 @@ class WelcomeScreen extends Component {
               title={"Join your meeting"}
               onPress={() => this.props.navigation.navigate('Ticket')}
             />
-
           </View>
           <View style={styles.footer}>
           <Text>Do you want to host your paid meeting?</Text>
-          <View style={{ flexDirection: 'row', width: '70%', justifyContent: 'space-around', marginTop: 15 }}>
+          <View style={{ flexDirection: 'row', width: '70%', justifyContent: 'space-around', marginTop: 15,marginBottom:10 }}>
             <TouchableOpacity
               onPress={() => this.props.navigation.navigate('SignIn')}>
               <Text style={{ fontSize: 15, fontWeight: 'bold' }}>
@@ -83,7 +83,7 @@ const styles = StyleSheet.create({
     borderTopRightRadius: 25,
     flexDirection: 'column',
     backgroundColor: '#F3F5F9',
-    padding: 30,
+    padding: 35,
     shadowColor: 'gray',
     shadowOpacity: 0.5,
     overflow: 'hidden',

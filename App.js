@@ -1,8 +1,9 @@
 import React, { Component } from 'react';
 import { Provider } from 'react-redux';
 import AppContainer from './src/navigation/AppNavigator';
-import { SafeAreaView } from 'react-native';
+import { SafeAreaView } from 'react-navigation';
 import firebase from 'react-native-firebase';
+import { View } from 'react-native';
 
 import store from './src/appstate/store';
 
@@ -26,11 +27,11 @@ class App extends Component {
 
   render() {
     return (
-      <SafeAreaView forceInset={{ top: 'always', bottom:'always' }} style={{ flex: 1,backgroundColor: 'green'}}>
-        <Provider store={store}>
-          <AppContainer />
-        </Provider>
-      </SafeAreaView>
+      <View style={{ flex: 1 }}>
+          <Provider store={store}>
+            <AppContainer />
+          </Provider>
+      </View>
     );
   }
 }
