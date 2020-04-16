@@ -28,7 +28,6 @@ const INITIAL_STATE = {
     peerIds: [],
     joinSucceed: false,
     viewers: 0,
-    duration: 0,
     time: 0,
     timeStr: '',
     status: app.EVENT_STATUS.SCHEDULED,
@@ -335,14 +334,6 @@ export default class LiveScreen extends Component {
         /*         var clientRole = this.props.navigation.getParam('clientRole', 2);
                 var eventID = this.props.navigation.getParam('eventID', 'agora_test'); */
         if (status !== app.EVENT_STATUS.IN_PROGRESS) {
-            if (clientRole === 1) {
-                // Suspend live event of host
-                suspendLive(eventID);
-            } else if (clientRole === 2) {
-                //leave live event of audience
-                // TODO: leaveEvent func.
-                leaveEvent(eventID, ticket)
-            }
             return navigation.goBack();
         }
         Alert.alert(

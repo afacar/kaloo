@@ -27,7 +27,6 @@ export default class VideoChatScreen extends Component {
         uid: '',
         peerIds: [],
         joinSucceed: false,
-        duration: 0,
         time: 0,
         timeStr: '',
         status: undefined,
@@ -284,9 +283,6 @@ export default class VideoChatScreen extends Component {
         const { clientRole, eventID, status, ticket } = this.state
 
         if (clientRole === 2 || status !== app.EVENT_STATUS.IN_PROGRESS) {
-            // Leave Video screen if it is audience
-            // or host stream status is not IN_PROGRESS
-            leaveEvent(eventID, ticket)
             return navigation.goBack();
         }
         // Confirm host before suspend streaming
@@ -453,14 +449,9 @@ export default class VideoChatScreen extends Component {
 
                 <View style={{ flex: 1 }}>
                     {
-                        capacity === 1 && <View style={{ flex: 1 }}>
-                            <View style={{ flex: 1 }}>
-                                <AgoraView mode={1} key={this.state.peerIds[0]} style={{ flex: 1 }} remoteUid={this.state.peerIds[0]} />
-                            </View>
-                            <View style={{ flex: 1 }}>
-                                <AgoraView style={{ flex: 1 }} mode={1} showLocalVideo={true} />
-                            </View>
-                        </View>
+                        capacity === 1 && (
+                            this.renderTwoVideos()
+                        )
                     }
                     {
                         capacity === 0 && (
