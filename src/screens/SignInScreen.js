@@ -115,7 +115,7 @@ class SignInScreen extends Component {
                   disabled={this.state.isWaiting} />
               </View>
               <View style={styles.contactUs}>
-                <ContactUs text="Have a problem?" screen='SignIn' />
+                <ContactUs title="Have a problem?" screen='SignIn' />
               </View>
             </View>
           </ScrollView>

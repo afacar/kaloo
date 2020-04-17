@@ -50,11 +50,11 @@ export class ContactUs extends Component {
     }
 
     render() {
-        const { text } = this.props
+        const { title } = this.props
         const { message, visible, infoMessage, chars, loading, sent } = this.state;
         return (
-            <View>
-                <ClickableText text={text || 'Contact Us'} onPress={this.openContactUs} />
+            <View style={{ alignSelf: 'center' }}>
+                <ClickableText text={title || 'Contact Us'} onPress={this.openContactUs} />
                 <Modal
                     animationType="slide"
                     visible={visible}

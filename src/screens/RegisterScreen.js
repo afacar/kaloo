@@ -221,7 +221,7 @@ class RegisterScreen extends Component {
                   disabled={isWaiting} />
               </View>
               <View style={styles.contactUs}>
-                <ContactUs text="Have a problem?" screen='Register' />
+                <ContactUs title="Have a problem?" screen='Register' />
               </View>
             </View>
           </ScrollView>
