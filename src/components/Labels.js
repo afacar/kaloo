@@ -16,17 +16,12 @@ export function HighlightedText(props) {
             flexDirection: 'row',
             alignItems: 'center',
             justifyContent: "center",
-            backgroundColor: '#196BFF',
+            backgroundColor: '#655FFF',
             borderRadius: 6,
-            paddingHorizontal: 30
+            paddingHorizontal: 15,
+            marginVertical:10
         }}>
-            <Icon
-                name='lightbulb-on-outline'
-                type='material-community'
-                color='#fff'
-                containerStyle={{ paddingHorizontal: 5 }}
-            />
-            <Text style={{ textAlign: 'center', color: 'white', paddingVertical: 15, fontSize: 15 }}>
+            <Text style={{color: 'white', paddingVertical: 15, fontSize: 15 }}>
                 {text}
             </Text>
         </View>
@@ -37,14 +32,27 @@ export function HighlightedText(props) {
 export function Label(props) {
     const { label } = props
     return (
-        <Text style={{ fontSize: 17, fontWeight: '600', paddingVertical: 10, }}>{label}</Text>
+        <Text style={{ fontSize: 17,paddingVertical:5 }}>{label}</Text>
+    )
+}
+
+export function BottomText(props) {
+    const { label } = props
+    return (
+        <Text style={{ fontSize: 14, color:'#333333' }}>{label}</Text>
+    )
+}
+export function ContactUs(props) {
+    const { label } = props
+    return (
+        <Text style={{ fontSize: 14, color:'#3598FE' }}>{label}</Text>
     )
 }
 
 export function BoldLabel(props) {
     const { label } = props
     return (
-        <Text style={{ fontSize: 17, fontWeight: '600', paddingVertical: 10, }}>{label}</Text>
+        <Text style={{ fontSize: 28, fontWeight: '600', paddingVertical: 10, }}>{label}</Text>
     )
 }
 

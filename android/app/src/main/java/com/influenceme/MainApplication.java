@@ -4,6 +4,7 @@ import android.app.Application;
 import android.content.Context;
 import com.facebook.react.PackageList;
 import com.facebook.react.ReactApplication;
+import com.brentvatne.react.ReactVideoPackage;
 import com.corbt.keepawake.KCKeepAwakePackage;
 import com.oblador.vectoricons.VectorIconsPackage;
 import io.invertase.firebase.RNFirebasePackage;
@@ -36,6 +37,7 @@ public class MainApplication extends Application implements ReactApplication {
           packages.add(new RNFirebaseFirestorePackage()); // <-- Add this line
           packages.add(new RNFirebaseStoragePackage()); // <-- Add this line
           packages.add(new RNFirebaseFunctionsPackage()); // <-- Add this line
+          packages.add(new ReactVideoPackage()); // <-- Add this line
 
           return packages;
         }
