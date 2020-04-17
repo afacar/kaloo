@@ -138,8 +138,9 @@ export function ClearButton(props) {
     const { onPress, title, disabled } = props
     return (
         <Button
-            type='clear                                        '
+            type='clear'
             title={title}
+            titleStyle={{ color: '#3BCDE2' }}
             onPress={onPress}
             buttonStyle={styles.clearButtonColor}
             disabled={disabled}
@@ -181,9 +182,10 @@ const styles = StyleSheet.create({
         height: 50
     },
     clearButtonColor: {
-        backgroundColor: "#3BCDE2",
+        marginTop: 10,
         borderRadius: 16,
-        height: 50
-
+        height: 50,
+        borderColor: '#3598FE',
+        borderWidth: 1,
     },
 })
