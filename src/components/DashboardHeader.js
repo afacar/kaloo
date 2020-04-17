@@ -19,7 +19,7 @@ export default class DashboradHeader extends React.Component {
                 />
                 <Text style={{ color: 'white', fontWeight: 'bold', paddingVertical: 10, fontSize: 20 }}>{auth().currentUser.displayName}</Text>
                 <ClickableText color='white' text='Edit Profile' onPress={() => navigation.navigate('Profile')} />
-                <ClickableText color='white' text='Total Earnings: $0 >' onPress={() => navigation.navigate('Balance')} />
+                <ClickableText color='white' text='Total Earnings: $0 →' onPress={() => navigation.navigate('Balance')} />
             </View>
         );
     }
