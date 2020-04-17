@@ -5,44 +5,23 @@ import { firestore, auth } from "react-native-firebase";
 import { connect } from 'react-redux';
 
 import { setUserProfile } from "../appstate/actions/auth_actions";
-import { checkAudioPermission, checkCameraPermission } from '../utils/Utils';
+import { checkAudioPermission, checkCameraPermission, compare } from '../utils/Utils';
+import app from "../constants/app";
 import { ContactUs } from '../components/ContactUs';
+import { DefaultButton, ClearButton } from '../components/Buttons';
+import { Label, BoldLabel } from '../components/Labels';
+import DashboardHeader from "../components/DashboardHeader";
 
 const db = firestore()
 
-class UserHeader extends React.Component {
-    render() {
-        return (
-            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                <Avatar
-                    rounded={true}
-                    size='small'
-                    source={{ uri: auth().currentUser.photoURL }}
-                />
-                <Text style={{ paddingLeft: 10, fontSize: 20 }}>{auth().currentUser.displayName}</Text>
-            </View>
-        );
-    }
-}
-
 
 class EventListScreen extends Component {
-    static navigationOptions = ({ navigation }) => ({
-        headerTitle: () => <UserHeader />,
-        headerRight: () => (
-            <Button
-                type='clear'
-                onPress={() => navigation.navigate('Profile')}
-                title={'Account'}
-                titleStyle={{ color: 'grey' }}
-                icon={{ type: 'material-community', name: 'settings', size: 15, color: 'grey' }}
-                iconRight
-            />
-        )
-    });
+    static navigationOptions = { headerShown: false }
 
     state = {
-        events: [],
+        liveEvents: [],
+        upcomingEvents: [],
+        pastEvents: [],
         isLoading: false,
     }
 
@@ -64,11 +43,16 @@ class EventListScreen extends Component {
     checkMyEvents = async () => {
         const { uid } = auth().currentUser
         this.setState({ isLoading: true })
-        var pathToEvents = `users/${uid}/myevents`;
+        const { IN_PROGRESS, SUSPENDED, SCHEDULED, COMPLETED } = app.EVENT_STATUS
+        var pathToEvents = `events`;
         // TODO: filter events based on status [All the events except COMPLETED]
-        let events = await db.collection(pathToEvents).where('eventDate', '>=', new Date()).orderBy('eventDate').get()
-            .then((querySnapshot) => {
-                var events = [];
+
+
+        db.collection(pathToEvents).where('uid', '==', uid)
+            .onSnapshot((querySnapshot) => {
+                var liveEvents = [];
+                var upcomingEvents = [];
+                var pastEvents = [];
                 querySnapshot.forEach(function (doc) {
                     let event = doc.data()
                     // Convert Firebase Timestamp tp JS Date object
@@ -79,12 +63,16 @@ class EventListScreen extends Component {
                         date = new Date(eventData.eventTimestamp)
                     }
                     event.eventDate = date
-                    events.push(event);
+                    if (event.status === SUSPENDED || event.status === IN_PROGRESS) liveEvents.push(event)
+                    if (event.status === SCHEDULED) upcomingEvents.push(event)
+                    if (event.status === COMPLETED) pastEvents.push(event)
                 });
-                return events;
+                console.log('liveEvents', liveEvents)
+                console.log('upcomingEvents', upcomingEvents)
+                console.log('pastEvents', pastEvents)
+                this.setState({ liveEvents, upcomingEvents, pastEvents, isLoading: false })
+                //return events;
             });
-        console.log('events here', events)
-        this.setState({ events, isLoading: false })
     }
 
     componentWillUnmount() {
@@ -102,54 +90,84 @@ class EventListScreen extends Component {
     }
 
     renderEventList = () => {
-        const { events, isLoading } = this.state;
+        const { liveEvents, upcomingEvents, isLoading } = this.state;
         if (isLoading) return <ActivityIndicator size='large' />
-
-        if (events.length > 0) {
-            return events.map((event, i) => {
-                let description = event.description.substring(0, 20) || 'No description';
-                description = description + '\n' + event.eventDate.toLocaleString()
-                return (
-                    <ListItem
-                        key={i}
-                        leftAvatar={{ source: { uri: event.image } }}
-                        rightIcon={{ type: 'material-community', name: 'chevron-right' }}
-                        title={event.title}
-                        subtitle={description}
-                        bottomDivider
-                        onPress={() => this.props.navigation.navigate('MyEvent', { event: event })}
-                    />
-                );
-            })
-        } else {
-            return <Text>No upcoming events!</Text>
+        liveEvents.sort(compare)
+        upcomingEvents.sort(compare)
+        // List SCHEDULED EVENT by sorting accordinf to eventDate
+        let lives = <View></View>
+        if (liveEvents.length > 0) {
+            lives = <View>
+                <BoldLabel label='Live Now!' />
+                {liveEvents.map((event, i) => {
+                    let description = event.eventDate.toLocaleString()
+                    return (
+                        <ListItem
+                            key={i}
+                            leftAvatar={{ source: { uri: event.image } }}
+                            rightIcon={{ type: 'material-community', name: 'chevron-right' }}
+                            title={event.title}
+                            titleStyle={{ fontWeight: 'bold' }}
+                            subtitle={description}
+                            containerStyle={{ borderWidth: 0.7, borderRadius: 6, marginTop: 7, elevation: 1 }}
+                            onPress={() => this.props.navigation.navigate('MyEvent', { event: event })}
+                        />
+                    );
+                })}
+            </View>
         }
+        // List SCHEDULED EVENT by sorting accordinf to eventDate
+        let upcomings = <View></View>
+        if (upcomingEvents.length > 0) {
+            upcomings = <View>
+                <Label label='Your Upcoming Meetings' />
+                {upcomingEvents.map((event, i) => {
+                    let description = event.eventDate.toLocaleString()
+                    return (
+                        <ListItem
+                            key={i}
+                            leftAvatar={{ source: { uri: event.image } }}
+                            rightIcon={{ type: 'material-community', name: 'chevron-right' }}
+                            title={event.title}
+                            titleStyle={{ fontWeight: 'bold' }}
+                            subtitle={description}
+                            onPress={() => this.props.navigation.navigate('MyEvent', { event: event })}
+                            containerStyle={{ borderWidth: 0.7, borderRadius: 6, marginTop: 7, elevation: 1 }}
+                        />
+                    );
+                })}
+            </View>
+        } else {
+            upcomings = <Text>No upcoming events!</Text>
+        }
+
+        return <View>
+            {lives}
+            {upcomings}
+        </View>
     }
 
     render() {
         return (
-            <View style={styles.container}>
-                <Card containerStyle={{ margin: 0, flex: 1, alignSelf: 'stretch' }} >
-                    <View style={{ justifyContent: 'flex-start', height: '100%', borderWidth: 0 }}>
-                        <View style={{ flexDirection: 'row', justifyContent: 'space-evenly', borderBottomWidth: 1 }}>
-                            <Button
-                                type='clear'
-                                icon={{ type: 'material-community', name: 'ticket' }}
-                                title='Join Event'
-                                onPress={() => this.props.navigation.navigate('MyTicket')} />
-                            <Button
-                                type='clear'
-                                icon={{ type: 'material-community', name: 'cast' }}
-                                title='Create Event'
-                                onPress={() => this.props.navigation.navigate('EventCreate')} />
-                        </View>
-                        <ScrollView overScrollMode='never'>
-                            {this.renderEventList()}
-                        </ScrollView>
-                    <ContactUs title='Have a problem?' screen='EventList' />
-
+            <View style={{ flex: 1, backgroundColor: '#3598FE' }}>
+                <DashboardHeader
+                    navigation={this.props.navigation}
+                //earnings={earnings} // TODO
+                />
+                <View style={styles.container}>
+                    <View style={{ flexDirection: 'column', justifyContent: 'space-evenly' }}>
+                        <DefaultButton
+                            title='+ Create an Event'
+                            onPress={() => this.props.navigation.navigate('EventCreate')} />
+                        <ClearButton
+                            title='Join a show'
+                            onPress={() => this.props.navigation.navigate('MyTicket')} />
                     </View>
-                </Card>
+                    <ScrollView overScrollMode='never'>
+                        {this.renderEventList()}
+                        <ContactUs title='Have a problem?' screen='EventList' />
+                    </ScrollView>
+                </View>
             </View>
         )
     }
@@ -159,7 +177,12 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         justifyContent: 'flex-start',
-        alignItems: 'center',
+        alignItems: 'stretch',
+        paddingHorizontal: 15,
+        paddingTop: 10,
+        backgroundColor: 'white',
+        borderTopLeftRadius: 16,
+        borderTopRightRadius: 16
     }
 })
 
