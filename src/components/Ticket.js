@@ -68,7 +68,7 @@ class Ticket extends Component {
           }}>
           <KeyboardAvoidingView style={styles.container}>
             <Image
-              source={require('../assets/5.png')}
+              source={require('../assets/icon.png')}
               style={{ width: 150, height: 150 }}
             />
             <Label label="Get your ticket ready!" />
