@@ -17,7 +17,7 @@ export default function PreviewBody(props) {
       <Label label={description || 'No description'} />
       </View>
       {capacity && <View>
-        <Text style={{ alignSelf: 'flex-end', }}>{capacity} Ticket Left</Text>
+        <Text style={{ alignSelf: 'flex-end',marginTop:15 }}>{capacity} Ticket Left</Text>
         <Slider
           trackStyle={{ height: 10,width:'100%', backgroundColor: '#196BFF', borderBottomRightRadius: 20, borderTopRightRadius: 20, borderBottomLeftRadius: 20, borderTopLeftRadius: 20 }}
           value={capacity}
