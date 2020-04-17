@@ -45,7 +45,7 @@ export function BottomText(props) {
 export function BoldLabel(props) {
     const { label } = props
     return (
-        <Text style={{ fontSize: 28, fontWeight: '600', paddingVertical: 10, }}>{label}</Text>
+        <Text style={{ fontSize: 17, fontWeight: 'bold', paddingVertical: 10, }}>{label}</Text>
     )
 }
 
