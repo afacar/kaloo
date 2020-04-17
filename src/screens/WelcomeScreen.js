@@ -25,24 +25,24 @@ class WelcomeScreen extends Component {
       <View style={styles.container}>
         <View style={{ flex: 8, justifyContent: 'center', alignItems: 'center' }}>
           <Video
-            source={{ uri: 'http://d23dyxeqlo5psv.cloudfront.net/big_buck_bunny.mp4' }}
+            source={{ uri: 'https://firebasestorage.googleapis.com/v0/b/influenceme-dev.appspot.com/o/assets%2Fwelcome-video.mov?alt=media&token=436c5a93-45ef-4aa1-abd1-6f717ca4300f' }}
             muted={true}
             repeat={true}
             resizeMode={"cover"}
             repeat
             style={styles.video}
           />
-          <View style={{alignItems: 'center' }}>
+          <View style={{alignItems: 'center', opacity: 0.7  }}>
             <Image
-              source={require('../assets/5.png')}
-              style={{ width: 150, height: 150 }}
+              source={require('../assets/icon.png')}
+              style={{ width: 150, height: 150}}
             />
             <Text style={{ fontSize: 25, fontWeight: 'bold', color: 'white' }}>
               Kaloo
             </Text>
             <Text style={{ width: 250, textAlign: 'center', color: 'white' }}> Access premium meetings to get together online</Text>
           </View>
-          <View style={{margin:25, alignSelf: 'stretch' }}>
+          <View style={{margin:25, alignSelf: 'stretch', opacity: 0.7  }}>
             <DefaultButton
               title={"Join your meeting"}
               onPress={() => this.props.navigation.navigate('Ticket')}
