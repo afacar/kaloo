@@ -155,15 +155,15 @@ class EventListScreen extends Component {
                 //earnings={earnings} // TODO
                 />
                 <View style={styles.container}>
-                    <View style={{ flexDirection: 'column', justifyContent: 'space-evenly' }}>
-                        <DefaultButton
-                            title='+ Create an Event'
-                            onPress={() => this.props.navigation.navigate('EventCreate')} />
-                        <ClearButton
-                            title='Join a show'
-                            onPress={() => this.props.navigation.navigate('MyTicket')} />
-                    </View>
                     <ScrollView overScrollMode='never'>
+                        <View style={{ flexDirection: 'column', justifyContent: 'space-evenly' }}>
+                            <DefaultButton
+                                title='+ Create an Event'
+                                onPress={() => this.props.navigation.navigate('EventCreate')} />
+                            <ClearButton
+                                title='Join a show'
+                                onPress={() => this.props.navigation.navigate('MyTicket')} />
+                        </View>
                         {this.renderEventList()}
                         <ContactUs title='Have a problem?' screen='EventList' />
                     </ScrollView>
