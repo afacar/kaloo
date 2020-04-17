@@ -176,3 +176,13 @@ export function InfoModal(title, message, confirmText, onConfirm) {
         { cancelable: false }
     );
 }
+
+export function compare(a, b) {
+    if (a.eventDate < b.eventDate) {
+        return -1;
+    }
+    if (a.eventDate > b.eventDate) {
+        return 1;
+    }
+    return 0;
+}
