@@ -8,9 +8,9 @@ export function HyperLink(props) {
     const { text, link } = props
 
     return (
-      <TouchableOpacity onPress={() => Linking.openURL(link)} >
-        <Text style={{ color: '#3598FE',textDecorationLine: 'underline', }}>{text}</Text>
-      </TouchableOpacity>
+        <TouchableOpacity onPress={() => Linking.openURL(link)} >
+            <Text style={{ color: '#3598FE', textDecorationLine: 'underline', }}>{text}</Text>
+        </TouchableOpacity>
     )
 }
 
@@ -19,7 +19,7 @@ export function ClickableText(props) {
     return (
         <View style={{ padding: 5 }}>
             <TouchableOpacity onPress={onPress} >
-                <Text style={{fontSize: 14, color:'#3598FE'}}>{text}</Text>
+                <Text style={{ fontSize: 14, color: '#3598FE' }}>{text}</Text>
             </TouchableOpacity>
         </View>
     )
@@ -110,17 +110,43 @@ export function EndCallButon(props) {
     )
 }
 
-export function DefaultButton(props){
-    const {onPress,title,disabled} = props
-    return(
+export function DefaultButton(props) {
+    const { onPress, title, disabled } = props
+    return (
         <Button
             title={title}
-            onPress = {onPress}
+            onPress={onPress}
             buttonStyle={styles.defaultButtonColor}
             disabled={disabled}
         />
     )
 }
+
+export function RedButton(props) {
+    const { onPress, title, disabled } = props
+    return (
+        <Button
+            title={title}
+            onPress={onPress}
+            buttonStyle={styles.redButton}
+            disabled={disabled}
+        />
+    )
+}
+
+export function ClearButton(props) {
+    const { onPress, title, disabled } = props
+    return (
+        <Button
+            type='clear                                        '
+            title={title}
+            onPress={onPress}
+            buttonStyle={styles.clearButtonColor}
+            disabled={disabled}
+        />
+    )
+}
+
 
 const styles = StyleSheet.create({
     startButton: {
@@ -143,10 +169,21 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center'
     },
-    defaultButtonColor:{
-        backgroundColor:"#3BCDE2",
-        borderRadius:16,
-        height:50
+    redButton: {
+        alignSelf: 'center',
+        backgroundColor: colors.RED,
+        borderRadius: 16,
+        height: 50,
+    },
+    defaultButtonColor: {
+        backgroundColor: "#3BCDE2",
+        borderRadius: 16,
+        height: 50
+    },
+    clearButtonColor: {
+        backgroundColor: "#3BCDE2",
+        borderRadius: 16,
+        height: 50
 
-    }
+    },
 })

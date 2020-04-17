@@ -19,33 +19,26 @@ export function HighlightedText(props) {
             backgroundColor: '#655FFF',
             borderRadius: 6,
             paddingHorizontal: 15,
-            marginVertical:10
+            marginVertical: 10
         }}>
-            <Text style={{color: 'white', paddingVertical: 15, fontSize: 15 }}>
+            <Text style={{ color: 'white', paddingVertical: 15, fontSize: 15 }}>
                 {text}
             </Text>
         </View>
     )
-
 }
 
 export function Label(props) {
     const { label } = props
     return (
-        <Text style={{ fontSize: 17,paddingVertical:5 }}>{label}</Text>
+        <Text style={{ fontSize: 17, paddingVertical: 5 }}>{label}</Text>
     )
 }
 
 export function BottomText(props) {
     const { label } = props
     return (
-        <Text style={{ fontSize: 14, color:'#333333' }}>{label}</Text>
-    )
-}
-export function ContactUs(props) {
-    const { label } = props
-    return (
-        <Text style={{ fontSize: 14, color:'#3598FE' }}>{label}</Text>
+        <Text style={{ fontSize: 14, color: '#333333' }}>{label}</Text>
     )
 }
 
