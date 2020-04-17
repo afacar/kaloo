@@ -208,7 +208,7 @@ class RegisterScreen extends Component {
                 />
                 <View style={{ justifyContent: 'center' }}>
                   <Text>By checking this box I aggree with</Text>
-                  <HyperLink text="terms and conditions" />
+                  <HyperLink text="terms and conditions" link='https://policies.google.com/terms?hl=en-US' />
                 </View>
               </View>
 
