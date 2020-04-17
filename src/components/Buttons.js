@@ -15,11 +15,11 @@ export function HyperLink(props) {
 }
 
 export function ClickableText(props) {
-    const { text, onPress } = props
+    const { text, onPress, color } = props
     return (
         <View style={{ padding: 5 }}>
             <TouchableOpacity onPress={onPress} >
-                <Text style={{ fontSize: 14, color: '#3598FE' }}>{text}</Text>
+                <Text style={{ fontSize: 14, color: color || '#3598FE' }}>{text}</Text>
             </TouchableOpacity>
         </View>
     )
