@@ -52,20 +52,20 @@ export function BoldLabel(props) {
 export function H1Label(props) {
     const { label } = props
     return (
-        <Text style={{ fontSize: 17, fontWeight: '600', paddingVertical: 10, }}>{label}</Text>
+        <Text style={{ fontSize: 27, fontWeight: '600', paddingVertical: 10, }}>{label}</Text>
     )
 }
 
 export function H2Label(props) {
     const { label } = props
     return (
-        <Text style={{ fontSize: 17, fontWeight: '600', paddingVertical: 10, }}>{label}</Text>
+        <Text style={{ fontSize: 25, fontWeight: '600', paddingVertical: 10, }}>{label}</Text>
     )
 }
 
 export function H3Label(props) {
     const { label } = props
     return (
-        <Text style={{ fontSize: 17, fontWeight: '600', paddingVertical: 10, }}>{label}</Text>
+        <Text style={{ fontSize: 23, fontWeight: '600', paddingVertical: 10, }}>{label}</Text>
     )
 }

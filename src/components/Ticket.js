@@ -7,6 +7,7 @@ import { SafeAreaView } from 'react-navigation';
 
 import { Label } from './Labels';
 import { ClickableText, DefaultButton } from '../components/Buttons';
+import { ContactUs } from './ContactUs';
 
 
 class Ticket extends Component {
@@ -100,7 +101,7 @@ class Ticket extends Component {
             </View>
             <View style={styles.contactUs}>
               <Text>Lost your ticket number?</Text>
-              <ClickableText onPress={() => { }} text="Contact Us" />
+              <ContactUs screen='Ticket' />
             </View>
           </KeyboardAvoidingView>
         </ScrollView>

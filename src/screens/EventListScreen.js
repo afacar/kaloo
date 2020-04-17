@@ -6,6 +6,7 @@ import { connect } from 'react-redux';
 
 import { setUserProfile } from "../appstate/actions/auth_actions";
 import { checkAudioPermission, checkCameraPermission } from '../utils/Utils';
+import { ContactUs } from '../components/ContactUs';
 
 const db = firestore()
 
@@ -145,6 +146,8 @@ class EventListScreen extends Component {
                         <ScrollView overScrollMode='never'>
                             {this.renderEventList()}
                         </ScrollView>
+                    <ContactUs title='Have a problem?' screen='EventList' />
+
                     </View>
                 </Card>
             </View>

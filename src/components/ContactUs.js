@@ -4,39 +4,39 @@ import { Input, Button } from 'react-native-elements';
 import { functions, auth } from "react-native-firebase";
 import { ClickableText, DefaultButton, RedButton } from './Buttons';
 
-const INITIAL_STATE = { text: '', visible: false, message: '', chars: 0, loading: false, sent: false }
+const INITIAL_STATE = { message: '', visible: false, infoMessage: '', chars: 0, loading: false, sent: false }
 
 export class ContactUs extends Component {
     state = INITIAL_STATE
 
     onSubmit = async () => {
-        const { text } = this.state;
+        const { message } = this.state;
         const { screen } = this.props
         let user = { uid: '', email: '' }
 
-        if (text.length < 3) {
-            return this.setState({ message: 'We need more than this :)' })
+        if (message.length < 3) {
+            return this.setState({ infoMessage: 'We need more than this :)' })
         }
 
         if (auth().currentUser) {
             user.uid = auth().currentUser.uid
             user.email = auth().currentUser.email
         }
-        
+
         this.setState({ loading: true })
         try {
             let contactUs = functions().httpsCallable('contactUs')
-            let contactData = { text, screen, user }
+            let contactData = { message, screen, user }
             console.log('contactData', contactData)
             let result = await contactUs(contactData)
             console.log('contactUs result', result)
             if (result.data.state === 'SUCCESS') {
-                this.setState({ message: 'Thanks for inquiry!', sent: true })
+                this.setState({ infoMessage: 'Thanks for inquiry!', sent: true })
             } else {
-                this.setState({ message: result.data.message })
+                this.setState({ infoMessage: result.data.message })
             }
         } catch (error) {
-            this.setState({ message: error.message })
+            this.setState({ infoMessage: error.message })
         }
         this.setState({ loading: false })
     };
@@ -50,10 +50,11 @@ export class ContactUs extends Component {
     }
 
     render() {
-        const { text, visible, message, chars, loading, sent } = this.state;
+        const { text } = this.props
+        const { message, visible, infoMessage, chars, loading, sent } = this.state;
         return (
             <View>
-                <ClickableText text='Contact Us' onPress={this.openContactUs} />
+                <ClickableText text={text || 'Contact Us'} onPress={this.openContactUs} />
                 <Modal
                     animationType="slide"
                     visible={visible}
@@ -63,10 +64,10 @@ export class ContactUs extends Component {
                 >
                     <View style={styles.container}>
                         <View style={styles.modalView}>
-                            <Text style={{ color: 'red' }}>{message}</Text>
+                            <Text style={{ color: 'red' }}>{infoMessage}</Text>
                             {!sent && <Input
-                                value={text}
-                                onChangeText={text => this.setState({ text, chars: text.length })}
+                                value={message}
+                                onChangeText={message => this.setState({ message, chars: message.length })}
                                 placeholder='Text goes here'
                                 multiline
                                 maxLength={250}
