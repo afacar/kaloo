@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { StyleSheet, View, ScrollView, Text, TouchableOpacity, Alert } from 'react-native';
+import { StyleSheet, View, ScrollView, Text, TouchableOpacity } from 'react-native';
 import { storage, firestore, functions } from 'react-native-firebase';
 import { Input, Button, Image, CheckBox, Icon } from 'react-native-elements';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
@@ -7,7 +7,7 @@ import ImagePicker from 'react-native-image-crop-picker';
 import { HighlightedText } from '../components/Labels';
 import { app } from '../constants';
 import { connect } from 'react-redux';
-import { splitDate } from '../utils/Utils';
+import { splitDate, ConfirmModal } from '../utils/Utils';
 
 const INITIAL_STATE = {
     image: null,
@@ -121,22 +121,17 @@ class EventCreateScreen extends Component {
         this.setState({ isDatePickerVisible: false, eventDate: selectedDate, dateMessage: '' });
     };
 
+    onConfirmPublish = () => {
+        this.setState({ isPublishing: true });
+        this.createEvent();
+    }
+
     _confirmPublish = () => {
-        console.log('confirm this.props', this.props);
-        Alert.alert('You will publish event', 'This can not be undone!', [
-            {
-                text: 'Cancel',
-                onPress: () => { },
-                style: 'cancel',
-            },
-            {
-                text: 'Yes, Publish',
-                onPress: () => {
-                    this.setState({ isPublishing: true });
-                    this.createEvent();
-                },
-            },
-        ]);
+        const title = 'You will publish event',
+            message = 'This can not be undone!',
+            confirmText = 'Yes, Publish',
+            cancelText = 'Cancel';
+        ConfirmModal(title, message, confirmText, cancelText, this.onConfirmPublish)
     }
 
     render() {

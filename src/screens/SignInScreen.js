@@ -6,17 +6,10 @@ import {
   ScrollView,
 } from 'react-native';
 import { Input, Button } from 'react-native-elements';
-import firebase from 'react-native-firebase';
-import { HighlightedText } from '../components/Labels';
-import { Label } from '../components/Labels';
+import { auth } from 'react-native-firebase';
 
-
-function validateEmail(email) {
-  if (/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(email)) {
-    return true;
-  }
-  return false;
-}
+import { HighlightedText, Label } from '../components/Labels';
+import { validateEmail } from '../utils/Utils'
 
 class SignInScreen extends Component {
   static navigationOptions = ({ navigation }) => ({
@@ -43,8 +36,7 @@ class SignInScreen extends Component {
     console.log('email and password', email, password);
     this.setState({ isWaiting: true });
     try {
-      let user = await firebase
-        .auth()
+      let user = await auth()
         .signInWithEmailAndPassword(email, password);
       if (user) return this.props.navigation.navigate('UserHome');
       console.log('The user', user);

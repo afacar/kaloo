@@ -1,10 +1,10 @@
 import React, { Component } from 'react';
-import { View, Platform, PermissionsAndroid, Alert, StatusBar, Text, TouchableOpacity } from 'react-native';
+import { View, Alert, StatusBar, Text, TouchableOpacity } from 'react-native';
 import { RtcEngine, AgoraView } from 'react-native-agora';
 import KeepAwake from 'react-native-keep-awake';
 import { clearLiveEventListener, setLiveEventListener, startEvent, endLive, suspendLive, continueLive, leaveEvent, setTicketListener, clearTicketListener } from '../utils/EventHandler';
 import { handleAndroidBackButton, removeAndroidBackButtonHandler } from '../utils/BackHandler';
-import { formatTime, getDeviceID } from '../utils/Utils';
+import { formatTime, getDeviceID, checkCameraPermission, checkAudioPermission, ConfirmModal, InfoModal } from '../utils/Utils';
 import { AppText } from '../components/Labels';
 import { Icon } from 'react-native-elements';
 import Header from '../components/Header';
@@ -15,11 +15,11 @@ const HOST_UID = 1000;
 
 
 export default class VideoChatScreen extends Component {
-
     constructor(props) {
         super(props);
         this.backButtonPressed = this.backButtonPressed.bind(this);
     }
+
     liveData = this.props.navigation.getParam('liveData', '')
 
     state = {
@@ -33,155 +33,65 @@ export default class VideoChatScreen extends Component {
         startLoading: false
     };
 
-    checkCameraPermission = async () => {
-        try {
-            const granted = await PermissionsAndroid.request(
-                PermissionsAndroid.PERMISSIONS.CAMERA);
-            if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-                // granted
-            } else {
-                // not granted
-            }
-        } catch (err) {
-        }
-    }
-
-    checkAudioPermission = async () => {
-        try {
-            const granted = await PermissionsAndroid.request(
-                PermissionsAndroid.PERMISSIONS.RECORD_AUDIO,
-                {
-                    title: 'Microphone Permission',
-                    message:
-                        'InfluenceMe needs access to your camera',
-                    buttonNeutral: 'Ask Me Later',
-                    buttonNegative: 'Cancel',
-                    buttonPositive: 'OK',
-                },
-            );
-            if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-                // granted
-            } else {
-                // not granted
-            }
-        } catch (err) {
-        }
-    }
-
-    startCall = () => {
+    onStartCall = () => {
         const { eventID } = this.state;
-        Alert.alert(
-            "Start broadcast",
-            "Are you sure you want to start meeting?",
-            [
-                {
-                    text: 'No', onPress: () => { },
-                    style: 'cancel'
-                },
-                {
-                    text: 'Yes', onPress: () => {
-                        RtcEngine.leaveChannel();
-                        RtcEngine.joinChannel(eventID, HOST_UID)
-                            .then(async (result) => {
-                                this.setState({
-                                    startLoading: true
-                                })
-                                let response = await startEvent(eventID);
-                                if (!response) {
-                                    Alert.alert(
-                                        'Error occured',
-                                        'Unknown error occured while starting your call. Please try again!',
-                                        [
-                                            {
-                                                text: 'Ok', onPress: () => { },
-                                                style: 'cancel'
-                                            },
-                                        ],
-                                        { cancelable: false }
-                                    )
-                                }
-                                this.setState({
-                                    startLoading: false
-                                })
-                            })
-                            .catch((error) => {
-                            });
-                    }
-                },
-            ],
-            { cancelable: false }
-        );
+        RtcEngine.leaveChannel();
+        RtcEngine.joinChannel(eventID, HOST_UID)
+            .then(async (result) => {
+                this.setState({ startLoading: true })
+                let response = await startEvent(eventID);
+                if (!response) {
+                    let title = 'Error occured',
+                        message = 'Unknown error occured while starting your call. Please try again!',
+                        onConfirm = () => { }
+                    InfoModal(title, message, 'Ok', onConfirm)
+                }
+                this.setState({ startLoading: false })
+            })
+            .catch((error) => {
+            });
     }
 
-    continueCall = () => {
+    _startCall = () => {
+        let title = 'Starting broadcast',
+            message = 'Do you want to start video meeting?';
+        ConfirmModal(title, message, 'Yes', 'Cancel', this.onStartCall)
+    }
+
+    onContinueCall = () => {
         const { eventID } = this.state;
-        Alert.alert(
-            "Continue broadcast",
-            "Are you sure you want to continue meeting?",
-            [
-                {
-                    text: 'No', onPress: () => { },
-                    style: 'cancel'
-                },
-                {
-                    text: 'Yes', onPress: () => {
-                        RtcEngine.leaveChannel();
-                        RtcEngine.joinChannel(eventID, HOST_UID)
-                            .then(async (result) => {
-                                this.setState({
-                                    startLoading: true
-                                })
-                                let response = await continueLive(eventID);
-                                if (!response) {
-                                    Alert.alert(
-                                        'Error occured',
-                                        'Unknown error occured while starting your call. Please try again!',
-                                        [
-                                            {
-                                                text: 'Ok', onPress: () => { },
-                                                style: 'cancel'
-                                            },
-                                        ],
-                                        { cancelable: false }
-                                    )
-                                }
-                                this.setState({
-                                    startLoading: false
-                                })
-                            })
-                            .catch((error) => {
-                            });
-                    }
-                },
-            ],
-            { cancelable: false }
-        );
+        RtcEngine.leaveChannel();
+        RtcEngine.joinChannel(eventID, HOST_UID)
+            .then((result) => {
+                continueLive(eventID);
+            })
+            .catch((error) => {
+            });
+    }
+
+    _continueCall = () => {
+        let title = 'Confirm',
+            message = 'Continue video meeting?';
+        ConfirmModal(title, message, 'Ok', 'Cancel', this.onContinueCall)
     }
 
     suspendCall = () => {
         this.backButtonPressed();
     }
 
-    endCall = () => {
+    onEndCall = () => {
         const { eventID } = this.state;
-        Alert.alert(
-            "Confirm End",
-            "Do you want to end your stream early?",
-            [
-                {
-                    text: 'Cancel', onPress: () => { },
-                    style: 'cancel'
-                },
-                {
-                    text: 'OK', onPress: () => {
-                        RtcEngine.leaveChannel();
-                        endLive(eventID);
-                        this.props.navigation.goBack();
-                    }
-                },
-            ],
-            { cancelable: false }
-        );
+        RtcEngine.leaveChannel();
+        endLive(eventID);
+        this.props.navigation.goBack();
+    }
+
+    _endCall = () => {
+        let title = 'Confirm',
+            message = 'Do you want to end your meeting?',
+            confirmText = 'Yes',
+            cancelText = 'No';
+        ConfirmModal(title, message, confirmText, cancelText, this.onEndCall)
     }
 
     leaveCall = () => {
@@ -189,10 +99,8 @@ export default class VideoChatScreen extends Component {
     }
 
     componentDidMount() {
-        if (Platform.OS === 'android') {
-            this.checkCameraPermission();
-            this.checkAudioPermission();
-        }
+        checkAudioPermission()
+        checkCameraPermission()
 
         // setup listener for  watcherCount
         this.setState({ timeStr: formatTime(this.state.duration * 60) })
@@ -234,7 +142,7 @@ export default class VideoChatScreen extends Component {
                 }
             }
             else if (status === app.EVENT_STATUS.COMPLETED && clientRole === 2) {
-                this.onEventCompleted();
+                this._onEventCompleted();
             }
             this.setState({ viewers: viewerCount || 0, status: status || app.EVENT_STATUS.SCHEDULED })
         });
@@ -266,35 +174,28 @@ export default class VideoChatScreen extends Component {
             var localID = await getDeviceID();
             if (localID != remoteID) {
                 this.props.navigation.goBack();
-                Alert.alert(
-                    'Multiple Access',
-                    'System detected using same ticket from different devices. You can only use you ticket from a single device at a given time',
-                    [
-                        {
-                            text: 'OK', onPress: () => { }
-                        }
-                    ],
-                    { cancelable: false }
-                )
+                let title = 'Multiple Access',
+                    message = 'System detected using same ticket from different devices. You can only use you ticket from a single device at a given time',
+                    onConfirm = () => { }
+                InfoModal(title, message, 'Ok', onConfirm)
             }
         })
     }
 
-    onEventCompleted() {
-        Alert.alert(
-            "Event Finished",
-            "Host ended the meeting",
-            [
+    _onEventCompleted() {
+        let title = 'Meeting finished',
+            message = 'Your host ended the meeting!',
+            onConfirm = () => { this.props.navigation.goBack() }
+        InfoModal(title, message, 'Ok', onConfirm)
+    }
 
-                {
-                    text: 'OK', onPress: () => {
-                        this.props.navigation.goBack();
-                        return false;
-                    }
-                },
-            ],
-            { cancelable: false }
-        );
+    _onSuspend = () => {
+        // Suspend live event of host
+        const { navigation } = this.props;
+        const { eventID } = this.state
+        suspendLive(eventID)
+        navigation.goBack();
+        return false;
     }
 
     backButtonPressed() {
@@ -305,34 +206,11 @@ export default class VideoChatScreen extends Component {
                 leaveEvent(eventID, ticket)
             return navigation.goBack();
         }
-        // Confirm
-        Alert.alert(
-            "Confirm Exit",
-            "You can continue call from MyEvent page",
-            [
-                {
-                    text: 'Cancel', onPress: () => {
-                        return true;
+        // Confirm host before suspend streaming
+        let title = 'Leave call?',
+            message = 'Meeting is not finished yet, you can still continue!';
 
-                    },
-                    style: 'cancel'
-                },
-                {
-                    text: 'OK', onPress: () => {
-                        if (clientRole === 1) {
-                            // Suspend live event of host
-                            suspendLive(eventID);
-                        } else if (clientRole === 2) {
-                            //leave live event of audience
-                            leaveEvent(eventID, ticket)
-                        }
-                        navigation.goBack();
-                        return false;
-                    }
-                },
-            ],
-            { cancelable: false }
-        );
+        ConfirmModal(title, message, 'Ok', 'Cancel', this._onSuspend)
         return true;
     }
 
@@ -396,15 +274,15 @@ export default class VideoChatScreen extends Component {
         const { status, startLoading } = this.state;
         if (status === app.EVENT_STATUS.IN_PROGRESS) {
             return (
-                <EndCallButon onPress={this.endCall} loading={startLoading} />
+                <EndCallButon onPress={this._endCall} loading={startLoading} />
             )
         } else if (status === app.EVENT_STATUS.SCHEDULED) {
             return (
-                <StartCallButon onPress={this.startCall} loading={startLoading} />
+                <StartCallButon onPress={this._startCall} loading={startLoading} />
             )
         } else if (status === app.EVENT_STATUS.SUSPENDED) {
             return (
-                <ContinueCallButon onPress={this.continueCall} loading={startLoading} />
+                <ContinueCallButon onPress={this._continueCall} loading={startLoading} />
             )
         }
     }

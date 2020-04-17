@@ -1,7 +1,6 @@
 import React from 'react';
-import { View, Text, Alert, Share, Clipboard } from 'react-native';
+import { View, Text, Alert, Share, Clipboard, TouchableOpacity } from 'react-native';
 import { Icon, Button } from 'react-native-elements';
-import { TouchableOpacity } from 'react-native-gesture-handler';
 
 async function onShare(link, title) {
     try {

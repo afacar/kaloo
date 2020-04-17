@@ -1,9 +1,11 @@
 import React, { Component } from 'react';
-import { View, StyleSheet, PermissionsAndroid, Text, ActivityIndicator, ScrollView, Platform } from 'react-native';
+import { View, StyleSheet, Text, ActivityIndicator, ScrollView } from 'react-native';
 import { Button, Card, ListItem, Avatar } from 'react-native-elements';
 import { firestore, auth } from "react-native-firebase";
 import { connect } from 'react-redux';
+
 import { setUserProfile } from "../appstate/actions/auth_actions";
+import { checkAudioPermission, checkCameraPermission } from '../utils/Utils';
 
 const db = firestore()
 
@@ -54,10 +56,8 @@ class EventListScreen extends Component {
         });
         this.props.setUserProfile();
         this.checkMyEvents()
-        if (Platform.OS === 'android') {
-            this.checkCameraPermission();
-            this.checkAudioPermission();
-        }
+        checkCameraPermission()
+        checkAudioPermission()
     }
 
     checkMyEvents = async () => {
@@ -82,45 +82,8 @@ class EventListScreen extends Component {
                 });
                 return events;
             });
-            console.log('events here', events)
-            this.setState({ events, isLoading: false })
-    }
-
-    checkAudioPermission = async () => {
-        try {
-            const granted = await PermissionsAndroid.request(
-                PermissionsAndroid.PERMISSIONS.RECORD_AUDIO,
-                {
-                    title: 'Microphone Permission',
-                    message:
-                        'InfluenceMe needs access to your camera',
-                    buttonNeutral: 'Ask Me Later',
-                    buttonNegative: 'Cancel',
-                    buttonPositive: 'OK',
-                },
-            );
-            if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-                // granted
-            } else {
-                // not granted
-            }
-        } catch (err) {
-            // console.warn(err);
-        }
-    }
-
-    checkCameraPermission = async () => {
-        try {
-            const granted = await PermissionsAndroid.request(
-                PermissionsAndroid.PERMISSIONS.CAMERA);
-            if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-                console.log('You can use the camera');
-            } else {
-                console.log('Camera permission denied');
-            }
-        } catch (err) {
-            console.warn(err);
-        }
+        console.log('events here', events)
+        this.setState({ events, isLoading: false })
     }
 
     componentWillUnmount() {

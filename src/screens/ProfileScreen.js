@@ -3,8 +3,8 @@ import { View, StyleSheet, Text, ActivityIndicator, KeyboardAvoidingView, Scroll
 import { Input, Button, Avatar, Icon } from 'react-native-elements';
 import { firestore, auth, storage } from "react-native-firebase";
 import ImagePicker from "react-native-image-crop-picker";
-import { HyperLink } from '../components/Buttons';
 import { ClickableText } from '../components/Buttons';
+import { ContactUs } from '../components/ContactUs';
 
 const db = firestore();
 
@@ -128,7 +128,7 @@ class ProfileScreen extends Component {
                     </View>
                     <View style={{ alignSelf: 'stretch', justifyContent: 'space-around', flexDirection: 'row' }}>
                         <ClickableText text='Log out' onPress={() => auth().signOut()} />
-                        <HyperLink text='Need Help?' link={`mailto:support@speechtext.io?subject=${auth().currentUser.uid}`} />
+                        <ContactUs text='Need Help?' screen='Profile' />
                     </View>
                 </ScrollView>
             </KeyboardAvoidingView>
