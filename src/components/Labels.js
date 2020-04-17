@@ -32,7 +32,7 @@ export function HighlightedText(props) {
 export function Label(props) {
     const { label } = props
     return (
-        <Text style={{ fontSize: 17,paddingVertical:5 }}>{label}</Text>
+        <Text style={{ fontSize: 15 }}>{label}</Text>
     )
 }
 
@@ -52,14 +52,14 @@ export function ContactUs(props) {
 export function BoldLabel(props) {
     const { label } = props
     return (
-        <Text style={{ fontSize: 28, fontWeight: '600', paddingVertical: 10, }}>{label}</Text>
+        <Text style={{ fontSize: 17, fontWeight: '600', paddingVertical: 10, }}>{label}</Text>
     )
 }
 
 export function H1Label(props) {
     const { label } = props
     return (
-        <Text style={{ fontSize: 17, fontWeight: '600', paddingVertical: 10, }}>{label}</Text>
+        <Text style={{ fontSize: 28, fontWeight: '700', paddingVertical: 10, }}>{label}</Text>
     )
 }
 

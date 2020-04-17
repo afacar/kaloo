@@ -265,7 +265,7 @@ const styles = StyleSheet.create({
     borderWidth: 0.7,
     borderColor: '#909090',
     borderRadius: 6,
-    paddingVertical: 5,
+    //paddingVertical: 5,
 
   },
   contactUs: {
