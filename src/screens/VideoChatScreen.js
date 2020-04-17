@@ -27,7 +27,6 @@ export default class VideoChatScreen extends Component {
         uid: '',
         peerIds: [],
         joinSucceed: false,
-        duration: 0,
         time: 0,
         timeStr: '',
         status: undefined,
@@ -128,8 +127,27 @@ export default class VideoChatScreen extends Component {
                     text: 'Yes', onPress: () => {
                         RtcEngine.leaveChannel();
                         RtcEngine.joinChannel(eventID, HOST_UID)
-                            .then((result) => {
-                                continueLive(eventID);
+                            .then(async (result) => {
+                                this.setState({
+                                    startLoading: true
+                                })
+                                let response = await continueLive(eventID);
+                                if (!response) {
+                                    Alert.alert(
+                                        'Error occured',
+                                        'Unknown error occured while starting your call. Please try again!',
+                                        [
+                                            {
+                                                text: 'Ok', onPress: () => { },
+                                                style: 'cancel'
+                                            },
+                                        ],
+                                        { cancelable: false }
+                                    )
+                                }
+                                this.setState({
+                                    startLoading: false
+                                })
                             })
                             .catch((error) => {
                             });
@@ -188,7 +206,7 @@ export default class VideoChatScreen extends Component {
             var time = 0;
             if (startedAt) {
                 time = Math.floor((Date.now() - startedAt.getTime()) / 1000);
-                this.setState({ timeStr: formatTime(this.state.duration * 60 - time) });
+                this.setState({ timeStr: formatTime(this.state.duration * 60 - time), time: this.state.duration * 60 - time });
             }
             if (startedAt && status === app.EVENT_STATUS.IN_PROGRESS) {
                 if (clientRole === 1 && !this.state.joinSucceed) {
@@ -203,7 +221,7 @@ export default class VideoChatScreen extends Component {
                         });
                 }
                 time = Math.floor((Date.now() - startedAt.getTime()) / 1000);
-                this.setState({ time: this.state.duration * 60 - time });
+                this.setState({ time: this.state.duration * 60 - time, time: this.state.duration * 60 - time });
                 if (!this.timer) {
                     this.timer = setInterval(() => {
                         var time = this.state.time;
@@ -282,14 +300,12 @@ export default class VideoChatScreen extends Component {
     backButtonPressed() {
         const { navigation } = this.props;
         const { clientRole, eventID, status, ticket } = this.state
-
-        if (clientRole === 2 || status !== app.EVENT_STATUS.IN_PROGRESS) {
-            // Leave Video screen if it is audience
-            // or host stream status is not IN_PROGRESS
-            leaveEvent(eventID, ticket)
+        if (status !== app.EVENT_STATUS.IN_PROGRESS) {
+            if (clientRole === 2)
+                leaveEvent(eventID, ticket)
             return navigation.goBack();
         }
-        // Confirm host before suspend streaming
+        // Confirm
         Alert.alert(
             "Confirm Exit",
             "You can continue call from MyEvent page",
@@ -303,8 +319,13 @@ export default class VideoChatScreen extends Component {
                 },
                 {
                     text: 'OK', onPress: () => {
-                        // Suspend live event of host
-                        suspendLive(eventID)
+                        if (clientRole === 1) {
+                            // Suspend live event of host
+                            suspendLive(eventID);
+                        } else if (clientRole === 2) {
+                            //leave live event of audience
+                            leaveEvent(eventID, ticket)
+                        }
                         navigation.goBack();
                         return false;
                     }
@@ -333,6 +354,23 @@ export default class VideoChatScreen extends Component {
                 </View>
             </View>
         )
+    }
+
+    renderTimer() {
+        const { time, timeStr } = this.state;
+        if (time < 0) {
+            return (
+                <View style={styles.timerNViewer}>
+                    <AppText style={styles.timerCardRed}>{this.state.timeStr}</AppText>
+                </View>
+            )
+        } else {
+            return (
+                <View style={styles.timerNViewer}>
+                    <AppText style={styles.timerCard}>{this.state.timeStr}</AppText>
+                </View>
+            )
+        }
     }
 
     /* renderThreeVideos() {
@@ -366,7 +404,7 @@ export default class VideoChatScreen extends Component {
             )
         } else if (status === app.EVENT_STATUS.SUSPENDED) {
             return (
-                <ContinueCallButon onPress={this.continueCall} />
+                <ContinueCallButon onPress={this.continueCall} loading={startLoading} />
             )
         }
     }
@@ -453,14 +491,9 @@ export default class VideoChatScreen extends Component {
 
                 <View style={{ flex: 1 }}>
                     {
-                        capacity === 1 && <View style={{ flex: 1 }}>
-                            <View style={{ flex: 1 }}>
-                                <AgoraView mode={1} key={this.state.peerIds[0]} style={{ flex: 1 }} remoteUid={this.state.peerIds[0]} />
-                            </View>
-                            <View style={{ flex: 1 }}>
-                                <AgoraView style={{ flex: 1 }} mode={1} showLocalVideo={true} />
-                            </View>
-                        </View>
+                        capacity === 1 && (
+                            this.renderTwoVideos()
+                        )
                     }
                     {
                         capacity === 0 && (
@@ -475,9 +508,10 @@ export default class VideoChatScreen extends Component {
                     {
                         this.renderLiveInfo()
                     }
-                    <View style={styles.timerNViewer}>
-                        <AppText style={styles.timerCard}>{this.state.timeStr}</AppText>
-                    </View>
+                    {
+                        this.renderTimer()
+                    }
+
                 </View>
             </View>
         )

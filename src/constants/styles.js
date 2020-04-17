@@ -36,6 +36,16 @@ export default StyleSheet.create({
         alignContent: 'center',
         padding: 8,
     },
+    timerCardRed: {
+        fontSize: 12,
+        backgroundColor: colors.RED,
+        color: 'white',
+        borderRadius: 6,
+        textAlign: 'center',
+        justifyContent: 'center',
+        alignContent: 'center',
+        padding: 8,
+    },
     liveText: {
         marginLeft: 16,
         fontSize: 12,

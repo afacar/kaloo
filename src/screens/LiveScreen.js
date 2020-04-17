@@ -28,7 +28,6 @@ const INITIAL_STATE = {
     peerIds: [],
     joinSucceed: false,
     viewers: 0,
-    duration: 0,
     time: 0,
     timeStr: '',
     status: app.EVENT_STATUS.SCHEDULED,
@@ -335,14 +334,8 @@ export default class LiveScreen extends Component {
         /*         var clientRole = this.props.navigation.getParam('clientRole', 2);
                 var eventID = this.props.navigation.getParam('eventID', 'agora_test'); */
         if (status !== app.EVENT_STATUS.IN_PROGRESS) {
-            if (clientRole === 1) {
-                // Suspend live event of host
-                suspendLive(eventID);
-            } else if (clientRole === 2) {
-                //leave live event of audience
-                // TODO: leaveEvent func.
+            if (clientRole === 2)
                 leaveEvent(eventID, ticket)
-            }
             return navigation.goBack();
         }
         Alert.alert(
@@ -362,7 +355,6 @@ export default class LiveScreen extends Component {
                             suspendLive(eventID);
                         } else if (clientRole === 2) {
                             //leave live event of audience
-                            // TODO: leaveEvent func.
                             leaveEvent(eventID, ticket)
                         }
                         navigation.goBack();
@@ -417,16 +409,30 @@ export default class LiveScreen extends Component {
     }
 
     renderTimerNViewer() {
-        return (
-            <View style={styles.timerNViewer}>
-                <View style={{ flex: 1, marginBottom: 10, justifyContent: 'center', alignItems: 'center' }}>
-                    <AppText style={styles.viewerText}>{this.state.viewers + ' Viewers'}</AppText>
+        const { time } = this.state;
+        if (time < 0) {
+            return (
+                <View style={styles.timerNViewer}>
+                    <View style={{ flex: 1, marginBottom: 10, justifyContent: 'center', alignItems: 'center' }}>
+                        <AppText style={styles.viewerText}>{this.state.viewers + ' Viewers'}</AppText>
+                    </View>
+                    <View style={{ flex: 1 }}>
+                        <AppText style={styles.timerCard}>{this.state.timeStr}</AppText>
+                    </View>
                 </View>
-                <View style={{ flex: 1 }}>
-                    <AppText style={styles.timerCard}>{this.state.timeStr}</AppText>
+            )
+        } else {
+            return (
+                <View style={styles.timerNViewer}>
+                    <View style={{ flex: 1, marginBottom: 10, justifyContent: 'center', alignItems: 'center' }}>
+                        <AppText style={styles.viewerText}>{this.state.viewers + ' Viewers'}</AppText>
+                    </View>
+                    <View style={{ flex: 1 }}>
+                        <AppText style={styles.timerCardRed}>{this.state.timeStr}</AppText>
+                    </View>
                 </View>
-            </View>
-        )
+            )
+        }
     }
 
     renderWaitingComponent() {
