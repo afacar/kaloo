@@ -42,13 +42,6 @@ export function BottomText(props) {
         <Text style={{ fontSize: 14, color:'#333333' }}>{label}</Text>
     )
 }
-export function ContactUs(props) {
-    const { label } = props
-    return (
-        <Text style={{ fontSize: 14, color:'#3598FE' }}>{label}</Text>
-    )
-}
-
 export function BoldLabel(props) {
     const { label } = props
     return (
@@ -66,13 +59,13 @@ export function H1Label(props) {
 export function H2Label(props) {
     const { label } = props
     return (
-        <Text style={{ fontSize: 17, fontWeight: '600', paddingVertical: 10, }}>{label}</Text>
+        <Text style={{ fontSize: 20, fontWeight: '600', paddingVertical: 10, }}>{label}</Text>
     )
 }
 
 export function H3Label(props) {
     const { label } = props
     return (
-        <Text style={{ fontSize: 17, fontWeight: '600', paddingVertical: 10, }}>{label}</Text>
+        <Text style={{ fontSize: 20 }}>{label}</Text>
     )
 }

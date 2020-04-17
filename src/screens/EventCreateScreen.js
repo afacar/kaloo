@@ -4,8 +4,9 @@ import { storage, firestore, functions } from 'react-native-firebase';
 import { Input, Button, Image, CheckBox, Icon, Badge } from 'react-native-elements';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import ImagePicker from 'react-native-image-crop-picker';
-import { HighlightedText, H1Label, BoldLabel, Label, ContactUs } from '../components/Labels';
+import { HighlightedText, H1Label, BoldLabel, Label } from '../components/Labels';
 import { Stage1, Stage2, Stage3 } from '../components/Stages';
+import { ContactUs } from '../components/ContactUs'
 
 import { app } from '../constants';
 import { connect } from 'react-redux';
@@ -152,7 +153,6 @@ class EventCreateScreen extends Component {
                         backgroundColor: "#3598FE"
                     }}>
                         <View style={styles.componentStyle}>
-                            <View style={{ paddingHorizontal: 20, paddingVertical: 10 }}>
                                 <View style={{ flexDirection: 'row', justifyContent: "space-between", marginVertical: 10 }}>
                                     <Stage2 value="1" text="Create" />
                                     <Stage1 value="2" text="Preview" />
@@ -304,7 +304,6 @@ class EventCreateScreen extends Component {
                                 <ContactUs />
                                 </View>
                             </View>
-                        </View>
                     </ScrollView>
                 </KeyboardAvoidingView>
             </SafeAreaView>
@@ -317,11 +316,6 @@ class EventCreateScreen extends Component {
 const styles = StyleSheet.create({
     container: {
         flexGrow: 1
-    },
-    labelStyle: {
-        fontSize: 17,
-        fontWeight: '600',
-        paddingVertical: 10,
     },
     inputContainerStyle: {
         borderWidth: 0.7,
@@ -346,7 +340,7 @@ const styles = StyleSheet.create({
     },
     componentStyle: {
         flex: 1,
-        paddingHorizontal: 20,
+        paddingHorizontal: 40,
         paddingVertical: 10,
         alignSelf: 'stretch',
         paddingVertical: 20,

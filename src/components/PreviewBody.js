@@ -2,35 +2,39 @@ import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { Slider, Button } from "react-native-elements";
 import EventTime from './EventTime';
+import { H2Label, H3Label, Label } from './Labels';
+import { DefaultButton } from './Buttons';
 
 export default function PreviewBody(props) {
   const { displayName, title, eventDate, duration, description, capacity, price } = props.event
 
   return (
-    <View style={{ marginLeft: 10, alignItems: 'stretch' }}>
-      <Text style={{ fontSize: 20, fontWeight: 'bold', marginBottom: 10 }}>by {displayName}</Text>
-      <Text style={{ fontSize: 30, fontWeight: "normal" }}>{title}</Text>
+    <View style={{ marginTop: 25, paddingBottom:15}}>
+      <View style={{ alignItems: 'center' }}>
+        <H2Label label={displayName} />
+        <H3Label label={title} />
       <EventTime eventTime={{ eventDate, duration }} />
-      <Text style={{ fontSize: 20, fontWeight: '500', marginVertical: 20 }}>{description || 'No description'}</Text>
-
+      <Label label={description || 'No description'} />
+      </View>
       {capacity && <View>
-        <Text style={{ alignSelf: 'center', color: 'gray' }}>{capacity} ticket(s) left</Text>
+        <Text style={{ alignSelf: 'flex-end', }}>{capacity} Ticket Left</Text>
         <Slider
-          trackStyle={{ height: 10, backgroundColor: '#196BFF', borderBottomRightRadius: 20, borderTopRightRadius: 20, borderBottomLeftRadius: 20, borderTopLeftRadius: 20 }}
+          trackStyle={{ height: 10,width:'100%', backgroundColor: '#196BFF', borderBottomRightRadius: 20, borderTopRightRadius: 20, borderBottomLeftRadius: 20, borderTopLeftRadius: 20 }}
           value={capacity}
           maximumValue={capacity}
           disabled
           thumbTintColor="transperant"
           maximumTrackTintColor="#E7E7E7"
-          minimumTrackTintColor="#196BFF"
+          minimumTrackTintColor="#3598FE"
         />
       </View>}
       {price && <View style={{ paddingTop: 0 }}>
-        <Button
+        <DefaultButton 
           title={`Buy a ticket for $${price}`}
-          disabled
-          onPress={() => console.log('This is preview!')}
+          onPress={() =>{}}
+          disabled={true}
         />
+        
       </View>}
     </View>
   )
