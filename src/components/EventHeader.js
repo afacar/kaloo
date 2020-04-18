@@ -3,6 +3,7 @@ import { View, Text, Image, StyleSheet } from 'react-native';
 import EventTime from './EventTime';
 import { ClickableText } from './Buttons';
 import { formatDuration } from '../utils/Utils';
+import { H1Label, H3Label, Label } from './Labels';
 
 export default function EventHeader(props) {
   const { event, navigation } = props
@@ -10,17 +11,18 @@ export default function EventHeader(props) {
   const remaining = formatDuration(Math.floor((eventDate.getTime() - new Date().getTime()) / 60000))
   return (
     <View style={styles.container}>
+      <View style={{flex: 1, flexDirection:"row", justifyContent: 'space-between', alignItems: 'center'}}>
+      <H1Label label="Up Next"/>
       <Text style={styles.remaining}>{`Starts in ${remaining}`}</Text>
+      </View>
       <Image source={{ uri: image }} style={styles.imageStyle} />
-      <Text style={{ fontSize: 21, paddingVertical: 5 }}>{title}</Text>
-      <Text style={{ paddingVertical: 5 }}>{description}</Text>
+      <H3Label label={title}/>
+      <Label label={description}/>
       <EventTime eventTime={{ eventDate, duration }} />
-      <View style={{ marginTop: 10 }}>
         <ClickableText
           text='Preview event card'
           onPress={() => navigation.navigate('EventPreview', { event })}
         />
-      </View>
     </View>
   )
 }
@@ -41,6 +43,7 @@ const styles = StyleSheet.create({
   imageStyle: {
     height: 150,
     borderColor: 'white',
-    borderRadius: 6,
+    borderRadius: 8,
+    marginVertical:10
   }
 })

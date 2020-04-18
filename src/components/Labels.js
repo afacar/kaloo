@@ -66,6 +66,6 @@ export function H2Label(props) {
 export function H3Label(props) {
     const { label } = props
     return (
-        <Text style={{ fontSize: 20 }}>{label}</Text>
+        <Text style={{ fontSize: 25 }}>{label}</Text>
     )
 }
