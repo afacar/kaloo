@@ -8,6 +8,7 @@ import { SafeAreaView } from 'react-navigation';
 import { Label } from './Labels';
 import { ClickableText, DefaultButton } from '../components/Buttons';
 import { TouchableOpacity } from 'react-native-gesture-handler';
+import CustomStatusBar from './StatusBars/CustomStatusBar';
 
 
 class Ticket extends Component {
@@ -60,6 +61,7 @@ class Ticket extends Component {
 
     return (
       <SafeAreaView style={{ flex: 1, backgroundColor: 'white' }}>
+        <CustomStatusBar />
         <ScrollView
           contentContainerStyle={{
             flexGrow: 1,

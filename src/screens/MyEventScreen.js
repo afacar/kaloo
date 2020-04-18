@@ -5,7 +5,8 @@ import { RtcEngine } from 'react-native-agora';
 import { setEventListener, clearEventListener } from '../utils/EventHandler';
 import EventShare from '../components/EventShare';
 import EventHeader from '../components/EventHeader';
-import { app } from '../constants';
+import { app, colors } from '../constants';
+import HeaderLeft from '../components/Headers/HeaderLeft';
 const { Agora } = NativeModules;
 
 const {
@@ -17,7 +18,21 @@ const {
 
 class MyEventScreen extends Component {
     static navigationOptions = ({ navigation }) => ({
-        title: `${navigation.getParam('event').title}`,
+        headerStyle: { backgroundColor: colors.BLUE },
+        headerTitle: () => {
+            return (
+                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                    <Avatar
+                        rounded={true}
+                        size='small'
+                        source={{ uri: auth().currentUser.photoURL } || require('../assets/profile.png')}
+                    />
+                </View>
+            )
+        },
+        headerLeft: () => (
+            <HeaderLeft onPress={navigation.goBack} />
+        )
     });
 
     event = this.props.navigation.getParam('event', '')

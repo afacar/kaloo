@@ -6,6 +6,7 @@ import { connect } from 'react-redux';
 
 import { setUserProfile } from "../appstate/actions/auth_actions";
 import { checkAudioPermission, checkCameraPermission } from '../utils/Utils';
+import CustomStatusBar from '../components/StatusBars/CustomStatusBar';
 
 const db = firestore()
 
@@ -128,6 +129,7 @@ class EventListScreen extends Component {
     render() {
         return (
             <View style={styles.container}>
+                <CustomStatusBar />
                 <Card containerStyle={{ margin: 0, flex: 1, alignSelf: 'stretch' }} >
                     <View style={{ justifyContent: 'flex-start', height: '100%', borderWidth: 0 }}>
                         <View style={{ flexDirection: 'row', justifyContent: 'space-evenly', borderBottomWidth: 1 }}>

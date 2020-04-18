@@ -10,6 +10,7 @@ import { Button, Text, Avatar } from 'react-native-elements';
 import { connect } from 'react-redux';
 import { DefaultButton } from '../components/Buttons';
 import Video from "react-native-video";
+import TransparentStatusBar from '../components/StatusBars/TransparentStatusBar';
 
 //const DEFAULT_LOGO = 'https://firebasestorage.googleapis.com/v0/b/influenceme-dev.appspot.com/o/assets%2Fdefault-logo.jpg?alt=media&token=20a6be6f-954f-417b-abfb-55e0ac75db02'
 
@@ -23,6 +24,7 @@ class WelcomeScreen extends Component {
     const { DEFAULT_LOGO_IMAGE } = this.props.assets;
     return (
       <View style={styles.container}>
+        <TransparentStatusBar />
         <View style={{ flex: 8, justifyContent: 'center', alignItems: 'center' }}>
           <Video
             source={{ uri: 'https://firebasestorage.googleapis.com/v0/b/influenceme-dev.appspot.com/o/assets%2Fwelcome-video.mov?alt=media&token=436c5a93-45ef-4aa1-abd1-6f717ca4300f' }}
@@ -32,40 +34,40 @@ class WelcomeScreen extends Component {
             repeat
             style={styles.video}
           />
-          <View style={{alignItems: 'center', opacity: 0.7  }}>
+          <View style={{ alignItems: 'center', opacity: 0.7 }}>
             <Image
               source={require('../assets/icon.png')}
-              style={{ width: 150, height: 150}}
+              style={{ width: 150, height: 150 }}
             />
             <Text style={{ fontSize: 25, fontWeight: 'bold', color: 'white' }}>
               Kaloo
             </Text>
             <Text style={{ width: 250, textAlign: 'center', color: 'white' }}> Access premium meetings to get together online</Text>
           </View>
-          <View style={{margin:25, alignSelf: 'stretch', opacity: 0.7  }}>
+          <View style={{ margin: 25, alignSelf: 'stretch', opacity: 0.7 }}>
             <DefaultButton
               title={"Join your meeting"}
               onPress={() => this.props.navigation.navigate('Ticket')}
             />
           </View>
           <View style={styles.footer}>
-          <Text>Do you want to host your paid meeting?</Text>
-          <View style={{ flexDirection: 'row', width: '70%', justifyContent: 'space-around', marginTop: 15,marginBottom:10 }}>
-            <TouchableOpacity
-              onPress={() => this.props.navigation.navigate('SignIn')}>
-              <Text style={{ fontSize: 15, fontWeight: 'bold' }}>
-                Sign in
+            <Text>Do you want to host your paid meeting?</Text>
+            <View style={{ flexDirection: 'row', width: '70%', justifyContent: 'space-around', marginTop: 15, marginBottom: 10 }}>
+              <TouchableOpacity
+                onPress={() => this.props.navigation.navigate('SignIn')}>
+                <Text style={{ fontSize: 15, fontWeight: 'bold' }}>
+                  Sign in
               </Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              onPress={() => this.props.navigation.navigate('Register')}>
-              <Text style={{ fontSize: 15, fontWeight: 'bold' }}>
-                Register
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => this.props.navigation.navigate('Register')}>
+                <Text style={{ fontSize: 15, fontWeight: 'bold' }}>
+                  Register
               </Text>
-            </TouchableOpacity>
+              </TouchableOpacity>
+            </View>
           </View>
-        </View>
-        
+
         </View>
       </View>
     );
@@ -87,7 +89,7 @@ const styles = StyleSheet.create({
     shadowColor: 'gray',
     shadowOpacity: 0.5,
     overflow: 'hidden',
-    width:'100%',
+    width: '100%',
     position: 'absolute', //Here is the trick
     bottom: 0, //Here is the trick
   },

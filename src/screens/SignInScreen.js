@@ -12,14 +12,22 @@ import { auth } from 'react-native-firebase';
 import { HighlightedText, BoldLabel } from '../components/Labels';
 import { DefaultButton, ClickableText } from '../components/Buttons';
 import { validateEmail } from '../utils/Utils'
+import { colors } from '../constants';
+import HeaderLeft from '../components/Headers/HeaderLeft';
 
 class SignInScreen extends Component {
   static navigationOptions = ({ navigation }) => ({
+    headerStyle: { backgroundColor: colors.BLUE, borderBottomWidth: 0, elevation: 0, shadowOpacity: 0 },
+    headerTitle: () => null,
+    headerLeft: () => (
+      <HeaderLeft onPress={navigation.goBack} />
+    ),
     headerRight: () => (
       <Button
         type='clear'
         onPress={() => navigation.navigate('Register')}
         title={'Register'}
+        titleStyle={{ color: 'white' }}
       />
     )
   });
