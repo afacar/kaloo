@@ -128,7 +128,7 @@ class ProfileScreen extends Component {
                     </View>
                     <View style={{ alignSelf: 'stretch', justifyContent: 'space-around', flexDirection: 'row' }}>
                         <ClickableText text='Log out' onPress={() => auth().signOut()} />
-                        <ContactUs text='Need Help?' screen='Profile' />
+                        <ContactUs title='Need Help?' screen='Profile' />
                     </View>
                 </ScrollView>
             </KeyboardAvoidingView>

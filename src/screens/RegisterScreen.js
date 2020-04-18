@@ -16,6 +16,7 @@ import { connect } from "react-redux";
 import { HighlightedText, Label, BoldLabel } from '../components/Labels';
 import { validateEmail } from '../utils/Utils'
 import { ClickableText, HyperLink, DefaultButton } from '../components/Buttons';
+import { ContactUs } from '../components/ContactUs';
 
 
 class RegisterScreen extends Component {
@@ -220,7 +221,7 @@ class RegisterScreen extends Component {
                   disabled={isWaiting} />
               </View>
               <View style={styles.contactUs}>
-                <ClickableText onPress={() => { }} text="Have a problem?" />
+                <ContactUs title="Have a problem?" screen='Register' />
               </View>
             </View>
           </ScrollView>

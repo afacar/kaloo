@@ -1,13 +1,13 @@
 import React, { Component } from 'react';
 import { View, StyleSheet, KeyboardAvoidingView, ScrollView, Image, Text } from 'react-native';
 import { Input, Button, Avatar } from 'react-native-elements';
-import { functions, firestore } from 'react-native-firebase';
+import { functions, firestore, auth } from 'react-native-firebase';
 import { connect } from "react-redux";
 import { SafeAreaView } from 'react-navigation';
 
 import { Label } from './Labels';
 import { ClickableText, DefaultButton } from '../components/Buttons';
-import { TouchableOpacity } from 'react-native-gesture-handler';
+import { ContactUs } from './ContactUs';
 
 
 class Ticket extends Component {
@@ -32,8 +32,9 @@ class Ticket extends Component {
           date = new Date(eventData.eventTimestamp)
         }
         eventData.eventDate = date
+        let nextScreen = auth().currentUser ? 'MyJoinEvent' : 'JoinEvent'
         this.setState({ isWaiting: false })
-        this.props.navigation.navigate('JoinEvent', { event: eventData })
+        this.props.navigation.navigate(nextScreen, { event: eventData })
       } else {
         this.setState({ isWaiting: false, ticketError: response.data.message })
       }
@@ -100,7 +101,7 @@ class Ticket extends Component {
             </View>
             <View style={styles.contactUs}>
               <Text>Lost your ticket number?</Text>
-              <ClickableText onPress={() => { }} text="Contact Us" />
+              <ContactUs screen='Ticket' />
             </View>
           </KeyboardAvoidingView>
         </ScrollView>

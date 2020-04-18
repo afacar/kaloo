@@ -12,6 +12,7 @@ import { auth } from 'react-native-firebase';
 import { HighlightedText, BoldLabel } from '../components/Labels';
 import { DefaultButton, ClickableText } from '../components/Buttons';
 import { validateEmail } from '../utils/Utils'
+import { ContactUs } from '../components/ContactUs';
 
 class SignInScreen extends Component {
   static navigationOptions = ({ navigation }) => ({
@@ -114,7 +115,7 @@ class SignInScreen extends Component {
                   disabled={this.state.isWaiting} />
               </View>
               <View style={styles.contactUs}>
-                <ClickableText onPress={() => { }} text="Have a problem?" />
+                <ContactUs title="Have a problem?" screen='SignIn' />
               </View>
             </View>
           </ScrollView>
