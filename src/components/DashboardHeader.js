@@ -29,7 +29,7 @@ const styles = StyleSheet.create({
     container: {
         paddingTop: 15,
         alignSelf: 'stretch',
-        backgroundColor: '#3598FE',
+        backgroundColor: colors.BLUE,
         alignItems: 'center'
     }
 })
