@@ -122,6 +122,20 @@ export function DefaultButton(props){
     )
 }
 
+export function ClearButton(props) {
+    const { onPress, title, disabled } = props
+    return (
+        <Button
+            type='clear'
+            title={title}
+            titleStyle={{ color: '#3BCDE2' }}
+            onPress={onPress}
+            buttonStyle={styles.clearButton}
+            disabled={disabled}
+        />
+    )
+}
+
 const styles = StyleSheet.create({
     startButton: {
         position: 'absolute',
@@ -147,6 +161,12 @@ const styles = StyleSheet.create({
         backgroundColor:"#3BCDE2",
         borderRadius:16,
         height:50
-
-    }
+    },
+    clearButton: {
+        marginTop: 10,
+        borderRadius: 16,
+        height: 50,
+        borderColor: '#3598FE',
+        borderWidth: 1,
+    },
 })
