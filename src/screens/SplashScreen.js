@@ -40,7 +40,7 @@ class SplashScreen extends Component {
         return (
             <View style={styles.container}>
                 <Image
-                    source={require('../assets/icon.png')}
+                    source={require('../assets/default-logo.png')}
                     style={styles.iconStyle}
                 />
                 <AppText>Loading...</AppText>
