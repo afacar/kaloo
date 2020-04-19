@@ -11,14 +11,14 @@ import { generateRandomString } from '../utils/Utils';
 
 class SplashScreen extends Component {
     async componentDidMount() {
-        setTimeout(() => {
+        setTimeout(async () => {
             var deviceID
-            AsyncStorage.getItem('deviceID').then(value => {
+            await AsyncStorage.getItem('deviceID').then(value => {
                 deviceID = value
             });
             if (!deviceID) {
                 deviceID = generateRandomString(5);
-                AsyncStorage.setItem('deviceID', deviceID);
+                await AsyncStorage.setItem('deviceID', deviceID);
             }
             try {
                 this.props.loadAssets()
