@@ -34,7 +34,7 @@ class WelcomeScreen extends Component {
           />
           <View style={{alignItems: 'center', opacity: 0.7  }}>
             <Image
-              source={require('../assets/icon.png')}
+              source={require('../assets/default-logo.png')}
               style={{ width: 150, height: 150}}
             />
             <Text style={{ fontSize: 25, fontWeight: 'bold', color: 'white' }}>

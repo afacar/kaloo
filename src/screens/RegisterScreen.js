@@ -64,7 +64,7 @@ class RegisterScreen extends Component {
       }
 
       // Update user profile @Authentication
-      await currentUser.updateProfile({ displayName, photoURL });
+      //await currentUser.updateProfile({ displayName, photoURL });
       // Create user @Firestore
       const newUser = { uid, displayName, photoURL }
       let createUser = functions().httpsCallable('createUser')
