@@ -9,17 +9,17 @@ export default function PreviewBody(props) {
   const { displayName, title, eventDate, duration, description, capacity, price } = props.event
 
   return (
-    <View style={{ marginTop: 25, paddingBottom:15}}>
+    <View style={{ padding: 15 }}>
       <View style={{ alignItems: 'center' }}>
         <H2Label label={displayName} />
         <H3Label label={title} />
-      <EventTime eventTime={{ eventDate, duration }} />
-      <Label label={description || 'No description'} />
+        <EventTime eventTime={{ eventDate, duration }} />
+        <Label label={description || 'No description'} />
       </View>
       {capacity && <View>
-        <Text style={{ alignSelf: 'flex-end',marginTop:15 }}>{capacity} Ticket Left</Text>
+        <Text style={{ alignSelf: 'flex-end', marginTop: 15 }}>{capacity} Ticket Left</Text>
         <Slider
-          trackStyle={{ height: 10,width:'100%', backgroundColor: '#196BFF', borderBottomRightRadius: 20, borderTopRightRadius: 20, borderBottomLeftRadius: 20, borderTopLeftRadius: 20 }}
+          trackStyle={{ height: 10, width: '100%', backgroundColor: '#196BFF', borderBottomRightRadius: 20, borderTopRightRadius: 20, borderBottomLeftRadius: 20, borderTopLeftRadius: 20 }}
           value={capacity}
           maximumValue={capacity}
           disabled
@@ -29,12 +29,11 @@ export default function PreviewBody(props) {
         />
       </View>}
       {price && <View style={{ paddingTop: 0 }}>
-        <DefaultButton 
+        <DefaultButton
           title={`Buy a ticket for $${price}`}
-          onPress={() =>{}}
+          onPress={() => { }}
           disabled={true}
         />
-        
       </View>}
     </View>
   )

@@ -58,14 +58,14 @@ class EventPreviewScreen extends Component {
             backgroundColor: "#3598FE"
           }}>
             <View style={styles.componentStyle}>
-              <View style={{ flexDirection: 'row', justifyContent: "space-between", marginVertical: 20 }}>
+              {!isPublished && <View style={{ flexDirection: 'row', justifyContent: "space-between", marginVertical: 20 }}>
                 <Stage3 value="1" text="Create" />
                 <Stage2 value="2" text="Preview" />
                 <Stage1 value="3" text="Published" />
-              </View>
-              <H1Label label="Preview & Publish" />
+              </View>}
+              {!isPublished && <H1Label label="Preview & Publish" />}
               {!isPublished && <HighlightedText
-                text='Your event isn’t published yet. Event ticket is going to look like this when you publish.'
+                text='This is how your event is going to look like when it’s shared to your audience.'
               />}
               <BoldLabel label="Event Card Preview" />
               <View style={{ borderWidth: 1, borderColor: "#c4c4c4", flex: 1, marginBottom: 30 }}>
@@ -78,9 +78,10 @@ class EventPreviewScreen extends Component {
                   />
                 </View>
               </View>
-              <DefaultButton
+              {!isPublished && <DefaultButton
                 title="Publish your event"
-                onPress={() => this.props.navigation.getParam('onPublish')()} />
+                onPress={() => this.props.navigation.getParam('onPublish')()}
+              />}
               <ContactUs />
             </View>
           </ScrollView>
@@ -100,7 +101,7 @@ const styles = StyleSheet.create({
   },
   componentStyle: {
     flex: 1,
-    paddingHorizontal: 40,
+    paddingHorizontal: 30,
     paddingVertical: 10,
     alignSelf: 'stretch',
     paddingVertical: 20,

@@ -15,7 +15,7 @@ class EventPublishScreen extends Component {
   static navigationOptions = ({ navigation }) => ({
     headerStyle: { backgroundColor: colors.BLUE, borderBottomWidth: 0, elevation: 0, shadowOpacity: 0 },
     title: 'Event ready!',
-    headerTitleStyle: {color:'#fff'},
+    headerTitleStyle: { color: '#fff' },
     headerLeft: () => (
       <Button
         type='clear'
@@ -57,25 +57,24 @@ class EventPublishScreen extends Component {
     const myEvent = this.props.navigation.getParam('event');
 
     return (
-      
       <SafeAreaView style={{ flex: 1, backgroundColor: "#3598FE" }} forceInset={{ bottom: 'never' }}>
-          <View style={styles.componentStyle}>
-            <View style={{ flexDirection: 'row', justifyContent: "space-between", marginVertical: 20 }}>
-              <Stage3 value="1" text="Create" />
-              <Stage3 value="2" text="Preview" />
-              <Stage2 value="3" text="Published" />
-            </View>
-            <H1Label label="Your meeting is set!" />
-            <EventShare
-              link={myEvent.eventLink}
-            />
-            <View style={{marginVertical:15}}>
+        <View style={styles.componentStyle}>
+          <View style={{ flexDirection: 'row', justifyContent: "space-between", marginVertical: 20 }}>
+            <Stage3 value="1" text="Create" />
+            <Stage3 value="2" text="Preview" />
+            <Stage2 value="3" text="Published" />
+          </View>
+          <H1Label label="Your meeting is set!" />
+          <EventShare
+            link={myEvent.eventLink}
+          />
+          <View style={{ marginVertical: 15 }}>
             <DefaultButton
               title='Go to Event'
               onPress={() => this.props.navigation.navigate('MyEvent', { event: myEvent })}
             />
-            </View>
           </View>
+        </View>
       </SafeAreaView>
     );
   }
