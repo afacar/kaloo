@@ -5,7 +5,7 @@ import { Input, Button, Image, CheckBox, Icon, Avatar } from 'react-native-eleme
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import ImagePicker from 'react-native-image-crop-picker';
 import { HighlightedText } from '../components/Labels';
-import { app, colors } from '../constants';
+import { app, colors, dimensions } from '../constants';
 import { connect } from 'react-redux';
 import { splitDate, ConfirmModal } from '../utils/Utils';
 import HeaderLeft from '../components/Headers/HeaderLeft';
@@ -34,7 +34,7 @@ class EventCreateScreen extends Component {
         headerStyle: { backgroundColor: colors.BLUE, borderBottomWidth: 0, elevation: 0, shadowOpacity: 0 },
         headerTitle: () => {
             return (
-                <View style={{ flex: 1, alignItems: 'center', marginLeft: Dimensions.get('window').width / 2 - 100 }}>
+                <View style={{ flex: 1, alignItems: 'center', marginLeft: dimensions.HEADER_LEFT_MARGIN }}>
                     <Avatar
                         rounded={true}
                         size='medium'

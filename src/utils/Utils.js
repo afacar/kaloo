@@ -117,7 +117,7 @@ export const checkAudioPermission = async () => {
                 {
                     title: 'Microphone Permission',
                     message:
-                        'InfluenceMe needs access to your microphone',
+                        'Kaloo needs access to your microphone',
                     buttonNeutral: 'Ask Me Later',
                     buttonNegative: 'Cancel',
                     buttonPositive: 'OK',

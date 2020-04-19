@@ -14,6 +14,7 @@ import { DefaultButton, ClickableText } from '../components/Buttons';
 import { validateEmail } from '../utils/Utils'
 import { colors } from '../constants';
 import HeaderLeft from '../components/Headers/HeaderLeft';
+import CustomStatusBar from '../components/StatusBars/CustomStatusBar';
 
 class SignInScreen extends Component {
   static navigationOptions = ({ navigation }) => ({
@@ -78,6 +79,7 @@ class SignInScreen extends Component {
     const { email, password, emailError, passwordError, isWaiting } = this.state;
     return (
       <SafeAreaView style={{ flex: 1, backgroundColor: 'white' }}>
+        <CustomStatusBar />
         <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : ''} style={styles.container}>
           <ScrollView
             contentContainerStyle={{

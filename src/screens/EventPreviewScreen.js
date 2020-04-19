@@ -5,7 +5,7 @@ import { Button, Card, Avatar } from 'react-native-elements';
 import { HighlightedText } from '../components/Labels';
 import PreviewHeader from "../components/PreviewHeader";
 import PreviewBody from '../components/PreviewBody';
-import { colors } from '../constants';
+import { colors, dimensions } from '../constants';
 import { auth } from 'react-native-firebase';
 import HeaderLeft from '../components/Headers/HeaderLeft';
 
@@ -15,7 +15,7 @@ class EventPreviewScreen extends Component {
     headerStyle: { backgroundColor: colors.BLUE, borderBottomWidth: 0, elevation: 0, shadowOpacity: 0 },
     headerTitle: () => {
       return (
-        <View style={{ flex: 1, alignItems: 'center', marginLeft: Dimensions.get('window').width / 2 - 100 }}>
+        <View style={{ flex: 1, alignItems: 'center', marginLeft: dimensions.HEADER_LEFT_MARGIN }}>
           <Avatar
             rounded={true}
             size='medium'

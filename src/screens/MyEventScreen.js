@@ -1,12 +1,13 @@
 import React, { Component } from 'react';
-import { ScrollView, StyleSheet, NativeModules } from 'react-native';
-import { Button } from 'react-native-elements';
+import { ScrollView, StyleSheet, NativeModules, View, Dimensions } from 'react-native';
+import { Button, Avatar } from 'react-native-elements';
 import { RtcEngine } from 'react-native-agora';
 import { setEventListener, clearEventListener } from '../utils/EventHandler';
 import EventShare from '../components/EventShare';
 import EventHeader from '../components/EventHeader';
-import { app, colors } from '../constants';
+import { app, colors, dimensions } from '../constants';
 import HeaderLeft from '../components/Headers/HeaderLeft';
+import { auth } from 'react-native-firebase';
 const { Agora } = NativeModules;
 
 const {
@@ -21,10 +22,10 @@ class MyEventScreen extends Component {
         headerStyle: { backgroundColor: colors.BLUE },
         headerTitle: () => {
             return (
-                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                <View style={{ flex: 1, alignItems: 'center', marginLeft: dimensions.HEADER_LEFT_MARGIN }}>
                     <Avatar
                         rounded={true}
-                        size='small'
+                        size='medium'
                         source={{ uri: auth().currentUser.photoURL } || require('../assets/profile.png')}
                     />
                 </View>

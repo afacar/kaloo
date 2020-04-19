@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { View, StyleSheet, Text, TouchableOpacity, Dimensions } from 'react-native';
 import { Input, Button, Avatar } from 'react-native-elements';
-import { colors } from '../constants';
+import { colors, dimensions } from '../constants';
 import { auth } from 'react-native-firebase';
 import HeaderLeft from '../components/Headers/HeaderLeft';
 
@@ -10,7 +10,7 @@ class BalanceScreen extends Component {
     headerStyle: { backgroundColor: colors.BLUE, borderBottomWidth: 0, elevation: 0, shadowOpacity: 0 },
     headerTitle: () => {
       return (
-        <View style={{ flex: 1, alignItems: 'center', marginLeft: Dimensions.get('window').width / 2 - 100 }}>
+        <View style={{ flex: 1, alignItems: 'center', marginLeft: dimensions.HEADER_LEFT_MARGIN }}>
           <Avatar
             rounded={true}
             size='medium'
