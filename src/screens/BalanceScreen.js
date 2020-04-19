@@ -1,9 +1,11 @@
 import React, { Component } from 'react';
-import { View, StyleSheet, Text, TouchableOpacity, Dimensions } from 'react-native';
+import { View, StyleSheet, ScrollView, KeyboardAvoidingView } from 'react-native';
 import { Input, Button, Avatar } from 'react-native-elements';
 import { colors, dimensions } from '../constants';
 import { auth } from 'react-native-firebase';
 import HeaderLeft from '../components/Headers/HeaderLeft';
+import { ContactUs } from '../components/ContactUs';
+import { AppText } from '../components/Labels';
 
 class BalanceScreen extends Component {
   static navigationOptions = ({ navigation }) => ({
@@ -13,7 +15,7 @@ class BalanceScreen extends Component {
         <View style={{ flex: 1, alignItems: 'center', marginLeft: dimensions.HEADER_LEFT_MARGIN }}>
           <Avatar
             rounded={true}
-            size='medium'
+            size='small'
             source={{ uri: auth().currentUser.photoURL } || require('../assets/default-profile.png')}
           />
         </View>
@@ -27,83 +29,41 @@ class BalanceScreen extends Component {
       )
     }
   });
-  state = { iban: '', totalBalance: '', currentBalance: '' };
+  state = { iban: '', totalBalance: '', currentBalance: 0, requestLoading: false };
+
+  requestPayment = () => {
+    this.setState({ requestLoading: true })
+    console.warn('Request Payment is clicked')
+    this.setState({ requestLoading: false })
+  }
 
   render() {
+    const { requestLoading, currentBalance } = this.state
     return (
-      <View style={styles.container}>
-        <View>
-          <View style={{ alignSelf: 'stretch', alignItems: 'center' }}>
-            <View
-              style={{
-                alignContent: 'center',
-                backgroundColor: '#b2c2bf',
-                borderRadius: 10,
-                paddingHorizontal: 10,
-                paddingVertical: 10,
-                marginBottom: 20,
-              }}>
-              <Text style={{ textAlign: 'center' }}>
-                You need to register a bank account info to recieve your monthly
-                payouts.
-              </Text>
-            </View>
-          </View>
-          <View style={{ alignSelf: 'stretch' }}>
-            <Button
-              buttonStyle={{
-                backgroundColor: '#3b3a30',
-                borderRadius: 10,
-                paddingVertical: 10,
-                paddingHorizontal: 10,
-                marginBottom: 30,
-              }}
-              title="Register Bank Account Details"
-            />
-          </View>
-          <View style={{ alignSelf: 'flex-start', paddingHorizontal: 10 }}>
-            <Text style={{ fontSize: 20, fontWeight: 'bold' }}>
-              Current Balance
-            </Text>
-            <Text
-              style={{
-                fontSize: 40,
-                fontWeight: 'bold',
-                color: 'black',
-                paddingVertical: 10,
-              }}>
-              $0
-            </Text>
-            <Text style={{ fontSize: 15, marginBottom: 30 }}>
-              Your collected balance would be paid out monthly to your provided
-              bank account.
-            </Text>
+      <KeyboardAvoidingView style={styles.container}>
+        <ScrollView contentContainerStyle={{ flexGrow: 1, paddingHorizontal: 40, paddingVertical: 10, borderTopLeftRadius: 16, borderTopRightRadius: 16, backgroundColor: 'white' }} >
+
+          <View style={{ alignItems: 'flex-start', marginTop: 20 }}>
+            <AppText style={{ fontSize: 28, fontWeight: 'bold' }}> Total Earnings</AppText>
           </View>
 
-          <View style={{ alignSelf: 'flex-start', paddingHorizontal: 10 }}>
-            <Text style={{ fontSize: 20, fontWeight: 'bold', color: 'gray' }}>
-              Earned Total
-            </Text>
-            <Text
-              style={{
-                fontSize: 40,
-                fontWeight: 'bold',
-                color: 'gray',
-                paddingVertical: 10,
-              }}>
-              $0
-            </Text>
+          <View style={styles.balanceContainer}>
+            <AppText style={{ fontSize: 28, fontWeight: 'bold' }}> {'$' + currentBalance}</AppText>
           </View>
-        </View>
-        <View style={{ alignItems: 'center', flexDirection: 'column' }}>
-          <TouchableOpacity
-            onPress={() => {
-              /TODO: Contact us/;
-            }}>
-            <Text style={{ textDecorationLine: 'underline' }}>Having Trouble?</Text>
-          </TouchableOpacity>
-        </View>
-      </View>
+
+          <Button
+            title={'Requst Payment'}
+            buttonStyle={styles.requestButton}
+            containerStyle={styles.requestButtonContainer}
+            onPress={this.requestPayment}
+            loading={requestLoading}
+          />
+
+          <View style={{ position: 'absolute', bottom: 24, alignSelf: 'center' }}>
+            <ContactUs title='Need Help?' screen='Profile' />
+          </View>
+        </ScrollView>
+      </KeyboardAvoidingView >
     );
   }
 }
@@ -111,11 +71,31 @@ class BalanceScreen extends Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: 10,
-    paddingVertical: 20,
+    backgroundColor: colors.BLUE
   },
+  balanceContainer: {
+    marginTop: 20,
+    backgroundColor: colors.LIGHT_GREY,
+    justifyContent: 'center',
+    alignItems: 'center',
+    height: 80,
+    width: '100%',
+    borderWidth: 1
+  },
+  requestButtonContainer: {
+    position: 'absolute',
+    alignSelf: 'center',
+    bottom: 72,
+  },
+  requestButton: {
+    backgroundColor: colors.CYAN,
+    width: 300,
+    height: 50,
+    borderRadius: 16,
+    padding: 12,
+    justifyContent: 'center',
+    alignItems: 'center'
+  }
 });
 
 export default BalanceScreen;

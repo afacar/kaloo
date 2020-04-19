@@ -5,5 +5,6 @@ export default {
   CYAN: "#3BCDE2",
   GREEN: "#31DB1C",
   GREY: "#C4C4C4",
+  LIGHT_GREY:'#FAFAFA',
   ORANGE:'#FFBF19'
 }

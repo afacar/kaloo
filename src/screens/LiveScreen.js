@@ -106,13 +106,16 @@ export default class LiveScreen extends Component {
             }} />
         ),
         headerRight: () => (
-            <View>
-                <Button
-                    type='clear'
-                    title={'Report'}
-                    titleStyle={{ marginRight: 10, color: 'white' }}
-                    onPress={() => console.warn("report problem clicked")} />
-            </View>
+            <TouchableOpacity
+                style={{ flex: 1, marginRight: 10 }}
+                onPress={() => {
+                    RtcEngine.switchCamera()
+                }}>
+                <Image
+                    style={{ flex: 1, width: 30, height: 30, resizeMode: 'contain' }}
+                    source={require('../assets/switch-camera.png')}
+                />
+            </TouchableOpacity>
         )
     });
 
@@ -436,13 +439,13 @@ export default class LiveScreen extends Component {
             return (
                 <Button
                     // icon={
-                        // <Icon
-                        //     type='material-community'
-                        //     name="video-off"
-                        //     size={16}
-                        //     iconStyle={{ marginRight: 4 }}
-                        //     color="white"
-                        // />
+                    // <Icon
+                    //     type='material-community'
+                    //     name="video-off"
+                    //     size={16}
+                    //     iconStyle={{ marginRight: 4 }}
+                    //     color="white"
+                    // />
                     // }
                     title='End Live'
                     buttonStyle={styles.endButton}

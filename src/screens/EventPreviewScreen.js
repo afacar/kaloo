@@ -24,7 +24,7 @@ class EventPreviewScreen extends Component {
         <View style={{ flex: 1, alignItems: 'center', marginLeft: dimensions.HEADER_LEFT_MARGIN }}>
           <Avatar
             rounded={true}
-            size='medium'
+            size='small'
             source={{ uri: auth().currentUser.photoURL } || require('../assets/default-profile.png')}
           />
         </View>
