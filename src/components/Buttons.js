@@ -111,13 +111,14 @@ export function EndCallButon(props) {
 }
 
 export function DefaultButton(props) {
-    const { onPress, title, disabled } = props
+    const { onPress, title, disabled,loading } = props
     return (
         <Button
             title={title}
             onPress={onPress}
             buttonStyle={styles.defaultButtonColor}
             disabled={disabled}
+            loading={loading}
         />
     )
 }
@@ -180,6 +181,7 @@ const styles = StyleSheet.create({
         backgroundColor: "#3BCDE2",
         borderRadius: 16,
         height: 50,
+        marginTop: 10,
     },
     clearButton: {
         marginTop: 10,

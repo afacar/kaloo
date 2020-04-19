@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { View, Text, Modal, StyleSheet } from 'react-native';
 import { Input, Button } from 'react-native-elements';
 import { functions, auth } from "react-native-firebase";
-import { ClickableText, DefaultButton, RedButton } from './Buttons';
+import { ClickableText, DefaultButton, RedButton, ClearButton } from './Buttons';
 
 const INITIAL_STATE = { message: '', visible: false, infoMessage: '', chars: 0, loading: false, sent: false }
 
@@ -71,13 +71,16 @@ export class ContactUs extends Component {
                                 placeholder='Text goes here'
                                 multiline
                                 maxLength={250}
+                                inputContainerStyle={{ ...styles.inputContainerStyle, height: 100 }}
+                                //inputStyle={{ alignSelf: 'flex-start', paddingVertical: 5 }}
+                                containerStyle={{ paddingHorizontal: 0 }}
                             />}
                             <Text style={{ alignSelf: 'flex-end', color: 'grey' }}>{chars}/250</Text>
-                            <View style={{ flexDirection: 'row', justifyContent: 'space-around' }}>
-                                <RedButton
-                                    title='Close'
-                                    onPress={this.closeContactUs}
-                                />
+
+                            <View style={{ flexDirection: 'row',alignItems:'center', justifyContent:'space-evenly' }}>
+                                <ClearButton
+                                title='Close'
+                                onPress={this.closeContactUs}/>
                                 <DefaultButton
                                     title='Submit'
                                     onPress={this.onSubmit}
@@ -115,5 +118,12 @@ const styles = StyleSheet.create({
         shadowOpacity: 0.25,
         shadowRadius: 3.84,
         elevation: 5
+    },
+    inputContainerStyle: {
+        borderWidth: 0.7,
+        borderColor: '#3b3a30',
+        borderRadius: 6,
+        paddingHorizontal: 10,
+        marginHorizontal: 0,
     },
 })
