@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { StyleSheet, ScrollView, View } from 'react-native';
-import { Button, Card } from 'react-native-elements';
+import { Button, Avatar } from 'react-native-elements';
 
 import { HighlightedText, BoldLabel } from '../components/Labels';
 import PreviewHeader from "../components/PreviewHeader";
@@ -11,17 +11,38 @@ import { SafeAreaView } from 'react-navigation'
 import { DefaultButton } from '../components/Buttons';
 import { ContactUs } from '../components/ContactUs'
 
+import { colors, dimensions } from '../constants';
+import { auth } from 'react-native-firebase';
+import HeaderLeft from '../components/Headers/HeaderLeft';
 
 
 class EventPreviewScreen extends Component {
   static navigationOptions = ({ navigation }) => ({
-    title: 'Preview Event',
+    headerStyle: { backgroundColor: colors.BLUE, borderBottomWidth: 0, elevation: 0, shadowOpacity: 0 },
+    headerTitle: () => {
+      return (
+        <View style={{ flex: 1, alignItems: 'center', marginLeft: dimensions.HEADER_LEFT_MARGIN }}>
+          <Avatar
+            rounded={true}
+            size='medium'
+            source={{ uri: auth().currentUser.photoURL } || require('../assets/default-profile.png')}
+          />
+        </View>
+      )
+    },
+    headerLeft: () => {
+      return (
+        <View style={{ flex: 1, justifyContent: 'center' }}>
+          <HeaderLeft onPress={navigation.goBack} />
+        </View>
+      )
+    },
     headerRight: () => (
       !navigation.getParam('event').isPublished && <Button
         type='clear'
         onPress={() => navigation.getParam('onPublish')()}
         title={'Publish'}
-        titleStyle={{ color: '#196BFF' }}
+        titleStyle={{ color: 'white' }}
         containerStyle={{ paddingRight: 15 }}
       />
     )

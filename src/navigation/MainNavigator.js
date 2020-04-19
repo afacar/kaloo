@@ -17,15 +17,15 @@ export default MainNavigatior = createStackNavigator(
     Register: RegisterScreen,
     Live: {
       screen: LiveScreen,
-      navigationOptions: {
-        headerShown: false,
-      }
+      // navigationOptions: {
+      //   headerShown: false,
+      // }
     },
     VideoChat: {
       screen: VideoChatScreen,
-      navigationOptions: {
-        headerShown: false,
-      }
+      // navigationOptions: {
+      //   headerShown: false,
+      // }
     },
   },
   {

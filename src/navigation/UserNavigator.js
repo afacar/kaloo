@@ -25,15 +25,15 @@ export default UserNavigatior = createStackNavigator(
     MyEvent: MyEventScreen,
     Live: {
       screen: LiveScreen,
-      navigationOptions: {
-        headerShown: false,
-      }
+      // navigationOptions: {
+      //   headerShown: false,
+      // }
     },
     VideoChat: {
       screen: VideoChatScreen,
-      navigationOptions: {
-        headerShown: false,
-      }
+      // navigationOptions: {
+      //   headerShown: false,
+      // }
     },
   },
   {

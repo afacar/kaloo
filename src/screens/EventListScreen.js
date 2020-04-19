@@ -11,6 +11,7 @@ import { ContactUs } from '../components/ContactUs';
 import { DefaultButton, ClearButton } from '../components/Buttons';
 import { Label, BoldLabel } from '../components/Labels';
 import DashboardHeader from "../components/DashboardHeader";
+import CustomStatusBar from '../components/StatusBars/CustomStatusBar';
 
 const db = firestore()
 
@@ -150,9 +151,10 @@ class EventListScreen extends Component {
     render() {
         return (
             <View style={{ flex: 1, backgroundColor: '#3598FE' }}>
+                <CustomStatusBar />
                 <DashboardHeader
                     navigation={this.props.navigation}
-                //earnings={earnings} // TODO
+                    //earnings={earnings} // TODO
                 />
                 <View style={styles.container}>
                     <ScrollView overScrollMode='never'>

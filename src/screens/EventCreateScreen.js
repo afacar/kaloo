@@ -1,20 +1,21 @@
 import React, { Component } from 'react';
 import { StyleSheet, View, ScrollView, Text, TouchableOpacity, KeyboardAvoidingView } from 'react-native';
-import { storage, firestore, functions } from 'react-native-firebase';
-import { Input, Button, Image, CheckBox, Icon, Badge } from 'react-native-elements';
+import { storage, firestore, functions, auth } from 'react-native-firebase';
+import { Input, Button, Image, CheckBox, Icon, Badge, Avatar } from 'react-native-elements';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import ImagePicker from 'react-native-image-crop-picker';
 import { HighlightedText, H1Label, BoldLabel, Label } from '../components/Labels';
 import { Stage1, Stage2, Stage3 } from '../components/Stages';
 import { ContactUs } from '../components/ContactUs'
 
-import { app } from '../constants';
+import { app, colors, dimensions } from '../constants';
 import { connect } from 'react-redux';
 import { splitDate, ConfirmModal } from '../utils/Utils';
 import { SafeAreaView } from 'react-navigation';
 import { DefaultButton } from '../components/Buttons';
 
 
+import HeaderLeft from '../components/Headers/HeaderLeft';
 
 const INITIAL_STATE = {
     image: null,
@@ -36,7 +37,25 @@ const INITIAL_STATE = {
 
 class EventCreateScreen extends Component {
     static navigationOptions = ({ navigation }) => ({
-        headerTitle: () => <Text>Create Event</Text>
+        headerStyle: { backgroundColor: colors.BLUE, borderBottomWidth: 0, elevation: 0, shadowOpacity: 0 },
+        headerTitle: () => {
+            return (
+                <View style={{ flex: 1, alignItems: 'center', marginLeft: dimensions.HEADER_LEFT_MARGIN }}>
+                    <Avatar
+                        rounded={true}
+                        size='medium'
+                        source={{ uri: auth().currentUser.photoURL } || require('../assets/default-profile.png')}
+                    />
+                </View>
+            )
+        },
+        headerLeft: () => {
+            return (
+                <View style={{ flex: 1, justifyContent: 'center' }}>
+                    <HeaderLeft onPress={navigation.goBack} />
+                </View>
+            )
+        }
     });
 
     state = { ...INITIAL_STATE, ...this.props.profile, image: this.props.assets.DEFAULT_EVENT_IMAGE }

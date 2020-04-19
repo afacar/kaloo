@@ -13,14 +13,23 @@ import { HighlightedText, BoldLabel } from '../components/Labels';
 import { DefaultButton, ClickableText } from '../components/Buttons';
 import { validateEmail } from '../utils/Utils'
 import { ContactUs } from '../components/ContactUs';
+import { colors } from '../constants';
+import HeaderLeft from '../components/Headers/HeaderLeft';
+import CustomStatusBar from '../components/StatusBars/CustomStatusBar';
 
 class SignInScreen extends Component {
   static navigationOptions = ({ navigation }) => ({
+    headerStyle: { backgroundColor: colors.BLUE, borderBottomWidth: 0, elevation: 0, shadowOpacity: 0 },
+    headerTitle: () => null,
+    headerLeft: () => (
+      <HeaderLeft onPress={navigation.goBack} />
+    ),
     headerRight: () => (
       <Button
         type='clear'
         onPress={() => navigation.navigate('Register')}
         title={'Register'}
+        titleStyle={{ color: 'white' }}
       />
     )
   });
@@ -71,6 +80,7 @@ class SignInScreen extends Component {
     const { email, password, emailError, passwordError, isWaiting } = this.state;
     return (
       <SafeAreaView style={{ flex: 1, backgroundColor: 'white' }}>
+        <CustomStatusBar />
         <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : ''} style={styles.container}>
           <ScrollView
             contentContainerStyle={{

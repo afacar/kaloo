@@ -1,8 +1,32 @@
 import React, { Component } from 'react';
-import { View, StyleSheet, Text, TouchableOpacity } from 'react-native';
-import { Input, Button } from 'react-native-elements';
+import { View, StyleSheet, Text, TouchableOpacity, Dimensions } from 'react-native';
+import { Input, Button, Avatar } from 'react-native-elements';
+import { colors, dimensions } from '../constants';
+import { auth } from 'react-native-firebase';
+import HeaderLeft from '../components/Headers/HeaderLeft';
 
 class BalanceScreen extends Component {
+  static navigationOptions = ({ navigation }) => ({
+    headerStyle: { backgroundColor: colors.BLUE, borderBottomWidth: 0, elevation: 0, shadowOpacity: 0 },
+    headerTitle: () => {
+      return (
+        <View style={{ flex: 1, alignItems: 'center', marginLeft: dimensions.HEADER_LEFT_MARGIN }}>
+          <Avatar
+            rounded={true}
+            size='medium'
+            source={{ uri: auth().currentUser.photoURL } || require('../assets/default-profile.png')}
+          />
+        </View>
+      )
+    },
+    headerLeft: () => {
+      return (
+        <View style={{ flex: 1, justifyContent: 'center' }}>
+          <HeaderLeft onPress={navigation.goBack} />
+        </View>
+      )
+    }
+  });
   state = { iban: '', totalBalance: '', currentBalance: '' };
 
   render() {

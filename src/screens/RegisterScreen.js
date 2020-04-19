@@ -13,19 +13,28 @@ import ImagePicker from 'react-native-image-crop-picker';
 import { SafeAreaView } from 'react-navigation';
 import { connect } from "react-redux";
 
-import { HighlightedText, Label, BoldLabel } from '../components/Labels';
+import { HighlightedText, BoldLabel } from '../components/Labels';
 import { validateEmail } from '../utils/Utils'
 import { ClickableText, HyperLink, DefaultButton } from '../components/Buttons';
 import { ContactUs } from '../components/ContactUs';
+import HeaderLeft from '../components/Headers/HeaderLeft';
+import CustomStatusBar from '../components/StatusBars/CustomStatusBar';
+import { colors } from '../constants';
 
 
 class RegisterScreen extends Component {
   static navigationOptions = ({ navigation }) => ({
+    headerStyle: { backgroundColor: colors.BLUE, borderBottomWidth: 0, elevation: 0, shadowOpacity: 0 },
+    headerTitle: () => null,
+    headerLeft: () => (
+      <HeaderLeft onPress={navigation.goBack} />
+    ),
     headerRight: () => (
       <Button
         type='clear'
         onPress={() => navigation.navigate('SignIn')}
         title={'Sign in'}
+        titleStyle={{ color: 'white' }}
       />
     )
   });
@@ -125,6 +134,7 @@ class RegisterScreen extends Component {
     } = this.state;
     return (
       <SafeAreaView style={{ flex: 1, backgroundColor: 'white' }}>
+        <CustomStatusBar />
         <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : ''} style={styles.container}>
           <ScrollView
             contentContainerStyle={{

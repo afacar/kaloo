@@ -133,7 +133,7 @@ export const rateEvent = async (eid, ticket, rate) => {
 }
 
 export const setEventListener = (eventID, callback) => {
-    console.log( 'setting event listener', eventID)
+    console.log('setting event listener', eventID)
     eventListener = firestore().collection('events').doc(eventID).onSnapshot(eventSnapshot => {
         console.log('eventSnapshot ', eventSnapshot.data());
         // Convert Firebase Timestamp to JS Date
@@ -146,30 +146,29 @@ export const setEventListener = (eventID, callback) => {
                 date = new Date(eventData.eventTimestamp)
             }
             event.eventDate = date
-    
-            callback(event)    
+
+            callback(event)
         }
     })
 }
 
 export const setLiveEventListener = (eventID, callback) => {
-    console.log( 'setting live listener', eventID)
+    console.log('setting live listener', eventID)
     liveEventListener = firestore().collection('events').doc(eventID).collection('live').doc('--stats--').onSnapshot(eventSnapshot => {
         console.log('live Snapshot ', eventSnapshot.data());
         const liveStats = eventSnapshot.data();
         if (liveStats) {
             let startedAt = liveStats.startDate ? liveStats.startDate.toDate() : new Date()
-            if (liveStats) {
-                callback({ status: liveStats.status, viewerCount: liveStats.viewerCount, startedAt });
-            } else {
-                callback({ status: app.EVENT_STATUS.SCHEDULED, viewerCount: 0, startedAt: undefined })
-            }
+            callback({ status: liveStats.status, viewerCount: liveStats.viewerCount, startedAt });
+
+        } else {
+            callback({ status: app.EVENT_STATUS.SCHEDULED, viewerCount: 0, startedAt: undefined })
         }
     })
 }
 
 export const setTicketListener = (eventID, ticket, callback) => {
-    console.log( 'setting ticket listener', eventID)
+    console.log('setting ticket listener', eventID)
     ticketListener = firestore().collection('events').doc(eventID).collection('tickets').doc(ticket.tid).onSnapshot(ticketSnapshot => {
         const ticketStats = ticketSnapshot.data();
         if (ticketStats && ticketStats.deviceID) {

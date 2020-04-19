@@ -1,13 +1,14 @@
 import React, { Component } from 'react';
 import { View, StyleSheet, KeyboardAvoidingView, ScrollView, Image, Text } from 'react-native';
-import { Input, Button, Avatar } from 'react-native-elements';
+import { Input } from 'react-native-elements';
 import { functions, firestore, auth } from 'react-native-firebase';
 import { connect } from "react-redux";
 import { SafeAreaView } from 'react-navigation';
 
 import { Label } from './Labels';
-import { ClickableText, DefaultButton } from '../components/Buttons';
+import { DefaultButton } from '../components/Buttons';
 import { ContactUs } from './ContactUs';
+import CustomStatusBar from './StatusBars/CustomStatusBar';
 
 
 class Ticket extends Component {
@@ -61,6 +62,7 @@ class Ticket extends Component {
 
     return (
       <SafeAreaView style={{ flex: 1, backgroundColor: 'white' }}>
+        <CustomStatusBar />
         <ScrollView
           contentContainerStyle={{
             flexGrow: 1,

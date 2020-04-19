@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, Alert, StatusBar, TouchableOpacity, Text } from 'react-native';
+import { View, Alert, StatusBar, TouchableOpacity, Text, Dimensions, Image } from 'react-native';
 import app from '../constants/app';
 import { RtcEngine, AgoraView } from 'react-native-agora';
 import KeepAwake from 'react-native-keep-awake';
@@ -15,11 +15,17 @@ import {
     setTicketListener,
     clearTicketListener,
 } from '../utils/EventHandler';
+import LinearGradient from 'react-native-linear-gradient'
 import { handleAndroidBackButton, removeAndroidBackButtonHandler } from '../utils/BackHandler';
-import { styles, colors } from '../constants';
+import { styles, colors, dimensions } from '../constants';
 import { formatTime, getDeviceID, checkAudioPermission, checkCameraPermission, InfoModal, ConfirmModal } from '../utils/Utils';
 import Header from '../components/Header';
 import { Icon, Button } from 'react-native-elements';
+import HeaderLeft from '../components/Headers/HeaderLeft';
+import TransparentStatusBar from '../components/StatusBars/TransparentStatusBar';
+import CustomStatusBar from '../components/StatusBars/CustomStatusBar';
+import HeaderGradient from '../components/HeaderGradient';
+import LiveHeaderTitle from '../components/Headers/LiveHeaderTitle';
 
 const HOST_UID = 1000;
 const INITIAL_STATE = {
@@ -35,6 +41,80 @@ const INITIAL_STATE = {
 };
 
 export default class LiveScreen extends Component {
+
+    static navigationOptions = ({ navigation }) => ({
+        headerTransparent:
+        {
+            ...styles.headerTransparent
+        },
+        headerBackground: () => (
+            <HeaderGradient />
+        ),
+        headerStyle:
+        {
+            opacity: 0.7,
+        },
+        headerTitle: () => {
+            const liveData = navigation.getParam('liveData')
+            const status = navigation.getParam('status')
+            return (
+                <LiveHeaderTitle
+                    clientRole={liveData.clientRole}
+                    status={status}
+                />
+            )
+
+        },
+        headerLeft: () => (
+            <HeaderLeft onPress={() => {
+                const { clientRole, eventID, ticket } = navigation.getParam('liveData')
+                const status = navigation.getParam('status')
+                /*         var clientRole = this.props.navigation.getParam('clientRole', 2);
+                        var eventID = this.props.navigation.getParam('eventID', 'agora_test'); */
+                if (status !== app.EVENT_STATUS.IN_PROGRESS) {
+                    if (clientRole === 2)
+                        leaveEvent(eventID, ticket)
+                    return navigation.goBack();
+                }
+                Alert.alert(
+                    "Confirm Exit",
+                    "You can continue show from event screen",
+                    [
+                        {
+                            text: 'Cancel', onPress: () => {
+                                return true;
+                            },
+                            style: 'cancel'
+                        },
+                        {
+                            text: 'OK', onPress: () => {
+                                if (clientRole === 1) {
+                                    // Suspend live event of host
+                                    suspendLive(eventID);
+                                } else if (clientRole === 2) {
+                                    //leave live event of audience
+                                    leaveEvent(eventID, ticket)
+                                }
+                                navigation.goBack();
+                                return false;
+                            }
+                        },
+                    ],
+                    { cancelable: false }
+                );
+                return true;
+            }} />
+        ),
+        headerRight: () => (
+            <View>
+                <Button
+                    type='clear'
+                    title={'Report'}
+                    titleStyle={{ marginRight: 10, color: 'white' }}
+                    onPress={() => console.warn("report problem clicked")} />
+            </View>
+        )
+    });
 
     constructor(props) {
         super(props);
@@ -60,6 +140,9 @@ export default class LiveScreen extends Component {
             if (startedAt) {
                 time = Math.floor((Date.now() - startedAt.getTime()) / 1000);
                 this.setState({ timeStr: formatTime(this.state.duration * 60 - time) });
+            }
+            if (status) {
+                this.props.navigation.setParams({ status })
             }
             if (startedAt && status === app.EVENT_STATUS.IN_PROGRESS) {
                 if (clientRole === 1 && !this.state.joinSucceed) {
@@ -156,7 +239,7 @@ export default class LiveScreen extends Component {
     }
 
     _startLive = () => {
-        let title = 'Start broadcasting?',
+        let title = 'Start Live?',
             message = 'You will be live!';
         ConfirmModal(title, message, 'I am ready!', 'Not ready!', this.onStartLive)
     }
@@ -278,31 +361,29 @@ export default class LiveScreen extends Component {
         }
     }
 
-    renderTimerNViewer() {
+    renderTimer() {
         const { time } = this.state;
         if (time < 0) {
             return (
-                <View style={styles.timerNViewer}>
-                    <View style={{ flex: 1, marginBottom: 10, justifyContent: 'center', alignItems: 'center' }}>
-                        <AppText style={styles.viewerText}>{this.state.viewers + ' Viewers'}</AppText>
-                    </View>
-                    <View style={{ flex: 1 }}>
-                        <AppText style={styles.timerCard}>{this.state.timeStr}</AppText>
-                    </View>
+                <View style={styles.timer}>
+                    <AppText style={styles.timerCardRed}>{this.state.timeStr}</AppText>
                 </View>
             )
         } else {
             return (
                 <View style={styles.timerNViewer}>
-                    <View style={{ flex: 1, marginBottom: 10, justifyContent: 'center', alignItems: 'center' }}>
-                        <AppText style={styles.viewerText}>{this.state.viewers + ' Viewers'}</AppText>
-                    </View>
-                    <View style={{ flex: 1 }}>
-                        <AppText style={styles.timerCardRed}>{this.state.timeStr}</AppText>
-                    </View>
+                    <AppText style={styles.timerCard}>{this.state.timeStr}</AppText>
                 </View>
             )
         }
+    }
+
+    renderViewers() {
+        return (
+            <View style={styles.viewerCard}>
+                <AppText style={styles.viewerText}>{this.state.viewers + ' Viewers'}</AppText>
+            </View>
+        )
     }
 
     renderWaitingComponent() {
@@ -310,11 +391,9 @@ export default class LiveScreen extends Component {
         if (status === app.EVENT_STATUS.SUSPENDED || status === app.EVENT_STATUS.IN_PROGRESS) {
             return (
                 <View style={styles.waitingBox}>
-                    <Icon
-                        type='simple-line-icon'
-                        name="globe"
-                        size={48}
-                        color='white'
+                    <Image
+                        style={{ width: 250, height: 220 }}
+                        source={require('../assets/waiting_icon.png')}
                     />
                     <AppText style={{ color: '#FFFFFF', marginLeft: 8, fontSize: 24, fontWeight: 'bold', textAlign: 'center' }}>Your host is connecting...</AppText>
                 </View>
@@ -322,11 +401,9 @@ export default class LiveScreen extends Component {
         } else if (status === app.EVENT_STATUS.SCHEDULED) {
             return (
                 <View style={styles.waitingBox}>
-                    <Icon
-                        type='simple-line-icon'
-                        name="globe"
-                        size={48}
-                        color='white'
+                    <Image
+                        style={{ width: 250, height: 220 }}
+                        source={require('../assets/waiting_icon.png')}
                     />
                     <AppText style={{ color: '#FFFFFF', marginLeft: 8, fontSize: 24, fontWeight: 'bold', textAlign: 'center' }}>Wait for event to start..</AppText>
                 </View>
@@ -336,19 +413,20 @@ export default class LiveScreen extends Component {
 
     renderBroadcastButton() {
         const { status } = this.state;
+        console.warn()
         if (status === app.EVENT_STATUS.SCHEDULED) {
             return (
                 <Button
-                    icon={
-                        <Icon
-                            type='font-awesome'
-                            name="video-camera"
-                            size={16}
-                            iconStyle={{ marginRight: 4 }}
-                            color="white"
-                        />
-                    }
-                    title='Start Broadcasting'
+                    // icon={
+                    //     <Icon
+                    //         type='font-awesome'
+                    //         name="video-camera"
+                    //         size={16}
+                    //         iconStyle={{ marginRight: 4 }}
+                    //         color="white"
+                    //     />
+                    // }
+                    title='Go live!'
                     buttonStyle={styles.startButton}
                     onPress={this._startLive}
                     loading={this.state.startLoading}
@@ -357,16 +435,16 @@ export default class LiveScreen extends Component {
         } else if (status === app.EVENT_STATUS.IN_PROGRESS) {
             return (
                 <Button
-                    icon={
-                        <Icon
-                            type='material-community'
-                            name="video-off"
-                            size={16}
-                            iconStyle={{ marginRight: 4 }}
-                            color="white"
-                        />
-                    }
-                    title='End Broadcasting'
+                    // icon={
+                        // <Icon
+                        //     type='material-community'
+                        //     name="video-off"
+                        //     size={16}
+                        //     iconStyle={{ marginRight: 4 }}
+                        //     color="white"
+                        // />
+                    // }
+                    title='End Live'
                     buttonStyle={styles.endButton}
                     onPress={this._endLive}
                 />
@@ -374,16 +452,16 @@ export default class LiveScreen extends Component {
         } else if (status === app.EVENT_STATUS.SUSPENDED) {
             return (
                 <Button
-                    icon={
-                        <Icon
-                            type='font-awesome'
-                            name="video-camera"
-                            size={16}
-                            iconStyle={{ marginRight: 4 }}
-                            color="white"
-                        />
-                    }
-                    title='Continue Broadcasting'
+                    // icon={
+                    //     <Icon
+                    //         type='font-awesome'
+                    //         name="video-camera"
+                    //         size={16}
+                    //         iconStyle={{ marginRight: 4 }}
+                    //         color="white"
+                    //     />
+                    // }
+                    title='Go Live!'
                     buttonStyle={styles.startButton}
                     onPress={this._continueLive}
                     loading={this.state.startLoading}
@@ -403,23 +481,27 @@ export default class LiveScreen extends Component {
         }
     }
 
+    renderStatusBar() {
+        const { status } = this.state;
+        console.warn(status)
+        if (status === app.EVENT_STATUS.IN_PROGRESS) {
+            return (
+                <TransparentStatusBar />
+            )
+        } else {
+            return (
+                <CustomStatusBar />
+            )
+        }
+    }
+
     render() {
         const { clientRole } = this.state;
         return (
             // <TouchableOpacity activeOpacity={1} onPress={() => this.toggleShowState()} style={{ flex: 1 }}>
             <View style={{ flex: 1 }}>
                 <KeepAwake />
-                <StatusBar hidden={true} />
-                <Header
-                    buttonTitle={'Quit Live'}
-                    buttonTitleStyle={{ color: colors.BLUE, fontSize: 16 }}
-                    headerRight={(
-                        <TouchableOpacity onPress={this.reportProblem}>
-                            <Text style={{ fontSize: 16, fontWeight: 'bold', color: colors.BLUE }}>Report Problem</Text>
-                        </TouchableOpacity>
-                    )}
-                    onPress={this.backButtonPressed}
-                />
+                <TransparentStatusBar />
                 <View style={{ flex: 1 }}>
                     {
                         // The Host
@@ -427,10 +509,10 @@ export default class LiveScreen extends Component {
                             <View style={{ flex: 1 }}>
                                 <AgoraView style={{ flex: 1 }} showLocalVideo={true} mode={1} />
                                 {
-                                    this.renderTimerNViewer()
+                                    this.renderTimer()
                                 }
                                 {
-                                    this.renderLiveInfo()
+                                    this.renderViewers()
                                 }
                                 {
                                     this.renderBroadcastButton()
@@ -446,10 +528,10 @@ export default class LiveScreen extends Component {
                                     this.renderMainComponent()
                                 }
                                 {
-                                    this.renderTimerNViewer()
+                                    this.renderTimer()
                                 }
                                 {
-                                    this.renderLiveInfo()
+                                    this.renderViewers()
                                 }
                             </View>
                         )

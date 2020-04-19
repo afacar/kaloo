@@ -1,15 +1,17 @@
 import React, { Component } from 'react';
-import { ScrollView, StyleSheet, NativeModules, View, Text } from 'react-native';
-import { Button } from 'react-native-elements';
+import { ScrollView, StyleSheet, NativeModules, View, Dimensions } from 'react-native';
+import { Button, Avatar } from 'react-native-elements';
 import { RtcEngine } from 'react-native-agora';
 import { setEventListener, clearEventListener } from '../utils/EventHandler';
 import EventShare from '../components/EventShare';
 import EventHeader from '../components/EventHeader';
-import { app } from '../constants';
 import { SafeAreaView } from 'react-navigation'
 import { DefaultButton } from '../components/Buttons';
 import { ContactUs } from '../components/ContactUs';
 
+import { app, colors, dimensions } from '../constants';
+import HeaderLeft from '../components/Headers/HeaderLeft';
+import { auth } from 'react-native-firebase';
 const { Agora } = NativeModules;
 
 const {
@@ -21,7 +23,21 @@ const {
 
 class MyEventScreen extends Component {
     static navigationOptions = ({ navigation }) => ({
-        title: `${navigation.getParam('event').title}`,
+        headerStyle: { backgroundColor: colors.BLUE },
+        headerTitle: () => {
+            return (
+                <View style={{ flex: 1, alignItems: 'center', marginLeft: dimensions.HEADER_LEFT_MARGIN }}>
+                    <Avatar
+                        rounded={true}
+                        size='medium'
+                        source={{ uri: auth().currentUser.photoURL } || require('../assets/default-profile.png')}
+                    />
+                </View>
+            )
+        },
+        headerLeft: () => (
+            <HeaderLeft onPress={navigation.goBack} />
+        )
     });
 
     event = this.props.navigation.getParam('event', '')

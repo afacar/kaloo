@@ -7,6 +7,7 @@ import { AppText } from "./Labels";
 import { setEventListener, clearEventListener, joinEvent, rateEvent } from "../utils/EventHandler";
 import PreviewHeader from './PreviewHeader';
 import PreviewBody from './PreviewBody';
+import CustomStatusBar from './StatusBars/CustomStatusBar';
 const { Agora } = NativeModules;
 
 const {
@@ -98,6 +99,7 @@ class JoinEvent extends Component {
         const { image, photoURL, title, description, displayName, duration, eventType, eventDate, status, ticket } = this.state;
         return (
             <ScrollView contentContainerStyle={styles.container}>
+                <CustomStatusBar />
                 <Card containerStyle={{ alignSelf: 'stretch' }}>
                     <View>
                         <PreviewHeader

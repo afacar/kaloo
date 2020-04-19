@@ -1,20 +1,96 @@
 import React, { Component } from 'react';
-import { View, Alert, StatusBar, Text, TouchableOpacity } from 'react-native';
+import { View, Alert, StatusBar, Text, TouchableOpacity, Image } from 'react-native';
 import { RtcEngine, AgoraView } from 'react-native-agora';
 import KeepAwake from 'react-native-keep-awake';
 import { clearLiveEventListener, setLiveEventListener, startEvent, endLive, suspendLive, continueLive, leaveEvent, setTicketListener, clearTicketListener } from '../utils/EventHandler';
 import { handleAndroidBackButton, removeAndroidBackButtonHandler } from '../utils/BackHandler';
 import { formatTime, getDeviceID, checkCameraPermission, checkAudioPermission, ConfirmModal, InfoModal } from '../utils/Utils';
 import { AppText } from '../components/Labels';
-import { Icon } from 'react-native-elements';
-import Header from '../components/Header';
-import { colors, styles, app } from '../constants';
+import { Button } from 'react-native-elements';
+import { colors, styles, app, dimensions } from '../constants';
 import { EndCallButon, StartCallButon, ContinueCallButon } from '../components/Buttons';
+import HeaderGradient from '../components/HeaderGradient';
+import LiveHeaderTitle from '../components/Headers/LiveHeaderTitle';
+import HeaderLeft from '../components/Headers/HeaderLeft';
+import TransparentStatusBar from '../components/StatusBars/TransparentStatusBar';
 
 const HOST_UID = 1000;
 
 
 export default class VideoChatScreen extends Component {
+
+    static navigationOptions = ({ navigation }) => ({
+        headerTransparent:
+        {
+            ...styles.headerTransparent
+        },
+        headerBackground: () => (
+            <HeaderGradient />
+        ),
+        headerStyle:
+        {
+            opacity: 0.7,
+        },
+        headerTitle: () => {
+            const liveData = navigation.getParam('liveData')
+            const status = navigation.getParam('status')
+            return (
+                <LiveHeaderTitle
+                    clientRole={liveData.clientRole}
+                    status={status}
+                />
+            )
+
+        },
+        headerLeft: () => (
+            <HeaderLeft onPress={() => {
+                const { clientRole, eventID, ticket } = navigation.getParam('liveData')
+                const status = navigation.getParam('status')
+                if (status !== app.EVENT_STATUS.IN_PROGRESS) {
+                    if (clientRole === 2)
+                        leaveEvent(eventID, ticket)
+                    return navigation.goBack();
+                }
+                Alert.alert(
+                    "Confirm Exit",
+                    "You can continue show from event screen",
+                    [
+                        {
+                            text: 'Cancel', onPress: () => {
+                                return true;
+                            },
+                            style: 'cancel'
+                        },
+                        {
+                            text: 'OK', onPress: () => {
+                                if (clientRole === 1) {
+                                    // Suspend live event of host
+                                    suspendLive(eventID);
+                                } else if (clientRole === 2) {
+                                    //leave live event of audience
+                                    leaveEvent(eventID, ticket)
+                                }
+                                navigation.goBack();
+                                return false;
+                            }
+                        },
+                    ],
+                    { cancelable: false }
+                );
+                return true;
+            }} />
+        ),
+        headerRight: () => (
+            <View>
+                <Button
+                    type='clear'
+                    title={'Report'}
+                    titleStyle={{ marginRight: 10, color: 'white' }}
+                    onPress={() => console.warn("report problem clicked")} />
+            </View>
+        )
+    });
+
     constructor(props) {
         super(props);
         this.backButtonPressed = this.backButtonPressed.bind(this);
@@ -62,8 +138,16 @@ export default class VideoChatScreen extends Component {
         const { eventID } = this.state;
         RtcEngine.leaveChannel();
         RtcEngine.joinChannel(eventID, HOST_UID)
-            .then((result) => {
-                continueLive(eventID);
+            .then(async (result) => {
+                this.setState({ startLoading: true })
+                let response = await continueLive(eventID);
+                if (!response) {
+                    let title = 'Error occured',
+                        message = 'Unknown error occured while starting your call. Please try again!',
+                        onConfirm = () => { }
+                    InfoModal(title, message, 'Ok', onConfirm)
+                }
+                this.setState({ startLoading: false })
             })
             .catch((error) => {
             });
@@ -115,6 +199,9 @@ export default class VideoChatScreen extends Component {
             if (startedAt) {
                 time = Math.floor((Date.now() - startedAt.getTime()) / 1000);
                 this.setState({ timeStr: formatTime(this.state.duration * 60 - time), time: this.state.duration * 60 - time });
+            }
+            if (status) {
+                this.props.navigation.setParams({ status })
             }
             if (startedAt && status === app.EVENT_STATUS.IN_PROGRESS) {
                 if (clientRole === 1 && !this.state.joinSucceed) {
@@ -192,8 +279,11 @@ export default class VideoChatScreen extends Component {
     _onSuspend = () => {
         // Suspend live event of host
         const { navigation } = this.props;
-        const { eventID } = this.state
-        suspendLive(eventID)
+        const { eventID, clientRole, ticket } = this.state
+        if (clientRole === 1)
+            suspendLive(eventID)
+        else if (clientRole === 2)
+            leaveEvent(eventID, ticket)
         navigation.goBack();
         return false;
     }
@@ -288,41 +378,26 @@ export default class VideoChatScreen extends Component {
     }
 
     renderWaitingComponent() {
-        const { status, clientRole } = this.state;
-        if (status === app.EVENT_STATUS.IN_PROGRESS && clientRole === 1) {
+        const { clientRole } = this.state
+        console.warn()
+        if (clientRole === 1) {
             return (
-                <View style={styles.waitingBox}>
-                    <Icon
-                        type='simple-line-icon'
-                        name="globe"
-                        size={48}
-                        color='white'
+                <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', }}>
+                    <Image
+                        style={{ width: 150, height: 120 }}
+                        source={require('../assets/call_waiting_icon.png')}
                     />
-                    <AppText style={{ color: '#FFFFFF', marginLeft: 8, fontSize: 24, fontWeight: 'bold', textAlign: 'center' }}>Your peer is connecting...</AppText>
-                    <View style={styles.localVideoBox}>
-                        <AgoraView style={{ flex: 1, borderRadius: 10 }} showLocalVideo={true} mode={1} />
-                    </View>
+                    <AppText style={{ color: 'black', marginLeft: 8, fontSize: 24, fontWeight: 'bold', textAlign: 'center' }}>Waiting for your peer to connect...</AppText>
                 </View>
             )
-        } else if (status !== app.EVENT_STATUS.COMPLETED && clientRole === 2) {
+        } else {
             return (
-                <View style={styles.waitingBox}>
-                    <Icon
-                        type='simple-line-icon'
-                        name="globe"
-                        size={48}
-                        color='white'
+                <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', marginTop: dimensions.HEADER_MARGIN }}>
+                    <Image
+                        style={{ width: 150, height: 120 }}
+                        source={require('../assets/call_waiting_icon.png')}
                     />
-                    <AppText style={{ color: '#FFFFFF', marginLeft: 8, fontSize: 24, fontWeight: 'bold', textAlign: 'center' }}>Your host is connecting...</AppText>
-                    <View style={styles.localVideoBox}>
-                        <AgoraView style={{ flex: 1, borderRadius: 10 }} showLocalVideo={true} mode={1} />
-                    </View>
-                </View>
-            )
-        } else if (status === app.EVENT_STATUS.SCHEDULED || status === app.EVENT_STATUS.SUSPENDED && clientRole === 1) {
-            return (
-                <View style={{ flex: 1 }}>
-                    <AgoraView style={{ flex: 1 }} showLocalVideo={true} mode={1} />
+                    <AppText style={{ color: 'black', marginLeft: 8, fontSize: 24, fontWeight: 'bold', textAlign: 'center' }}>Waiting for your host to connect...</AppText>
                 </View>
             )
         }
@@ -349,28 +424,47 @@ export default class VideoChatScreen extends Component {
         console.warn("Report a problem clicked");
     }
 
-    render() {
-        const { clientRole } = this.state;
+    renderHostView() {
+        const capacity = this.state.peerIds.length;
+        const { status } = this.state
+        if (status === app.EVENT_STATUS.IN_PROGRESS) {
+            return (
+                <View style={{ flex: 1 }}>
+                    <View style={{ flex: 1 }}>
+                        <AgoraView style={{ flex: 1 }} showLocalVideo={true} mode={1} />
+                    </View>
+                    <View style={{ flex: 1 }}>
+                        {
+                            capacity === 1 && (
+                                <AgoraView mode={1} key={this.state.peerIds[0]} style={{ flex: 1 }} remoteUid={this.state.peerIds[0]} />
+                            )
+                        }
+                        {
+                            capacity === 0 && (
+                                this.renderWaitingComponent()
+                            )
+                        }
+                    </View>
+                </View>
+            )
+        }
+        else {
+            return (
+                <View style={{ flex: 1 }}>
+                    <AgoraView style={{ flex: 1 }} showLocalVideo={true} mode={1} />
+                </View>
+            )
+        }
+    }
+
+    renderAudienceView() {
         const capacity = this.state.peerIds.length;
         return (
             <View style={{ flex: 1 }}>
-                <StatusBar hidden={true} />
-                <KeepAwake />
-                <Header
-                    buttonTitle={'Quit Call'}
-                    buttonTitleStyle={{ color: colors.BLUE, fontSize: 16 }}
-                    headerRight={(
-                        <TouchableOpacity onPress={this.reportProblem}>
-                            <Text style={{ fontSize: 16, fontWeight: 'bold', color: colors.BLUE }}>Report Problem</Text>
-                        </TouchableOpacity>
-                    )}
-                    onPress={this.backButtonPressed}
-                />
-
                 <View style={{ flex: 1 }}>
                     {
                         capacity === 1 && (
-                            this.renderTwoVideos()
+                            <AgoraView mode={1} key={this.state.peerIds[0]} style={{ flex: 1 }} remoteUid={this.state.peerIds[0]} />
                         )
                     }
                     {
@@ -378,18 +472,118 @@ export default class VideoChatScreen extends Component {
                             this.renderWaitingComponent()
                         )
                     }
+                </View>
+                <View style={{ flex: 1 }}>
+                    <AgoraView style={{ flex: 1 }} showLocalVideo={true} mode={1} />
+                </View>
+            </View>
+        )
+    }
+
+    renderBroadcastButton() {
+        const { status } = this.state;
+        console.warn()
+        if (status === app.EVENT_STATUS.SCHEDULED) {
+            return (
+                <Button
+                    // icon={
+                    //     <Icon
+                    //         type='font-awesome'
+                    //         name="video-camera"
+                    //         size={16}
+                    //         iconStyle={{ marginRight: 4 }}
+                    //         color="white"
+                    //     />
+                    // }
+                    title='Go live!'
+                    buttonStyle={styles.startButton}
+                    onPress={this._startCall}
+                    loading={this.state.startLoading}
+                />
+            )
+        } else if (status === app.EVENT_STATUS.IN_PROGRESS) {
+            return (
+                <Button
+                    // icon={
+                    // <Icon
+                    //     type='material-community'
+                    //     name="video-off"
+                    //     size={16}
+                    //     iconStyle={{ marginRight: 4 }}
+                    //     color="white"
+                    // />
+                    // }
+                    title='End Live'
+                    buttonStyle={styles.endButton}
+                    onPress={this._endLive}
+                />
+            )
+        } else if (status === app.EVENT_STATUS.SUSPENDED) {
+            return (
+                <Button
+                    // icon={
+                    //     <Icon
+                    //         type='font-awesome'
+                    //         name="video-camera"
+                    //         size={16}
+                    //         iconStyle={{ marginRight: 4 }}
+                    //         color="white"
+                    //     />
+                    // }
+                    title='Go Live!'
+                    buttonStyle={styles.startButton}
+                    onPress={this._continueCall}
+                    loading={this.state.startLoading}
+                />
+            )
+        }
+    }
+
+    renderTimer() {
+        const { time } = this.state;
+        if (time < 0) {
+            return (
+                <View style={styles.timer}>
+                    <AppText style={styles.timerCardRed}>{this.state.timeStr}</AppText>
+                </View>
+            )
+        } else {
+            return (
+                <View style={styles.timerNViewer}>
+                    <AppText style={styles.timerCard}>{this.state.timeStr}</AppText>
+                </View>
+            )
+        }
+    }
+
+    render() {
+        const { clientRole } = this.state;
+        return (
+            <View style={{ flex: 1 }}>
+                <KeepAwake />
+                <TransparentStatusBar />
+                <View style={{ flex: 1 }}>
                     {
                         clientRole === 1 && (
-                            this.renderStartButton()
+                            <View style={{ flex: 1 }}>
+                                {
+                                    this.renderHostView()
+                                }
+                                {
+
+                                    this.renderBroadcastButton()
+                                }
+                            </View>
                         )
                     }
                     {
-                        this.renderLiveInfo()
+                        clientRole === 2 && (
+                            this.renderAudienceView()
+                        )
                     }
                     {
                         this.renderTimer()
                     }
-
                 </View>
             </View>
         )
