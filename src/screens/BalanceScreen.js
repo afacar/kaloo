@@ -63,7 +63,7 @@ class BalanceScreen extends Component {
             <ContactUs title='Need Help?' screen='Profile' />
           </View>
         </ScrollView>
-      </KeyboardAvoidingView >
+      </KeyboardAvoidingView>
     );
   }
 }
