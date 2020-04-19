@@ -81,13 +81,16 @@ export default class VideoChatScreen extends Component {
             }} />
         ),
         headerRight: () => (
-            <View>
-                <Button
-                    type='clear'
-                    title={'Report'}
-                    titleStyle={{ marginRight: 10, color: 'white' }}
-                    onPress={() => console.warn("report problem clicked")} />
-            </View>
+            <TouchableOpacity
+                style={{ flex: 1, marginRight: 10 }}
+                onPress={() => {
+                    RtcEngine.switchCamera()
+                }}>
+                <Image
+                    style={{ flex: 1, width: 30, height: 30, resizeMode: 'contain' }}
+                    source={require('../assets/switch-camera.png')}
+                />
+            </TouchableOpacity>
         )
     });
 
@@ -515,7 +518,7 @@ export default class VideoChatScreen extends Component {
                     // }
                     title='End Live'
                     buttonStyle={styles.endButton}
-                    onPress={this._endLive}
+                    onPress={this._endCall}
                 />
             )
         } else if (status === app.EVENT_STATUS.SUSPENDED) {
