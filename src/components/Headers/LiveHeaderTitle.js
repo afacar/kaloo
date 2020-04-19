@@ -33,7 +33,7 @@ export default class LiveHeaderTitle extends Component {
             } else {
                 return (
                     <View style={{ marginLeft: dimensions.HEADER_LEFT_MARGIN }}>
-                        <AppText style={styles.standybyText}>Test</AppText>
+                        <AppText style={styles.standybyText}>Preview</AppText>
                     </View>
                 )
             }

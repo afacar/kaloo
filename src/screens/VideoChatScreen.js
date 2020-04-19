@@ -486,18 +486,10 @@ export default class VideoChatScreen extends Component {
     renderBroadcastButton() {
         const { status } = this.state;
         console.warn()
+        //setTimeout(() => { }, 10)
         if (status === app.EVENT_STATUS.SCHEDULED) {
             return (
                 <Button
-                    // icon={
-                    //     <Icon
-                    //         type='font-awesome'
-                    //         name="video-camera"
-                    //         size={16}
-                    //         iconStyle={{ marginRight: 4 }}
-                    //         color="white"
-                    //     />
-                    // }
                     title='Go live!'
                     buttonStyle={styles.startButton}
                     onPress={this._startCall}
@@ -507,15 +499,6 @@ export default class VideoChatScreen extends Component {
         } else if (status === app.EVENT_STATUS.IN_PROGRESS) {
             return (
                 <Button
-                    // icon={
-                    // <Icon
-                    //     type='material-community'
-                    //     name="video-off"
-                    //     size={16}
-                    //     iconStyle={{ marginRight: 4 }}
-                    //     color="white"
-                    // />
-                    // }
                     title='End Live'
                     buttonStyle={styles.endButton}
                     onPress={this._endCall}
@@ -524,15 +507,6 @@ export default class VideoChatScreen extends Component {
         } else if (status === app.EVENT_STATUS.SUSPENDED) {
             return (
                 <Button
-                    // icon={
-                    //     <Icon
-                    //         type='font-awesome'
-                    //         name="video-camera"
-                    //         size={16}
-                    //         iconStyle={{ marginRight: 4 }}
-                    //         color="white"
-                    //     />
-                    // }
                     title='Go Live!'
                     buttonStyle={styles.startButton}
                     onPress={this._continueCall}

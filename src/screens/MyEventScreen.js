@@ -21,6 +21,8 @@ const {
     Adaptative
 } = Agora
 
+const { COMPLETED, SUSPENDED } = app.EVENT_STATUS
+
 class MyEventScreen extends Component {
     static navigationOptions = ({ navigation }) => ({
         headerStyle: { backgroundColor: colors.BLUE, borderBottomWidth: 0, elevation: 0, shadowOpacity: 0 },
@@ -86,6 +88,7 @@ class MyEventScreen extends Component {
     render() {
         const thisEvent = { ...this.state, isPublished: true }
         var { status } = thisEvent;
+        let title = status === COMPLETED ? 'Event Completed' : status === SUSPENDED ? 'Continue Meeting' : 'Preview audio and video'
         return (
             <SafeAreaView style={{ flex: 1, backgroundColor: 'white' }}>
                 <ScrollView contentContainerStyle={{
@@ -103,13 +106,12 @@ class MyEventScreen extends Component {
                         />
                         <View style={{ marginVertical: 15 }}>
                             <DefaultButton
-                                title={status === app.EVENT_STATUS.COMPLETED ? 'Event Completed' : 'Preview audio and video'}
-                                disabled={status === app.EVENT_STATUS.COMPLETED}
+                                title={title}
                                 onPress={this.onCamera}
-                                disabled={this.state.status === app.EVENT_STATUS.COMPLETED}
+                                disabled={status === COMPLETED}
                             />
                         </View>
-                        <ContactUs/>
+                        <ContactUs />
                     </View>
                 </ScrollView>
             </SafeAreaView>

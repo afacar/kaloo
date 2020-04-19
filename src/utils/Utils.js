@@ -33,33 +33,35 @@ export const formatTime = (seconds) => {
 
 export function formatDuration(duration) {
     // Takes duration as minutes and return as a readible, rounded time format
-    // Can be used to show remaining duratoin or duration for an event 
+    // Can be used to show remaining duration or duration for an event 
+    let minus = duration >= 0 ? 1 : -1;
+    duration = duration * minus;
 
     if (duration == 0)
         return ''
 
     if (duration < 60)
-        return duration + ' min'
+        return (duration * minus) + ' min'
 
     let hours = Math.floor(duration / 60)
     let minutes = duration - (hours * 60)
     minutes = minutes > 0 ? ` ${minutes} min` : ''
 
     if (hours < 24)
-        return `${hours} hr${minutes}`
+        return `${hours * minus} hr${minutes}`
 
     let days = Math.floor(hours / 24)
     hours = hours - (days * 24)
     hours = hours > 0 ? ` ${hours} hr` : ''
 
     if (days < 7)
-        return `${days} day${hours}`
+        return `${days * minus} day${hours}`
 
     let weeks = Math.floor(days / 7)
     days = days - (weeks * 7)
     days = days > 0 ? ` ${days} day` : ''
 
-    return `${weeks} week${days}`
+    return `${weeks * minus} week${days}`
 }
 
 export function addZeroToTime(time) {

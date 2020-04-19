@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
-import { View, Text } from 'react-native';
+import { View, Text, StyleSheet } from 'react-native';
 import { Icon } from "react-native-elements";
-import { app } from '../constants';
+import { app, colors } from '../constants';
 
 export function AppText(props) {
     return (
@@ -69,3 +69,21 @@ export function H3Label(props) {
         <Text style={{ fontSize: 23, fontWeight: '600', paddingVertical: 10, }}>{label}</Text>
     )
 }
+
+export function RedLabel(props) {
+    const { label } = props
+    return (
+        <Text style={styles.redLabel}>{label}</Text>
+    )
+}
+
+const styles = StyleSheet.create({
+    redLabel: {
+        fontSize: 12,
+        color: 'white',
+        backgroundColor: colors.PINK,
+        borderRadius: 6,
+        textAlign: 'center',
+        padding: 8,
+    }
+})
