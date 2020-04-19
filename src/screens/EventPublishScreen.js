@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, Fragment } from 'react';
 import { StyleSheet, ScrollView, BackHandler, View } from 'react-native';
 import { Button, Icon } from 'react-native-elements';
 import { SafeAreaView } from 'react-navigation'
@@ -8,9 +8,14 @@ import { Stage1, Stage2, Stage3 } from '../components/Stages';
 import { H3Label, H1Label } from '../components/Labels';
 import { DefaultButton } from '../components/Buttons';
 
+import { app, colors, dimensions } from '../constants';
+
+
 class EventPublishScreen extends Component {
   static navigationOptions = ({ navigation }) => ({
+    headerStyle: { backgroundColor: colors.BLUE, borderBottomWidth: 0, elevation: 0, shadowOpacity: 0 },
     title: 'Event ready!',
+    headerTitleStyle: {color:'#fff'},
     headerLeft: () => (
       <Button
         type='clear'
@@ -18,7 +23,7 @@ class EventPublishScreen extends Component {
         containerStyle={{ marginLeft: 15 }}
         icon={<Icon type="ionicon"
           name={Platform.OS === 'ios' ? 'ios-arrow-back' : 'md-arrow-back'}
-          color="black"
+          color="#fff"
         />}
       />
     ),
@@ -27,7 +32,7 @@ class EventPublishScreen extends Component {
         type='clear'
         onPress={() => navigation.navigate('UserHome')}
         title={'Done'}
-        titleStyle={{ color: '#196BFF' }}
+        titleStyle={{ color: '#fff' }}
         containerStyle={{ paddingRight: 15 }}
       />
     )
@@ -52,12 +57,8 @@ class EventPublishScreen extends Component {
     const myEvent = this.props.navigation.getParam('event');
 
     return (
-      <SafeAreaView style={{ flex: 1, backgroundColor: 'white' }}>
-        <ScrollView contentContainerStyle={{
-          flexGrow: 1,
-          alignItems: 'center',
-          backgroundColor: "#3598FE"
-        }}>
+      
+      <SafeAreaView style={{ flex: 1, backgroundColor: "#3598FE" }} forceInset={{ bottom: 'never' }}>
           <View style={styles.componentStyle}>
             <View style={{ flexDirection: 'row', justifyContent: "space-between", marginVertical: 20 }}>
               <Stage3 value="1" text="Create" />
@@ -75,7 +76,6 @@ class EventPublishScreen extends Component {
             />
             </View>
           </View>
-        </ScrollView>
       </SafeAreaView>
     );
   }

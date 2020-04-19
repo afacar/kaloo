@@ -21,7 +21,7 @@ class EventPreviewScreen extends Component {
     headerStyle: { backgroundColor: colors.BLUE, borderBottomWidth: 0, elevation: 0, shadowOpacity: 0 },
     headerTitle: () => {
       return (
-        <View style={{ flex: 1, alignItems: 'center', marginLeft: dimensions.HEADER_LEFT_MARGIN }}>
+        <View style={{ flex: 1, alignItems: 'center', marginLeft: Platform.OS === "ios" ? 0 : dimensions.HEADER_LEFT_MARGIN }}>
           <Avatar
             rounded={true}
             size='medium'
@@ -37,15 +37,7 @@ class EventPreviewScreen extends Component {
         </View>
       )
     },
-    headerRight: () => (
-      !navigation.getParam('event').isPublished && <Button
-        type='clear'
-        onPress={() => navigation.getParam('onPublish')()}
-        title={'Publish'}
-        titleStyle={{ color: 'white' }}
-        containerStyle={{ paddingRight: 15 }}
-      />
-    )
+
   });
 
   state = {};
@@ -58,39 +50,41 @@ class EventPreviewScreen extends Component {
     } = this.props.navigation.getParam('event');
 
     return (
-      <SafeAreaView style={{ flex: 1, backgroundColor: 'white' }}>
-        <ScrollView contentContainerStyle={{
-          flexGrow: 1,
-          alignItems: 'center',
-          backgroundColor: "#3598FE"
-        }}>
-          <View style={styles.componentStyle}>
-            <View style={{ flexDirection: 'row', justifyContent: "space-between", marginVertical: 20 }}>
-              <Stage3 value="1" text="Create" />
-              <Stage2 value="2" text="Preview" />
-              <Stage1 value="3" text="Published" />
-            </View>
-            <H1Label label="Preview & Publish" />
-            {!isPublished && <HighlightedText
-              text='Your event isn’t published yet. Event ticket is going to look like this when you publish.'
-            />}
-            <BoldLabel label="Event Card Preview" />
-            <View style={{ borderWidth: 1, borderColor: "#c4c4c4", flex: 1,marginBottom:30 }}>
-              <PreviewHeader
-                event={{ image, photoURL, eventType }}
-              />
-              <View style={{paddingHorizontal:10}}>
-                <PreviewBody
-                  event={{ displayName, title, eventDate, duration, description, capacity, price }}
-                />
+      <SafeAreaView style={{ flex: 1, backgroundColor: "white" }}>
+        <View style={{ flex: 1, backgroundColor: "#3598FE" }}>
+          <ScrollView contentContainerStyle={{
+            flexGrow: 1,
+            alignItems: 'center',
+            backgroundColor: "#3598FE"
+          }}>
+            <View style={styles.componentStyle}>
+              <View style={{ flexDirection: 'row', justifyContent: "space-between", marginVertical: 20 }}>
+                <Stage3 value="1" text="Create" />
+                <Stage2 value="2" text="Preview" />
+                <Stage1 value="3" text="Published" />
               </View>
+              <H1Label label="Preview & Publish" />
+              {!isPublished && <HighlightedText
+                text='Your event isn’t published yet. Event ticket is going to look like this when you publish.'
+              />}
+              <BoldLabel label="Event Card Preview" />
+              <View style={{ borderWidth: 1, borderColor: "#c4c4c4", flex: 1, marginBottom: 30 }}>
+                <PreviewHeader
+                  event={{ image, photoURL, eventType }}
+                />
+                <View style={{ paddingHorizontal: 10 }}>
+                  <PreviewBody
+                    event={{ displayName, title, eventDate, duration, description, capacity, price }}
+                  />
+                </View>
+              </View>
+              <DefaultButton
+                title="Publish your event"
+                onPress={() => this.props.navigation.getParam('onPublish')()} />
+              <ContactUs />
             </View>
-           <DefaultButton 
-            title="Publish your event"
-            onPress={() => this.props.navigation.getParam('onPublish')()}/>
-            <ContactUs/>
-          </View>
-        </ScrollView>
+          </ScrollView>
+        </View>
       </SafeAreaView>
     );
   }

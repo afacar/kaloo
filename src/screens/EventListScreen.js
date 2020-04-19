@@ -3,6 +3,8 @@ import { View, StyleSheet, Text, ActivityIndicator, ScrollView } from 'react-nat
 import { Button, Card, ListItem, Avatar } from 'react-native-elements';
 import { firestore, auth } from "react-native-firebase";
 import { connect } from 'react-redux';
+import { SafeAreaView } from 'react-navigation'
+
 
 import { setUserProfile } from "../appstate/actions/auth_actions";
 import { checkAudioPermission, checkCameraPermission, compare } from '../utils/Utils';
@@ -150,11 +152,14 @@ class EventListScreen extends Component {
 
     render() {
         return (
+            <>
+            <SafeAreaView style={{flex:0, backgroundColor:"#3598FE"}}/>
+            <SafeAreaView style={{flex:1, backgroundColor:"white"}} >
             <View style={{ flex: 1, backgroundColor: '#3598FE' }}>
                 <CustomStatusBar />
                 <DashboardHeader
                     navigation={this.props.navigation}
-                    //earnings={earnings} // TODO
+                //earnings={earnings} // TODO
                 />
                 <View style={styles.container}>
                     <ScrollView overScrollMode='never'>
@@ -171,6 +176,8 @@ class EventListScreen extends Component {
                     </ScrollView>
                 </View>
             </View>
+            </SafeAreaView>
+            </>
         )
     }
 }

@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { StyleSheet, View, ScrollView, Text, TouchableOpacity, KeyboardAvoidingView } from 'react-native';
+import { StyleSheet, View, ScrollView, Text, TouchableOpacity, KeyboardAvoidingView,Platform } from 'react-native';
 import { storage, firestore, functions, auth } from 'react-native-firebase';
 import { Input, Button, Image, CheckBox, Icon, Badge, Avatar } from 'react-native-elements';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
@@ -7,11 +7,11 @@ import ImagePicker from 'react-native-image-crop-picker';
 import { HighlightedText, H1Label, BoldLabel, Label } from '../components/Labels';
 import { Stage1, Stage2, Stage3 } from '../components/Stages';
 import { ContactUs } from '../components/ContactUs'
+import { SafeAreaView } from 'react-navigation'
 
 import { app, colors, dimensions } from '../constants';
 import { connect } from 'react-redux';
 import { splitDate, ConfirmModal } from '../utils/Utils';
-import { SafeAreaView } from 'react-navigation';
 import { DefaultButton } from '../components/Buttons';
 
 
@@ -35,12 +35,14 @@ const INITIAL_STATE = {
     status: app.EVENT_STATUS.SCHEDULED,
 }
 
+
 class EventCreateScreen extends Component {
     static navigationOptions = ({ navigation }) => ({
-        headerStyle: { backgroundColor: colors.BLUE, borderBottomWidth: 0, elevation: 0, shadowOpacity: 0 },
+        headerStyle: { backgroundColor: colors.BLUE, borderBottomWidth: 0, elevation: 0, shadowOpacity: 0, height:80},
+        headerTitleStyle:{flex:1},
         headerTitle: () => {
             return (
-                <View style={{ flex: 1, alignItems: 'center', marginLeft: dimensions.HEADER_LEFT_MARGIN }}>
+                <View style={{ flex: 1, alignItems: 'center', marginLeft: Platform.OS==="ios" ? 0: dimensions.HEADER_LEFT_MARGIN }}>
                     <Avatar
                         rounded={true}
                         size='medium'
@@ -55,8 +57,8 @@ class EventCreateScreen extends Component {
                     <HeaderLeft onPress={navigation.goBack} />
                 </View>
             )
-        }
-    });
+        },
+        });
 
     state = { ...INITIAL_STATE, ...this.props.profile, image: this.props.assets.DEFAULT_EVENT_IMAGE }
 
@@ -164,12 +166,13 @@ class EventCreateScreen extends Component {
         const { image, title, description, duration, eventType, capacity, price, eventDate, titleMessage, dateMessage } = this.state;
         const { date, time, gmt } = splitDate(eventDate)
         return (
-            <SafeAreaView style={{ flex: 1, backgroundColor: 'white' }}>
+            <SafeAreaView style={{ flex:1, backgroundColor: "white" }}>
                 <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : ''} style={styles.container}>
+                    <View style={{flex:1, backgroundColor:"#3598FE"}}>
                     <ScrollView contentContainerStyle={{
                         flexGrow: 1,
                         alignItems: 'center',
-                        backgroundColor: "#3598FE"
+                        backgroundColor: "#3598FE",
                     }}>
                         <View style={styles.componentStyle}>
                                 <View style={{ flexDirection: 'row', justifyContent: "space-between", marginVertical: 10 }}>
@@ -324,9 +327,9 @@ class EventCreateScreen extends Component {
                                 </View>
                             </View>
                     </ScrollView>
+                    </View>
                 </KeyboardAvoidingView>
             </SafeAreaView>
-
         );
     }
 
