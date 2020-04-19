@@ -106,18 +106,16 @@ export default class LiveScreen extends Component {
             }} />
         ),
         headerRight: () => (
-            <View style={{ width: 20, height: 20 }}>
-                <TouchableOpacity
-                    style={{ flex: 1 }}
-                    onPress={() => {
-                        RtcEngine.switchCamera()
-                    }}>
-                    <Image
-                        style={{ flex: 1, width: 50, height: 50, resizeMode: 'contain' }}
-                        source={require('../assets/switch-camera.png')}
-                    />
-                </TouchableOpacity>
-            </View>
+            <TouchableOpacity
+                style={{ flex: 1, marginRight: 10 }}
+                onPress={() => {
+                    RtcEngine.switchCamera()
+                }}>
+                <Image
+                    style={{ flex: 1, width: 30, height: 30, resizeMode: 'contain' }}
+                    source={require('../assets/switch-camera.png')}
+                />
+            </TouchableOpacity>
         )
     });
 
