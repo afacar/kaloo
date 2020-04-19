@@ -14,6 +14,7 @@ import { SafeAreaView } from 'react-navigation';
 import { connect } from "react-redux";
 
 import { HighlightedText, BoldLabel } from '../components/Labels';
+import { WaitingModal } from "../components/Modals";
 import { validateEmail } from '../utils/Utils'
 import { ClickableText, HyperLink, DefaultButton } from '../components/Buttons';
 import { ContactUs } from '../components/ContactUs';
@@ -232,6 +233,7 @@ class RegisterScreen extends Component {
               </View>
               <View style={styles.contactUs}>
                 <ContactUs title="Have a problem?" screen='Register' />
+                <WaitingModal isWaiting={isWaiting} text='Creating your account...' />
               </View>
             </View>
           </ScrollView>
