@@ -1,5 +1,5 @@
-import React, { Component } from 'react';
-import { View, StyleSheet, Text, ActivityIndicator, ScrollView } from 'react-native';
+import React, { Component, Fragment } from 'react';
+import { View, StyleSheet, Text, ActivityIndicator, ScrollView, Image } from 'react-native';
 import { Button, Card, ListItem, Avatar } from 'react-native-elements';
 import { firestore, auth } from "react-native-firebase";
 import { connect } from 'react-redux';
@@ -10,7 +10,7 @@ import { setUserProfile } from "../appstate/actions/auth_actions";
 import { checkAudioPermission, checkCameraPermission, compare } from '../utils/Utils';
 import app from "../constants/app";
 import { ContactUs } from '../components/ContactUs';
-import { DefaultButton, ClearButton } from '../components/Buttons';
+import { DefaultButton, ClearButton, ClickableText } from '../components/Buttons';
 import { Label, BoldLabel } from '../components/Labels';
 import DashboardHeader from "../components/DashboardHeader";
 import CustomStatusBar from '../components/StatusBars/CustomStatusBar';
@@ -98,7 +98,7 @@ class EventListScreen extends Component {
         liveEvents.sort(compare)
         upcomingEvents.sort(compare)
         // List SCHEDULED EVENT by sorting accordinf to eventDate
-        let lives = <View></View>
+        let lives = null
         if (liveEvents.length > 0) {
             lives = <View>
                 <BoldLabel label='Live Now!' />
@@ -141,43 +141,51 @@ class EventListScreen extends Component {
                 })}
             </View>
         } else {
-            upcomings = <Text>No upcoming events!</Text>
+            upcomings = <View style={{ alignSelf: 'center', alignItems: 'center', margin: 20 }}>
+                <Image source={require('../assets/no-event.png')} />
+                <Text>
+                    You don’t have any scheduled meetings.
+                </Text>
+                <ClickableText text='Let’s create one!' onPress={() => this.props.navigation.navigate('EventCreate')} />
+            </View>
         }
 
         return <View>
-            {lives}
+            {lives && lives}
             {upcomings}
         </View>
     }
 
     render() {
         return (
-            <>
-            <SafeAreaView style={{flex:0, backgroundColor:"#3598FE"}}/>
-            <SafeAreaView style={{flex:1, backgroundColor:"white"}} >
-            <View style={{ flex: 1, backgroundColor: '#3598FE' }}>
-                <CustomStatusBar />
-                <DashboardHeader
-                    navigation={this.props.navigation}
-                //earnings={earnings} // TODO
-                />
-                <View style={styles.container}>
-                    <ScrollView overScrollMode='never'>
-                        <View style={{ flexDirection: 'column', justifyContent: 'space-evenly' }}>
-                            <DefaultButton
-                                title='+ Create an Event'
-                                onPress={() => this.props.navigation.navigate('EventCreate')} />
-                            <ClearButton
-                                title='Join a show'
-                                onPress={() => this.props.navigation.navigate('MyTicket')} />
+            <Fragment>
+                <SafeAreaView style={{ flex: 0, backgroundColor: "#3598FE" }} />
+                <SafeAreaView style={{ flex: 1, backgroundColor: "white" }} >
+                    <View style={{ flex: 1, backgroundColor: '#3598FE' }}>
+                        <CustomStatusBar />
+                        <DashboardHeader
+                            navigation={this.props.navigation}
+                        //earnings={earnings} // TODO
+                        />
+                        <View style={styles.container}>
+                            <ScrollView overScrollMode='never' contentContainerStyle={{ flexGrow: 1, justifyContent: 'space-between' }}>
+                                <View>
+                                    <View style={{ flexDirection: 'column', justifyContent: 'space-evenly' }}>
+                                        <DefaultButton
+                                            title='+ Create an Event'
+                                            onPress={() => this.props.navigation.navigate('EventCreate')} />
+                                        <ClearButton
+                                            title='Join a show'
+                                            onPress={() => this.props.navigation.navigate('MyTicket')} />
+                                    </View>
+                                    {this.renderEventList()}
+                                </View>
+                                <ContactUs title='Have a problem?' screen='EventList' />
+                            </ScrollView>
                         </View>
-                        {this.renderEventList()}
-                        <ContactUs title='Have a problem?' screen='EventList' />
-                    </ScrollView>
-                </View>
-            </View>
-            </SafeAreaView>
-            </>
+                    </View>
+                </SafeAreaView>
+            </Fragment>
         )
     }
 }
