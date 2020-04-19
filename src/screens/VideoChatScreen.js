@@ -385,7 +385,7 @@ export default class VideoChatScreen extends Component {
                 <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', }}>
                     <Image
                         style={{ width: 150, height: 120 }}
-                        source={require('../assets/call_waiting_icon.png')}
+                        source={require('../assets/disconnected.png')}
                     />
                     <AppText style={{ color: 'black', marginLeft: 8, fontSize: 24, fontWeight: 'bold', textAlign: 'center' }}>Waiting for your peer to connect...</AppText>
                 </View>
@@ -395,7 +395,7 @@ export default class VideoChatScreen extends Component {
                 <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', marginTop: dimensions.HEADER_MARGIN }}>
                     <Image
                         style={{ width: 150, height: 120 }}
-                        source={require('../assets/call_waiting_icon.png')}
+                        source={require('../assets/disconnected.png')}
                     />
                     <AppText style={{ color: 'black', marginLeft: 8, fontSize: 24, fontWeight: 'bold', textAlign: 'center' }}>Waiting for your host to connect...</AppText>
                 </View>

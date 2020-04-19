@@ -393,7 +393,7 @@ export default class LiveScreen extends Component {
                 <View style={styles.waitingBox}>
                     <Image
                         style={{ width: 250, height: 220 }}
-                        source={require('../assets/waiting_icon.png')}
+                        source={require('../assets/host-connecting.png')}
                     />
                     <AppText style={{ color: '#FFFFFF', marginLeft: 8, fontSize: 24, fontWeight: 'bold', textAlign: 'center' }}>Your host is connecting...</AppText>
                 </View>
@@ -403,7 +403,7 @@ export default class LiveScreen extends Component {
                 <View style={styles.waitingBox}>
                     <Image
                         style={{ width: 250, height: 220 }}
-                        source={require('../assets/waiting_icon.png')}
+                        source={require('../assets/host-connecting.png')}
                     />
                     <AppText style={{ color: '#FFFFFF', marginLeft: 8, fontSize: 24, fontWeight: 'bold', textAlign: 'center' }}>Wait for event to start..</AppText>
                 </View>
