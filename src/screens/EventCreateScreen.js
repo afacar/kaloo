@@ -1,17 +1,17 @@
 import React, { Component } from 'react';
-import { StyleSheet, View, ScrollView, Text, TouchableOpacity, KeyboardAvoidingView,Platform } from 'react-native';
-import { storage, firestore, functions, auth } from 'react-native-firebase';
-import { Input, Button, Image, CheckBox, Icon, Badge, Avatar } from 'react-native-elements';
+import { StyleSheet, View, ScrollView, Text, TouchableOpacity, KeyboardAvoidingView, Platform } from 'react-native';
+import { auth } from 'react-native-firebase';
+import { Input, Image, CheckBox, Icon, Avatar } from 'react-native-elements';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import ImagePicker from 'react-native-image-crop-picker';
-import { HighlightedText, H1Label, BoldLabel, Label } from '../components/Labels';
+import { H1Label, BoldLabel, Label } from '../components/Labels';
 import { Stage1, Stage2, Stage3 } from '../components/Stages';
 import { ContactUs } from '../components/ContactUs'
 import { SafeAreaView } from 'react-navigation'
 
 import { app, colors, dimensions } from '../constants';
 import { connect } from 'react-redux';
-import { splitDate, ConfirmModal } from '../utils/Utils';
+import { splitDate } from '../utils/Utils';
 import { DefaultButton } from '../components/Buttons';
 
 
@@ -31,18 +31,17 @@ const INITIAL_STATE = {
     titleMessage: '',
     dateMessage: '',
     isPreview: false,
-    isWaiting: false,
     status: app.EVENT_STATUS.SCHEDULED,
 }
 
 
 class EventCreateScreen extends Component {
     static navigationOptions = ({ navigation }) => ({
-        headerStyle: { backgroundColor: colors.BLUE, borderBottomWidth: 0, elevation: 0, shadowOpacity: 0, height:80},
-        headerTitleStyle:{flex:1},
+        headerStyle: { backgroundColor: colors.BLUE, borderBottomWidth: 0, elevation: 0, shadowOpacity: 0, height: 80 },
+        headerTitleStyle: { flex: 1 },
         headerTitle: () => {
             return (
-                <View style={{ flex: 1, alignItems: 'center', marginLeft: Platform.OS==="ios" ? 0: dimensions.HEADER_LEFT_MARGIN }}>
+                <View style={{ flex: 1, alignItems: 'center', marginLeft: Platform.OS === "ios" ? 0 : dimensions.HEADER_LEFT_MARGIN }}>
                     <Avatar
                         rounded={true}
                         size='small'
@@ -58,77 +57,9 @@ class EventCreateScreen extends Component {
                 </View>
             )
         },
-        });
+    });
 
     state = { ...INITIAL_STATE, ...this.props.profile, image: this.props.assets.DEFAULT_EVENT_IMAGE }
-
-    componentDidMount() {
-        console.log('EventCreateDidMiunt state', this.state)
-    }
-
-    createEvent = async () => {
-        let { uid, displayName, userNumber, photoURL, image, title, description, duration, eventType, capacity, price, eventDate, status } = this.state
-        const { DEFAULT_EVENT_IMAGE } = this.props.assets;
-
-        let event = { uid, displayName, userNumber, photoURL, image, title, description, duration, eventType, capacity, price, eventDate, status }
-        let createEvent = functions().httpsCallable('createEvent');
-        event.eventTimestamp = eventDate.getTime();
-
-        this.setState({ isWaiting: true })
-
-        // Check if new event image is set
-        if (image !== DEFAULT_EVENT_IMAGE) {
-            let imagePath = `events/${event.uid}/${event.eventTimestamp}.jpg`
-            console.log(`Uploading event image to: ${imagePath}`)
-            const imageRef = storage().ref(imagePath)
-            await imageRef.getDownloadURL().then((url) => {
-                // Another event created at the same timestamp
-                this.setState({ isWaiting: false, isPreview: false, dateMessage: 'There is already an event on this date!' })
-            }).catch(async (error) => {
-                if (error.code === 'storage/object-not-found') {
-                    await imageRef.putFile(image)
-                    let newImage = await imageRef.getDownloadURL()
-                    console.log('New Image uploaded')
-                    event.image = newImage
-                    console.log('calling create event...', event);
-                    let response = await createEvent(event);
-                    console.log('Recieved created event:=>', response);
-                    if (response && response.data && response.data.state === 'SUCCESS') {
-                        let eventData = response.data.event;
-                        let date = eventData.eventDate
-                        if (date instanceof firestore.Timestamp) {
-                            console.log('finally Timestamp')
-                            date = date.toDate();
-                        } else if (eventData.eventTimestamp) {
-                            date = new Date(eventData.eventTimestamp);
-                        }
-                        eventData.eventDate = date
-                        this.setState({ isWaiting: false })
-                        console.log('Sending event to EventPublish1:=>', eventData);
-                        this.props.navigation.navigate('EventPublish', { event: eventData })
-                    }
-                }
-            })
-        } else {
-            console.log('calling create event...', event);
-            let response = await createEvent(event);
-            console.log('Recieved created event:=>', response);
-            if (response && response.data && response.data.state === 'SUCCESS') {
-                let eventData = response.data.event;
-                let date = eventData.eventDate
-                if (date instanceof firestore.Timestamp) {
-                    console.log('finally Timestamp')
-                    date = date.toDate();
-                } else if (eventData.eventTimestamp) {
-                    date = new Date(eventData.eventTimestamp);
-                }
-                eventData.eventDate = date
-                this.setState({ isWaiting: false })
-                console.log('Sending event to EventPublish2:=>', eventData);
-                this.props.navigation.navigate('EventPublish', { event: eventData })
-            }
-        }
-    }
 
     onImagePressed = () => {
         ImagePicker.openPicker({
@@ -147,34 +78,21 @@ class EventCreateScreen extends Component {
 
     onDateChange = (selectedDate) => {
         this.setState({ isDatePickerVisible: false, eventDate: selectedDate, dateMessage: '' });
-    };
-
-    onConfirmPublish = () => {
-        this.setState({ isPublishing: true });
-        this.createEvent();
-    }
-
-    _confirmPublish = () => {
-        const title = 'You will publish event',
-            message = 'This can not be undone!',
-            confirmText = 'Yes, Publish',
-            cancelText = 'Cancel';
-        ConfirmModal(title, message, confirmText, cancelText, this.onConfirmPublish)
     }
 
     render() {
         const { image, title, description, duration, eventType, capacity, price, eventDate, titleMessage, dateMessage } = this.state;
         const { date, time, gmt } = splitDate(eventDate)
         return (
-            <SafeAreaView style={{ flex:1, backgroundColor: "white" }}>
+            <SafeAreaView style={{ flex: 1, backgroundColor: "white" }}>
                 <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : ''} style={styles.container}>
-                    <View style={{flex:1, backgroundColor:"#3598FE"}}>
-                    <ScrollView contentContainerStyle={{
-                        flexGrow: 1,
-                        alignItems: 'center',
-                        backgroundColor: "#3598FE",
-                    }}>
-                        <View style={styles.componentStyle}>
+                    <View style={{ flex: 1, backgroundColor: "#3598FE" }}>
+                        <ScrollView contentContainerStyle={{
+                            flexGrow: 1,
+                            alignItems: 'center',
+                            backgroundColor: "#3598FE",
+                        }}>
+                            <View style={styles.componentStyle}>
                                 <View style={{ flexDirection: 'row', justifyContent: "space-between", marginVertical: 10 }}>
                                     <Stage2 value="1" text="Create" />
                                     <Stage1 value="2" text="Preview" />
@@ -270,7 +188,7 @@ class EventCreateScreen extends Component {
                                         checkedColor="#FF3E6C"
                                         uncheckedColor="#FF3E6C"
                                         containerStyle={{ paddingHorizontal: 0 }} />
-                                    <View style={{paddingRight:25}}>
+                                    <View style={{ paddingRight: 25 }}>
                                         <TouchableOpacity onPress={() => this.setState({ eventType: 'live' })}>
                                             <BoldLabel label="Broadcasting Event" />
                                             <Label label="Stream to large audience. You won’t be hearing your audience, communcation is one way." />
@@ -301,14 +219,14 @@ class EventCreateScreen extends Component {
                                         containerStyle={{ paddingHorizontal: 0 }} />
                                     <View>
                                         <TouchableOpacity onPress={() => this.setState({ eventType: 'call', capacity: 1 })}>
-                                            <BoldLabel label="1-1 Meeting"/>
-                                            <Label label="Create a private video call with just one person."/>
+                                            <BoldLabel label="1-1 Meeting" />
+                                            <Label label="Create a private video call with just one person." />
                                         </TouchableOpacity>
                                     </View>
                                 </View>
 
 
-                                <BoldLabel label="Ticket Price (USD)"/>
+                                <BoldLabel label="Ticket Price (USD)" />
                                 <Input
                                     placeholder="Price"
                                     placeholderTextColor='#c4c4c4'
@@ -319,14 +237,14 @@ class EventCreateScreen extends Component {
                                     inputContainerStyle={styles.inputContainerStyle}
                                     containerStyle={{ paddingHorizontal: 0 }} />
                                 <View style={{ paddingTop: 20 }}>
-                                <DefaultButton 
-                                    title="Preview"
-                                    onPress={() => this.props.navigation.navigate('EventPreview', { event: this.state, onPublish: this._confirmPublish })}
+                                    <DefaultButton
+                                        title="Preview"
+                                        onPress={() => this.props.navigation.navigate('EventPreview', { event: this.state })}
                                     />
-                                <ContactUs />
+                                    <ContactUs />
                                 </View>
                             </View>
-                    </ScrollView>
+                        </ScrollView>
                     </View>
                 </KeyboardAvoidingView>
             </SafeAreaView>
