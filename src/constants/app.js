@@ -1,5 +1,5 @@
 export default {
-  APPLICATION_NAME: 'influenceMe',
+  APPLICATION_NAME: 'Kaloo',
   APP_FONT: 'System',
   AGORA_APP_ID: 'a0ee6b5742ca4cfe84d1e9fa4c97b946',
   EVENT_STATUS: {
