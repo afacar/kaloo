@@ -2,9 +2,15 @@ import React, { Component } from 'react';
 import { StyleSheet, ScrollView, View } from 'react-native';
 import { Button, Card } from 'react-native-elements';
 
-import { HighlightedText } from '../components/Labels';
+import { HighlightedText, BoldLabel } from '../components/Labels';
 import PreviewHeader from "../components/PreviewHeader";
 import PreviewBody from '../components/PreviewBody';
+import { Stage1, Stage2, Stage3 } from '../components/Stages';
+import { H1Label } from '../components/Labels';
+import { SafeAreaView } from 'react-navigation'
+import { DefaultButton } from '../components/Buttons';
+import { ContactUs } from '../components/ContactUs'
+
 
 
 class EventPreviewScreen extends Component {
@@ -31,19 +37,40 @@ class EventPreviewScreen extends Component {
     } = this.props.navigation.getParam('event');
 
     return (
-      <ScrollView contentContainerStyle={styles.container}>
-        {!isPublished && <HighlightedText
-          text='Your event isn’t published yet. Event ticket is going to look like this when you publish.'
-        />}
-        <Card containerStyle={{ marginHorizontal: 0, margin: 5 }}>
-          <PreviewHeader
-            event={{ image, photoURL, eventType }}
-          />
-          <PreviewBody
-            event={{ displayName, title, eventDate, duration, description, capacity, price }}
-          />
-        </Card>
-      </ScrollView>
+      <SafeAreaView style={{ flex: 1, backgroundColor: 'white' }}>
+        <ScrollView contentContainerStyle={{
+          flexGrow: 1,
+          alignItems: 'center',
+          backgroundColor: "#3598FE"
+        }}>
+          <View style={styles.componentStyle}>
+            <View style={{ flexDirection: 'row', justifyContent: "space-between", marginVertical: 20 }}>
+              <Stage3 value="1" text="Create" />
+              <Stage2 value="2" text="Preview" />
+              <Stage1 value="3" text="Published" />
+            </View>
+            <H1Label label="Preview & Publish" />
+            {!isPublished && <HighlightedText
+              text='Your event isn’t published yet. Event ticket is going to look like this when you publish.'
+            />}
+            <BoldLabel label="Event Card Preview" />
+            <View style={{ borderWidth: 1, borderColor: "#c4c4c4", flex: 1,marginBottom:30 }}>
+              <PreviewHeader
+                event={{ image, photoURL, eventType }}
+              />
+              <View style={{paddingHorizontal:10}}>
+                <PreviewBody
+                  event={{ displayName, title, eventDate, duration, description, capacity, price }}
+                />
+              </View>
+            </View>
+           <DefaultButton 
+            title="Publish your event"
+            onPress={() => this.props.navigation.getParam('onPublish')()}/>
+            <ContactUs/>
+          </View>
+        </ScrollView>
+      </SafeAreaView>
     );
   }
 }
@@ -55,7 +82,17 @@ const styles = StyleSheet.create({
     marginHorizontal: 10,
     padding: 10,
     borderRadius: 15
-  }
+  },
+  componentStyle: {
+    flex: 1,
+    paddingHorizontal: 40,
+    paddingVertical: 10,
+    alignSelf: 'stretch',
+    paddingVertical: 20,
+    backgroundColor: "white",
+    borderTopRightRadius: 26,
+    borderTopLeftRadius: 26,
+  },
 });
 
 export default EventPreviewScreen;

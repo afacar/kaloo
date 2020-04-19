@@ -179,7 +179,7 @@ const styles = StyleSheet.create({
     defaultButtonColor: {
         backgroundColor: "#3BCDE2",
         borderRadius: 16,
-        height: 50
+        height: 50,
     },
     clearButton: {
         marginTop: 10,

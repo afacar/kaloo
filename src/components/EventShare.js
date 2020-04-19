@@ -1,6 +1,8 @@
 import React from 'react';
 import { View, Text, Alert, Share, Clipboard, TouchableOpacity } from 'react-native';
 import { Icon, Button } from 'react-native-elements';
+import { BoldLabel } from './Labels';
+import { ClearButton } from './Buttons';
 
 async function onShare(link, title) {
     try {
@@ -25,19 +27,19 @@ async function onShare(link, title) {
 export default function EventShare(props) {
     const { link, title } = props
     return (
-        <View style={{ paddingVertical: 10 }}>
-            <Text style={{ fontSize: 15, fontWeight: 'bold' }}>Event Link</Text>
-            <Text>Your unique link is ready!</Text>
+        <View>
+            <BoldLabel label="Event Link" />
             <View style={{
                 flexDirection: 'row',
                 borderWidth: 1,
-                borderColor: '#1A6BFE',
+                borderColor: '#BFBFBF',
                 justifyContent: 'center',
                 alignItems: 'center',
                 borderRadius: 6,
                 paddingHorizontal: 20,
                 paddingVertical: 10,
-                marginVertical: 15
+                marginVertical: 15,
+                backgroundColor: "#EFF5FF"
             }}>
                 <Text numberOfLines={1} style={{ fontSize: 15 }}>
                     {link}
@@ -46,15 +48,13 @@ export default function EventShare(props) {
                     <Icon
                         name='content-copy'
                         type='material-community'
-                        color='#1A6BFE'
+                        color='#655FFF'
                     />
                 </TouchableOpacity>
             </View>
-            <Button
+            <ClearButton
                 title='Share'
                 onPress={() => onShare(link, title)}
-                type='clear'
-                buttonStyle={{ borderWidth: 1, borderColor: '#3B77EB', borderRadius: 15 }}
             />
         </View>
     )

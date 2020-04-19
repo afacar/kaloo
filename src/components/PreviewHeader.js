@@ -9,11 +9,11 @@ export default function PreviewHeader(props) {
       <ImageBackground
         source={{ uri: image }}
         style={{ width: '100%', height: '100%' }}
-        imageStyle={{ borderTopLeftRadius: 6, height: '75%', borderTopRightRadius: 6 }}
+        imageStyle={{height:'85%'}}
+        
       >
-        <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'space-between' }}>
-          <Image source={{ uri: photoURL }} style={styles.userPhotoStyle} />
-          <Text style={styles.eventTypeStyle}>{eventType}</Text>
+        <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'center',}}>
+          <Image source={{ uri: photoURL }} style={styles.userPhotoStyle}/>
         </View>
       </ImageBackground>
     </View>
@@ -24,13 +24,12 @@ export default function PreviewHeader(props) {
 const styles = StyleSheet.create({
   container: {
     height: 190,
-    paddingVertical: 10,
   },
   userPhotoStyle: {
     height: 84,
     width: 84,
     borderColor: 'white',
-    borderRadius: 6,
+    borderRadius: 50,
     borderWidth: 4,
     marginLeft: 10,
     alignSelf: 'flex-end',

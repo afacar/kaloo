@@ -1,10 +1,12 @@
 import React, { Component } from 'react';
-import { StyleSheet, ScrollView, BackHandler } from 'react-native';
+import { StyleSheet, ScrollView, BackHandler, View } from 'react-native';
 import { Button, Icon } from 'react-native-elements';
-
+import { SafeAreaView } from 'react-navigation'
 import { handleAndroidBackButton, removeAndroidBackButtonHandler } from '../utils/BackHandler'
 import EventShare from '../components/EventShare';
-
+import { Stage1, Stage2, Stage3 } from '../components/Stages';
+import { H3Label, H1Label } from '../components/Labels';
+import { DefaultButton } from '../components/Buttons';
 
 class EventPublishScreen extends Component {
   static navigationOptions = ({ navigation }) => ({
@@ -50,15 +52,31 @@ class EventPublishScreen extends Component {
     const myEvent = this.props.navigation.getParam('event');
 
     return (
-      <ScrollView contentContainerStyle={styles.container}>
-        <EventShare
-          link={myEvent.eventLink}
-        />
-        <Button
-          title='Go to Event'
-          onPress={() => this.props.navigation.navigate('MyEvent', { event: myEvent })}
-        />
-      </ScrollView>
+      <SafeAreaView style={{ flex: 1, backgroundColor: 'white' }}>
+        <ScrollView contentContainerStyle={{
+          flexGrow: 1,
+          alignItems: 'center',
+          backgroundColor: "#3598FE"
+        }}>
+          <View style={styles.componentStyle}>
+            <View style={{ flexDirection: 'row', justifyContent: "space-between", marginVertical: 20 }}>
+              <Stage3 value="1" text="Create" />
+              <Stage3 value="2" text="Preview" />
+              <Stage2 value="3" text="Published" />
+            </View>
+            <H1Label label="Your meeting is set!" />
+            <EventShare
+              link={myEvent.eventLink}
+            />
+            <View style={{marginVertical:15}}>
+            <DefaultButton
+              title='Go to Event'
+              onPress={() => this.props.navigation.navigate('MyEvent', { event: myEvent })}
+            />
+            </View>
+          </View>
+        </ScrollView>
+      </SafeAreaView>
     );
   }
 }
@@ -70,7 +88,17 @@ const styles = StyleSheet.create({
     marginHorizontal: 10,
     padding: 10,
     borderRadius: 15
-  }
+  },
+  componentStyle: {
+    flex: 1,
+    paddingHorizontal: 40,
+    paddingVertical: 10,
+    alignSelf: 'stretch',
+    paddingVertical: 20,
+    backgroundColor: "white",
+    borderTopRightRadius: 26,
+    borderTopLeftRadius: 26,
+  },
 });
 
 export default EventPublishScreen;
