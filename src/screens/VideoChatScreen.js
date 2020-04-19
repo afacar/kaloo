@@ -279,7 +279,7 @@ export default class VideoChatScreen extends Component {
     _onSuspend = () => {
         // Suspend live event of host
         const { navigation } = this.props;
-        const { eventID, clientRole } = this.state
+        const { eventID, clientRole, ticket } = this.state
         if (clientRole === 1)
             suspendLive(eventID)
         else if (clientRole === 2)
