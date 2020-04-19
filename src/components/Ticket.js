@@ -63,45 +63,47 @@ class Ticket extends Component {
     return (
       <SafeAreaView style={{ flex: 1, backgroundColor: 'white' }}>
         <CustomStatusBar />
-        <ScrollView
-          contentContainerStyle={{
-            flexGrow: 1,
-            paddingHorizontal: 20,
-            backgroundColor: 'white',
-          }}>
+        <ScrollView contentContainerStyle={styles.scrollView} >
           <KeyboardAvoidingView style={styles.container}>
-            <Image
-              source={require('../assets/default-logo.png')}
-              style={{ width: 150, height: 150 }}
-            />
-            <Label label="Get your ticket ready!" />
-            <Input
-              placeholder={TICKET_FORMAT || ''}
-              placeholderTextColor="gray"
-              inputStyle={{ textAlign: 'center' }}
-              onChangeText={this.onTicketChange}
-              value={ticket}
-              keyboardType="ascii-capable"
-              errorMessage={ticketError}
-              autoCapitalize="characters"
-              disabled={isWaiting}
-              containerStyle={{ paddingVertical: 10, paddingHorizontal: 0 }}
-              inputContainerStyle={{
-                borderWidth: 0.7,
-                borderColor: '#3b3a30',
-                borderRadius: 8,
-                paddingHorizontal: 10,
-                marginHorizontal: 0,
-                paddingVertical: 5,
-              }}
-            />
-            <View style={{ alignSelf: 'stretch' }}>
-              <DefaultButton
-                title={isWaiting ? 'Checking Ticket...' : "Watch Now"}
-                onPress={this.checkTicket}
-                disabled={isWaiting || ticket.length === 0} />
+            <View>
+              {/** EMPTY HEADER COMPONENT */}
             </View>
-            <View style={styles.contactUs}>
+            <View style={styles.body}>
+              {/** BODY */}
+              <Image
+                source={{ uri: DEFAULT_LOGO_IMAGE }}
+                style={{ width: 150, height: 150 }}
+              />
+              <Label label="Get your ticket ready!" />
+              <Input
+                placeholder={TICKET_FORMAT || ''}
+                placeholderTextColor="gray"
+                inputStyle={{ textAlign: 'center' }}
+                onChangeText={this.onTicketChange}
+                value={ticket}
+                keyboardType="ascii-capable"
+                errorMessage={ticketError}
+                autoCapitalize="characters"
+                disabled={isWaiting}
+                containerStyle={{ paddingVertical: 10, paddingHorizontal: 0 }}
+                inputContainerStyle={{
+                  borderWidth: 0.7,
+                  borderColor: '#3b3a30',
+                  borderRadius: 8,
+                  paddingHorizontal: 10,
+                  marginHorizontal: 0,
+                  paddingVertical: 5,
+                }}
+              />
+              <View style={{ alignSelf: 'stretch' }}>
+                <DefaultButton
+                  title={isWaiting ? 'Checking Ticket...' : "Watch Now"}
+                  onPress={this.checkTicket}
+                  disabled={isWaiting || ticket.length === 0} />
+              </View>
+            </View>
+            <View>
+              {/** FOOTER */}
               <Text>Lost your ticket number?</Text>
               <ContactUs screen='Ticket' />
             </View>
@@ -113,16 +115,20 @@ class Ticket extends Component {
 }
 
 const styles = StyleSheet.create({
+  scrollView: {
+    flexGrow: 1,
+    paddingHorizontal: 20,
+    backgroundColor: 'white',
+  },
   container: {
     flex: 1,
     alignItems: 'center',
-    justifyContent: 'center',
+    justifyContent: 'space-between',
   },
-  contactUs: {
-    position: 'absolute', //Here is the trick
-    bottom: 0, //Here is the trick
-    alignItems: 'center',
-  }
+  body: {
+    alignSelf: 'stretch',
+    alignItems: 'center'
+  },
 });
 
 const mapStateToProps = ({ assets }) => {
