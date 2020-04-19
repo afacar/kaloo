@@ -282,6 +282,8 @@ export default class VideoChatScreen extends Component {
         const { eventID, clientRole } = this.state
         if (clientRole === 1)
             suspendLive(eventID)
+        else if (clientRole === 2)
+            leaveEvent(eventID, ticket)
         navigation.goBack();
         return false;
     }
