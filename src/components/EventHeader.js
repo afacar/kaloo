@@ -27,7 +27,7 @@ export default function EventHeader(props) {
       <EventTime eventTime={{ eventDate, duration }} />
       <ClickableText
         text='Preview event card'
-        onPress={() => navigation.navigate('EventPreview', { event })}
+        onPress={() => navigation.push('EventPreview', { event })}
       />
     </View>
   )
