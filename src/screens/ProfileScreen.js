@@ -1,14 +1,14 @@
 import React, { Component } from 'react';
 import { View, StyleSheet, Text, ActivityIndicator, KeyboardAvoidingView, ScrollView, TouchableOpacity, Linking } from 'react-native';
-import { Input, Button, Avatar, Icon } from 'react-native-elements';
+import { Input, Button, Avatar } from 'react-native-elements';
 import { firestore, auth, storage } from "react-native-firebase";
 import ImagePicker from "react-native-image-crop-picker";
-import { ClickableText } from '../components/Buttons';
 import { ContactUs } from '../components/ContactUs';
 import HeaderLeft from '../components/Headers/HeaderLeft';
 import { colors } from '../constants';
 import { AppText } from '../components/Labels';
 import { connect } from 'react-redux';
+import HeaderRight from '../components/Headers/HeaderRight';
 
 const db = firestore();
 
@@ -16,11 +16,7 @@ class ProfileScreen extends Component {
     static navigationOptions = ({ navigation }) => ({
         headerTitle: () => null,
         headerLeft: () => <HeaderLeft onPress={navigation.goBack} />,
-        headerRight: () => (
-            <View style={{ marginRight: 10 }}>
-                <ClickableText color='white' text='Logout' onPress={() => auth().signOut()} />
-            </View>
-        )
+        headerRight: () => <HeaderRight title='Logout' onPress={() => auth().signOut()} />
     });
 
     state = { 

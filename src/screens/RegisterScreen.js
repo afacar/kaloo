@@ -7,7 +7,7 @@ import {
   Platform,
   Text
 } from 'react-native';
-import { Input, Button, Avatar, CheckBox } from 'react-native-elements';
+import { Input, Avatar, CheckBox } from 'react-native-elements';
 import { functions, storage, auth } from 'react-native-firebase';
 import ImagePicker from 'react-native-image-crop-picker';
 import { SafeAreaView } from 'react-navigation';
@@ -19,22 +19,15 @@ import { validateEmail } from '../utils/Utils'
 import { ClickableText, HyperLink, DefaultButton } from '../components/Buttons';
 import { ContactUs } from '../components/ContactUs';
 import HeaderLeft from '../components/Headers/HeaderLeft';
+import HeaderRight from '../components/Headers/HeaderRight';
 import CustomStatusBar from '../components/StatusBars/CustomStatusBar';
-import { colors } from '../constants';
 
 
 class RegisterScreen extends Component {
   static navigationOptions = ({ navigation }) => ({
     headerTitle: () => null,
     headerLeft: () => <HeaderLeft onPress={navigation.goBack} />,
-    headerRight: () => (
-      <Button
-        type='clear'
-        onPress={() => navigation.navigate('SignIn')}
-        title={'Sign in'}
-        titleStyle={{ color: 'white' }}
-      />
-    )
+    headerRight: () => <HeaderRight title='Sign in' onPress={() => navigation.navigate('SignIn')} />
   });
 
   state = {

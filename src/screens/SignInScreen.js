@@ -6,29 +6,22 @@ import {
   ScrollView,
 } from 'react-native';
 import { SafeAreaView } from 'react-navigation';
-import { Input, Button } from 'react-native-elements';
+import { Input } from 'react-native-elements';
 import { auth } from 'react-native-firebase';
 
 import { HighlightedText, BoldLabel } from '../components/Labels';
-import { DefaultButton, ClickableText } from '../components/Buttons';
+import { DefaultButton } from '../components/Buttons';
 import { validateEmail } from '../utils/Utils'
 import { ContactUs } from '../components/ContactUs';
-import { colors } from '../constants';
 import HeaderLeft from '../components/Headers/HeaderLeft';
 import CustomStatusBar from '../components/StatusBars/CustomStatusBar';
+import HeaderRight from '../components/Headers/HeaderRight';
 
 class SignInScreen extends Component {
   static navigationOptions = ({ navigation }) => ({
     headerTitle: () => null,
     headerLeft: () => <HeaderLeft onPress={navigation.goBack} />,
-    headerRight: () => (
-      <Button
-        type='clear'
-        onPress={() => navigation.navigate('Register')}
-        title={'Register'}
-        titleStyle={{ color: 'white' }}
-      />
-    )
+    headerRight: () => <HeaderRight title='Register' onPress={() => navigation.navigate('Register')} />
   });
 
   email = this.props.navigation.getParam('email', '');
