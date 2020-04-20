@@ -4,11 +4,12 @@ import { SafeAreaView } from 'react-navigation'
 import { handleAndroidBackButton, removeAndroidBackButtonHandler } from '../utils/BackHandler'
 import EventShare from '../components/EventShare';
 import { Stage2, Stage3 } from '../components/Stages';
-import {  H1Label } from '../components/Labels';
+import { H1Label } from '../components/Labels';
 import { DefaultButton } from '../components/Buttons';
 
 import HeaderLeft from '../components/Headers/HeaderLeft';
 import HeaderRight from '../components/Headers/HeaderRight';
+import { ContactUs } from '../components/ContactUs';
 
 
 class EventPublishScreen extends Component {
@@ -55,6 +56,7 @@ class EventPublishScreen extends Component {
             />
           </View>
         </View>
+        <ContactUs />
       </SafeAreaView>
     );
   }

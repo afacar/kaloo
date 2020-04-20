@@ -218,16 +218,17 @@ class EventCreateScreen extends Component {
                                     keyboardType="numeric"
                                     maxLength={3}
                                     inputContainerStyle={styles.inputContainerStyle}
-                                    containerStyle={{ paddingHorizontal: 0 }} />
+                                    containerStyle={{ paddingHorizontal: 0 }}
+                                />
                                 <View style={{ paddingTop: 20 }}>
                                     <DefaultButton
                                         title="Preview"
                                         onPress={() => this.props.navigation.navigate('EventPreview', { event: this.state })}
                                     />
-                                    <ContactUs />
                                 </View>
                             </View>
                         </ScrollView>
+                        <ContactUs />
                     </View>
                 </KeyboardAvoidingView>
             </SafeAreaView>

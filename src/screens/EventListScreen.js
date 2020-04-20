@@ -176,8 +176,8 @@ class EventListScreen extends Component {
                                     </View>
                                     {this.renderEventList()}
                                 </View>
-                                <ContactUs title='Have a problem?' screen='EventList' />
                             </ScrollView>
+                            <ContactUs title='Have a problem?' screen='EventList' />
                         </View>
                     </View>
                 </SafeAreaView>

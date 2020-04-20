@@ -141,10 +141,10 @@ class EventPreviewScreen extends Component {
                 disabled={isWaiting}
                 onPress={this._confirmPublish}
               />}
-              <ContactUs />
               <WaitingModal isWaiting={isWaiting} text='Creating your event...' />
             </View>
           </ScrollView>
+          <ContactUs />
         </View>
       </SafeAreaView>
     );
