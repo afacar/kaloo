@@ -1,12 +1,10 @@
 import React, { Component, Fragment } from 'react';
 import { View, StyleSheet, Text, ActivityIndicator, ScrollView, Image } from 'react-native';
-import { Button, Card, ListItem, Avatar } from 'react-native-elements';
+import { ListItem } from 'react-native-elements';
 import { firestore, auth } from "react-native-firebase";
 import { connect } from 'react-redux';
 import { SafeAreaView } from 'react-navigation'
 
-
-import { setUserProfile } from "../appstate/actions/auth_actions";
 import { checkAudioPermission, checkCameraPermission, compare } from '../utils/Utils';
 import app from "../constants/app";
 import { ContactUs } from '../components/ContactUs';
@@ -37,7 +35,6 @@ class EventListScreen extends Component {
                 this.props.navigation.navigate('Splash');
             }
         });
-        this.props.setUserProfile();
         this.checkMyEvents()
         checkCameraPermission()
         checkAudioPermission()
@@ -70,9 +67,6 @@ class EventListScreen extends Component {
                     if (event.status === SCHEDULED) upcomingEvents.push(event)
                     if (event.status === COMPLETED) pastEvents.push(event)
                 });
-                console.log('liveEvents', liveEvents)
-                console.log('upcomingEvents', upcomingEvents)
-                console.log('pastEvents', pastEvents)
                 this.setState({ liveEvents, upcomingEvents, pastEvents, isLoading: false })
                 //return events;
             });
@@ -119,7 +113,7 @@ class EventListScreen extends Component {
                 })}
             </View>
         }
-        // List SCHEDULED EVENT by sorting accordinf to eventDate
+        // List SCHEDULED EVENT by sorting according to eventDate
         let upcomings = <View></View>
         if (upcomingEvents.length > 0) {
             upcomings = <View>
@@ -142,6 +136,7 @@ class EventListScreen extends Component {
             </View>
         } else {
             upcomings = <View style={{ alignSelf: 'center', alignItems: 'center', margin: 20 }}>
+                <Label label='Your Upcoming Meetings' />
                 <Image source={require('../assets/no-event.png')} />
                 <Text>
                     You don’t have any scheduled meetings.
@@ -208,4 +203,4 @@ const mapStateToProps = ({ auth }) => {
     return { profile: auth.profile }
 }
 
-export default connect(mapStateToProps, { setUserProfile })(EventListScreen);
+export default connect(mapStateToProps, null)(EventListScreen);

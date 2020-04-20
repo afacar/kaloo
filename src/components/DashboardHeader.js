@@ -6,13 +6,13 @@ import { ClickableText } from './Buttons';
 
 export default function DashboradHeader(props) {
     const { navigation, profile } = props;
-
+    let imageSource = profile.photoURL ? { uri: profile.photoURL } : require('../assets/default-profile.png')
     return (
         <View style={styles.container}>
             <Avatar
                 rounded={true}
                 size='large'
-                source={{ uri: profile.photoURL }}
+                source={imageSource}
                 overlayContainerStyle={{ borderWidth: 3, borderColor: 'white' }}
             />
             <Text style={{ color: 'white', fontWeight: 'bold', paddingVertical: 10, fontSize: 20 }}>{profile.displayName}</Text>
