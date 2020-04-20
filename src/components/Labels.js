@@ -31,7 +31,14 @@ export function HighlightedText(props) {
 export function Label(props) {
     const { label } = props
     return (
-        <Text style={{ fontSize: 15,marginVertical:15 }}>{label}</Text>
+        <Text style={{ fontSize: 15, marginVertical: 15 }}>{label}</Text>
+    )
+}
+
+export function ErrorLabel(props) {
+    const { label } = props
+    return (
+        <Text style={{ fontSize: 15, color: 'red' }}>{label}</Text>
     )
 }
 
