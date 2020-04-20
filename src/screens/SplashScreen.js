@@ -28,7 +28,7 @@ class SplashScreen extends Component {
                 if (user) {
                     await this.props.setUserProfile();
                     this.props.navigation.navigate('User');
-                } else { 
+                } else {
                     this.props.navigation.navigate('Home');
                 }
             } catch (error) {
@@ -48,7 +48,9 @@ class SplashScreen extends Component {
                     source={require('../assets/default-logo.png')}
                     style={styles.iconStyle}
                 />
-                <AppText>Loading...</AppText>
+                <AppText>
+                    Welcome to your online  gathering platform
+                </AppText>
             </View>
         )
     }
