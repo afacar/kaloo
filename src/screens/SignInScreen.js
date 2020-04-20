@@ -19,7 +19,6 @@ import CustomStatusBar from '../components/StatusBars/CustomStatusBar';
 
 class SignInScreen extends Component {
   static navigationOptions = ({ navigation }) => ({
-    headerStyle: { backgroundColor: colors.BLUE, borderBottomWidth: 0, elevation: 0, shadowOpacity: 0 },
     headerTitle: () => null,
     headerLeft: () => <HeaderLeft onPress={navigation.goBack} />,
     headerRight: () => (
