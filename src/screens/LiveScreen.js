@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, Alert, StatusBar, TouchableOpacity, Text, Dimensions, Image } from 'react-native';
+import { View, Alert, TouchableOpacity, Image } from 'react-native';
 import app from '../constants/app';
 import { RtcEngine, AgoraView } from 'react-native-agora';
 import KeepAwake from 'react-native-keep-awake';
@@ -15,11 +15,9 @@ import {
     setTicketListener,
     clearTicketListener,
 } from '../utils/EventHandler';
-import LinearGradient from 'react-native-linear-gradient'
 import { handleAndroidBackButton, removeAndroidBackButtonHandler } from '../utils/BackHandler';
-import { styles, colors, dimensions } from '../constants';
+import { styles } from '../constants';
 import { formatTime, getDeviceID, checkAudioPermission, checkCameraPermission, InfoModal, ConfirmModal } from '../utils/Utils';
-import Header from '../components/Header';
 import { Icon, Button } from 'react-native-elements';
 import HeaderLeft from '../components/Headers/HeaderLeft';
 import TransparentStatusBar from '../components/StatusBars/TransparentStatusBar';
@@ -107,13 +105,14 @@ export default class LiveScreen extends Component {
         ),
         headerRight: () => (
             <TouchableOpacity
-                style={{ flex: 1, marginRight: 10 }}
+                style={{ flex: 1, marginRight: 10, justifyContent: 'center' }}
                 onPress={() => {
                     RtcEngine.switchCamera()
                 }}>
-                <Image
-                    style={{ flex: 1, width: 30, height: 30, resizeMode: 'contain' }}
-                    source={require('../assets/switch-camera.png')}
+                <Icon
+                    name='camera-switch'
+                    type='material-community'
+                    color='white'
                 />
             </TouchableOpacity>
         )

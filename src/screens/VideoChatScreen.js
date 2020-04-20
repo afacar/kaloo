@@ -1,13 +1,13 @@
 import React, { Component } from 'react';
-import { View, Alert, StatusBar, Text, TouchableOpacity, Image } from 'react-native';
+import { View, Alert, TouchableOpacity, Image } from 'react-native';
 import { RtcEngine, AgoraView } from 'react-native-agora';
 import KeepAwake from 'react-native-keep-awake';
 import { clearLiveEventListener, setLiveEventListener, startEvent, endLive, suspendLive, continueLive, leaveEvent, setTicketListener, clearTicketListener } from '../utils/EventHandler';
 import { handleAndroidBackButton, removeAndroidBackButtonHandler } from '../utils/BackHandler';
 import { formatTime, getDeviceID, checkCameraPermission, checkAudioPermission, ConfirmModal, InfoModal } from '../utils/Utils';
 import { AppText } from '../components/Labels';
-import { Button } from 'react-native-elements';
-import { colors, styles, app, dimensions } from '../constants';
+import { Button, Icon } from 'react-native-elements';
+import { styles, app, dimensions } from '../constants';
 import { EndCallButon, StartCallButon, ContinueCallButon } from '../components/Buttons';
 import HeaderGradient from '../components/HeaderGradient';
 import LiveHeaderTitle from '../components/Headers/LiveHeaderTitle';
@@ -82,13 +82,14 @@ export default class VideoChatScreen extends Component {
         ),
         headerRight: () => (
             <TouchableOpacity
-                style={{ flex: 1, marginRight: 10 }}
+                style={{ flex: 1, marginRight: 10, justifyContent: 'center' }}
                 onPress={() => {
                     RtcEngine.switchCamera()
                 }}>
-                <Image
-                    style={{ flex: 1, width: 30, height: 30, resizeMode: 'contain' }}
-                    source={require('../assets/switch-camera.png')}
+                <Icon
+                    name='camera-switch'
+                    type='material-community'
+                    color='white'
                 />
             </TouchableOpacity>
         )
