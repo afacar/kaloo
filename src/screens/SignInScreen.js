@@ -16,6 +16,7 @@ import { ContactUs } from '../components/ContactUs';
 import HeaderLeft from '../components/Headers/HeaderLeft';
 import CustomStatusBar from '../components/StatusBars/CustomStatusBar';
 import HeaderRight from '../components/Headers/HeaderRight';
+import { WaitingModal } from '../components/Modals';
 
 class SignInScreen extends Component {
   static navigationOptions = ({ navigation }) => ({
@@ -38,10 +39,8 @@ class SignInScreen extends Component {
     console.log('email and password', email, password);
     this.setState({ isWaiting: true });
     try {
-      let user = await auth()
-        .signInWithEmailAndPassword(email, password);
+      let user = await auth().signInWithEmailAndPassword(email, password);
       if (user) return this.props.navigation.navigate('UserHome');
-      console.log('The user', user);
     } catch (err) {
       this.setState({ passwordError: err.message });
     }
@@ -116,6 +115,7 @@ class SignInScreen extends Component {
               </View>
               <View style={styles.contactUs}>
                 <ContactUs title="Have a problem?" screen='SignIn' />
+                <WaitingModal isWaiting={isWaiting} text='Just a second...' />
               </View>
             </View>
           </ScrollView>
