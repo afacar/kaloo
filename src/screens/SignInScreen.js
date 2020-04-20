@@ -6,32 +6,23 @@ import {
   ScrollView,
 } from 'react-native';
 import { SafeAreaView } from 'react-navigation';
-import { Input, Button } from 'react-native-elements';
+import { Input } from 'react-native-elements';
 import { auth } from 'react-native-firebase';
 
 import { HighlightedText, BoldLabel } from '../components/Labels';
-import { DefaultButton, ClickableText } from '../components/Buttons';
+import { DefaultButton } from '../components/Buttons';
 import { validateEmail } from '../utils/Utils'
 import { ContactUs } from '../components/ContactUs';
-import { colors } from '../constants';
 import HeaderLeft from '../components/Headers/HeaderLeft';
 import CustomStatusBar from '../components/StatusBars/CustomStatusBar';
+import HeaderRight from '../components/Headers/HeaderRight';
+import { WaitingModal } from '../components/Modals';
 
 class SignInScreen extends Component {
   static navigationOptions = ({ navigation }) => ({
-    headerStyle: { backgroundColor: colors.BLUE, borderBottomWidth: 0, elevation: 0, shadowOpacity: 0 },
     headerTitle: () => null,
-    headerLeft: () => (
-      <HeaderLeft onPress={navigation.goBack} />
-    ),
-    headerRight: () => (
-      <Button
-        type='clear'
-        onPress={() => navigation.navigate('Register')}
-        title={'Register'}
-        titleStyle={{ color: 'white' }}
-      />
-    )
+    headerLeft: () => <HeaderLeft onPress={navigation.goBack} />,
+    headerRight: () => <HeaderRight title='Register' onPress={() => navigation.navigate('Register')} />
   });
 
   email = this.props.navigation.getParam('email', '');
@@ -48,10 +39,8 @@ class SignInScreen extends Component {
     console.log('email and password', email, password);
     this.setState({ isWaiting: true });
     try {
-      let user = await auth()
-        .signInWithEmailAndPassword(email, password);
+      let user = await auth().signInWithEmailAndPassword(email, password);
       if (user) return this.props.navigation.navigate('UserHome');
-      console.log('The user', user);
     } catch (err) {
       this.setState({ passwordError: err.message });
     }
@@ -126,6 +115,7 @@ class SignInScreen extends Component {
               </View>
               <View style={styles.contactUs}>
                 <ContactUs title="Have a problem?" screen='SignIn' />
+                <WaitingModal isWaiting={isWaiting} text='Just a second...' />
               </View>
             </View>
           </ScrollView>

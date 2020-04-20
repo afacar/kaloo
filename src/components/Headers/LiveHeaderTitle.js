@@ -10,31 +10,23 @@ export default class LiveHeaderTitle extends Component {
         if (clientRole === 2) {
             if (status === app.EVENT_STATUS.IN_PROGRESS) {
                 return (
-                    <View style={{ marginLeft: dimensions.HEADER_LEFT_MARGIN }}>
-                        <AppText style={styles.liveText}>Live</AppText>
-                    </View>
+                    <AppText style={styles.liveText}>Live</AppText>
                 )
             } else {
                 return (
-                    <View style={{ marginLeft: dimensions.HEADER_LEFT_MARGIN }}>
-                        <View style={styles.connectingCard}>
-                            <AppText style={styles.connectingText}>Connecting...</AppText>
-                        </View>
+                    <View style={styles.connectingCard}>
+                        <AppText style={styles.connectingText}>Connecting...</AppText>
                     </View>
                 )
             }
         } else {
             if (status === app.EVENT_STATUS.IN_PROGRESS) {
                 return (
-                    <View style={{ marginLeft: dimensions.HEADER_LEFT_MARGIN }}>
-                        <AppText style={styles.liveText}>Live</AppText>
-                    </View>
+                    <AppText style={styles.liveText}>Live</AppText>
                 )
             } else {
                 return (
-                    <View style={{ marginLeft: dimensions.HEADER_LEFT_MARGIN }}>
-                        <AppText style={styles.standybyText}>Preview</AppText>
-                    </View>
+                    <AppText style={styles.standybyText}>Preview</AppText>
                 )
             }
         }

@@ -7,11 +7,8 @@ import { colors } from '../constants';
 
 class TicketScreen extends Component {
   static navigationOptions = ({ navigation }) => ({
-    headerStyle: { backgroundColor: colors.BLUE },
     headerTitle: () => null,
-    headerLeft: () => (
-      <HeaderLeft onPress={navigation.goBack} />
-    )
+    headerLeft: () => <HeaderLeft onPress={navigation.goBack} />
   });
 
   render() {

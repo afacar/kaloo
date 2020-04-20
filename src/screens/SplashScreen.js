@@ -9,6 +9,8 @@ import { loadAssets } from "../appstate/actions/app_actions";
 import { connect } from 'react-redux';
 import { generateRandomString } from '../utils/Utils';
 
+import { setUserProfile } from "../appstate/actions/auth_actions";
+
 class SplashScreen extends Component {
     async componentDidMount() {
         setTimeout(async () => {
@@ -21,13 +23,16 @@ class SplashScreen extends Component {
                 await AsyncStorage.setItem('deviceID', deviceID);
             }
             try {
-                this.props.loadAssets()
+                await this.props.loadAssets()
                 const user = auth().currentUser;
-                this.setState({ isWaiting: false })
-                if (user) this.props.navigation.navigate('User');
-                else this.props.navigation.navigate('Home');
+                if (user) {
+                    await this.props.setUserProfile();
+                    this.props.navigation.navigate('User');
+                } else { 
+                    this.props.navigation.navigate('Home');
+                }
             } catch (error) {
-                this.setState({ isWaiting: false })
+                console.log('Splash error:', error)
             }
         }, 1500)
     }
@@ -53,7 +58,8 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         justifyContent: 'center',
-        alignItems: 'center'
+        alignItems: 'center',
+        backgroundColor: 'white'
     },
     iconStyle: {
         width: 200,
@@ -61,4 +67,4 @@ const styles = StyleSheet.create({
     }
 })
 
-export default connect(null, { loadAssets })(SplashScreen);
+export default connect(null, { loadAssets, setUserProfile })(SplashScreen);

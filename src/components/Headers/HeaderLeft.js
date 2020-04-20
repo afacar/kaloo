@@ -1,21 +1,20 @@
-import React, { Component } from 'react';
-import { View, Dimensions } from 'react-native';
+import React from 'react';
+import { View, Dimensions, Platform } from 'react-native';
 import { Button } from 'react-native-elements';
 import { colors } from '../../constants';
 
-export default class HeaderLeft extends Component {
-
-    render() {
-        return (
-            <View>
-                <Button
-                    type='clear'
-                    onPress={() => this.props.onPress()}
-                    title={this.props.buttonTitle}
-                    titleStyle={[{ color: 'black' }, this.props.buttonTitleStyle]}
-                    icon={this.props.icon || { type: 'MaterialIcons', name: 'arrow-back', size: 20, color: 'white' }}
-                />
-            </View>
-        )
-    }
+export default function HeaderLeft(props) {
+    const {icon, onPress, buttonTitle, buttonTitleStyle} = props
+    const name = Platform.OS === 'ios' ? 'chevron-left' : 'arrow-left';
+    return (
+        <View>
+            <Button
+                type='clear'
+                onPress={() => onPress()}
+                title={buttonTitle}
+                titleStyle={[{ color: 'black' }, buttonTitleStyle]}
+                icon={icon || { type: 'material-community', name, size: 20, color: 'white' }}
+            />
+        </View>
+    )
 }

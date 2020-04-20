@@ -1,53 +1,111 @@
 import React, { Component } from 'react';
-import { StyleSheet, ScrollView, View } from 'react-native';
-import { Button, Avatar } from 'react-native-elements';
+import { StyleSheet, ScrollView, View, Modal } from 'react-native';
+import { Avatar } from 'react-native-elements';
+import { storage, firestore, functions, auth } from 'react-native-firebase';
+import { connect } from 'react-redux';
+import { SafeAreaView } from 'react-navigation';
 
-import { HighlightedText, BoldLabel } from '../components/Labels';
+import { HighlightedText, BoldLabel, H1Label } from '../components/Labels';
 import PreviewHeader from "../components/PreviewHeader";
 import PreviewBody from '../components/PreviewBody';
 import { Stage1, Stage2, Stage3 } from '../components/Stages';
-import { H1Label } from '../components/Labels';
-import { SafeAreaView } from 'react-navigation'
 import { DefaultButton } from '../components/Buttons';
 import { ContactUs } from '../components/ContactUs'
 
 import { colors, dimensions } from '../constants';
-import { auth } from 'react-native-firebase';
 import HeaderLeft from '../components/Headers/HeaderLeft';
+import { ConfirmModal } from '../utils/Utils';
+import { WaitingModal } from '../components/Modals';
+import UserAvatar from '../components/UserAvatar';
 
 
 class EventPreviewScreen extends Component {
   static navigationOptions = ({ navigation }) => ({
-    headerStyle: { backgroundColor: colors.BLUE, borderBottomWidth: 0, elevation: 0, shadowOpacity: 0 },
-    headerTitle: () => {
-      return (
-        <View style={{ flex: 1, alignItems: 'center', marginLeft: Platform.OS === "ios" ? 0 : dimensions.HEADER_LEFT_MARGIN }}>
-          <Avatar
-            rounded={true}
-            size='small'
-            source={{ uri: auth().currentUser.photoURL } || require('../assets/default-profile.png')}
-          />
-        </View>
-      )
-    },
-    headerLeft: () => {
-      return (
-        <View style={{ flex: 1, justifyContent: 'center' }}>
-          <HeaderLeft onPress={navigation.goBack} />
-        </View>
-      )
-    },
+    headerTitle: () => <UserAvatar />,
+    headerLeft: () => <HeaderLeft onPress={navigation.goBack} />
 
   });
 
-  state = {};
+  state = { isWaiting: false, ...this.props.navigation.getParam('event') }
 
-  componentDidMount() { }
+  createEvent = async () => {
+    let { uid, displayName, userNumber, photoURL, image, title, description, duration, eventType, capacity, price, eventDate, status } = this.state
+    const { DEFAULT_EVENT_IMAGE } = this.props.assets;
+
+    let event = { uid, displayName, userNumber, photoURL, image, title, description, duration, eventType, capacity, price, eventDate, status }
+    let createEvent = functions().httpsCallable('createEvent');
+    event.eventTimestamp = eventDate.getTime();
+
+    this.setState({ isWaiting: true })
+
+    // Check if new event image is set
+    if (image !== DEFAULT_EVENT_IMAGE) {
+      // TODO: Upload image to ...
+      let imagePath = `events/${event.uid}/${event.eventTimestamp}.jpg`
+      console.log(`Uploading event image to: ${imagePath}`)
+      const imageRef = storage().ref(imagePath)
+      await imageRef.getDownloadURL().then((url) => {
+        // Another event created at the same timestamp
+        this.setState({ isWaiting: false, isPreview: false, dateMessage: 'There is already an event on this date!' })
+      }).catch(async (error) => {
+        if (error.code === 'storage/object-not-found') {
+          await imageRef.putFile(image)
+          let newImage = await imageRef.getDownloadURL()
+          console.log('New Image uploaded')
+          event.image = newImage
+          console.log('calling create event...', event);
+          let response = await createEvent(event);
+          console.log('Recieved created event:=>', response);
+          if (response && response.data && response.data.state === 'SUCCESS') {
+            let eventData = response.data.event;
+            let date = eventData.eventDate
+            if (date instanceof firestore.Timestamp) {
+              console.log('finally Timestamp')
+              date = date.toDate();
+            } else if (eventData.eventTimestamp) {
+              date = new Date(eventData.eventTimestamp);
+            }
+            eventData.eventDate = date
+            this.setState({ isWaiting: false })
+            console.log('Sending event to EventPublish1:=>', eventData);
+            this.props.navigation.navigate('EventPublish', { event: eventData })
+          }
+        }
+      })
+    } else {
+      console.log('calling create event...', event);
+      let response = await createEvent(event);
+      console.log('Recieved created event:=>', response);
+      if (response && response.data && response.data.state === 'SUCCESS') {
+        let eventData = response.data.event;
+        let date = eventData.eventDate
+        if (date instanceof firestore.Timestamp) {
+          console.log('finally Timestamp')
+          date = date.toDate();
+        } else if (eventData.eventTimestamp) {
+          date = new Date(eventData.eventTimestamp);
+        }
+        eventData.eventDate = date
+        this.setState({ isWaiting: false })
+        console.log('Sending event to EventPublish2:=>', eventData);
+        this.props.navigation.navigate('EventPublish', { event: eventData })
+      }
+    }
+  }
+
+  _confirmPublish = () => {
+    const title = 'You will publish event',
+      message = 'You won’t be able to edit your meeting  details after you publish it.',
+      confirmText = 'Publish',
+      cancelText = 'Back';
+    ConfirmModal(title, message, confirmText, cancelText, this.createEvent)
+  }
 
   render() {
     const {
-      displayName, photoURL, image, title, description, duration, eventType, capacity, price, eventDate, status, isPublished
-    } = this.props.navigation.getParam('event');
+      displayName, photoURL, image, title, description, duration, eventType, capacity, price, eventDate, status, isPublished, isWaiting
+    } = this.state;
+    console.log('Preview render state', this.state)
 
     return (
       <SafeAreaView style={{ flex: 1, backgroundColor: "white" }}>
@@ -79,10 +137,12 @@ class EventPreviewScreen extends Component {
                 </View>
               </View>
               {!isPublished && <DefaultButton
-                title="Publish your event"
-                onPress={() => this.props.navigation.getParam('onPublish')()}
+                title={eventType === 'live' ? 'Publish your event' : 'Publish your meeting'}
+                disabled={isWaiting}
+                onPress={this._confirmPublish}
               />}
               <ContactUs />
+              <WaitingModal isWaiting={isWaiting} text='Creating your event...' />
             </View>
           </ScrollView>
         </View>
@@ -111,4 +171,8 @@ const styles = StyleSheet.create({
   },
 });
 
-export default EventPreviewScreen;
+const mapStateToProps = ({ assets }) => {
+  return { assets: assets.assets }
+}
+
+export default connect(mapStateToProps, null)(EventPreviewScreen);

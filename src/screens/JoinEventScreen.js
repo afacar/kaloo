@@ -8,11 +8,8 @@ import { colors } from '../constants';
 class JoinEventScreen extends Component {
     event = this.props.navigation.getParam('event', '')
     static navigationOptions = ({ navigation }) => ({
-        headerStyle: { backgroundColor: colors.BLUE },
         headerTitle: () => null,
-        headerLeft: () => (
-            <HeaderLeft onPress={navigation.goBack} />
-        )
+        headerLeft: () => <HeaderLeft onPress={navigation.goBack} />
     });
     render() {
         return <JoinEvent event={this.event} navigation={this.props.navigation} />

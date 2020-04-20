@@ -1,41 +1,30 @@
 import React, { Component } from 'react';
 import { View, StyleSheet, Text, ActivityIndicator, KeyboardAvoidingView, ScrollView, TouchableOpacity, Linking } from 'react-native';
-import { Input, Button, Avatar, Icon } from 'react-native-elements';
+import { Input, Button, Avatar } from 'react-native-elements';
 import { firestore, auth, storage } from "react-native-firebase";
 import ImagePicker from "react-native-image-crop-picker";
-import { ClickableText } from '../components/Buttons';
 import { ContactUs } from '../components/ContactUs';
 import HeaderLeft from '../components/Headers/HeaderLeft';
 import { colors } from '../constants';
 import { AppText } from '../components/Labels';
+import { connect } from 'react-redux';
+import HeaderRight from '../components/Headers/HeaderRight';
 
 const db = firestore();
 
 class ProfileScreen extends Component {
     static navigationOptions = ({ navigation }) => ({
-        headerStyle: { backgroundColor: colors.BLUE, borderBottomWidth: 0, elevation: 0, shadowOpacity: 0 },
         headerTitle: () => null,
-        headerLeft: () => (
-            <HeaderLeft onPress={navigation.goBack} />
-        ),
-        headerRight: () => (
-            <View style={{ marginRight: 10 }}>
-                <ClickableText color='white' text='Logout' onPress={() => auth().signOut()} />
-            </View>
-        )
+        headerLeft: () => <HeaderLeft onPress={navigation.goBack} />,
+        headerRight: () => <HeaderRight title='Logout' onPress={() => auth().signOut()} />
     });
 
-    user = auth().currentUser
-    state = {
-        email: this.user.email,
-        displayName: this.user.displayName,
-        photoURL: this.user.photoURL,
+    state = { 
+        ...this.props.profile,
         isNameChanged: false,
         isAvatarChanged: false,
         saveLoading: false,
     }
-
-    componentDidMount() { }
 
     handleProfileUpdate = async () => {
         let { displayName, photoURL, isAvatarChanged, isNameChanged } = this.state;
@@ -170,4 +159,8 @@ const styles = StyleSheet.create({
     }
 })
 
-export default ProfileScreen;
+const mapStateToProps = ({ auth }) => {
+    return { profile: auth.profile }
+}
+
+export default connect(mapStateToProps, null)(ProfileScreen);

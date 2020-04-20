@@ -1,41 +1,21 @@
-import React, { Component, Fragment } from 'react';
-import { StyleSheet, ScrollView, BackHandler, View } from 'react-native';
-import { Button, Icon } from 'react-native-elements';
+import React, { Component } from 'react';
+import { StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-navigation'
 import { handleAndroidBackButton, removeAndroidBackButtonHandler } from '../utils/BackHandler'
 import EventShare from '../components/EventShare';
-import { Stage1, Stage2, Stage3 } from '../components/Stages';
-import { H3Label, H1Label } from '../components/Labels';
+import { Stage2, Stage3 } from '../components/Stages';
+import {  H1Label } from '../components/Labels';
 import { DefaultButton } from '../components/Buttons';
 
-import { app, colors, dimensions } from '../constants';
+import HeaderLeft from '../components/Headers/HeaderLeft';
+import HeaderRight from '../components/Headers/HeaderRight';
 
 
 class EventPublishScreen extends Component {
   static navigationOptions = ({ navigation }) => ({
-    headerStyle: { backgroundColor: colors.BLUE, borderBottomWidth: 0, elevation: 0, shadowOpacity: 0 },
     title: 'Event ready!',
-    headerTitleStyle: { color: '#fff' },
-    headerLeft: () => (
-      <Button
-        type='clear'
-        onPress={() => navigation.navigate('UserHome')}
-        containerStyle={{ marginLeft: 15 }}
-        icon={<Icon type="ionicon"
-          name={Platform.OS === 'ios' ? 'ios-arrow-back' : 'md-arrow-back'}
-          color="#fff"
-        />}
-      />
-    ),
-    headerRight: () => (
-      <Button
-        type='clear'
-        onPress={() => navigation.navigate('UserHome')}
-        title={'Done'}
-        titleStyle={{ color: '#fff' }}
-        containerStyle={{ paddingRight: 15 }}
-      />
-    )
+    headerLeft: () => <HeaderLeft onPress={() => navigation.navigate('UserHome')} />,
+    headerRight: () => <HeaderRight title='Done' onPress={() => navigation.navigate('UserHome')} />
   });
 
   state = {};

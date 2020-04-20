@@ -6,29 +6,14 @@ import { auth } from 'react-native-firebase';
 import HeaderLeft from '../components/Headers/HeaderLeft';
 import { ContactUs } from '../components/ContactUs';
 import { AppText } from '../components/Labels';
+import UserAvatar from '../components/UserAvatar'
 
 class BalanceScreen extends Component {
   static navigationOptions = ({ navigation }) => ({
-    headerStyle: { backgroundColor: colors.BLUE, borderBottomWidth: 0, elevation: 0, shadowOpacity: 0 },
-    headerTitle: () => {
-      return (
-        <View style={{ flex: 1, alignItems: 'center', marginLeft: dimensions.HEADER_LEFT_MARGIN }}>
-          <Avatar
-            rounded={true}
-            size='small'
-            source={{ uri: auth().currentUser.photoURL } || require('../assets/default-profile.png')}
-          />
-        </View>
-      )
-    },
-    headerLeft: () => {
-      return (
-        <View style={{ flex: 1, justifyContent: 'center' }}>
-          <HeaderLeft onPress={navigation.goBack} />
-        </View>
-      )
-    }
+    headerTitle: () => <UserAvatar />,
+    headerLeft: () => <HeaderLeft onPress={navigation.goBack} />
   });
+
   state = { iban: '', totalBalance: '', currentBalance: 0, requestLoading: false };
 
   requestPayment = () => {

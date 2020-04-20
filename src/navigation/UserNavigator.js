@@ -11,6 +11,8 @@ import EventPreviewScreen from '../screens/EventPreviewScreen';
 import EventPublishScreen from "../screens/EventPublishScreen";
 import LiveScreen from '../screens/LiveScreen';
 import VideoChatScreen from '../screens/VideoChatScreen';
+import { Dimensions } from 'react-native';
+import { colors } from '../constants';
 
 export default UserNavigatior = createStackNavigator(
   {
@@ -37,8 +39,12 @@ export default UserNavigatior = createStackNavigator(
     },
   },
   {
+    //headerLayoutPreset: 'center',
     initialRouteName: "UserHome",
     defaultNavigationOptions: {
+      headerTitleAlign: 'center',
+      headerStyle: { backgroundColor: colors.BLUE, borderBottomWidth: 0, elevation: 0, shadowOpacity: 0 },
+      headerTitleStyle: { color: '#fff', fontWeight: 'normal' },
       cardStyle: { backgroundColor: 'white' }
     }
   }

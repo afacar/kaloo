@@ -7,36 +7,27 @@ import {
   Platform,
   Text
 } from 'react-native';
-import { Input, Button, Avatar, CheckBox } from 'react-native-elements';
+import { Input, Avatar, CheckBox } from 'react-native-elements';
 import { functions, storage, auth } from 'react-native-firebase';
 import ImagePicker from 'react-native-image-crop-picker';
 import { SafeAreaView } from 'react-navigation';
 import { connect } from "react-redux";
 
 import { HighlightedText, BoldLabel } from '../components/Labels';
+import { WaitingModal } from "../components/Modals";
 import { validateEmail } from '../utils/Utils'
 import { ClickableText, HyperLink, DefaultButton } from '../components/Buttons';
 import { ContactUs } from '../components/ContactUs';
 import HeaderLeft from '../components/Headers/HeaderLeft';
+import HeaderRight from '../components/Headers/HeaderRight';
 import CustomStatusBar from '../components/StatusBars/CustomStatusBar';
-import { colors } from '../constants';
 
 
 class RegisterScreen extends Component {
   static navigationOptions = ({ navigation }) => ({
-    headerStyle: { backgroundColor: colors.BLUE, borderBottomWidth: 0, elevation: 0, shadowOpacity: 0 },
     headerTitle: () => null,
-    headerLeft: () => (
-      <HeaderLeft onPress={navigation.goBack} />
-    ),
-    headerRight: () => (
-      <Button
-        type='clear'
-        onPress={() => navigation.navigate('SignIn')}
-        title={'Sign in'}
-        titleStyle={{ color: 'white' }}
-      />
-    )
+    headerLeft: () => <HeaderLeft onPress={navigation.goBack} />,
+    headerRight: () => <HeaderRight title='Sign in' onPress={() => navigation.navigate('SignIn')} />
   });
 
   state = {
@@ -52,8 +43,6 @@ class RegisterScreen extends Component {
     emailMessage: '',
     passwordMessage: '',
   };
-
-  componentDidMount() { }
 
   createAccount = async () => {
     let { displayName, email, password, photoURL } = this.state;
@@ -73,14 +62,18 @@ class RegisterScreen extends Component {
       }
 
       // Update user profile @Authentication
-      //await currentUser.updateProfile({ displayName, photoURL });
+      currentUser.updateProfile({ displayName, photoURL });
       // Create user @Firestore
       const newUser = { uid, displayName, photoURL }
       let createUser = functions().httpsCallable('createUser')
-      await createUser(newUser)
-
-      this.setState({ isWaiting: false });
-      this.props.navigation.navigate('UserHome', { displayName });
+      let result = await createUser(newUser)
+      console.log('result of createUser ', result);
+      if (result.data.state !== 'SUCCESS') {
+        this.setState({ isWaiting: false, termsMessage: result.data.message });
+      } else {
+        this.setState({ isWaiting: false });
+        this.props.navigation.navigate('UserHome', { displayName });
+      }
     } catch (error) {
       this.setState({ isWaiting: false, termsMessage: error.message });
     }
@@ -232,6 +225,7 @@ class RegisterScreen extends Component {
               </View>
               <View style={styles.contactUs}>
                 <ContactUs title="Have a problem?" screen='Register' />
+                <WaitingModal isWaiting={isWaiting} text='Creating your account...' />
               </View>
             </View>
           </ScrollView>
