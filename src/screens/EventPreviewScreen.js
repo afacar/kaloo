@@ -16,29 +16,13 @@ import { colors, dimensions } from '../constants';
 import HeaderLeft from '../components/Headers/HeaderLeft';
 import { ConfirmModal } from '../utils/Utils';
 import { WaitingModal } from '../components/Modals';
+import UserAvatar from '../components/UserAvatar';
 
 
 class EventPreviewScreen extends Component {
   static navigationOptions = ({ navigation }) => ({
-    headerStyle: { backgroundColor: colors.BLUE, borderBottomWidth: 0, elevation: 0, shadowOpacity: 0 },
-    headerTitle: () => {
-      return (
-        <View style={{ flex: 1, alignItems: 'center', marginLeft: Platform.OS === "ios" ? 0 : dimensions.HEADER_LEFT_MARGIN }}>
-          <Avatar
-            rounded={true}
-            size='small'
-            source={{ uri: auth().currentUser.photoURL } || require('../assets/default-profile.png')}
-          />
-        </View>
-      )
-    },
-    headerLeft: () => {
-      return (
-        <View style={{ flex: 1, justifyContent: 'center' }}>
-          <HeaderLeft onPress={navigation.goBack} />
-        </View>
-      )
-    },
+    headerTitle: () => <UserAvatar />,
+    headerLeft: () => <HeaderLeft onPress={navigation.goBack} />
 
   });
 
@@ -153,7 +137,7 @@ class EventPreviewScreen extends Component {
                 </View>
               </View>
               {!isPublished && <DefaultButton
-                title={eventType=== 'live' ? 'Publish your event': 'Publish your meeting'}
+                title={eventType === 'live' ? 'Publish your event' : 'Publish your meeting'}
                 disabled={isWaiting}
                 onPress={this._confirmPublish}
               />}

@@ -16,6 +16,7 @@ import { DefaultButton } from '../components/Buttons';
 
 
 import HeaderLeft from '../components/Headers/HeaderLeft';
+import UserAvatar from '../components/UserAvatar';
 
 const INITIAL_STATE = {
     image: null,
@@ -37,26 +38,8 @@ const INITIAL_STATE = {
 
 class EventCreateScreen extends Component {
     static navigationOptions = ({ navigation }) => ({
-        headerStyle: { backgroundColor: colors.BLUE, borderBottomWidth: 0, elevation: 0, shadowOpacity: 0, height: 80 },
-        headerTitleStyle: { flex: 1 },
-        headerTitle: () => {
-            return (
-                <View style={{ flex: 1, alignItems: 'center', marginLeft: Platform.OS === "ios" ? 0 : dimensions.HEADER_LEFT_MARGIN }}>
-                    <Avatar
-                        rounded={true}
-                        size='small'
-                        source={{ uri: auth().currentUser.photoURL } || require('../assets/default-profile.png')}
-                    />
-                </View>
-            )
-        },
-        headerLeft: () => {
-            return (
-                <View style={{ flex: 1, justifyContent: 'center' }}>
-                    <HeaderLeft onPress={navigation.goBack} />
-                </View>
-            )
-        },
+        headerTitle: () => <UserAvatar />,
+        headerLeft: () => <HeaderLeft onPress={navigation.goBack} />
     });
 
     state = { ...INITIAL_STATE, ...this.props.profile, image: this.props.assets.DEFAULT_EVENT_IMAGE }

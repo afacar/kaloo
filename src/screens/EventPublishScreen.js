@@ -13,20 +13,8 @@ import { app, colors, dimensions } from '../constants';
 
 class EventPublishScreen extends Component {
   static navigationOptions = ({ navigation }) => ({
-    headerStyle: { backgroundColor: colors.BLUE, borderBottomWidth: 0, elevation: 0, shadowOpacity: 0 },
     title: 'Event ready!',
-    headerTitleStyle: { color: '#fff' },
-    headerLeft: () => (
-      <Button
-        type='clear'
-        onPress={() => navigation.navigate('UserHome')}
-        containerStyle={{ marginLeft: 15 }}
-        icon={<Icon type="ionicon"
-          name={Platform.OS === 'ios' ? 'ios-arrow-back' : 'md-arrow-back'}
-          color="#fff"
-        />}
-      />
-    ),
+    headerLeft: () => <HeaderLeft onPress={navigation.navigate('UserHome')} />,
     headerRight: () => (
       <Button
         type='clear'

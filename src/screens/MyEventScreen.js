@@ -11,7 +11,8 @@ import { ContactUs } from '../components/ContactUs';
 
 import { app, colors, dimensions } from '../constants';
 import HeaderLeft from '../components/Headers/HeaderLeft';
-import { auth } from 'react-native-firebase';
+import UserAvatar from '../components/UserAvatar';
+
 const { Agora } = NativeModules;
 
 const {
@@ -26,20 +27,8 @@ const { COMPLETED, SUSPENDED } = app.EVENT_STATUS
 class MyEventScreen extends Component {
     static navigationOptions = ({ navigation }) => ({
         headerStyle: { backgroundColor: colors.BLUE, borderBottomWidth: 0, elevation: 0, shadowOpacity: 0 },
-        headerTitle: () => {
-            return (
-                <View style={{ flex: 1, alignItems: 'center', marginLeft: dimensions.HEADER_LEFT_MARGIN }}>
-                    <Avatar
-                        rounded={true}
-                        size='small'
-                        source={{ uri: auth().currentUser.photoURL } || require('../assets/default-profile.png')}
-                    />
-                </View>
-            )
-        },
-        headerLeft: () => (
-            <HeaderLeft onPress={navigation.goBack} />
-        )
+        headerTitle: () => <UserAvatar />,
+        headerLeft: () => <HeaderLeft onPress={navigation.goBack} />
     });
 
     event = this.props.navigation.getParam('event', '')

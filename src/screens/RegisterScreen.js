@@ -27,9 +27,7 @@ class RegisterScreen extends Component {
   static navigationOptions = ({ navigation }) => ({
     headerStyle: { backgroundColor: colors.BLUE, borderBottomWidth: 0, elevation: 0, shadowOpacity: 0 },
     headerTitle: () => null,
-    headerLeft: () => (
-      <HeaderLeft onPress={navigation.goBack} />
-    ),
+    headerLeft: () => <HeaderLeft onPress={navigation.goBack} />,
     headerRight: () => (
       <Button
         type='clear'
@@ -54,8 +52,6 @@ class RegisterScreen extends Component {
     passwordMessage: '',
   };
 
-  componentDidMount() { }
-
   createAccount = async () => {
     let { displayName, email, password, photoURL } = this.state;
     const { DEFAULT_PROFILE_IMAGE } = this.props.assets
@@ -74,14 +70,18 @@ class RegisterScreen extends Component {
       }
 
       // Update user profile @Authentication
-      //await currentUser.updateProfile({ displayName, photoURL });
+      currentUser.updateProfile({ displayName, photoURL });
       // Create user @Firestore
       const newUser = { uid, displayName, photoURL }
       let createUser = functions().httpsCallable('createUser')
-      await createUser(newUser)
-
-      this.setState({ isWaiting: false });
-      this.props.navigation.navigate('UserHome', { displayName });
+      let result = await createUser(newUser)
+      console.log('result of createUser ', result);
+      if (result.data.state !== 'SUCCESS') {
+        this.setState({ isWaiting: false, termsMessage: result.data.message });
+      } else {
+        this.setState({ isWaiting: false });
+        this.props.navigation.navigate('UserHome', { displayName });
+      }
     } catch (error) {
       this.setState({ isWaiting: false, termsMessage: error.message });
     }

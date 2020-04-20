@@ -14,11 +14,8 @@ const db = firestore();
 
 class ProfileScreen extends Component {
     static navigationOptions = ({ navigation }) => ({
-        headerStyle: { backgroundColor: colors.BLUE, borderBottomWidth: 0, elevation: 0, shadowOpacity: 0 },
         headerTitle: () => null,
-        headerLeft: () => (
-            <HeaderLeft onPress={navigation.goBack} />
-        ),
+        headerLeft: () => <HeaderLeft onPress={navigation.goBack} />,
         headerRight: () => (
             <View style={{ marginRight: 10 }}>
                 <ClickableText color='white' text='Logout' onPress={() => auth().signOut()} />
