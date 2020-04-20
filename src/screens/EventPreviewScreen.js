@@ -111,9 +111,9 @@ class EventPreviewScreen extends Component {
 
   _confirmPublish = () => {
     const title = 'You will publish event',
-      message = 'This can not be undone!',
-      confirmText = 'Yes, Publish',
-      cancelText = 'Cancel';
+      message = 'You won’t be able to edit your meeting  details after you publish it.',
+      confirmText = 'Publish',
+      cancelText = 'Back';
     ConfirmModal(title, message, confirmText, cancelText, this.createEvent)
   }
 
@@ -153,7 +153,7 @@ class EventPreviewScreen extends Component {
                 </View>
               </View>
               {!isPublished && <DefaultButton
-                title="Publish your event"
+                title={eventType=== 'live' ? 'Publish your event': 'Publish your meeting'}
                 disabled={isWaiting}
                 onPress={this._confirmPublish}
               />}
