@@ -1,12 +1,12 @@
 import React from 'react';
-import { View, StyleSheet, Text } from 'react-native';
+import { View } from 'react-native';
+import { auth } from "react-native-firebase";
 import { Avatar } from 'react-native-elements';
 import { connect } from "react-redux";
 
-import { colors, dimensions } from '../constants';
-
 function UserAvatar(props) {
-    const { profile } = props;
+    let { profile } = props;
+    profile = profile ? profile : auth().currentUser
     let imageSource = profile.photoURL ? { uri: profile.photoURL } : require('../assets/default-profile.png')
     return (
         <View style={{ flex: 1, justifyContent: 'center' }}>

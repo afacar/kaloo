@@ -59,11 +59,13 @@ class RegisterScreen extends Component {
         let avatarRef = storage().ref(`users/${uid}/avatar/${uid}.jpg`);
         await avatarRef.putFile(photoURL);
         photoURL = await avatarRef.getDownloadURL()
+        console.log('picture is uploaded')
       }
 
       // Update user profile @Authentication
       currentUser.updateProfile({ displayName, photoURL });
-      // Create user @Firestore
+      console.log('updateProfile')
+        // Create user @Firestore
       const newUser = { uid, displayName, photoURL }
       let createUser = functions().httpsCallable('createUser')
       let result = await createUser(newUser)
@@ -75,6 +77,7 @@ class RegisterScreen extends Component {
         this.props.navigation.navigate('UserHome', { displayName });
       }
     } catch (error) {
+      console.log('register error', error)
       this.setState({ isWaiting: false, termsMessage: error.message });
     }
 

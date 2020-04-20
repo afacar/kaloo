@@ -1,11 +1,13 @@
 import React from 'react';
 import { View, StyleSheet, Text } from 'react-native';
+import { auth } from 'react-native-firebase'
 import { Avatar } from 'react-native-elements';
 import { colors } from '../constants';
 import { ClickableText } from './Buttons';
 
 export default function DashboradHeader(props) {
-    const { navigation, profile } = props;
+    let { navigation, profile } = props;
+    profile = profile ? profile : auth().currentUser
     let imageSource = profile.photoURL ? { uri: profile.photoURL } : require('../assets/default-profile.png')
     return (
         <View style={styles.container}>

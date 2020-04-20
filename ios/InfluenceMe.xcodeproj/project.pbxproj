@@ -742,7 +742,7 @@
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = org.influenceme;
+				PRODUCT_BUNDLE_IDENTIFIER = org.fmob.kaloo;
 				PRODUCT_NAME = InfluenceMe;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VERSIONING_SYSTEM = "apple-generic";
@@ -763,7 +763,7 @@
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = org.influenceme;
+				PRODUCT_BUNDLE_IDENTIFIER = org.fmob.kaloo;
 				PRODUCT_NAME = InfluenceMe;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VERSIONING_SYSTEM = "apple-generic";

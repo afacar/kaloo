@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { StyleSheet, ScrollView, View, Modal } from 'react-native';
+import { StyleSheet, ScrollView, View, Text } from 'react-native';
 import { Avatar } from 'react-native-elements';
 import { storage, firestore, functions, auth } from 'react-native-firebase';
 import { connect } from 'react-redux';
@@ -69,6 +69,8 @@ class EventPreviewScreen extends Component {
             this.setState({ isWaiting: false })
             console.log('Sending event to EventPublish1:=>', eventData);
             this.props.navigation.navigate('EventPublish', { event: eventData })
+          } else {
+            this.setState({ isWaiting: false, error: response.data.message })
           }
         }
       })
@@ -89,6 +91,8 @@ class EventPreviewScreen extends Component {
         this.setState({ isWaiting: false })
         console.log('Sending event to EventPublish2:=>', eventData);
         this.props.navigation.navigate('EventPublish', { event: eventData })
+      } else {
+        this.setState({ isWaiting: false, error: response.data.message })
       }
     }
   }
@@ -136,11 +140,15 @@ class EventPreviewScreen extends Component {
                   />
                 </View>
               </View>
-              {!isPublished && <DefaultButton
-                title={eventType === 'live' ? 'Publish your event' : 'Publish your meeting'}
-                disabled={isWaiting}
-                onPress={this._confirmPublish}
-              />}
+              {!isPublished && <View>
+                <Text style={{ color: 'red' }}>{this.state.error}</Text>
+                <DefaultButton
+                  title={eventType === 'live' ? 'Publish your event' : 'Publish your meeting'}
+                  disabled={isWaiting}
+                  onPress={this._confirmPublish}
+                />
+              </View>
+              }
               <ContactUs />
               <WaitingModal isWaiting={isWaiting} text='Creating your event...' />
             </View>

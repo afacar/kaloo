@@ -1,4 +1,4 @@
-package com.influenceme;
+package com.fmob.kaloo;
 
 import android.app.Application;
 import android.content.Context;

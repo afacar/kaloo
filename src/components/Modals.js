@@ -3,7 +3,6 @@ import { View, Modal, StyleSheet, Image, Text } from 'react-native';
 
 export function WaitingModal(props) {
     const { isWaiting, text } = props
-    console.log('WaitingModal isWaiting', typeof isWaiting)
     return (
         <Modal
             animationType='fade'
