@@ -11,7 +11,7 @@ export function Stage1(props) {
         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
             <Badge
                 //status="success"
-                containerStyle={{ paddingRight: 5 }}
+                containerStyle={{ paddingRight: 2 }}
                 value={value}
                 badgeStyle={{ backgroundColor: 'white', borderWidth: 1, borderColor: "#CFCFDC", height: 25, width: 25, borderRadius: 50 }}
                 textStyle={{ color: "#CFCFDC", fontSize: 15, fontWeight: "600" }}
@@ -30,7 +30,7 @@ export function Stage2(props) {
         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
             <Badge
                 //status="success"
-                containerStyle={{ paddingRight: 5 }}
+                containerStyle={{ paddingRight: 2 }}
                 value={value}
                 badgeStyle={{ backgroundColor: 'white', borderWidth: 2, borderColor: "#3598FE", height: 25, width: 25, borderRadius: 50 }}
                 textStyle={{ color: "#3598FE", fontSize: 15, fontWeight: "600" }}
@@ -47,7 +47,7 @@ export function Stage3(props) {
         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
             <Badge
                 //status="success"
-                containerStyle={{ paddingRight: 5 }}
+                containerStyle={{ paddingRight: 2 }}
                 value={value}
                 badgeStyle={{ backgroundColor: "#CFCFDC", borderWidth: 2, borderColor: "#CFCFDC", height: 25, width: 25, borderRadius: 50 }}
                 textStyle={{ color: "#fff", fontSize: 15, fontWeight: "600" }}

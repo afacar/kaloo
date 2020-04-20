@@ -13,8 +13,8 @@ import ImagePicker from 'react-native-image-crop-picker';
 import { SafeAreaView } from 'react-navigation';
 import { connect } from "react-redux";
 
-import { HighlightedText, BoldLabel } from '../components/Labels';
 import { WaitingModal } from "../components/Modals";
+import { HighlightedText, H1Label } from '../components/Labels';
 import { validateEmail } from '../utils/Utils'
 import { ClickableText, HyperLink, DefaultButton } from '../components/Buttons';
 import { ContactUs } from '../components/ContactUs';
@@ -129,6 +129,7 @@ class RegisterScreen extends Component {
       <SafeAreaView style={{ flex: 1, backgroundColor: 'white' }}>
         <CustomStatusBar />
         <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : ''} style={styles.container}>
+        <View style={{flex:1, backgroundColor:"#3598FE"}}>
           <ScrollView
             contentContainerStyle={{
               flexGrow: 1,
@@ -136,7 +137,7 @@ class RegisterScreen extends Component {
               backgroundColor: "#3598FE"
             }}>
             <View style={styles.componentStyle}>
-              <BoldLabel label='Register' />
+              <H1Label label="Register"/>
               <HighlightedText text="You only need an account if you’re planning to host a paid meeting. " />
               <View style={{ flexDirection: 'row', alignItems: "center", marginBottom: 5 }}>
                 <Avatar
@@ -229,6 +230,7 @@ class RegisterScreen extends Component {
               </View>
             </View>
           </ScrollView>
+          </View>
         </KeyboardAvoidingView>
       </SafeAreaView>
     );

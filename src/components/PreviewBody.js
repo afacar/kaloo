@@ -9,7 +9,7 @@ export default function PreviewBody(props) {
   const { displayName, title, eventDate, duration, description, capacity, price } = props.event
 
   return (
-    <View style={{ padding: 15 }}>
+    <View style={{ marginTop: 5, paddingBottom:15}}>
       <View style={{ alignItems: 'center' }}>
         <H2Label label={displayName} />
         <H3Label label={title} />

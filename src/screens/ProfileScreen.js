@@ -3,12 +3,16 @@ import { View, StyleSheet, Text, ActivityIndicator, KeyboardAvoidingView, Scroll
 import { Input, Button, Avatar } from 'react-native-elements';
 import { firestore, auth, storage } from "react-native-firebase";
 import ImagePicker from "react-native-image-crop-picker";
+
+import { DefaultButton } from '../components/Buttons';
 import { ContactUs } from '../components/ContactUs';
 import HeaderLeft from '../components/Headers/HeaderLeft';
-import { colors } from '../constants';
-import { AppText } from '../components/Labels';
-import { connect } from 'react-redux';
 import HeaderRight from '../components/Headers/HeaderRight';
+import { colors } from '../constants';
+import { connect } from 'react-redux';
+import { AppText, BoldLabel } from '../components/Labels';
+import { SafeAreaView } from 'react-navigation'
+
 
 const db = firestore();
 
@@ -77,63 +81,60 @@ class ProfileScreen extends Component {
     render() {
         const { email, displayName, photoURL, isAvatarChanged, isNameChanged, saveLoading } = this.state
         return (
-            <KeyboardAvoidingView style={styles.container}>
-                <ScrollView contentContainerStyle={{ flexGrow: 1, paddingHorizontal: 40, paddingVertical: 10, borderTopLeftRadius: 16, borderTopRightRadius: 16, backgroundColor: 'white' }} >
-                    <View style={{ alignItems: 'flex-start', marginTop: 20 }}>
-                        <AppText style={{ fontSize: 28, fontWeight: 'bold' }}> Edit Profile</AppText>
-                    </View>
-                    <View style={{ marginTop: 20, flexDirection: 'row', width: '100%', }}>
-                        <Avatar
-                            renderPlaceholderContent={<ActivityIndicator />}
-                            containerStyle={{ alignSelf: 'flex-start' }}
-                            size='large'
-                            rounded={true}
-                            source={{ uri: photoURL }}
-                        />
-                        <View style={{ alignSelf: 'center', justifyContent: 'center', marginLeft: 40, }}>
-                            <TouchableOpacity onPress={this.onImagePicker} >
-                                <Text style={{ fontSize: 18, color: colors.BLUE }}>Change Profile Picture</Text>
-                            </TouchableOpacity>
+            <SafeAreaView style={{ flex: 1, backgroundColor: "white" }}>
+                <KeyboardAvoidingView style={styles.container}>
+                    <ScrollView contentContainerStyle={{ flexGrow: 1, paddingHorizontal: 40, paddingVertical: 10, borderTopLeftRadius: 26, borderTopRightRadius: 26, backgroundColor: 'white' }} >
+                        <View style={{ flex: 1, justifyContent: 'space-between', }}>
+                            <View>
+                                <View style={{ alignItems: 'flex-start', marginTop: 20 }}>
+                                    <AppText style={{ fontSize: 28, fontWeight: 'bold' }}> Edit Profile</AppText>
+                                </View>
+                                <View style={{ marginTop: 20, flexDirection: 'row', width: '100%', marginBottom: 20 }}>
+                                    <Avatar
+                                        renderPlaceholderContent={<ActivityIndicator />}
+                                        containerStyle={{ alignSelf: 'flex-start' }}
+                                        size='large'
+                                        rounded={true}
+                                        source={{ uri: photoURL }}
+                                    />
+                                    <View style={{ alignSelf: 'center', justifyContent: 'center', marginLeft: 20, }}>
+                                        <TouchableOpacity onPress={this.onImagePicker} >
+                                            <Text style={{ fontSize: 18, color: colors.BLUE }}>Change Profile Picture</Text>
+                                        </TouchableOpacity>
+                                    </View>
+                                </View>
+
+                                <BoldLabel label="Name" />
+                                <Input
+                                    placeholder='Display name'
+                                    onChangeText={displayName => this.setState({ displayName, isNameChanged: true })}
+                                    value={displayName}
+                                    inputContainerStyle={styles.inputContainerStyle}
+                                    containerStyle={{ paddingHorizontal: 0 }}
+                                />
+                                <BoldLabel label="E-mail" />
+                                <Input
+                                    placeholder='Enter Email'
+                                    value={email}
+                                    disabled
+                                    inputContainerStyle={styles.inputContainerStyle}
+                                    containerStyle={{ paddingHorizontal: 0 }}
+                                />
+                            </View>
+                            <View >
+
+                                <DefaultButton
+                                    title={isNameChanged ? 'Save Changes' : 'Edit Your Profile'}
+                                    onPress={this.handleProfileUpdate}
+                                    disabled={!(isNameChanged || isAvatarChanged)}
+                                    loading={saveLoading}
+                                />
+                                <ContactUs title='Need Help?' screen='Profile' />
+                            </View>
                         </View>
-                    </View>
-
-                    <View style={{ marginTop: 20 }}>
-                        <AppText>Name</AppText>
-                        <Input
-                            placeholder='Display name'
-                            onChangeText={displayName => this.setState({ displayName, isNameChanged: true })}
-                            value={displayName}
-                            containerStyle={{ borderWidth: 1, borderRadius: 6, marginTop: 8 }}
-                            inputContainerStyle={{ borderBottomWidth: 0 }}
-                        />
-                    </View>
-
-                    <View style={{ marginTop: 20 }}>
-                        <AppText>E-mail</AppText>
-                        <Input
-                            placeholder='Enter Email'
-                            leftIcon={{ type: 'material-community', name: 'email' }}
-                            value={email}
-                            disabled
-                            containerStyle={{ borderWidth: 1, borderRadius: 6, marginTop: 8 }}
-                            inputContainerStyle={{ borderBottomWidth: 0 }}
-                        />
-                    </View>
-
-                    <Button
-                        title={isNameChanged ? 'Save Changes' : 'Edit Your Profile'}
-                        buttonStyle={styles.saveButton}
-                        containerStyle={styles.saveButtonContainer}
-                        onPress={this.handleProfileUpdate}
-                        loading={saveLoading}
-                        disabled={!(isNameChanged || isAvatarChanged)}
-                    />
-
-                    <View style={{ position: 'absolute', bottom: 24, alignSelf: 'center' }}>
-                        <ContactUs title='Need Help?' screen='Profile' />
-                    </View>
-                </ScrollView>
-            </KeyboardAvoidingView>
+                    </ScrollView>
+                </KeyboardAvoidingView>
+            </SafeAreaView>
         )
     }
 }
@@ -156,7 +157,15 @@ const styles = StyleSheet.create({
         padding: 12,
         justifyContent: 'center',
         alignItems: 'center'
-    }
+    },
+    inputContainerStyle: {
+        borderWidth: 0.7,
+        borderColor: '#909090',
+        borderRadius: 6,
+        paddingHorizontal: 10
+        //paddingVertical: 5,
+
+    },
 })
 
 const mapStateToProps = ({ auth }) => {

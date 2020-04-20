@@ -9,8 +9,8 @@ import { SafeAreaView } from 'react-navigation';
 import { Input } from 'react-native-elements';
 import { auth } from 'react-native-firebase';
 
-import { HighlightedText, BoldLabel } from '../components/Labels';
-import { DefaultButton } from '../components/Buttons';
+import { HighlightedText, BoldLabel, H1Label } from '../components/Labels';
+import { DefaultButton, ClickableText } from '../components/Buttons';
 import { validateEmail } from '../utils/Utils'
 import { ContactUs } from '../components/ContactUs';
 import HeaderLeft from '../components/Headers/HeaderLeft';
@@ -71,54 +71,59 @@ class SignInScreen extends Component {
       <SafeAreaView style={{ flex: 1, backgroundColor: 'white' }}>
         <CustomStatusBar />
         <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : ''} style={styles.container}>
-          <ScrollView
-            contentContainerStyle={{
-              flexGrow: 1,
-              alignItems: 'center',
-              backgroundColor: "#3598FE"
-            }}>
+          <View style={{ flex: 1, backgroundColor: "#3598FE" }}>
+            <ScrollView
+              contentContainerStyle={{
+                flexGrow: 1,
+                alignItems: 'center',
+                backgroundColor: "#3598FE"
+              }}>
 
-            <View style={styles.componentStyle}>
-              <BoldLabel label='Sign In' />
-              <HighlightedText text='You don’t need an account if you want to join a meeting.' />
-              <Input
-                placeholder="Enter Your email"
-                placeholderTextColor="#b2c2bf"
-                onChangeText={email => this.setState({ email, emailMessage: '' })}
-                value={email}
-                keyboardType="email-address"
-                errorMessage={emailError}
-                disabled={isWaiting}
-                inputContainerStyle={styles.inputContainerStyle}
-                containerStyle={{ paddingHorizontal: 0, marginTop: 10 }}
-                leftIcon={{ type: 'material-community', name: 'email-outline', color: "#909090" }}
-                leftIconContainerStyle={{ paddingHorizontal: 10, marginLeft: 0 }}
-              />
-              <Input
-                placeholder="Enter Your password"
-                placeholderTextColor="#b2c2bf"
-                onChangeText={password => this.setState({ password, passwordMessage: '' })}
-                value={password}
-                errorMessage={passwordError}
-                secureTextEntry
-                disabled={isWaiting}
-                inputContainerStyle={styles.inputContainerStyle}
-                containerStyle={{ paddingHorizontal: 0, marginTop: 10 }}
-                leftIcon={{ type: 'material-community', name: 'key-variant', color: "#909090" }}
-                leftIconContainerStyle={{ paddingHorizontal: 10, marginLeft: 0 }}
-              />
-              <View style={{ alignSelf: 'stretch', marginTop: 15 }}>
-                <DefaultButton
-                  title="Sign in"
-                  onPress={this._checkSignIn}
-                  disabled={this.state.isWaiting} />
+              <View style={styles.componentStyle}>
+                <H1Label label='Sign In' />
+                <HighlightedText text='You don’t need an account if you want to join a meeting.' />
+                <Input
+                  placeholder="Enter Your email"
+                  placeholderTextColor="#b2c2bf"
+                  onChangeText={email => this.setState({ email, emailMessage: '' })}
+                  value={email}
+                  keyboardType="email-address"
+                  errorMessage={emailError}
+                  disabled={isWaiting}
+                  inputContainerStyle={styles.inputContainerStyle}
+                  containerStyle={{ paddingHorizontal: 0, marginTop: 10 }}
+                  leftIcon={{ type: 'material-community', name: 'email-outline', color: "#909090" }}
+                  leftIconContainerStyle={{ paddingHorizontal: 10, marginLeft: 0 }}
+                />
+                <Input
+                  placeholder="Enter Your password"
+                  placeholderTextColor="#b2c2bf"
+                  onChangeText={password => this.setState({ password, passwordMessage: '' })}
+                  value={password}
+                  errorMessage={passwordError}
+                  secureTextEntry
+                  disabled={isWaiting}
+                  inputContainerStyle={styles.inputContainerStyle}
+                  containerStyle={{ paddingHorizontal: 0, marginTop: 10 }}
+                  leftIcon={{ type: 'material-community', name: 'key-variant', color: "#909090" }}
+                  leftIconContainerStyle={{ paddingHorizontal: 10, marginLeft: 0 }}
+                />
+                <View style={{ alignSelf: 'stretch', marginTop: 15 }}>
+                  <DefaultButton
+                    title="Sign in"
+                    onPress={this._checkSignIn}
+                    disabled={this.state.isWaiting} />
+                </View>
+                <View style={styles.contactUs}>
+                  <ContactUs title="Have a problem?" screen='SignIn' />
+                </View>
               </View>
               <View style={styles.contactUs}>
                 <ContactUs title="Have a problem?" screen='SignIn' />
                 <WaitingModal isWaiting={isWaiting} text='Just a second...' />
               </View>
-            </View>
-          </ScrollView>
+            </ScrollView>
+          </View>
         </KeyboardAvoidingView>
       </SafeAreaView>
     );
