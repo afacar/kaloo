@@ -8,6 +8,7 @@ import { ContactUs } from '../components/ContactUs';
 import HeaderLeft from '../components/Headers/HeaderLeft';
 import { colors } from '../constants';
 import { AppText } from '../components/Labels';
+import { connect } from 'react-redux';
 
 const db = firestore();
 
@@ -25,17 +26,12 @@ class ProfileScreen extends Component {
         )
     });
 
-    user = auth().currentUser
-    state = {
-        email: this.user.email,
-        displayName: this.user.displayName,
-        photoURL: this.user.photoURL,
+    state = { 
+        ...this.props.profile,
         isNameChanged: false,
         isAvatarChanged: false,
         saveLoading: false,
     }
-
-    componentDidMount() { }
 
     handleProfileUpdate = async () => {
         let { displayName, photoURL, isAvatarChanged, isNameChanged } = this.state;
@@ -170,4 +166,8 @@ const styles = StyleSheet.create({
     }
 })
 
-export default ProfileScreen;
+const mapStateToProps = ({ auth }) => {
+    return { profile: auth.profile }
+}
+
+export default connect(mapStateToProps, null)(ProfileScreen);

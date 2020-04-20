@@ -164,6 +164,7 @@ class EventListScreen extends Component {
                     <View style={{ flex: 1, backgroundColor: '#3598FE' }}>
                         <CustomStatusBar />
                         <DashboardHeader
+                            profile={this.props.profile}
                             navigation={this.props.navigation}
                         //earnings={earnings} // TODO
                         />
@@ -203,4 +204,8 @@ const styles = StyleSheet.create({
     }
 })
 
-export default connect(null, { setUserProfile })(EventListScreen);
+const mapStateToProps = ({ auth }) => {
+    return { profile: auth.profile }
+}
+
+export default connect(mapStateToProps, { setUserProfile })(EventListScreen);
