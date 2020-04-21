@@ -1,17 +1,19 @@
 import React, { Component } from 'react';
-import { ScrollView, StyleSheet, NativeModules, View, Dimensions } from 'react-native';
-import { Button, Avatar } from 'react-native-elements';
+import { ScrollView, StyleSheet, NativeModules, View } from 'react-native';
 import { RtcEngine } from 'react-native-agora';
-import { setEventListener, clearEventListener } from '../utils/EventHandler';
+
+
+import * as actions from '../appstate/actions/event_actions';
+//import { clearEventListener } from '../utils/EventHandler';
 import EventShare from '../components/EventShare';
 import EventHeader from '../components/EventHeader';
 import { SafeAreaView } from 'react-navigation'
 import { DefaultButton } from '../components/Buttons';
 import { ContactUs } from '../components/ContactUs';
-
-import { app, colors, dimensions } from '../constants';
+import { app, colors } from '../constants';
 import HeaderLeft from '../components/Headers/HeaderLeft';
 import UserAvatar from '../components/UserAvatar';
+import { connect } from 'react-redux';
 
 const { Agora } = NativeModules;
 
@@ -22,7 +24,7 @@ const {
     Adaptative
 } = Agora
 
-const { COMPLETED, SUSPENDED } = app.EVENT_STATUS
+const { COMPLETED, SUSPENDED, IN_PROGRESS, SCHEDULED } = app.EVENT_STATUS
 
 class MyEventScreen extends Component {
     static navigationOptions = ({ navigation }) => ({
@@ -32,25 +34,32 @@ class MyEventScreen extends Component {
     });
 
     event = this.props.navigation.getParam('event', '')
-    state = { ...this.event }
+    state = { ...this.event, Live: this.props.eventLive, isPublished: true }
 
     componentDidMount() {
-        setEventListener(this.state.eid, (event) => {
-            if (event) {
-                this.setState({ ...event })
-            }
-        })
+        const { eid, eventType } = this.state
+        // live channelProfile: 1 & call channelProfile: 0
+        let channelProfile = eventType === 'live' ? 1 : 0
+        let eventScreen = eventType === 'live' ? 'Live' : 'HostMeeting'
+        // Host clientRole: 1
+        let clientRole = 1
+        this.setState({ channelProfile, eventScreen, clientRole })
+        this.props.setLiveEventListener(eid, this.updateState);
+
+        console.log('MyEvent DidMount state', this.state)
     }
+
+    updateState = (Live) => {
+        this.setState({ Live })
+        console.log('MyEvent new state', this.state)
+    }
+
     componentWillUnmount() {
-        clearEventListener(this.event.eid);
+        this.props.clearLiveEventListener();
     }
 
     onCamera = () => {
-        const { eventType, eid, duration } = this.state
-        // live channelProfile: 1 & call channelProfile: 0
-        let channelProfile = eventType === 'live' ? 1 : 0
-        // Host clientRole: 1
-        let clientRole = 1
+        const { channelProfile, clientRole, eventScreen } = this.state
         const options = {
             appid: app.AGORA_APP_ID,
             channelProfile,
@@ -65,19 +74,15 @@ class MyEventScreen extends Component {
             audioProfile: AgoraAudioProfileMusicHighQuality,
             audioScenario: AgoraAudioScenarioShowRoom
         };
-        // TODO: Opening camera here
+        // Opening camera here
         RtcEngine.init(options)
-        if (eventType === 'live') {
-            this.props.navigation.navigate('Live', { liveData: { clientRole, channelProfile, eventID: eid + '', duration } })
-        } else if (eventType === 'call') {
-            this.props.navigation.navigate('VideoChat', { liveData: { clientRole, channelProfile, eventID: eid + '', duration } })
-        }
+        this.props.navigation.navigate(eventScreen, { eventData: this.state })
     }
 
     render() {
-        const thisEvent = { ...this.state, isPublished: true }
-        var { status } = thisEvent;
-        let title = status === COMPLETED ? 'Event Completed' : status === SUSPENDED ? 'Continue Meeting' : 'Preview audio and video'
+        console.log('RENDER', this.state)
+        var { status, eventLink } = this.state
+        let buttonTitle = status === COMPLETED ? 'Meeting Completed' : status === SUSPENDED ? 'Continue Meeting' : status === SCHEDULED ? 'Preview audio and video' : 'Meeting in Progress'
         return (
             <SafeAreaView style={{ flex: 1, backgroundColor: 'white' }}>
                 <ScrollView contentContainerStyle={{
@@ -87,15 +92,15 @@ class MyEventScreen extends Component {
                 }}>
                     <View style={styles.componentStyle}>
                         <EventHeader
-                            event={thisEvent}
+                            event={this.state}
                             navigation={this.props.navigation}
                         />
                         <EventShare
-                            link={thisEvent.eventLink}
+                            link={eventLink}
                         />
                         <View style={{ marginVertical: 15 }}>
                             <DefaultButton
-                                title={title}
+                                title={buttonTitle}
                                 onPress={this.onCamera}
                                 disabled={status === COMPLETED}
                             />
@@ -128,4 +133,9 @@ const styles = StyleSheet.create({
     },
 })
 
-export default MyEventScreen;
+const mapStateToProps = ({ eventLive }) => {
+    console.log('MyEvent mapStateToProps', eventLive)
+    return { eventLive }
+}
+
+export default connect(mapStateToProps, actions)(MyEventScreen);

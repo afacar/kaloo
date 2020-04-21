@@ -11,7 +11,7 @@ import EventPreviewScreen from '../screens/EventPreviewScreen';
 import EventPublishScreen from "../screens/EventPublishScreen";
 import LiveScreen from '../screens/LiveScreen';
 import VideoChatScreen from '../screens/VideoChatScreen';
-import { Dimensions } from 'react-native';
+import HostMeetingScreen from '../screens/HostMeetingScreen';
 import { colors } from '../constants';
 
 export default UserNavigatior = createStackNavigator(
@@ -31,12 +31,7 @@ export default UserNavigatior = createStackNavigator(
       //   headerShown: false,
       // }
     },
-    VideoChat: {
-      screen: VideoChatScreen,
-      // navigationOptions: {
-      //   headerShown: false,
-      // }
-    },
+    HostMeeting: HostMeetingScreen,
   },
   {
     //headerLayoutPreset: 'center',

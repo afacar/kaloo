@@ -111,7 +111,7 @@ export function EndCallButon(props) {
 }
 
 export function DefaultButton(props) {
-    const { onPress, title, disabled,loading } = props
+    const { onPress, title, disabled, loading } = props
     return (
         <Button
             title={title}
