@@ -12,13 +12,9 @@ import { DefaultButton } from '../components/Buttons';
 import Video from "react-native-video";
 import TransparentStatusBar from '../components/StatusBars/TransparentStatusBar';
 
-//const DEFAULT_LOGO = 'https://firebasestorage.googleapis.com/v0/b/influenceme-dev.appspot.com/o/assets%2Fdefault-logo.jpg?alt=media&token=20a6be6f-954f-417b-abfb-55e0ac75db02'
-
-const { width, height } = Dimensions.get("window");
 
 class WelcomeScreen extends Component {
   static navigationOptions = { headerShown: false }
-
 
   render() {
     const { DEFAULT_LOGO_IMAGE } = this.props.assets;
@@ -27,7 +23,7 @@ class WelcomeScreen extends Component {
         <TransparentStatusBar />
         <View style={{ flex: 8, justifyContent: 'center', alignItems: 'center' }}>
           <Video
-            source={{ uri: 'https://firebasestorage.googleapis.com/v0/b/influenceme-dev.appspot.com/o/assets%2Fwelcome-video.mov?alt=media&token=436c5a93-45ef-4aa1-abd1-6f717ca4300f' }}
+            source={require('../assets/welcome-video.mov')}
             muted={true}
             repeat={true}
             resizeMode={"cover"}
@@ -37,7 +33,7 @@ class WelcomeScreen extends Component {
           <View style={{ alignItems: 'center', opacity: 0.7 }}>
             <Image
               source={require('../assets/default-logo.png')}
-              style={{ width: 150, height: 150}}
+              style={{ width: 150, height: 150 }}
             />
             <Text style={{ fontSize: 25, fontWeight: 'bold', color: 'white' }}>
               Kaloo

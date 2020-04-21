@@ -49,7 +49,7 @@ class SplashScreen extends Component {
                     style={styles.iconStyle}
                 />
                 <AppText>
-                    Welcome to your online  gathering platform
+                    Welcome to your online gathering platform
                 </AppText>
             </View>
         )
