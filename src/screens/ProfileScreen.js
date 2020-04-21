@@ -5,6 +5,7 @@ import { auth, storage, functions } from "react-native-firebase";
 import ImagePicker from "react-native-image-crop-picker";
 import { connect } from 'react-redux';
 
+import * as actions from '../appstate/actions/auth_actions'
 import { DefaultButton } from '../components/Buttons';
 import { ErrorLabel } from "../components/Labels";
 import { ContactUs } from '../components/ContactUs';
@@ -67,7 +68,7 @@ class ProfileScreen extends Component {
         } catch (error) {
             return this.setState({ isWaiting: false, errorMessage: error.message })
         }
-
+        this.props.setUserProfile()
         this.setState({ isNameChanged: false, isAvatarChanged: false, isWaiting: false })
     }
 
@@ -181,4 +182,4 @@ const mapStateToProps = ({ auth }) => {
     return { profile: auth.profile }
 }
 
-export default connect(mapStateToProps, null)(ProfileScreen);
+export default connect(mapStateToProps, actions)(ProfileScreen);
