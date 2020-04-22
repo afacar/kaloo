@@ -11,8 +11,6 @@ import PreviewBody from '../components/PreviewBody';
 import { Stage1, Stage2, Stage3 } from '../components/Stages';
 import { DefaultButton } from '../components/Buttons';
 import { ContactUs } from '../components/ContactUs'
-
-import { colors, dimensions } from '../constants';
 import HeaderLeft from '../components/Headers/HeaderLeft';
 import { ConfirmModal } from '../utils/Utils';
 import { WaitingModal } from '../components/Modals';
@@ -29,69 +27,31 @@ class EventPreviewScreen extends Component {
   state = { isWaiting: false, ...this.props.navigation.getParam('event') }
 
   createEvent = async () => {
-    let { uid, displayName, userNumber, photoURL, image, title, description, duration, eventType, capacity, price, eventDate, status } = this.state
-    const { DEFAULT_EVENT_IMAGE } = this.props.assets;
-
-    let event = { uid, displayName, userNumber, photoURL, image, title, description, duration, eventType, capacity, price, eventDate, status }
+    let { uid, displayName, userNumber, photoURL, image, title, description, duration, eventType, capacity, price, eventDate } = this.state
+    let event = { uid, displayName, userNumber, photoURL, image, title, description, duration, eventType, capacity, price, eventDate }
     let createEvent = functions().httpsCallable('createEvent');
     event.eventTimestamp = eventDate.getTime();
 
     this.setState({ isWaiting: true })
     try {
-      // Check if new event image is set
-      if (image !== DEFAULT_EVENT_IMAGE) {
-        // TODO: Upload image to ...
-        let imagePath = `events/${event.uid}/${event.eventTimestamp}.jpg`
-        console.log(`Uploading event image to: ${imagePath}`)
-        const imageRef = storage().ref(imagePath)
-        await imageRef.getDownloadURL().then((url) => {
-          // Another event created at the same timestamp
-          this.setState({ isWaiting: false, isPreview: false, dateMessage: 'There is already an event on this date!' })
-        }).catch(async (error) => {
-          if (error.code === 'storage/object-not-found') {
-            await imageRef.putFile(image)
-            let newImage = await imageRef.getDownloadURL()
-            console.log('New Image uploaded')
-            event.image = newImage
-            console.log('calling create event...', event);
-            let response = await createEvent(event);
-            console.log('Recieved created event:=>', response);
-            if (response && response.data && response.data.state === 'SUCCESS') {
-              let eventData = response.data.event;
-              let date = eventData.eventDate
-              if (date instanceof firestore.Timestamp) {
-                console.log('finally Timestamp')
-                date = date.toDate();
-              } else if (eventData.eventTimestamp) {
-                date = new Date(eventData.eventTimestamp);
-              }
-              eventData.eventDate = date
-              this.setState({ isWaiting: false })
-              console.log('Sending event to EventPublish1:=>', eventData);
-              this.props.navigation.navigate('EventPublish', { event: eventData })
-            }
-          }
-        })
-      } else {
-        console.log('calling create event...', event);
-        let response = await createEvent(event);
-        console.log('Recieved created event:=>', response);
-        if (response && response.data && response.data.state === 'SUCCESS') {
-          let eventData = response.data.event;
-          let date = eventData.eventDate
-          if (date instanceof firestore.Timestamp) {
-            console.log('finally Timestamp')
-            date = date.toDate();
-          } else if (eventData.eventTimestamp) {
-            date = new Date(eventData.eventTimestamp);
-          }
-          eventData.eventDate = date
-          this.setState({ isWaiting: false })
-          console.log('Sending event to EventPublish2:=>', eventData);
-          this.props.navigation.navigate('EventPublish', { event: eventData })
+      console.log('calling create event...', event);
+      let response = await createEvent(event);
+      console.log('Recieved created event:=>', response);
+      if (response && response.data && response.data.state === 'SUCCESS') {
+        let eventData = response.data.event;
+        let date = eventData.eventDate
+        if (date instanceof firestore.Timestamp) {
+          date = date.toDate();
+        } else if (eventData.eventTimestamp) {
+          date = new Date(eventData.eventTimestamp);
         }
+        eventData.eventDate = date
+        this.setState({ isWaiting: false })
+        console.log('Sending event to EventPublish =>', eventData);
+        this.props.navigation.navigate('EventPublish', { event: eventData })
+      } else {
+        this.setState({ isWaiting: false, errorMessage: response.data.message })
       }
-
     } catch (error) {
       this.setState({ isWaiting: false, errorMessage: error.message })
     }
@@ -107,9 +67,8 @@ class EventPreviewScreen extends Component {
 
   render() {
     const {
-      displayName, photoURL, image, title, description, duration, eventType, capacity, price, eventDate, status, isPublished, isWaiting
+      displayName, photoURL, image, title, description, duration, eventType, capacity, price, eventDate, isPublished, isWaiting
     } = this.state;
-    console.log('Preview render state', this.state)
 
     return (
       <SafeAreaView style={{ flex: 1, backgroundColor: "white" }}>

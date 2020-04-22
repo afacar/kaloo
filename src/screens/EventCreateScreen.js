@@ -1,15 +1,14 @@
 import React, { Component } from 'react';
 import { StyleSheet, View, ScrollView, Text, TouchableOpacity, KeyboardAvoidingView, Platform } from 'react-native';
-import { auth } from 'react-native-firebase';
-import { Input, Image, CheckBox, Icon, Avatar } from 'react-native-elements';
+import { storage } from 'react-native-firebase';
+import { Input, Image, CheckBox, Icon } from 'react-native-elements';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import ImagePicker from 'react-native-image-crop-picker';
 import { H1Label, BoldLabel, Label } from '../components/Labels';
-import { Stage1, Stage2, Stage3 } from '../components/Stages';
+import { Stage1, Stage2 } from '../components/Stages';
 import { ContactUs } from '../components/ContactUs'
 import { SafeAreaView } from 'react-navigation'
 
-import { app, colors, dimensions } from '../constants';
 import { connect } from 'react-redux';
 import { splitDate } from '../utils/Utils';
 import { DefaultButton } from '../components/Buttons';
@@ -17,6 +16,7 @@ import { DefaultButton } from '../components/Buttons';
 
 import HeaderLeft from '../components/Headers/HeaderLeft';
 import UserAvatar from '../components/UserAvatar';
+import { ActivityIndicator } from 'react-native';
 
 const INITIAL_STATE = {
     image: null,
@@ -32,7 +32,6 @@ const INITIAL_STATE = {
     titleMessage: '',
     dateMessage: '',
     isPreview: false,
-    status: app.EVENT_STATUS.SCHEDULED,
 }
 
 
@@ -45,18 +44,32 @@ class EventCreateScreen extends Component {
     state = { ...INITIAL_STATE, ...this.props.profile, image: this.props.assets.DEFAULT_EVENT_IMAGE }
 
     onImagePressed = () => {
+        const { uid } = this.state;
+        const eventTimestamp = new Date().getTime()
+
         ImagePicker.openPicker({
-            path: 'my-profile-image.jpg',
+            path: 'my-event-image.jpg',
             width: 600,
             height: 300,
             cropping: true,
         }).then(image => {
-            console.log(image);
             if (Platform.OS === 'ios')
                 image.path = image.path.replace('file://', '');
             console.log('picked image', image);
-            this.setState({ image: image.path, imagePickerResponse: image });
-        }).catch(err => console.log('image-picker err:', err))
+            // TODO: Upload image to ...
+            this.setState({ uploading: true })
+            let imagePath = `events/${uid}/${eventTimestamp}.jpg`
+            const imageRef = storage().ref(imagePath)
+            imageRef.putFile(image.path).then(() => {
+                imageRef.getDownloadURL()
+                    .then((newImageURL) => {
+                        this.setState({ uploading: false, image: newImageURL, imagePickerResponse: image });
+                    })
+            })
+        }).catch(error => {
+            console.log('image-picker err:', error)
+            this.setState({ uploading: false, uploadError: error.message })
+        })
     }
 
     onDateChange = (selectedDate) => {
@@ -93,7 +106,11 @@ class EventCreateScreen extends Component {
                                             style={{ flex: 1 }}
                                         //resizeMode="contain"
                                         />
-                                        <Icon
+                                        {this.state.uploading ? <ActivityIndicator size='small' style={{
+                                            position: 'absolute',
+                                            right: 5,
+                                            bottom: 5,
+                                        }} /> : <Icon
                                             reverse
                                             name="camera"
                                             type="material-community"
@@ -104,6 +121,8 @@ class EventCreateScreen extends Component {
                                                 bottom: 5,
                                             }}
                                         />
+
+                                        }
                                     </TouchableOpacity>
                                 </View>
 
@@ -224,6 +243,7 @@ class EventCreateScreen extends Component {
                                     <DefaultButton
                                         title="Preview"
                                         onPress={() => this.props.navigation.navigate('EventPreview', { event: this.state })}
+                                        disabled={this.state.uploading}
                                     />
                                 </View>
                             </View>
