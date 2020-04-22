@@ -138,11 +138,11 @@ class ProfileScreen extends Component {
                                     disabled={!(isNameChanged || isAvatarChanged)}
                                 //loading={isWaiting}
                                 />
-                                <ContactUs title='Need Help?' screen='Profile' />
-                                <WaitingModal isWaiting={isWaiting} text='Just a second...' />
                             </View>
                         </View>
                     </ScrollView>
+                    <ContactUs title='Need Help?' screen='Profile' />
+                                <WaitingModal isWaiting={isWaiting} text='Just a second...' />
                 </KeyboardAvoidingView>
             </SafeAreaView>
         )
