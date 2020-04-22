@@ -2,7 +2,10 @@ import React, { Component } from 'react';
 import { StyleSheet, TouchableOpacity, Text, View, Linking } from 'react-native';
 import { Icon, Button } from 'react-native-elements';
 
+import app from '../constants/app';
 import { colors } from '../constants'
+
+const { SCHEDULED, IN_PROGRESS, SUSPENDED, COMPLETED } = app.EVENT_STATUS;
 
 export function HyperLink(props) {
     const { text, link } = props
@@ -145,6 +148,23 @@ export function ClearButton(props) {
             onPress={onPress}
             buttonStyle={styles.clearButton}
             disabled={disabled}
+        />
+    )
+}
+
+export function BroadcastButton(props) {
+    console.log('BroadcastButton props', props);
+    const { status, onPress, loading } = props;
+    console.warn()
+
+    const buttontitle = status === SCHEDULED ? 'Start Metting' : status === IN_PROGRESS ? 'End Meeting' : 'Continue Meeting';
+    const buttonStyle = status === SCHEDULED ? styles.startButton : status === IN_PROGRESS ? styles.endButton : styles.startButton;
+    return (
+        <Button
+            title={buttontitle}
+            buttonStyle={buttonStyle}
+            onPress={onPress}
+            loading={loading}
         />
     )
 }

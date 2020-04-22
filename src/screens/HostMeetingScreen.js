@@ -4,18 +4,20 @@ import { RtcEngine, AgoraView } from 'react-native-agora';
 import KeepAwake from 'react-native-keep-awake';
 import { startEvent, endLive, suspendLive, continueLive } from '../utils/EventHandler';
 import { handleAndroidBackButton, removeAndroidBackButtonHandler } from '../utils/BackHandler';
-import { formatTime, getDeviceID, checkCameraPermission, checkAudioPermission, ConfirmModal, InfoModal } from '../utils/Utils';
+import { checkCameraPermission, checkAudioPermission, ConfirmModal, InfoModal } from '../utils/Utils';
 import { AppText } from '../components/Labels';
 import { Button, Icon } from 'react-native-elements';
 import { connect } from 'react-redux';
 
 import { styles, app, dimensions } from '../constants';
-import { EndCallButon, StartCallButon, ContinueCallButon } from '../components/Buttons';
+import { BroadcastButton } from '../components/Buttons';
 import HeaderGradient from '../components/HeaderGradient';
 import HostHeaderTitle from '../components/Headers/HostHeaderTitle';
 import HeaderLeft from '../components/Headers/HeaderLeft';
 import TransparentStatusBar from '../components/StatusBars/TransparentStatusBar';
 import HostView from '../components/HostView';
+
+const { SCHEDULED, IN_PROGRESS, SUSPENDED, COMPLETED } = app.EVENT_STATUS
 
 const HOST_UID = 1000;
 
@@ -36,8 +38,8 @@ class HostMeetingScreen extends Component {
         headerTitle: () => <HostHeaderTitle />,
         headerLeft: () => (
             <HeaderLeft onPress={() => {
-                const { eventID, status } = navigation.getParam('eventData')
-                if (status !== app.EVENT_STATUS.IN_PROGRESS) {
+                const { eid, status } = navigation.getParam('eventData')
+                if (status !== IN_PROGRESS) {
                     return navigation.goBack();
                 }
                 Alert.alert(
@@ -53,7 +55,7 @@ class HostMeetingScreen extends Component {
                         {
                             text: 'OK', onPress: () => {
                                 // Suspend live event of host
-                                suspendLive(eventID);
+                                suspendLive(eid);
                                 navigation.goBack();
                             }
                         },
@@ -95,7 +97,7 @@ class HostMeetingScreen extends Component {
     };
 
     componentDidMount() {
-        console.log('VideoChat didMount state', this.state)
+        console.log('HostMeetingScreen DidMount state', this.state)
         checkAudioPermission()
         checkCameraPermission()
 
@@ -133,12 +135,12 @@ class HostMeetingScreen extends Component {
 
 
     onStartCall = () => {
-        const { eventID } = this.state;
+        const { eid } = this.state;
         RtcEngine.leaveChannel();
-        RtcEngine.joinChannel(eventID, HOST_UID)
+        RtcEngine.joinChannel(eid, HOST_UID)
             .then(async (result) => {
                 this.setState({ startLoading: true })
-                let response = await startEvent(eventID);
+                let response = await startEvent(eid);
                 if (!response) {
                     let title = 'Error occured',
                         message = 'Unknown error occured while starting your call. Please try again!',
@@ -158,13 +160,13 @@ class HostMeetingScreen extends Component {
     }
 
     onContinueCall = () => {
-        const { eventID } = this.state;
+        const { eid } = this.state;
         this.setState({ startLoading: true })
 
         RtcEngine.leaveChannel();
-        RtcEngine.joinChannel(eventID, HOST_UID)
+        RtcEngine.joinChannel(eid, HOST_UID)
             .then(async (result) => {
-                let response = await continueLive(eventID);
+                let response = await continueLive(eid);
                 if (!response) {
                     let title = 'Error occured',
                         message = 'Unknown error occured while starting your call. Please try again!',
@@ -185,9 +187,9 @@ class HostMeetingScreen extends Component {
     }
 
     onEndCall = () => {
-        const { eventID } = this.state;
+        const { eid } = this.state;
         RtcEngine.leaveChannel();
-        endLive(eventID);
+        endLive(eid);
         this.props.navigation.goBack();
     }
 
@@ -202,8 +204,8 @@ class HostMeetingScreen extends Component {
     _onSuspend = () => {
         // Suspend live event of host
         const { navigation } = this.props;
-        const { eventID } = this.state
-        suspendLive(eventID)
+        const { eid } = this.state
+        suspendLive(eid)
         return navigation.goBack();
     }
 
@@ -261,45 +263,6 @@ class HostMeetingScreen extends Component {
         }
     }
 
-/*     renderHostView() {
-        const capacity = this.state.peerIds.length;
-        const { status } = this.state
-        if (status === app.EVENT_STATUS.IN_PROGRESS) {
-            return (
-                <View style={{ flex: 1, borderWidth: 5, borderColor: 'blue' }}>
-                    <View style={{ flex: 1 }}>
-                        <AgoraView style={{ flex: 1, borderWidth: 2, borderColor: 'red' }} showLocalVideo={true} mode={1} />
-                    </View>
-                    <View style={{ flex: 1 }}>
-                        {
-                            capacity === 1 && (
-                                <AgoraView mode={1} key={this.state.peerIds[0]} style={{ flex: 1 }} remoteUid={this.state.peerIds[0]} />
-                            )
-                        }
-                        {
-                            capacity === 0 && (
-                                <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', }}>
-                                    <Image
-                                        style={{ width: 150, height: 120 }}
-                                        source={require('../assets/disconnected.png')}
-                                    />
-                                    <AppText style={{ color: 'black', marginLeft: 8, fontSize: 24, fontWeight: 'bold', textAlign: 'center' }}>Waiting for your peer to connect...</AppText>
-                                </View>
-                            )
-                        }
-                    </View>
-                </View>
-            )
-        }
-        else {
-            return (
-                <View style={{ flex: 1 }}>
-                    <AgoraView style={{ flex: 1 }} showLocalVideo={true} mode={1} />
-                </View>
-            )
-        }
-    } */
-
     renderBroadcastButton() {
         const { status } = this.state;
         console.warn()
@@ -350,7 +313,8 @@ class HostMeetingScreen extends Component {
     }
 
     render() {
-        const { status, peerIds } = this.state
+        const { status, peerIds, startLoading } = this.state
+        const onPress = status === SCHEDULED ? this._startCall : status === IN_PROGRESS ? this._endCall : this._continueCall;
         return (
             <View style={{ flex: 1 }}>
                 <KeepAwake />
@@ -358,9 +322,7 @@ class HostMeetingScreen extends Component {
                 <View style={{ flex: 1 }}>
                     <View style={{ flex: 1 }}>
                         <HostView status={status} peerIds={peerIds} />
-                        {
-                            this.renderBroadcastButton()
-                        }
+                        <BroadcastButton status={status} loading={startLoading} onPress={onPress} />
                     </View>
                     {
                         this.renderTimer()
