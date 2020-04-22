@@ -38,7 +38,7 @@ class EventPublishScreen extends Component {
     const myEvent = this.props.navigation.getParam('event');
 
     return (
-      <SafeAreaView style={{ flex: 1, backgroundColor: "#3598FE" }} forceInset={{ bottom: 'never' }}>
+      <SafeAreaView style={{ flex: 1, backgroundColor: "#fff" }} >
         <View style={styles.componentStyle}>
           <View style={{ flexDirection: 'row', justifyContent: "space-between", marginVertical: 20 }}>
             <Stage3 value="1" text="Create" />
