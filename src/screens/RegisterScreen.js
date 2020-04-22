@@ -13,6 +13,7 @@ import ImagePicker from 'react-native-image-crop-picker';
 import { SafeAreaView } from 'react-navigation';
 import { connect } from "react-redux";
 
+import * as actions from '../appstate/actions/auth_actions';
 import { WaitingModal } from "../components/Modals";
 import { HighlightedText, H1Label } from '../components/Labels';
 import { validateEmail } from '../utils/Utils'
@@ -65,15 +66,16 @@ class RegisterScreen extends Component {
       // Update user profile @Authentication
       currentUser.updateProfile({ displayName, photoURL });
       console.log('updateProfile')
-        // Create user @Firestore
+      // Create user @Firestore
       const newUser = { uid, displayName, photoURL }
       let createUser = functions().httpsCallable('createUser')
       let result = await createUser(newUser)
       console.log('result of createUser ', result);
-      if (result.data.state !== 'SUCCESS') {
+      if (result.data.state === 'ERROR') {
         this.setState({ isWaiting: false, termsMessage: result.data.message });
       } else {
         this.setState({ isWaiting: false });
+        this.props.setUserProfile()
         this.props.navigation.navigate('UserHome', { displayName });
       }
     } catch (error) {
@@ -132,107 +134,107 @@ class RegisterScreen extends Component {
       <SafeAreaView style={{ flex: 1, backgroundColor: 'white' }}>
         <CustomStatusBar />
         <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : ''} style={styles.container}>
-        <View style={{flex:1, backgroundColor:"#3598FE"}}>
-          <ScrollView
-            contentContainerStyle={{
-              flexGrow: 1,
-              alignItems: 'center',
-              backgroundColor: "#3598FE"
-            }}>
-            <View style={styles.componentStyle}>
-              <H1Label label="Register"/>
-              <HighlightedText text="You only need an account if you’re planning to host a paid meeting. " />
-              <View style={{ flexDirection: 'row', alignItems: "center", marginBottom: 5 }}>
-                <Avatar
-                  rounded
-                  size="large"
-                  //icon={{name: 'camera-outline', type: 'material-community', color:"#E7E7E7"}}
-                  overlayContainerStyle={{ backgroundColor: 'white', borderWidth: 1, borderColor: "#E7E7E7" }}
-                  onPress={this.onImagePicker}
-                  containerStyle={{ marginRight: 20 }}
-                  //showEditButton={true}
-                  source={{ uri: photoURL }}
+          <View style={{ flex: 1, backgroundColor: "#3598FE" }}>
+            <ScrollView
+              contentContainerStyle={{
+                flexGrow: 1,
+                alignItems: 'center',
+                backgroundColor: "#3598FE"
+              }}>
+              <View style={styles.componentStyle}>
+                <H1Label label="Register" />
+                <HighlightedText text="You only need an account if you’re planning to host a paid meeting. " />
+                <View style={{ flexDirection: 'row', alignItems: "center", marginBottom: 5 }}>
+                  <Avatar
+                    rounded
+                    size="large"
+                    //icon={{name: 'camera-outline', type: 'material-community', color:"#E7E7E7"}}
+                    overlayContainerStyle={{ backgroundColor: 'white', borderWidth: 1, borderColor: "#E7E7E7" }}
+                    onPress={this.onImagePicker}
+                    containerStyle={{ marginRight: 20 }}
+                    //showEditButton={true}
+                    source={{ uri: photoURL }}
+                  />
+                  <ClickableText text="Pick a profile picture" onPress={this.onImagePicker} />
+                </View>
+                <Input
+                  placeholder="Enter Your email"
+                  placeholderTextColor="#b2c2bf"
+                  onChangeText={email => this.setState({ email, emailMessage: '' })}
+                  value={email}
+                  keyboardType="email-address"
+                  errorMessage={emailMessage}
+                  disabled={isWaiting}
+                  inputContainerStyle={styles.inputContainerStyle}
+                  containerStyle={{ paddingHorizontal: 0, marginTop: 10 }}
+                  leftIcon={{ type: 'material-community', name: 'email-outline', color: "#909090" }}
+                  leftIconContainerStyle={{ paddingHorizontal: 10, marginLeft: 0 }}
                 />
-                <ClickableText text="Pick a profile picture" onPress={this.onImagePicker} />
-              </View>
-              <Input
-                placeholder="Enter Your email"
-                placeholderTextColor="#b2c2bf"
-                onChangeText={email => this.setState({ email, emailMessage: '' })}
-                value={email}
-                keyboardType="email-address"
-                errorMessage={emailMessage}
-                disabled={isWaiting}
-                inputContainerStyle={styles.inputContainerStyle}
-                containerStyle={{ paddingHorizontal: 0, marginTop: 10 }}
-                leftIcon={{ type: 'material-community', name: 'email-outline', color: "#909090" }}
-                leftIconContainerStyle={{ paddingHorizontal: 10, marginLeft: 0 }}
-              />
-              <Input
-                placeholder="Enter your display name"
-                placeholderTextColor="#b2c2bf"
-                onChangeText={displayName => this.setState({ displayName, displayNameMessage: '' })}
-                value={displayName}
-                errorMessage={displayNameMessage}
-                disabled={isWaiting}
-                inputContainerStyle={styles.inputContainerStyle}
-                containerStyle={{ paddingHorizontal: 0, marginTop: 10 }}
-                leftIcon={{ type: 'material-community', name: 'account', color: "#909090" }}
-                leftIconContainerStyle={{ paddingHorizontal: 10, marginLeft: 0 }}
-              />
-              <Input
-                placeholder="Enter Your password"
-                placeholderTextColor="#b2c2bf"
-                onChangeText={password => this.setState({ password, passwordMessage: '' })}
-                value={password}
-                errorMessage={passwordMessage}
-                secureTextEntry
-                disabled={isWaiting}
-                inputContainerStyle={styles.inputContainerStyle}
-                containerStyle={{ paddingHorizontal: 0, marginTop: 10 }}
-                leftIcon={{ type: 'material-community', name: 'key-variant', color: "#909090" }}
-                leftIconContainerStyle={{ paddingHorizontal: 10, marginLeft: 0 }}
-              />
-              <Input
-                placeholder="Repeat Your password"
-                placeholderTextColor="#b2c2bf"
-                onChangeText={repassword => this.setState({ repassword })}
-                value={repassword}
-                secureTextEntry
-                disabled={isWaiting}
-                inputContainerStyle={styles.inputContainerStyle}
-                containerStyle={{ paddingHorizontal: 0, marginTop: 10 }}
-                leftIcon={{ type: 'material-community', name: 'key-variant', color: "#909090" }}
-                leftIconContainerStyle={{ paddingHorizontal: 10, marginLeft: 0 }}
-              />
-              <View style={styles.checkBoxStyle}>
-                <CheckBox
-                  //title="By checking this box I aggree with terms and conditions."
-                  checked={this.state.terms}
-                  onPress={() => !isWaiting && this.setState({ terms: !this.state.terms })}
-                  containerStyle={{ backgroundColor: 'transparent', borderColor: 'transparent', marginLeft: 0 }}
-                  uncheckedColor='#3598FE'
-                  checkedColor='#3598FE'
+                <Input
+                  placeholder="Enter your display name"
+                  placeholderTextColor="#b2c2bf"
+                  onChangeText={displayName => this.setState({ displayName, displayNameMessage: '' })}
+                  value={displayName}
+                  errorMessage={displayNameMessage}
+                  disabled={isWaiting}
+                  inputContainerStyle={styles.inputContainerStyle}
+                  containerStyle={{ paddingHorizontal: 0, marginTop: 10 }}
+                  leftIcon={{ type: 'material-community', name: 'account', color: "#909090" }}
+                  leftIconContainerStyle={{ paddingHorizontal: 10, marginLeft: 0 }}
                 />
-                <View style={{ justifyContent: 'center' }}>
-                  <Text>By checking this box I aggree with</Text>
-                  <HyperLink text="terms and conditions" link='https://policies.google.com/terms?hl=en-US' />
+                <Input
+                  placeholder="Enter Your password"
+                  placeholderTextColor="#b2c2bf"
+                  onChangeText={password => this.setState({ password, passwordMessage: '' })}
+                  value={password}
+                  errorMessage={passwordMessage}
+                  secureTextEntry
+                  disabled={isWaiting}
+                  inputContainerStyle={styles.inputContainerStyle}
+                  containerStyle={{ paddingHorizontal: 0, marginTop: 10 }}
+                  leftIcon={{ type: 'material-community', name: 'key-variant', color: "#909090" }}
+                  leftIconContainerStyle={{ paddingHorizontal: 10, marginLeft: 0 }}
+                />
+                <Input
+                  placeholder="Repeat Your password"
+                  placeholderTextColor="#b2c2bf"
+                  onChangeText={repassword => this.setState({ repassword })}
+                  value={repassword}
+                  secureTextEntry
+                  disabled={isWaiting}
+                  inputContainerStyle={styles.inputContainerStyle}
+                  containerStyle={{ paddingHorizontal: 0, marginTop: 10 }}
+                  leftIcon={{ type: 'material-community', name: 'key-variant', color: "#909090" }}
+                  leftIconContainerStyle={{ paddingHorizontal: 10, marginLeft: 0 }}
+                />
+                <View style={styles.checkBoxStyle}>
+                  <CheckBox
+                    //title="By checking this box I aggree with terms and conditions."
+                    checked={this.state.terms}
+                    onPress={() => !isWaiting && this.setState({ terms: !this.state.terms })}
+                    containerStyle={{ backgroundColor: 'transparent', borderColor: 'transparent', marginLeft: 0 }}
+                    uncheckedColor='#3598FE'
+                    checkedColor='#3598FE'
+                  />
+                  <View style={{ justifyContent: 'center' }}>
+                    <Text>By checking this box I aggree with</Text>
+                    <HyperLink text="terms and conditions" link='https://policies.google.com/terms?hl=en-US' />
+                  </View>
+                </View>
+
+                <Text style={{ color: 'red', paddingVertical: 2 }}>{termsMessage || emailMessage}</Text>
+                <View style={{ paddingBottom: 20 }}>
+                  <DefaultButton
+                    title="Register"
+                    onPress={this.checkAccount}
+                    disabled={isWaiting} />
+                </View>
+                <View style={styles.contactUs}>
+                  <ContactUs title="Have a problem?" screen='Register' />
+                  <WaitingModal isWaiting={isWaiting} text='Creating your account...' />
                 </View>
               </View>
-
-              <Text style={{ color: 'red', paddingVertical: 2 }}>{termsMessage || emailMessage}</Text>
-              <View style={{ paddingBottom: 20 }}>
-                <DefaultButton
-                  title="Register"
-                  onPress={this.checkAccount}
-                  disabled={isWaiting} />
-              </View>
-              <View style={styles.contactUs}>
-                <ContactUs title="Have a problem?" screen='Register' />
-                <WaitingModal isWaiting={isWaiting} text='Creating your account...' />
-              </View>
-            </View>
-          </ScrollView>
+            </ScrollView>
           </View>
         </KeyboardAvoidingView>
       </SafeAreaView>
@@ -287,8 +289,8 @@ const styles = StyleSheet.create({
   }
 });
 
-const mapStateToProps = ({ auth, assets }) => {
-  return { profile: auth.profile, assets: assets.assets }
+const mapStateToProps = ({ assets }) => {
+  return { assets: assets.assets }
 }
 
-export default connect(mapStateToProps, null)(RegisterScreen);
+export default connect(mapStateToProps, actions)(RegisterScreen);

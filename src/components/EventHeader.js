@@ -13,7 +13,7 @@ export default function EventHeader(props) {
   const { image, title, description, eventDate, duration, status } = event
   let remaining = formatDuration(Math.floor((eventDate.getTime() - new Date().getTime()) / 60000))
   remaining = `Starts in ${remaining}`
-  const stat = status === SUSPENDED ? 'On Air' : status === SCHEDULED ? remaining : status === COMPLETED ? 'Finished' : ''
+  const stat = status === SUSPENDED ? 'On Air' : status === SCHEDULED ? remaining : status === COMPLETED ? 'Finished' : 'In Progress'
   console.log('stat of eventHeader is ', stat);
   return (
     <View style={styles.container}>

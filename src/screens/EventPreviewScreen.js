@@ -5,7 +5,7 @@ import { storage, firestore, functions, auth } from 'react-native-firebase';
 import { connect } from 'react-redux';
 import { SafeAreaView } from 'react-navigation';
 
-import { HighlightedText, BoldLabel, H1Label } from '../components/Labels';
+import { HighlightedText, BoldLabel, H1Label, ErrorLabel } from '../components/Labels';
 import PreviewHeader from "../components/PreviewHeader";
 import PreviewBody from '../components/PreviewBody';
 import { Stage1, Stage2, Stage3 } from '../components/Stages';
@@ -37,63 +37,63 @@ class EventPreviewScreen extends Component {
     event.eventTimestamp = eventDate.getTime();
 
     this.setState({ isWaiting: true })
-
-    // Check if new event image is set
-    if (image !== DEFAULT_EVENT_IMAGE) {
-      // TODO: Upload image to ...
-      let imagePath = `events/${event.uid}/${event.eventTimestamp}.jpg`
-      console.log(`Uploading event image to: ${imagePath}`)
-      const imageRef = storage().ref(imagePath)
-      await imageRef.getDownloadURL().then((url) => {
-        // Another event created at the same timestamp
-        this.setState({ isWaiting: false, isPreview: false, dateMessage: 'There is already an event on this date!' })
-      }).catch(async (error) => {
-        if (error.code === 'storage/object-not-found') {
-          await imageRef.putFile(image)
-          let newImage = await imageRef.getDownloadURL()
-          console.log('New Image uploaded')
-          event.image = newImage
-          console.log('calling create event...', event);
-          let response = await createEvent(event);
-          console.log('Recieved created event:=>', response);
-          if (response && response.data && response.data.state === 'SUCCESS') {
-            let eventData = response.data.event;
-            let date = eventData.eventDate
-            if (date instanceof firestore.Timestamp) {
-              console.log('finally Timestamp')
-              date = date.toDate();
-            } else if (eventData.eventTimestamp) {
-              date = new Date(eventData.eventTimestamp);
+    try {
+      // Check if new event image is set
+      if (image !== DEFAULT_EVENT_IMAGE) {
+        // TODO: Upload image to ...
+        let imagePath = `events/${event.uid}/${event.eventTimestamp}.jpg`
+        console.log(`Uploading event image to: ${imagePath}`)
+        const imageRef = storage().ref(imagePath)
+        await imageRef.getDownloadURL().then((url) => {
+          // Another event created at the same timestamp
+          this.setState({ isWaiting: false, isPreview: false, dateMessage: 'There is already an event on this date!' })
+        }).catch(async (error) => {
+          if (error.code === 'storage/object-not-found') {
+            await imageRef.putFile(image)
+            let newImage = await imageRef.getDownloadURL()
+            console.log('New Image uploaded')
+            event.image = newImage
+            console.log('calling create event...', event);
+            let response = await createEvent(event);
+            console.log('Recieved created event:=>', response);
+            if (response && response.data && response.data.state === 'SUCCESS') {
+              let eventData = response.data.event;
+              let date = eventData.eventDate
+              if (date instanceof firestore.Timestamp) {
+                console.log('finally Timestamp')
+                date = date.toDate();
+              } else if (eventData.eventTimestamp) {
+                date = new Date(eventData.eventTimestamp);
+              }
+              eventData.eventDate = date
+              this.setState({ isWaiting: false })
+              console.log('Sending event to EventPublish1:=>', eventData);
+              this.props.navigation.navigate('EventPublish', { event: eventData })
             }
-            eventData.eventDate = date
-            this.setState({ isWaiting: false })
-            console.log('Sending event to EventPublish1:=>', eventData);
-            this.props.navigation.navigate('EventPublish', { event: eventData })
-          } else {
-            this.setState({ isWaiting: false, error: response.data.message })
           }
-        }
-      })
-    } else {
-      console.log('calling create event...', event);
-      let response = await createEvent(event);
-      console.log('Recieved created event:=>', response);
-      if (response && response.data && response.data.state === 'SUCCESS') {
-        let eventData = response.data.event;
-        let date = eventData.eventDate
-        if (date instanceof firestore.Timestamp) {
-          console.log('finally Timestamp')
-          date = date.toDate();
-        } else if (eventData.eventTimestamp) {
-          date = new Date(eventData.eventTimestamp);
-        }
-        eventData.eventDate = date
-        this.setState({ isWaiting: false })
-        console.log('Sending event to EventPublish2:=>', eventData);
-        this.props.navigation.navigate('EventPublish', { event: eventData })
+        })
       } else {
-        this.setState({ isWaiting: false, error: response.data.message })
+        console.log('calling create event...', event);
+        let response = await createEvent(event);
+        console.log('Recieved created event:=>', response);
+        if (response && response.data && response.data.state === 'SUCCESS') {
+          let eventData = response.data.event;
+          let date = eventData.eventDate
+          if (date instanceof firestore.Timestamp) {
+            console.log('finally Timestamp')
+            date = date.toDate();
+          } else if (eventData.eventTimestamp) {
+            date = new Date(eventData.eventTimestamp);
+          }
+          eventData.eventDate = date
+          this.setState({ isWaiting: false })
+          console.log('Sending event to EventPublish2:=>', eventData);
+          this.props.navigation.navigate('EventPublish', { event: eventData })
+        }
       }
+
+    } catch (error) {
+      this.setState({ isWaiting: false, errorMessage: error.message })
     }
   }
 
@@ -140,19 +140,20 @@ class EventPreviewScreen extends Component {
                   />
                 </View>
               </View>
-              {!isPublished && <View>
-                <Text style={{ color: 'red' }}>{this.state.error}</Text>
-                <DefaultButton
-                  title={eventType === 'live' ? 'Publish your event' : 'Publish your meeting'}
-                  disabled={isWaiting}
-                  onPress={this._confirmPublish}
-                />
-              </View>
+              {!isPublished &&
+                <View>
+                  <ErrorLabel label={this.state.errorMessage} />
+                  <DefaultButton
+                    title={eventType === 'live' ? 'Publish your event' : 'Publish your meeting'}
+                    disabled={isWaiting}
+                    onPress={this._confirmPublish}
+                  />
+                </View>
               }
-              <ContactUs />
               <WaitingModal isWaiting={isWaiting} text='Creating your event...' />
             </View>
           </ScrollView>
+          <ContactUs />
         </View>
       </SafeAreaView>
     );

@@ -9,6 +9,7 @@ import { SafeAreaView } from 'react-navigation';
 import { Input } from 'react-native-elements';
 import { auth } from 'react-native-firebase';
 
+import * as actions from '../appstate/actions/auth_actions';
 import { HighlightedText, BoldLabel, H1Label } from '../components/Labels';
 import { DefaultButton, ClickableText } from '../components/Buttons';
 import { validateEmail } from '../utils/Utils'
@@ -17,6 +18,7 @@ import HeaderLeft from '../components/Headers/HeaderLeft';
 import CustomStatusBar from '../components/StatusBars/CustomStatusBar';
 import HeaderRight from '../components/Headers/HeaderRight';
 import { WaitingModal } from '../components/Modals';
+import { connect } from 'react-redux';
 
 class SignInScreen extends Component {
   static navigationOptions = ({ navigation }) => ({
@@ -40,9 +42,12 @@ class SignInScreen extends Component {
     this.setState({ isWaiting: true });
     try {
       let user = await auth().signInWithEmailAndPassword(email, password);
-      if (user) return this.props.navigation.navigate('UserHome');
+      if (user) {
+        this.props.setUserProfile();
+        return this.props.navigation.navigate('UserHome');
+      }
     } catch (err) {
-      this.setState({ passwordError: err.message });
+      this.setState({ isWaiting: false, passwordError: err.message });
     }
     this.setState({ isWaiting: false });
   };
@@ -165,4 +170,4 @@ const styles = StyleSheet.create({
   }
 });
 
-export default SignInScreen;
+export default connect(null, actions)(SignInScreen);

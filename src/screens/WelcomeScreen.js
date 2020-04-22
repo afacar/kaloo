@@ -16,7 +16,6 @@ import TransparentStatusBar from '../components/StatusBars/TransparentStatusBar'
 class WelcomeScreen extends Component {
   static navigationOptions = { headerShown: false }
 
-
   render() {
     const { DEFAULT_LOGO_IMAGE } = this.props.assets;
     return (
@@ -24,7 +23,7 @@ class WelcomeScreen extends Component {
         <TransparentStatusBar />
         <View style={{ flex: 8, justifyContent: 'center', alignItems: 'center' }}>
           <Video
-            source={{ uri: 'https://firebasestorage.googleapis.com/v0/b/kaloo-dev.appspot.com/o/assets%2Fwelcome-video.mov?alt=media&token=14e2b2ae-71bc-481f-9a70-70b544973f5f' }}
+            source={require('../assets/welcome-video.mov')}
             muted={true}
             repeat={true}
             resizeMode={"cover"}
@@ -34,7 +33,7 @@ class WelcomeScreen extends Component {
           <View style={{ alignItems: 'center', opacity: 0.7 }}>
             <Image
               source={require('../assets/default-logo.png')}
-              style={{ width: 150, height: 150}}
+              style={{ width: 150, height: 150 }}
             />
             <Text style={{ fontSize: 25, fontWeight: 'bold', color: 'white' }}>
               Kaloo

@@ -100,9 +100,9 @@ class MyEventScreen extends Component {
                                 disabled={status === COMPLETED}
                             />
                         </View>
-                        <ContactUs />
                     </View>
                 </ScrollView>
+                <ContactUs />
             </SafeAreaView>
         )
     }

@@ -53,7 +53,7 @@ export class ContactUs extends Component {
         const { title } = this.props
         const { message, visible, infoMessage, chars, loading, sent } = this.state;
         return (
-            <View style={{ alignSelf: 'center' }}>
+            <View style={{ alignSelf: 'stretch', alignItems:'center', backgroundColor: 'white' }}>
                 <ClickableText text={title || 'Contact Us'} onPress={this.openContactUs} />
                 <Modal
                     animationType="slide"

@@ -1,20 +1,21 @@
 import React, { Component } from 'react';
 import { View, StyleSheet, Text, ActivityIndicator, KeyboardAvoidingView, ScrollView, TouchableOpacity, Linking } from 'react-native';
-import { Input, Button, Avatar } from 'react-native-elements';
-import { firestore, auth, storage } from "react-native-firebase";
+import { Input, Avatar } from 'react-native-elements';
+import { auth, storage, functions } from "react-native-firebase";
 import ImagePicker from "react-native-image-crop-picker";
+import { connect } from 'react-redux';
 
+import * as actions from '../appstate/actions/auth_actions'
 import { DefaultButton } from '../components/Buttons';
+import { ErrorLabel } from "../components/Labels";
 import { ContactUs } from '../components/ContactUs';
 import HeaderLeft from '../components/Headers/HeaderLeft';
 import HeaderRight from '../components/Headers/HeaderRight';
 import { colors } from '../constants';
-import { connect } from 'react-redux';
 import { AppText, BoldLabel } from '../components/Labels';
 import { SafeAreaView } from 'react-navigation'
+import { WaitingModal } from '../components/Modals';
 
-
-const db = firestore();
 
 class ProfileScreen extends Component {
     static navigationOptions = ({ navigation }) => ({
@@ -23,44 +24,52 @@ class ProfileScreen extends Component {
         headerRight: () => <HeaderRight title='Logout' onPress={() => auth().signOut()} />
     });
 
-    state = { 
+    state = {
         ...this.props.profile,
         isNameChanged: false,
         isAvatarChanged: false,
-        saveLoading: false,
+        isWaiting: false,
+        errorMessage: ''
     }
 
     handleProfileUpdate = async () => {
-        let { displayName, photoURL, isAvatarChanged, isNameChanged } = this.state;
-        let newProfile = {}
-        let isResizedImage = true;
-        this.setState({ saveLoading: true })
+        let { uid, displayName, photoURL, isAvatarChanged } = this.state;
+        let newProfile = { uid, displayName, photoURL }
+        this.setState({ errorMessage: '', isWaiting: true })
+
         if (isAvatarChanged) {
             // Upload new Avatar to @Storage
             newProfile.photoURL = photoURL
-            console.log('uploading avatar...')
-            let avatarRef = storage().ref(`users/${this.user.uid}/avatar/${this.user.uid}.jpg`)
+            let avatarRef = storage().ref(`users/${uid}/avatar/${uid}.jpg`)
             try {
                 await avatarRef.putFile(photoURL);
                 let newPhotoURL = await avatarRef.getDownloadURL()
                 newProfile.photoURL = newPhotoURL
-                isResizedImage = false
-            } catch (err) {
-                console.log('Err at New avatar upload!', err)
+            } catch (error) {
+                console.log('Err at New avatar upload!', error)
+                return this.setState({ errorMessage: error.message })
             }
-            console.log('New avatar is uploaded!')
-        }
-        if (isNameChanged) {
-            newProfile.displayName = displayName
         }
 
         // Update user @Authentication 
-        await auth().currentUser.updateProfile(newProfile)
-        // Update user @Firestore 
-        let userRef = db.doc(`users/${this.user.uid}`)
-        await userRef.set({ ...newProfile, isResizedImage }, { merge: true });
-        console.log('user @db updated ', newProfile);
-        this.setState({ isNameChanged: false, isAvatarChanged: false, saveLoading: false })
+        auth().currentUser.updateProfile(newProfile)
+
+        // Update user @Firestore
+        try {
+            let updateProfile = functions().httpsCallable('updateProfile');
+            let result = await updateProfile(newProfile)
+            console.log('updateProfile result', result)
+            if (result.data.state === 'ERROR') {
+                return this.setState({
+                    isWaiting: false,
+                    errorMessage: result.data.message
+                })
+            }
+        } catch (error) {
+            return this.setState({ isWaiting: false, errorMessage: error.message })
+        }
+        this.props.setUserProfile()
+        this.setState({ isNameChanged: false, isAvatarChanged: false, isWaiting: false })
     }
 
     onImagePicker = () => {
@@ -79,7 +88,7 @@ class ProfileScreen extends Component {
     }
 
     render() {
-        const { email, displayName, photoURL, isAvatarChanged, isNameChanged, saveLoading } = this.state
+        const { email, displayName, photoURL, isAvatarChanged, isNameChanged, isWaiting, errorMessage } = this.state
         return (
             <SafeAreaView style={{ flex: 1, backgroundColor: "white" }}>
                 <KeyboardAvoidingView style={styles.container}>
@@ -121,15 +130,16 @@ class ProfileScreen extends Component {
                                     containerStyle={{ paddingHorizontal: 0 }}
                                 />
                             </View>
-                            <View >
-
+                            <View>
+                                <ErrorLabel label={errorMessage} />
                                 <DefaultButton
                                     title={isNameChanged ? 'Save Changes' : 'Edit Your Profile'}
                                     onPress={this.handleProfileUpdate}
                                     disabled={!(isNameChanged || isAvatarChanged)}
-                                    loading={saveLoading}
+                                //loading={isWaiting}
                                 />
                                 <ContactUs title='Need Help?' screen='Profile' />
+                                <WaitingModal isWaiting={isWaiting} text='Just a second...' />
                             </View>
                         </View>
                     </ScrollView>
@@ -172,4 +182,4 @@ const mapStateToProps = ({ auth }) => {
     return { profile: auth.profile }
 }
 
-export default connect(mapStateToProps, null)(ProfileScreen);
+export default connect(mapStateToProps, actions)(ProfileScreen);
