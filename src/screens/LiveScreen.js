@@ -23,7 +23,7 @@ import HeaderLeft from '../components/Headers/HeaderLeft';
 import TransparentStatusBar from '../components/StatusBars/TransparentStatusBar';
 import CustomStatusBar from '../components/StatusBars/CustomStatusBar';
 import HeaderGradient from '../components/HeaderGradient';
-import LiveHeaderTitle from '../components/Headers/LiveHeaderTitle';
+import LiveHeaderTitle from '../components/Headers/HostHeaderTitle';
 
 const HOST_UID = 1000;
 const INITIAL_STATE = {

@@ -12,7 +12,7 @@ import { connect } from 'react-redux';
 import { styles, app, dimensions } from '../constants';
 import { EndCallButon, StartCallButon, ContinueCallButon } from '../components/Buttons';
 import HeaderGradient from '../components/HeaderGradient';
-import LiveHeaderTitle from '../components/Headers/HostHeaderTitle';
+import LiveHeaderTitle from '../components/Headers/AudienceHeaderTitle';
 import HeaderLeft from '../components/Headers/HeaderLeft';
 import TransparentStatusBar from '../components/StatusBars/TransparentStatusBar';
 

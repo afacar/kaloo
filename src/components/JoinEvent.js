@@ -1,14 +1,18 @@
 import React, { Component } from 'react';
-import { View, StyleSheet, Image, Share, NativeModules, ScrollView } from 'react-native';
-import { Button, Text, Card, Rating, AirbnbRating } from 'react-native-elements';
+import { View, StyleSheet, NativeModules, ScrollView } from 'react-native';
+import { Button, Card, AirbnbRating } from 'react-native-elements';
 import { RtcEngine } from 'react-native-agora';
+
 import { app } from '../constants';
 import { AppText } from "./Labels";
 import { setEventListener, clearEventListener, joinEvent, rateEvent } from "../utils/EventHandler";
 import PreviewHeader from './PreviewHeader';
 import PreviewBody from './PreviewBody';
 import CustomStatusBar from './StatusBars/CustomStatusBar';
+import { DefaultButton } from './Buttons';
+
 const { Agora } = NativeModules;
+const { SCHEDULED, SUSPENDED, IN_PROGRESS, COMPLETED } = app.EVENT_STATUS
 
 const {
     FPS30,
@@ -96,7 +100,11 @@ class JoinEvent extends Component {
     }
 
     render() {
-        const { image, photoURL, title, description, displayName, duration, eventType, eventDate, status, ticket } = this.state;
+        const { image, photoURL, title, description, displayName, duration, eventType, eventDate, status, ticket, joinLoading } = this.state;
+        const disabled = status !== IN_PROGRESS
+        const eventTypeName = eventType === 'call' ? 'Meeting' : 'Broadcast'
+        const buttonTitle = (status === COMPLETED) ? `${eventTypeName} Finished` : (status === SCHEDULED || status === SUSPENDED) ? 'Waiting Host' : `Join ${eventTypeName}`;
+        const onPress = disabled ? () => { } : this.onCamera;
         return (
             <ScrollView contentContainerStyle={styles.container}>
                 <CustomStatusBar />
@@ -108,52 +116,42 @@ class JoinEvent extends Component {
                         <PreviewBody
                             event={{ displayName, title, eventDate, duration, description }}
                         />
+                        <DefaultButton
+                            title={buttonTitle}
+                            onPress={onPress}
+                            disabled={disabled}
+                            loading={joinLoading}
+                        />
+                        <View>
+                            {
+                                (status === COMPLETED && !this.state.isRatingComplete && !ticket.rate) && (
+                                    <View>
+                                        <AirbnbRating
+                                            count={5}
+                                            reviews={["Terrible", "Bad", "OK", "Good", "Unbelievable"]}
+                                            defaultRating={3}
+                                            onFinishRating={this.changeRate}
+                                            size={20}
+                                        />
+                                        <Button
+                                            title="Submit"
+                                            buttonStyle={{ marginTop: 12, marginBottom: 12, width: 180, height: 40, alignSelf: 'center', borderRadius: 6 }}
+                                            onPress={this.rateEvent}
+                                        />
+                                    </View>
+                                )
+                            }
+                            {
+                                (this.state.isRatingComplete || ticket.rate) && (
+                                    <AppText style={{ fontSize: 16, alignSelf: 'center', marginTop: 12 }}>Thanks For Your Feedback</AppText>
+                                )
+                            }
+                        </View>
                         {
-                            ((status === app.EVENT_STATUS.SCHEDULED) || (status === app.EVENT_STATUS.SUSPENDED)) && (
-                                <Button title='Waiting...' disabled />
-                            )
-                        }
-                        {
-                            status === app.EVENT_STATUS.COMPLETED && (
-                                <View>
-                                    <Button title='Finished' disabled />
-                                    {
-                                        (!this.state.isRatingComplete && !ticket.rate) && (
-                                            <View>
-                                                <AirbnbRating
-                                                    count={5}
-                                                    reviews={["Terrible", "Bad", "OK", "Good", "Unbelievable"]}
-                                                    defaultRating={3}
-                                                    onFinishRating={this.changeRate}
-                                                    size={20}
-                                                />
-                                                <Button
-                                                    title="Submit"
-                                                    buttonStyle={{ marginTop: 12, marginBottom: 12, width: 180, height: 40, alignSelf: 'center', borderRadius: 6 }}
-                                                    onPress={this.rateEvent}
-                                                />
-                                            </View>
-                                        )
-                                    }
-                                    {
-                                        (this.state.isRatingComplete || ticket.rate) && (
-                                            <AppText style={{ fontSize: 16, alignSelf: 'center', marginTop: 12 }}>Thanks For Your Feedback</AppText>
-                                        )
-                                    }
-                                </View>
-                            )
-                        }
-                        {
-                            (status === app.EVENT_STATUS.IN_PROGRESS) && (
-                                <View>
-                                    <Button title='Join' onPress={this.onCamera} loading={this.state.joinLoading} />
-                                    {
-                                        this.state.error && (
-                                            <AppText style={{ alignSelf: 'center', fontSize: 16, marginTop: 8, textAlign: 'left', color: 'red' }}>{this.state.error}</AppText>
-                                        )
-                                    }
-                                </View>
-
+                            this.state.error && (
+                                <AppText style={{ alignSelf: 'center', fontSize: 16, marginTop: 8, textAlign: 'left', color: 'red' }}>
+                                    {this.state.error}
+                                </AppText>
                             )
                         }
                     </View>

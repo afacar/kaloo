@@ -78,13 +78,6 @@ class EventListScreen extends Component {
         }
     }
 
-    onEventPublish = (event) => {
-        let { events } = this.state;
-        events.push(event)
-        this.setState({ events })
-        this.props.navigation.navigate('MyEvent', { event })
-    }
-
     renderEventList = () => {
         const { liveEvents, upcomingEvents, isLoading } = this.state;
         if (isLoading) return <ActivityIndicator size='large' />

@@ -1,9 +1,9 @@
-import firebase, { firestore, functions } from "react-native-firebase"
+import { firestore, functions } from "react-native-firebase"
 import { app } from "../constants";
 import { getDeviceID } from "./Utils";
 
-var liveEventListener = () => { };
-var eventListener = () => { };
+let liveEventListener = () => { };
+let eventListener = () => { };
 var ticketListener = () => { };
 
 /* Host Funcions */
