@@ -12,7 +12,7 @@ function UserAvatar(props) {
         <View style={{ flex: 1, justifyContent: 'center' }}>
             <Avatar
                 rounded={true}
-                size='medium'
+                size='small'
                 source={imageSource}
                 overlayContainerStyle={{ borderWidth: 2, borderColor: 'white' }}
             />

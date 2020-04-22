@@ -80,28 +80,30 @@ class MyEventScreen extends Component {
         let title = status === COMPLETED ? 'Event Completed' : status === SUSPENDED ? 'Continue Meeting' : 'Preview audio and video'
         return (
             <SafeAreaView style={{ flex: 1, backgroundColor: 'white' }}>
-                <ScrollView contentContainerStyle={{
-                    flexGrow: 1,
-                    alignItems: 'center',
-                    backgroundColor: "#3598FE"
-                }}>
-                    <View style={styles.componentStyle}>
-                        <EventHeader
-                            event={thisEvent}
-                            navigation={this.props.navigation}
-                        />
-                        <EventShare
-                            link={thisEvent.eventLink}
-                        />
-                        <View style={{ marginVertical: 15 }}>
-                            <DefaultButton
-                                title={title}
-                                onPress={this.onCamera}
-                                disabled={status === COMPLETED}
+                <View style={{ flex: 1, backgroundColor: "#3598FE" }}>
+                    <ScrollView contentContainerStyle={{
+                        flexGrow: 1,
+                        alignItems: 'center',
+                        backgroundColor: "#3598FE"
+                    }}>
+                        <View style={styles.componentStyle}>
+                            <EventHeader
+                                event={thisEvent}
+                                navigation={this.props.navigation}
                             />
+                            <EventShare
+                                link={thisEvent.eventLink}
+                            />
+                            <View style={{ marginVertical: 15 }}>
+                                <DefaultButton
+                                    title={title}
+                                    onPress={this.onCamera}
+                                    disabled={status === COMPLETED}
+                                />
+                            </View>
                         </View>
-                    </View>
-                </ScrollView>
+                    </ScrollView>
+                </View>
                 <ContactUs />
             </SafeAreaView>
         )
