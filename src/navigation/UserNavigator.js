@@ -1,4 +1,3 @@
-
 import { createStackNavigator } from 'react-navigation-stack';
 import EventListScreen from '../screens/EventListScreen';
 import ProfileScreen from '../screens/ProfileScreen';
@@ -10,9 +9,12 @@ import EventCreateScreen from '../screens/EventCreateScreen';
 import EventPreviewScreen from '../screens/EventPreviewScreen';
 import EventPublishScreen from "../screens/EventPublishScreen";
 import LiveScreen from '../screens/LiveScreen';
-import VideoChatScreen from '../screens/VideoChatScreen';
+//import VideoChatScreen from '../screens/VideoChatScreen';
 import HostMeetingScreen from '../screens/HostMeetingScreen';
 import { colors } from '../constants';
+import MyMeetingScreen from '../screens/MyMeetingScreen';
+import HostBroadcastScreen from '../screens/HostBroadcastScreen';
+import MyBroadcastScreen from '../screens/MyBroadcastScreen';
 
 export default UserNavigatior = createStackNavigator(
   {
@@ -25,16 +27,12 @@ export default UserNavigatior = createStackNavigator(
     Profile: ProfileScreen,
     Balance: BalanceScreen,
     MyEvent: MyEventScreen,
-    Live: {
-      screen: LiveScreen,
-      // navigationOptions: {
-      //   headerShown: false,
-      // }
-    },
     HostMeeting: HostMeetingScreen,
+    HostBroadcast: HostBroadcastScreen,
+    MyMeeting: MyMeetingScreen,
+    MyBroadcast: MyBroadcastScreen,
   },
   {
-    //headerLayoutPreset: 'center',
     initialRouteName: "UserHome",
     defaultNavigationOptions: {
       headerTitleAlign: 'center',

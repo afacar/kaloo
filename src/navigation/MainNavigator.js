@@ -6,7 +6,9 @@ import SignInScreen from '../screens/SignInScreen';
 import JoinEventScreen from '../screens/JoinEventScreen';
 import RegisterScreen from '../screens/RegisterScreen';
 import LiveScreen from '../screens/LiveScreen';
+import MeetingScreen from '../screens/MeetingScreen';
 import VideoChatScreen from '../screens/VideoChatScreen';
+import BroadcastScreen from '../screens/BroadcastScreen';
 import { colors } from '../constants';
 
 export default MainNavigatior = createStackNavigator(
@@ -16,6 +18,8 @@ export default MainNavigatior = createStackNavigator(
     JoinEvent: JoinEventScreen,
     SignIn: SignInScreen,
     Register: RegisterScreen,
+    Meeting: MeetingScreen,
+    Broadcast: BroadcastScreen,
     Live: {
       screen: LiveScreen,
     },
