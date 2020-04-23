@@ -1,8 +1,6 @@
 import React, { Component } from 'react';
 import Ticket from '../components/Ticket';
-import { Button } from 'react-native-elements';
 import HeaderLeft from '../components/Headers/HeaderLeft';
-import { colors } from '../constants';
 
 
 class TicketScreen extends Component {

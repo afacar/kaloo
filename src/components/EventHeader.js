@@ -9,14 +9,11 @@ import { app } from '../constants';
 const { SUSPENDED, SCHEDULED, COMPLETED, IN_PROGRESS } = app.EVENT_STATUS
 
 export default function EventHeader(props) {
-  console.log('EventHeader props', props)
   const { event, navigation } = props
-  const { image, title, description, eventDate, duration, Live } = event
-  const { status } = Live
-  let remaining = formatDuration(Math.floor((eventDate.getTime() - new Date().getTime()) / 60000))
+  const { image, title, description, eventDate, duration, status } = event
+  let remaining = eventDate ? formatDuration(Math.floor((eventDate.getTime() - new Date().getTime()) / 60000)) : 'Unknown'
   remaining = `Starts in ${remaining}`
   const stat = status === SUSPENDED ? 'On Air' : status === SCHEDULED ? remaining : status === COMPLETED ? 'Finished' : 'In Progress'
-  console.log('stat of eventHeader is ', stat);
   return (
     <View style={styles.container}>
       <View style={{ flex: 1, flexDirection: "row", justifyContent: 'space-between', alignItems: 'center' }}>
