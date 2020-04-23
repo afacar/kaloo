@@ -9,7 +9,6 @@ export const loadAssets = () => async (dispatch) => {
     let assetsDoc = await db.doc(`assets/static`).get();
 
     let staticAssets = assetsDoc.data()
-    console.log('Assets from db:', staticAssets)
     let TICKET_FORMAT = staticAssets.TICKET_PLACEHOLDER
     let DEFAULT_LOGO_IMAGE = staticAssets.DEFAULT_LOGO
     let DEFAULT_EVENT_IMAGE = staticAssets.DEFAULT_EVENT
