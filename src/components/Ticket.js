@@ -5,6 +5,7 @@ import { functions, firestore, auth } from 'react-native-firebase';
 import { connect } from "react-redux";
 import { SafeAreaView } from 'react-navigation';
 
+import * as actions from '../appstate/actions/audience_actions';
 import { Label } from './Labels';
 import { DefaultButton } from '../components/Buttons';
 import { ContactUs } from './ContactUs';
@@ -33,9 +34,11 @@ class Ticket extends Component {
           date = new Date(eventData.eventTimestamp)
         }
         eventData.eventDate = date
-        let nextScreen = auth().currentUser ? 'MyJoinEvent' : 'JoinEvent'
+        let joinEventScreen = auth().currentUser ? 'MyJoinEvent' : 'JoinEvent'
         this.setState({ isWaiting: false })
-        this.props.navigation.navigate(nextScreen, { event: eventData })
+        this.props.setJoinEventListener(eventData.eventId)
+        this.props.setTicketListener(eventData.eventId, eventData.ticket.ticketId)
+        this.props.navigation.navigate(joinEventScreen, { event: eventData })
       } else {
         this.setState({ isWaiting: false, ticketError: response.data.message })
       }
@@ -131,8 +134,8 @@ const styles = StyleSheet.create({
   },
 });
 
-const mapStateToProps = ({ assets }) => {
-  return { assets: assets.assets }
+const mapStateToProps = ({ assets, joinEvent }) => {
+  return { assets: assets.assets, joinEvent }
 }
 
-export default connect(mapStateToProps, null)(Ticket);
+export default connect(mapStateToProps, actions)(Ticket);

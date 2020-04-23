@@ -1,8 +1,9 @@
 import React, { Component } from 'react';
-
-import { app, styles } from '../../constants';
-import { AppText } from '../Labels';
 import { connect } from 'react-redux';
+
+import { app, colors } from '../../constants';
+import { AppText } from '../Labels';
+import { StyleSheet } from 'react-native';
 
 const { IN_PROGRESS } = app.EVENT_STATUS
 
@@ -10,15 +11,41 @@ const { IN_PROGRESS } = app.EVENT_STATUS
 class AudienceHeaderTitle extends Component {
 
     render() {
-        const { status } = this.props.eventLive
-        const { text } = status === IN_PROGRESS ? 'Live' : 'Connecting...';
-
-        return <AppText style={styles.liveText}>{text}</AppText>
+        const { status } = this.props
+        const text = status === IN_PROGRESS ? 'Live' : 'Waiting Host';
+        const style = status === IN_PROGRESS ? 'live' : 'waiting';
+        return <AppText style={styles[style]}>{text}</AppText>
     }
 }
 
-const mapStateToProps = ({ eventLive }) => {
-    return { eventLive }
+const styles = StyleSheet.create({
+    live: {
+        marginLeft: 16,
+        fontSize: 12,
+        color: 'white',
+        backgroundColor: colors.PINK,
+        borderRadius: 6,
+        textAlign: 'center',
+        padding: 8,
+        paddingHorizontal: 20
+    },
+    waiting: {
+        marginLeft: 16,
+        fontSize: 12,
+        color: 'white',
+        backgroundColor: colors.BLUE,
+        borderRadius: 6,
+        textAlign: 'center',
+        padding: 8,
+        paddingHorizontal: 20
+    },
+
+})
+
+const mapStateToProps = ({ joinEvent }) => {
+    const { event, ticket } = joinEvent
+    console.log('AudienceHeaderTitle mapStateToProps status', joinEvent)
+    return { status: event.status }
 }
 
-export default connect(mapStateToProps, null)(AudienceHeaderTitle)
+export default connect(mapStateToProps, null)(AudienceHeaderTitle);

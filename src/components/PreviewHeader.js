@@ -1,8 +1,8 @@
 import React from 'react';
-import { View, Text, Image, ImageBackground, StyleSheet } from 'react-native';
+import { View, Image, ImageBackground, StyleSheet } from 'react-native';
 
 export default function PreviewHeader(props) {
-  const { image, photoURL, eventType } = props.event
+  const { image, photoURL } = props.event
 
   return (
     <View style={styles.container}>
@@ -35,15 +35,4 @@ const styles = StyleSheet.create({
     alignSelf: 'flex-end',
     bottom: 0
   },
-  eventTypeStyle: {
-    alignSelf: 'flex-end',
-    backgroundColor: '#FF3131',
-    paddingHorizontal: 10,
-    paddingVertical: 5,
-    marginRight: 5,
-    color: 'white',
-    borderRadius: 6,
-    fontSize: 15,
-    marginVertical: 5
-  }
 })

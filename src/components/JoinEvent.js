@@ -2,14 +2,19 @@ import React, { Component } from 'react';
 import { View, StyleSheet, NativeModules, ScrollView } from 'react-native';
 import { Button, Card, AirbnbRating } from 'react-native-elements';
 import { RtcEngine } from 'react-native-agora';
+import { connect } from 'react-redux';
 
+import * as actions from '../appstate/actions/audience_actions';
 import { app } from '../constants';
 import { AppText } from "./Labels";
-import { setEventListener, clearEventListener, joinEvent, rateEvent } from "../utils/EventHandler";
+import { joinEvent, rateEvent } from "../utils/EventHandler";
 import PreviewHeader from './PreviewHeader';
 import PreviewBody from './PreviewBody';
 import CustomStatusBar from './StatusBars/CustomStatusBar';
 import { DefaultButton } from './Buttons';
+import { auth } from 'react-native-firebase';
+
+const { MEETING, BROADCAST } = app.EVENT_TYPE;
 
 const { Agora } = NativeModules;
 const { SCHEDULED, SUSPENDED, IN_PROGRESS, COMPLETED } = app.EVENT_STATUS
@@ -22,9 +27,7 @@ const {
 } = Agora
 
 class JoinEvent extends Component {
-    event = this.props.event
     state = {
-        ...this.event,
         isRatingComplete: false,
         joinLoading: false,
         rating: 3,
@@ -33,14 +36,11 @@ class JoinEvent extends Component {
 
     componentDidMount() {
         console.log('Event state is', this.state)
-
-        setEventListener(this.state.eid, (event) => {
-            this.setState({ ...event })
-        })
     }
 
     componentWillUnmount() {
-        clearEventListener(this.event.eid);
+        //clearEventListener(this.event.eid);
+        this.props.clearJoinEventListener()
     }
 
     onCamera = async () => {
@@ -48,11 +48,11 @@ class JoinEvent extends Component {
             joinLoading: true,
             error: undefined
         })
-        const { eventType, eid, duration, ticket } = this.state
-        console.log('MyJoint onCamera state', this.state)
+        const { eventType, eventId, duration } = this.props.event
+        const ticket = this.props.ticket
         const { navigate } = this.props.navigation
         // live channelProfile: 1 & call channelProfile: 0
-        let channelProfile = eventType === 'live' ? 1 : 0
+        let channelProfile = eventType === BROADCAST ? 1 : 0
         // Audience clientRole: 2
         let clientRole = 2
         const options = {
@@ -71,17 +71,17 @@ class JoinEvent extends Component {
         };
         // Initialize RtcEngine
         RtcEngine.init(options)
-        let result = await joinEvent(eid, ticket)
+        let result = await joinEvent(eventId, ticket)
         if (result.state === 'SUCCESS') {
-            RtcEngine.joinChannel(eid, parseInt(ticket.count))
+            console.log('audience joinning channel with', eventId, ticket.index)
+            RtcEngine.joinChannel(eventId, parseInt(ticket.index))
                 .then((res) => {
-                    if (eventType === 'live')
-                        return navigate('Live', { liveData: { clientRole, channelProfile, eventID: eid, duration, ticket } })
-                    else if (eventType === 'call')
-                        return navigate('VideoChat', { liveData: { clientRole, channelProfile, eventID: eid, duration, ticket } })
+                    let my = auth().currentUser ? 'My' : ''
+                    let nextScreen = eventType === BROADCAST ? 'Broadcast' : 'Meeting'
+                    navigate(my + nextScreen)
                 })
                 .catch((error) => {
-                    this.setState({ error: result.message || 'Check your connection' })
+                    this.setState({ error: error.message || 'Check your connection' })
                 })
         } else {
             this.setState({ error: result.message || 'Unknown error' })
@@ -100,11 +100,12 @@ class JoinEvent extends Component {
     }
 
     render() {
-        const { image, photoURL, title, description, displayName, duration, eventType, eventDate, status, ticket, joinLoading } = this.state;
+        const eventData = this.props.event || this.props.navigation.getParam('event')
+        const ticketData = this.props.ticket || this.props.navigation.getParam('event').ticket
+        const { image, photoURL, title, description, displayName, duration, eventType, eventDate, status, joinLoading } = eventData;
         const disabled = status !== IN_PROGRESS
-        const eventTypeName = eventType === 'call' ? 'Meeting' : 'Broadcast'
+        const eventTypeName = eventType === MEETING ? 'Meeting' : 'Broadcast'
         const buttonTitle = (status === COMPLETED) ? `${eventTypeName} Finished` : (status === SCHEDULED || status === SUSPENDED) ? 'Waiting Host' : `Join ${eventTypeName}`;
-        const onPress = disabled ? () => { } : this.onCamera;
         return (
             <ScrollView contentContainerStyle={styles.container}>
                 <CustomStatusBar />
@@ -118,13 +119,13 @@ class JoinEvent extends Component {
                         />
                         <DefaultButton
                             title={buttonTitle}
-                            onPress={onPress}
+                            onPress={this.onCamera}
                             disabled={disabled}
                             loading={joinLoading}
                         />
                         <View>
                             {
-                                (status === COMPLETED && !this.state.isRatingComplete && !ticket.rate) && (
+                                (status === COMPLETED && !this.state.isRatingComplete && !ticketData.rate) && (
                                     <View>
                                         <AirbnbRating
                                             count={5}
@@ -142,7 +143,7 @@ class JoinEvent extends Component {
                                 )
                             }
                             {
-                                (this.state.isRatingComplete || ticket.rate) && (
+                                (this.state.isRatingComplete || ticketData.rate) && (
                                     <AppText style={{ fontSize: 16, alignSelf: 'center', marginTop: 12 }}>Thanks For Your Feedback</AppText>
                                 )
                             }
@@ -169,4 +170,10 @@ const styles = StyleSheet.create({
     }
 })
 
-export default JoinEvent;
+const mapStateToProps = ({ joinEvent }) => {
+    console.log('joinEvent mapStateToProps', joinEvent)
+    const { event, ticket } = joinEvent
+    return { event, ticket }
+}
+
+export default connect(mapStateToProps, actions)(JoinEvent);
