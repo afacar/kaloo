@@ -6,6 +6,7 @@ import app from '../constants/app';
 import { colors } from '../constants'
 
 const { SCHEDULED, IN_PROGRESS, SUSPENDED, COMPLETED } = app.EVENT_STATUS;
+const { MEETING, BROADCAST } = app.EVENT_TYPE;
 
 export function HyperLink(props) {
     const { text, link } = props
@@ -153,15 +154,13 @@ export function ClearButton(props) {
 }
 
 export function BroadcastButton(props) {
-    console.log('BroadcastButton props', props);
-    const { status, onPress, loading } = props;
-    console.warn()
-
-    const buttontitle = status === SCHEDULED ? 'Start Metting' : status === IN_PROGRESS ? 'End Meeting' : 'Continue Meeting';
+    const { status, onPress, loading, eventType } = props;
+    let buttonTitle = status === SCHEDULED ? 'Start' : status === IN_PROGRESS ? 'End' : 'Continue';
+    buttonTitle += eventType === BROADCAST ? ' Broadcast' : ' Meeting'
     const buttonStyle = status === SCHEDULED ? styles.startButton : status === IN_PROGRESS ? styles.endButton : styles.startButton;
     return (
         <Button
-            title={buttontitle}
+            title={buttonTitle}
             buttonStyle={buttonStyle}
             onPress={onPress}
             loading={loading}
