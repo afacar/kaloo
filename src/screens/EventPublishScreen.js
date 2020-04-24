@@ -1,6 +1,9 @@
 import React, { Component } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-navigation'
+import { connect } from 'react-redux';
+
+import * as actions from '../appstate/actions/host_actions';
 import { handleAndroidBackButton, removeAndroidBackButtonHandler } from '../utils/BackHandler'
 import EventShare from '../components/EventShare';
 import { Stage2, Stage3 } from '../components/Stages';
@@ -52,7 +55,10 @@ class EventPublishScreen extends Component {
           <View style={{ marginVertical: 15 }}>
             <DefaultButton
               title='Go to Event'
-              onPress={() => this.props.navigation.navigate('MyEvent', { event: myEvent })}
+              onPress={() => { 
+                this.props.setEventId(myEvent.eventId)
+                this.props.navigation.navigate('MyEvent', { event: myEvent }) 
+              }}
             />
           </View>
         </View>
@@ -82,4 +88,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default EventPublishScreen;
+export default connect(null, actions)(EventPublishScreen);

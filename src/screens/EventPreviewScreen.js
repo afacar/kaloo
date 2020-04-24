@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
-import { StyleSheet, ScrollView, View, Text } from 'react-native';
-import { Avatar } from 'react-native-elements';
-import { storage, firestore, functions, auth } from 'react-native-firebase';
+import { StyleSheet, ScrollView, View } from 'react-native';
+import { firestore, functions } from 'react-native-firebase';
 import { connect } from 'react-redux';
 import { SafeAreaView } from 'react-navigation';
 
@@ -15,7 +14,9 @@ import HeaderLeft from '../components/Headers/HeaderLeft';
 import { ConfirmModal } from '../utils/Utils';
 import { WaitingModal } from '../components/Modals';
 import UserAvatar from '../components/UserAvatar';
+import app from '../constants/app';
 
+const { MEETING, BROADCAST } = app.EVENT_TYPE;
 
 class EventPreviewScreen extends Component {
   static navigationOptions = ({ navigation }) => ({
@@ -67,7 +68,7 @@ class EventPreviewScreen extends Component {
 
   render() {
     const {
-      displayName, photoURL, image, title, description, duration, eventType, capacity, price, eventDate, isPublished, isWaiting
+      displayName, photoURL, image, title, description, duration, eventType, capacity, price, eventDate, isWaiting, status
     } = this.state;
 
     return (
@@ -79,13 +80,13 @@ class EventPreviewScreen extends Component {
             backgroundColor: "#3598FE"
           }}>
             <View style={styles.componentStyle}>
-              {!isPublished && <View style={{ flexDirection: 'row', justifyContent: "space-between", marginVertical: 20 }}>
+              {!status && <View style={{ flexDirection: 'row', justifyContent: "space-between", marginVertical: 20 }}>
                 <Stage3 value="1" text="Create" />
                 <Stage2 value="2" text="Preview" />
                 <Stage1 value="3" text="Published" />
               </View>}
-              {!isPublished && <H1Label label="Preview & Publish" />}
-              {!isPublished && <HighlightedText
+              {!status && <H1Label label="Preview & Publish" />}
+              {!status && <HighlightedText
                 text='This is how your event is going to look like when it’s shared to your audience.'
               />}
               <BoldLabel label="Event Card Preview" />
@@ -99,11 +100,11 @@ class EventPreviewScreen extends Component {
                   />
                 </View>
               </View>
-              {!isPublished &&
+              {!status &&
                 <View>
                   <ErrorLabel label={this.state.errorMessage} />
                   <DefaultButton
-                    title={eventType === 'live' ? 'Publish your event' : 'Publish your meeting'}
+                    title={eventType === BROADCAST ? 'Publish your event' : 'Publish your meeting'}
                     disabled={isWaiting}
                     onPress={this._confirmPublish}
                   />
