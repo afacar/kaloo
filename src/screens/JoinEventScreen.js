@@ -1,22 +1,19 @@
 import React, { Component } from 'react';
-import { StyleSheet } from 'react-native';
 import JoinEvent from '../components/JoinEvent';
 import HeaderLeft from '../components/Headers/HeaderLeft';
-import { colors } from '../constants';
 
 
 class JoinEventScreen extends Component {
-    event = this.props.navigation.getParam('event', '')
-    static navigationOptions = ({ navigation }) => ({
-        headerTitle: () => null,
-        headerLeft: () => <HeaderLeft onPress={navigation.goBack} />
-    });
-    render() {
-        return <JoinEvent event={this.event} navigation={this.props.navigation} />
-    }
-}
+  static navigationOptions = ({ navigation }) => ({
+    headerTitle: () => null,
+    headerLeft: () => <HeaderLeft onPress={navigation.goBack} />
+  });
 
-const styles = StyleSheet.create({
-})
+  event = this.props.navigation.getParam('event', '')
+
+  render() {
+    return <JoinEvent event={this.event} navigation={this.props.navigation} />
+  }
+}
 
 export default JoinEventScreen;
