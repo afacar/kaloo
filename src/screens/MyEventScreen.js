@@ -2,9 +2,7 @@ import React, { Component } from 'react';
 import { ScrollView, StyleSheet, NativeModules, View } from 'react-native';
 import { RtcEngine } from 'react-native-agora';
 
-
-import * as actions from '../appstate/actions/event_actions';
-//import { clearEventListener } from '../utils/EventHandler';
+import * as actions from '../appstate/actions/host_actions';
 import EventShare from '../components/EventShare';
 import EventHeader from '../components/EventHeader';
 import { SafeAreaView } from 'react-navigation'
@@ -25,6 +23,7 @@ const {
 } = Agora
 
 const { COMPLETED, SUSPENDED, IN_PROGRESS, SCHEDULED } = app.EVENT_STATUS
+const { MEETING, BROADCAST } = app.EVENT_TYPE;
 
 class MyEventScreen extends Component {
     static navigationOptions = ({ navigation }) => ({
@@ -33,30 +32,22 @@ class MyEventScreen extends Component {
         headerLeft: () => <HeaderLeft onPress={navigation.goBack} />
     });
 
-    event = this.props.navigation.getParam('event', '')
-    state = { ...this.event, Live: this.props.eventLive, isPublished: true }
+    state = { ...this.props.event }
 
     componentDidMount() {
-        const { eid, eventType } = this.state
+        const { eventType } = this.state
         // live channelProfile: 1 & call channelProfile: 0
-        let channelProfile = eventType === 'live' ? 1 : 0
-        let eventScreen = eventType === 'live' ? 'Live' : 'HostMeeting'
+        let channelProfile = eventType === BROADCAST ? 1 : 0
+        let eventScreen = eventType === BROADCAST ? 'HostBroadcast' : 'HostMeeting'
         // Host clientRole: 1
         let clientRole = 1
+
         this.setState({ channelProfile, eventScreen, clientRole })
-        this.props.setLiveEventListener(eid, this.updateState);
-
-        console.log('MyEvent DidMount state', this.state)
-    }
-
-    updateState = (Live) => {
-        this.setState({ Live })
-        console.log('MyEvent new state', this.state)
     }
 
     componentWillUnmount() {
-        this.props.clearLiveEventListener();
-    }
+        this.props.setEventId(null);
+     }
 
     onCamera = () => {
         const { channelProfile, clientRole, eventScreen } = this.state
@@ -76,12 +67,11 @@ class MyEventScreen extends Component {
         };
         // Opening camera here
         RtcEngine.init(options)
-        this.props.navigation.navigate(eventScreen, { eventData: this.state })
+        this.props.navigation.navigate(eventScreen)
     }
 
     render() {
-        console.log('RENDER', this.state)
-        var { status, eventLink } = this.state
+        var { status } = this.props.event
         let buttonTitle = status === COMPLETED ? 'Meeting Completed' : status === SUSPENDED ? 'Continue Meeting' : status === SCHEDULED ? 'Preview audio and video' : 'Meeting in Progress'
         return (
             <SafeAreaView style={{ flex: 1, backgroundColor: 'white' }}>
@@ -92,11 +82,11 @@ class MyEventScreen extends Component {
                 }}>
                     <View style={styles.componentStyle}>
                         <EventHeader
-                            event={this.state}
+                            event={this.props.event}
                             navigation={this.props.navigation}
                         />
                         <EventShare
-                            link={eventLink}
+                            link={this.state.eventLink}
                         />
                         <View style={{ marginVertical: 15 }}>
                             <DefaultButton
@@ -133,9 +123,10 @@ const styles = StyleSheet.create({
     },
 })
 
-const mapStateToProps = ({ eventLive }) => {
-    console.log('MyEvent mapStateToProps', eventLive)
-    return { eventLive }
+const mapStateToProps = ({ events }) => {
+    const { myEvents, eventId } = events
+    console.log('MyEvent mapStateToProps', myEvents[eventId])
+    return { event: myEvents[eventId] }
 }
 
 export default connect(mapStateToProps, actions)(MyEventScreen);
