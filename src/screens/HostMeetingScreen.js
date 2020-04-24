@@ -1,21 +1,20 @@
 import React, { Component } from 'react';
-import { View, Alert, TouchableOpacity, Image } from 'react-native';
-import { RtcEngine, AgoraView } from 'react-native-agora';
+import { View } from 'react-native';
+import { RtcEngine } from 'react-native-agora';
 import KeepAwake from 'react-native-keep-awake';
 import { startEvent, endLive, suspendLive, continueLive } from '../utils/EventHandler';
-import { handleAndroidBackButton, removeAndroidBackButtonHandler } from '../utils/BackHandler';
 import { checkCameraPermission, checkAudioPermission, ConfirmModal, InfoModal } from '../utils/Utils';
-import { AppText } from '../components/Labels';
-import { Button, Icon } from 'react-native-elements';
 import { connect } from 'react-redux';
 
-import { styles, app, dimensions } from '../constants';
+import { styles, app } from '../constants';
 import { BroadcastButton } from '../components/Buttons';
 import HeaderGradient from '../components/HeaderGradient';
 import HostHeaderTitle from '../components/Headers/HostHeaderTitle';
 import HeaderLeft from '../components/Headers/HeaderLeft';
 import TransparentStatusBar from '../components/StatusBars/TransparentStatusBar';
-import HostView from '../components/HostView';
+import MeetingView from '../components/MeetingView';
+import SwitchCamera from '../components/Headers/SwitchCamera';
+import { WaitingModal } from '../components/Modals';
 
 const { SCHEDULED, IN_PROGRESS, SUSPENDED, COMPLETED } = app.EVENT_STATUS
 
@@ -28,72 +27,23 @@ class HostMeetingScreen extends Component {
         {
             ...styles.headerTransparent
         },
-        headerBackground: () => (
-            <HeaderGradient />
-        ),
+        headerBackground: () => <HeaderGradient />,
         headerStyle:
         {
             opacity: 0.7,
         },
         headerTitle: () => <HostHeaderTitle />,
-        headerLeft: () => (
-            <HeaderLeft onPress={() => {
-                const { eid, status } = navigation.getParam('eventData')
-                if (status !== IN_PROGRESS) {
-                    return navigation.goBack();
-                }
-                Alert.alert(
-                    "Confirm Exit",
-                    "You can continue meeting from event screen",
-                    [
-                        {
-                            text: 'Cancel', onPress: () => {
-                                return true;
-                            },
-                            style: 'cancel'
-                        },
-                        {
-                            text: 'OK', onPress: () => {
-                                // Suspend live event of host
-                                suspendLive(eid);
-                                navigation.goBack();
-                            }
-                        },
-                    ],
-                    { cancelable: false }
-                );
-                return true;
-            }} />
-        ),
-        headerRight: () => (
-            <TouchableOpacity
-                style={{ flex: 1, marginRight: 10, justifyContent: 'center' }}
-                onPress={() => {
-                    RtcEngine.switchCamera()
-                }}>
-                <Icon
-                    name='camera-switch'
-                    type='material-community'
-                    color='white'
-                />
-            </TouchableOpacity>
-        )
+        headerLeft: () => <HeaderLeft onPress={navigation.goBack} />,
+        headerRight: () => <SwitchCamera />
     });
 
-    constructor(props) {
-        super(props);
-        this.backButtonPressed = this.backButtonPressed.bind(this);
-    }
-
-    eventData = this.props.navigation.getParam('eventData', '')
-
     state = {
-        ...this.eventData,
+        clientRole: 1,
         peerIds: [],
         joinSucceed: false,
         time: 0,
         timeStr: '',
-        startLoading: false
+        isConnecting: false
     };
 
     componentDidMount() {
@@ -107,12 +57,12 @@ class HostMeetingScreen extends Component {
 
         // RtcEngine.stopPreview()
         // setup back button listener
-        handleAndroidBackButton(this.backButtonPressed);
+        //handleAndroidBackButton(this.backButtonPressed);
     }
 
     listenChannel = () => {
         RtcEngine.on('userJoined', (data) => {
-            console.log('userJoined data', userJoined)
+            console.log('userJoined data', data)
             const { peerIds } = this.state;
             if (peerIds.indexOf(data.uid) === -1) {
                 this.setState({
@@ -122,7 +72,7 @@ class HostMeetingScreen extends Component {
             console.log('userJoined state', this.state)
         })
         RtcEngine.on('userOffline', (data) => {
-            console.log('userOffline data', userJoined)
+            console.log('userOffline data', data)
             this.setState({
                 peerIds: this.state.peerIds.filter(uid => uid !== data.uid)
             })
@@ -134,23 +84,29 @@ class HostMeetingScreen extends Component {
 
 
 
-    onStartCall = () => {
-        const { eid } = this.state;
+    onStartCall = async () => {
+        const { eventId } = this.props.event;
         RtcEngine.leaveChannel();
-        RtcEngine.joinChannel(eid, HOST_UID)
-            .then(async (result) => {
-                this.setState({ startLoading: true })
-                let response = await startEvent(eid);
-                if (!response) {
-                    let title = 'Error occured',
-                        message = 'Unknown error occured while starting your call. Please try again!',
-                        onConfirm = () => { }
-                    InfoModal(title, message, 'Ok', onConfirm)
-                }
-                this.setState({ startLoading: false })
-            })
-            .catch((error) => {
-            });
+        this.setState({ isConnecting: true })
+        let response = await startEvent(eventId);
+        if (response) {
+            console.log('host joinning channel with', eventId, HOST_UID)
+
+            RtcEngine.joinChannel(eventId, HOST_UID)
+                .then(async (result) => {
+                    this.setState({ isConnecting: false })
+                })
+                .catch((error) => {
+                    console.log('Error onStartCall', error)
+                    this.setState({ isConnecting: false })
+                });
+        } else {
+            let title = 'Error occured',
+                message = 'Unknown error occured while starting your call. Please try again!',
+                onConfirm = () => { };
+            this.setState({ isConnecting: false })
+            InfoModal(title, message, 'Ok', onConfirm)
+        }
     }
 
     _startCall = () => {
@@ -159,25 +115,28 @@ class HostMeetingScreen extends Component {
         ConfirmModal(title, message, 'Yes', 'Cancel', this.onStartCall)
     }
 
-    onContinueCall = () => {
-        const { eid } = this.state;
-        this.setState({ startLoading: true })
-
+    onContinueCall = async () => {
+        const { eventId } = this.props.event;
         RtcEngine.leaveChannel();
-        RtcEngine.joinChannel(eid, HOST_UID)
-            .then(async (result) => {
-                let response = await continueLive(eid);
-                if (!response) {
-                    let title = 'Error occured',
-                        message = 'Unknown error occured while starting your call. Please try again!',
-                        onConfirm = () => { }
-                    InfoModal(title, message, 'Ok', onConfirm)
-                }
-                this.setState({ startLoading: false })
-            })
-            .catch((error) => {
-                this.setState({ startLoading: false })
-            });
+        this.setState({ isConnecting: true })
+        let response = await continueLive(eventId);
+        if (response) {
+            console.log('host joinning channel with', eventId, HOST_UID)
+
+            RtcEngine.joinChannel(eventId, HOST_UID)
+                .then(async (result) => {
+                    this.setState({ isConnecting: false })
+                })
+                .catch((error) => {
+                    this.setState({ isConnecting: false })
+                });
+        } else {
+            this.setState({ isConnecting: false })
+            let title = 'Error occured',
+                message = 'Unknown error occured while starting your call. Please try again!',
+                onConfirm = () => { };
+            InfoModal(title, message, 'Ok', onConfirm)
+        }
     }
 
     _continueCall = () => {
@@ -186,11 +145,21 @@ class HostMeetingScreen extends Component {
         ConfirmModal(title, message, 'Ok', 'Cancel', this.onContinueCall)
     }
 
-    onEndCall = () => {
-        const { eid } = this.state;
-        RtcEngine.leaveChannel();
-        endLive(eid);
-        this.props.navigation.goBack();
+    onEndCall = async () => {
+        const { eventId } = this.props.event;
+        this.setState({ isConnecting: true })
+        let reponse = await endLive(eventId);
+        if (reponse) {
+            RtcEngine.leaveChannel();
+            this.props.navigation.goBack();
+        } else {
+            this.setState({ isConnecting: false })
+            let title = 'Error occured',
+                message = 'Unknown error occured while starting your call. Please try again!',
+                onConfirm = () => { };
+            InfoModal(title, message, 'Ok', onConfirm)
+        }
+        this.setState({ isConnecting: false })
     }
 
     _endCall = () => {
@@ -203,144 +172,52 @@ class HostMeetingScreen extends Component {
 
     _onSuspend = () => {
         // Suspend live event of host
-        const { navigation } = this.props;
-        const { eid } = this.state
-        suspendLive(eid)
-        return navigation.goBack();
-    }
+        console.log('this.prons _onSuspend', this.props)
+        const { eventId, status } = this.props.event
+        if (status === IN_PROGRESS) {
+            suspendLive(eventId)
+            // Inform host before suspend streaming
+            let title = 'Leaving meeting?',
+                message = 'Meeting is not ended, just suspended!',
+                onPress = () => { }
 
-    backButtonPressed() {
-        const { navigation } = this.props;
-        const { status } = this.state
-        if (status !== app.EVENT_STATUS.IN_PROGRESS) {
-            return navigation.goBack();
-        }
-        // Confirm host before suspend streaming
-        let title = 'Leave call?',
-            message = 'Meeting is not finished yet, you can still continue!';
-
-        ConfirmModal(title, message, 'Ok', 'Cancel', this._onSuspend)
-        return true;
-    }
-
-    renderTwoVideos() {
-        console.log("rendering two video")
-        return (
-            <View style={{ flex: 1 }}>
-                <View style={{ flex: 1 }}>
-                    <AgoraView mode={1} key={this.state.peerIds[0]} style={{ flex: 1 }} remoteUid={this.state.peerIds[0]} />
-                </View>
-                <View style={{ flex: 1 }}>
-                    <AgoraView style={{ flex: 1 }} mode={1} showLocalVideo={true} />
-                </View>
-            </View>
-        )
-    }
-
-    renderWaitingComponent() {
-        const { clientRole } = this.state
-        console.warn()
-        if (clientRole === 1) {
-            return (
-                <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', }}>
-                    <Image
-                        style={{ width: 150, height: 120 }}
-                        source={require('../assets/disconnected.png')}
-                    />
-                    <AppText style={{ color: 'black', marginLeft: 8, fontSize: 24, fontWeight: 'bold', textAlign: 'center' }}>Waiting for your peer to connect...</AppText>
-                </View>
-            )
-        } else {
-            return (
-                <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', marginTop: dimensions.HEADER_MARGIN }}>
-                    <Image
-                        style={{ width: 150, height: 120 }}
-                        source={require('../assets/disconnected.png')}
-                    />
-                    <AppText style={{ color: 'black', marginLeft: 8, fontSize: 24, fontWeight: 'bold', textAlign: 'center' }}>Waiting for your host to connect...</AppText>
-                </View>
-            )
+            InfoModal(title, message, 'Ok', onPress)
         }
     }
 
-    renderBroadcastButton() {
-        const { status } = this.state;
-        console.warn()
-        if (status === app.EVENT_STATUS.SCHEDULED) {
-            return (
-                <Button
-                    title='Start Meeting!'
-                    buttonStyle={styles.startButton}
-                    onPress={this._startCall}
-                    loading={this.state.startLoading}
-                />
-            )
-        } else if (status === app.EVENT_STATUS.IN_PROGRESS) {
-            return (
-                <Button
-                    title='End Meeting'
-                    buttonStyle={styles.endButton}
-                    onPress={this._endCall}
-                />
-            )
-        } else if (status === app.EVENT_STATUS.SUSPENDED) {
-            return (
-                <Button
-                    title='Continue Meeting!'
-                    buttonStyle={styles.startButton}
-                    onPress={this._continueCall}
-                    loading={this.state.startLoading}
-                />
-            )
-        }
-    }
-
-    renderTimer() {
-        const { time } = this.state;
-        if (time < 0) {
-            return (
-                <View style={styles.timer}>
-                    <AppText style={styles.timerCardRed}>{this.state.timeStr}</AppText>
-                </View>
-            )
-        } else {
-            return (
-                <View style={styles.timerNViewer}>
-                    <AppText style={styles.timerCard}>{this.state.timeStr}</AppText>
-                </View>
-            )
-        }
+    _onPress = () => {
+        const { status } = this.props.event;
+        const onPress = status === SCHEDULED ? this._startCall() : status === IN_PROGRESS ? this._endCall() : this._continueCall();
+        return onPress
     }
 
     render() {
-        const { status, peerIds, startLoading } = this.state
-        const onPress = status === SCHEDULED ? this._startCall : status === IN_PROGRESS ? this._endCall : this._continueCall;
+        const { peerIds, isConnecting } = this.state
+        const { status, eventType } = this.props.event;
         return (
             <View style={{ flex: 1 }}>
                 <KeepAwake />
                 <TransparentStatusBar />
                 <View style={{ flex: 1 }}>
-                    <View style={{ flex: 1 }}>
-                        <HostView status={status} peerIds={peerIds} />
-                        <BroadcastButton status={status} loading={startLoading} onPress={onPress} />
-                    </View>
-                    {
-                        this.renderTimer()
-                    }
+                    <MeetingView status={status} peerIds={peerIds} />
+                    <BroadcastButton status={status} eventType={eventType} onPress={this._onPress} />
+                    <WaitingModal isWaiting={isConnecting} text='We are working on it...' />
                 </View>
             </View>
         )
     }
 
     componentWillUnmount() {
-        removeAndroidBackButtonHandler(this.backButtonPressed);
+        //removeAndroidBackButtonHandler(this.backButtonPressed);
+        this._onSuspend()
         RtcEngine.leaveChannel().then(res => { });
     }
 }
 
-const mapStateToProps = ({ eventLive }) => {
-    console.log('HostMeetingScreen mapStateToProps', eventLive)
-    return { eventLive }
+const mapStateToProps = ({ events }) => {
+    const { myEvents, eventId } = events
+    console.log('HostMeetingScreen mapStateToProps', myEvents[eventId])
+    return { event: myEvents[eventId] }
 }
 
 export default connect(mapStateToProps, null)(HostMeetingScreen)
