@@ -13,7 +13,9 @@ import ImagePicker from 'react-native-image-crop-picker';
 import { SafeAreaView } from 'react-navigation';
 import { connect } from "react-redux";
 
-import * as actions from '../appstate/actions/auth_actions';
+import { setUserProfile } from "../appstate/actions/auth_actions";
+import { setAllEventsListener } from "../appstate/actions/host_actions";
+
 import { WaitingModal } from "../components/Modals";
 import { HighlightedText, H1Label } from '../components/Labels';
 import { validateEmail } from '../utils/Utils'
@@ -71,12 +73,13 @@ class RegisterScreen extends Component {
       let createUser = functions().httpsCallable('createUser')
       let result = await createUser(newUser)
       console.log('result of createUser ', result);
-      if (result.data.state === 'ERROR') {
-        this.setState({ isWaiting: false, termsMessage: result.data.message });
-      } else {
+      if (result.data.state === 'SUCCESS') {
         this.setState({ isWaiting: false });
+        this.props.setAllEventsListener()
         this.props.setUserProfile()
         this.props.navigation.navigate('UserHome', { displayName });
+      } else {
+        this.setState({ isWaiting: false, termsMessage: result.data.message });
       }
     } catch (error) {
       console.log('register error', error)
@@ -293,4 +296,4 @@ const mapStateToProps = ({ assets }) => {
   return { assets: assets.assets }
 }
 
-export default connect(mapStateToProps, actions)(RegisterScreen);
+export default connect(mapStateToProps, { setUserProfile, setAllEventsListener })(RegisterScreen);

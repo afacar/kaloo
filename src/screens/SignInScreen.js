@@ -9,7 +9,8 @@ import { SafeAreaView } from 'react-navigation';
 import { Input } from 'react-native-elements';
 import { auth } from 'react-native-firebase';
 
-import * as actions from '../appstate/actions/auth_actions';
+import { setUserProfile } from "../appstate/actions/auth_actions";
+import { setAllEventsListener } from "../appstate/actions/host_actions";
 import { HighlightedText, BoldLabel, H1Label } from '../components/Labels';
 import { DefaultButton, ClickableText } from '../components/Buttons';
 import { validateEmail } from '../utils/Utils'
@@ -43,7 +44,8 @@ class SignInScreen extends Component {
     try {
       let user = await auth().signInWithEmailAndPassword(email, password);
       if (user) {
-        this.props.setUserProfile();
+        await this.props.setAllEventsListener()
+        await this.props.setUserProfile();
         return this.props.navigation.navigate('UserHome');
       }
     } catch (err) {
@@ -170,4 +172,4 @@ const styles = StyleSheet.create({
   }
 });
 
-export default connect(null, actions)(SignInScreen);
+export default connect(null, { setUserProfile, setAllEventsListener })(SignInScreen);
