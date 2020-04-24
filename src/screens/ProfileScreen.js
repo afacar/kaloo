@@ -10,18 +10,18 @@ import { DefaultButton } from '../components/Buttons';
 import { ErrorLabel } from "../components/Labels";
 import { ContactUs } from '../components/ContactUs';
 import HeaderLeft from '../components/Headers/HeaderLeft';
-import HeaderRight from '../components/Headers/HeaderRight';
 import { colors } from '../constants';
 import { AppText, BoldLabel } from '../components/Labels';
 import { SafeAreaView } from 'react-navigation'
 import { WaitingModal } from '../components/Modals';
+import Logout from '../components/Headers/Logout';
 
 
 class ProfileScreen extends Component {
     static navigationOptions = ({ navigation }) => ({
         headerTitle: () => null,
         headerLeft: () => <HeaderLeft onPress={navigation.goBack} />,
-        headerRight: () => <HeaderRight title='Logout' onPress={() => auth().signOut()} />
+        headerRight: () => <Logout />
     });
 
     state = {
