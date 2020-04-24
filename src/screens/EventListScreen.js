@@ -1,11 +1,12 @@
 import React, { Component, Fragment } from 'react';
 import { View, StyleSheet, Text, ActivityIndicator, ScrollView, Image } from 'react-native';
 import { ListItem } from 'react-native-elements';
-import { firestore, auth } from "react-native-firebase";
+import { auth } from "react-native-firebase";
 import { connect } from 'react-redux';
 import { SafeAreaView } from 'react-navigation'
 
 import { checkAudioPermission, checkCameraPermission, compare } from '../utils/Utils';
+import * as actions from '../appstate/actions/host_actions';
 import app from "../constants/app";
 import { ContactUs } from '../components/ContactUs';
 import { DefaultButton, ClearButton, ClickableText } from '../components/Buttons';
@@ -13,7 +14,7 @@ import { Label, BoldLabel } from '../components/Labels';
 import DashboardHeader from "../components/DashboardHeader";
 import CustomStatusBar from '../components/StatusBars/CustomStatusBar';
 
-const db = firestore()
+const { SCHEDULED, SUSPENDED, IN_PROGRESS, COMPLETED } = app.EVENT_STATUS
 
 
 class EventListScreen extends Component {
@@ -34,53 +35,31 @@ class EventListScreen extends Component {
                 this.props.navigation.navigate('Splash');
             }
         });
-        this.checkMyEvents()
+        //this.checkMyEvents()
         checkCameraPermission()
         checkAudioPermission()
-    }
 
-    checkMyEvents = async () => {
-        const { uid } = auth().currentUser
-        this.setState({ isLoading: true })
-        const { IN_PROGRESS, SUSPENDED, SCHEDULED, COMPLETED } = app.EVENT_STATUS
-        var pathToEvents = `events`;
-        // TODO: filter events based on status [All the events except COMPLETED]
-
-
-        db.collection(pathToEvents).where('uid', '==', uid)
-            .onSnapshot((querySnapshot) => {
-                var liveEvents = [];
-                var upcomingEvents = [];
-                var pastEvents = [];
-                querySnapshot.forEach(function (doc) {
-                    let event = doc.data()
-                    // Convert Firebase Timestamp tp JS Date object
-                    let date = event.eventDate
-                    if (date instanceof firestore.Timestamp) {
-                        date = date.toDate();
-                    } else if (eventData.eventTimestamp) {
-                        date = new Date(eventData.eventTimestamp)
-                    }
-                    event.eventDate = date
-                    if (event.status === SUSPENDED || event.status === IN_PROGRESS) liveEvents.push(event)
-                    if (event.status === SCHEDULED) upcomingEvents.push(event)
-                    if (event.status === COMPLETED) pastEvents.push(event)
-                });
-                this.setState({ liveEvents, upcomingEvents, pastEvents, isLoading: false })
-                //return events;
-            });
+        //this.props.setAllEventsListener()
     }
 
     componentWillUnmount() {
-        if (this.authListener) {
+        /* if (this.authListener) {
             console.log('authListener Unmounts');
             this.authListener();
-        }
+        } */
     }
 
     renderEventList = () => {
-        const { liveEvents, upcomingEvents, isLoading } = this.state;
-        if (isLoading) return <ActivityIndicator size='large' />
+        const events = this.props.events;
+        let upcomingEvents = [], liveEvents = [], pastEvents = []
+
+        for (var key in events) {
+            let event = events[key]
+            if (event.status === SUSPENDED || event.status === IN_PROGRESS) liveEvents.push(event)
+            if (event.status === SCHEDULED) upcomingEvents.push(event)
+            if (event.status === COMPLETED) pastEvents.push(event)
+        }
+
         liveEvents.sort(compare)
         upcomingEvents.sort(compare)
         // List SCHEDULED EVENT by sorting accordinf to eventDate
@@ -99,7 +78,11 @@ class EventListScreen extends Component {
                             titleStyle={{ fontWeight: 'bold' }}
                             subtitle={description}
                             containerStyle={{ borderWidth: 0.7, borderRadius: 6, marginTop: 7, elevation: 1 }}
-                            onPress={() => this.props.navigation.navigate('MyEvent', { event: event })}
+                            onPress={() => {
+                                console.log('before goin settin eventid', event)
+                                this.props.setEventId(event.eventId)
+                                this.props.navigation.navigate('MyEvent', { eventId: event.eventId })
+                            }}
                         />
                     );
                 })}
@@ -120,7 +103,11 @@ class EventListScreen extends Component {
                             title={event.title}
                             titleStyle={{ fontWeight: 'bold' }}
                             subtitle={description}
-                            onPress={() => this.props.navigation.navigate('MyEvent', { event: event })}
+                            onPress={() => {
+                                console.log('before goin settin eventid', event)
+                                this.props.setEventId(event.eventId)
+                                this.props.navigation.navigate('MyEvent', { eventId: event.eventId })
+                            }}
                             containerStyle={{ borderWidth: 0.7, borderRadius: 6, marginTop: 7, elevation: 1 }}
                         />
                     );
@@ -191,8 +178,9 @@ const styles = StyleSheet.create({
     }
 })
 
-const mapStateToProps = ({ auth }) => {
-    return { profile: auth.profile }
+const mapStateToProps = ({ auth, events }) => {
+    console.log('eventList mapStateToProps', events)
+    return { profile: auth.profile, events: events.myEvents }
 }
 
-export default connect(mapStateToProps, null)(EventListScreen);
+export default connect(mapStateToProps, actions)(EventListScreen);
