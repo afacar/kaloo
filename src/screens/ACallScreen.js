@@ -15,18 +15,13 @@ import { WaitingModal } from '../components/Modals';
 import AudienceHeaderTitle from '../components/Headers/AudienceHeaderTitle';
 import { leaveEvent } from '../utils/EventHandler';
 
+const { COMPLETED } = app.EVENT_STATUS
 
 class ACallScreen extends Component {
     static navigationOptions = ({ navigation }) => ({
-        headerTransparent:
-        {
-            ...styles.headerTransparent
-        },
+        headerTransparent: { ...styles.headerTransparent },
         headerBackground: () => <HeaderGradient />,
-        headerStyle:
-        {
-            opacity: 0.7,
-        },
+        headerStyle: { opacity: 0.7 },
         headerTitle: () => <AudienceHeaderTitle />,
         headerLeft: () => <HeaderLeft onPress={navigation.goBack} />,
         headerRight: () => <SwitchCamera />
@@ -34,9 +29,6 @@ class ACallScreen extends Component {
 
     state = {
         peerIds: [],
-        joinSucceed: false,
-        time: 0,
-        timeStr: '',
         isConnecting: false
     };
 
@@ -81,17 +73,23 @@ class ACallScreen extends Component {
         leaveEvent(eventId, ticket)
     }
 
+    _onCompleted = () => {
+        this.props.navigation.goBack()
+    }
+
     render() {
         const { peerIds, isConnecting } = this.state
         const { status } = this.props.event;
+
+        if (status === COMPLETED) {
+            this._onCompleted()
+        }
         return (
             <View style={{ flex: 1 }}>
                 <KeepAwake />
                 <TransparentStatusBar />
                 <View style={{ flex: 1 }}>
-                    <View style={{ flex: 1 }}>
-                        <CallView status={status} peerIds={peerIds} />
-                    </View>
+                    <CallView event={this.props.event} peerIds={peerIds} />
                     <WaitingModal isWaiting={isConnecting} text='We are connecting...' />
                 </View>
             </View>

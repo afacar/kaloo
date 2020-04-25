@@ -9,27 +9,20 @@ import { styles, app } from '../constants';
 import HeaderGradient from '../components/HeaderGradient';
 import HeaderLeft from '../components/Headers/HeaderLeft';
 import TransparentStatusBar from '../components/StatusBars/TransparentStatusBar';
-import SwitchCamera from '../components/Headers/SwitchCamera';
 import { WaitingModal } from '../components/Modals';
 import AudienceHeaderTitle from '../components/Headers/AudienceHeaderTitle';
 import { leaveEvent } from '../utils/EventHandler';
 import BroadcastView from '../components/BroadcastView';
 
+const { COMPLETED } = app.EVENT_STATUS
 
 class ACastScreen extends Component {
     static navigationOptions = ({ navigation }) => ({
-        headerTransparent:
-        {
-            ...styles.headerTransparent
-        },
+        headerTransparent: { ...styles.headerTransparent },
         headerBackground: () => <HeaderGradient />,
-        headerStyle:
-        {
-            opacity: 0.7,
-        },
+        headerStyle: { opacity: 0.7 },
         headerTitle: () => <AudienceHeaderTitle />,
         headerLeft: () => <HeaderLeft onPress={navigation.goBack} />,
-        headerRight: () => <SwitchCamera />
     });
 
     state = {
@@ -81,18 +74,31 @@ class ACastScreen extends Component {
         leaveEvent(eventId, ticket)
     }
 
+    _onCompleted = async () => {
+        this.props.navigation.goBack();
+        let title = 'Brodcast finished',
+            message = 'Broadcast finished by host!',
+            onConfirm = () => { };
+        InfoModal(title, message, 'Ok', onConfirm)
+    }
+
     render() {
         const { peerIds, isConnecting } = this.state
-        const { status } = this.props.event;
+        if (this.props.event.status === COMPLETED) {
+            this._onCompleted()
+        }
         return (
             <View style={{ flex: 1 }}>
                 <KeepAwake />
                 <TransparentStatusBar />
                 <View style={{ flex: 1 }}>
-                    <View style={{ flex: 1 }}>
-                        <BroadcastView status={status} peerIds={peerIds} />
-                    </View>
-                    <WaitingModal isWaiting={isConnecting} text='We are connecting...' />
+                    <BroadcastView
+                        event={this.props.event}
+                        clientRole={2}
+                        viewers={this.props.viewers}
+                        hostId={1000}
+                    />
+                    <WaitingModal isWaiting={isConnecting} />
                 </View>
             </View>
         )
@@ -100,14 +106,14 @@ class ACastScreen extends Component {
 
     componentWillUnmount() {
         this._onSuspend()
-        RtcEngine.leaveChannel().then(res => { });
+        RtcEngine.leaveChannel().then(res => { console.log('Guest is leaving channel') });
     }
 }
 
 const mapStateToProps = ({ joinEvent }) => {
-    console.log('BroadcastScreen mapStateToProps', joinEvent)
-    const { event, ticket } = joinEvent
-    return { event, ticket }
+    console.log('ACastScreen mapStateToProps', joinEvent)
+    const { event, ticket, viewers } = joinEvent
+    return { event, ticket, viewers }
 }
 
 export default connect(mapStateToProps, null)(ACastScreen)
