@@ -169,10 +169,11 @@ export function ConfirmModal(title, message, confirmText, canceltext, onConfirm)
 }
 
 export function InfoModal(title, message, confirmText, onConfirm) {
+    onPress = () => {}
     Alert.alert(title, message, [
         {
             text: confirmText || 'Ok',
-            onPress: onConfirm,
+            onPress: onConfirm || onPress,
         },
     ],
         { cancelable: false }
