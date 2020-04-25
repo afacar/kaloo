@@ -41,7 +41,7 @@ class ACallScreen extends Component {
     };
 
     componentDidMount() {
-        console.log('MeetingScreen DidMount state', this.state)
+        console.log('ACallScreen DidMount state', this.state)
         checkAudioPermission()
         checkCameraPermission()
 
@@ -105,7 +105,7 @@ class ACallScreen extends Component {
 }
 
 const mapStateToProps = ({ joinEvent }) => {
-    console.log('MeetingScreen mapStateToProps', joinEvent)
+    console.log('ACallScreen mapStateToProps', joinEvent)
     const { event, ticket } = joinEvent
     return { event, ticket }
 }

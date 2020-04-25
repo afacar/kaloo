@@ -3,7 +3,7 @@ export default {
   APP_FONT: 'System',
   AGORA_APP_ID: 'a0ee6b5742ca4cfe84d1e9fa4c97b946',
   EVENT_TYPE: {
-    MEETING: 'MEETING',
+    MEETING: 'CALL',
     BROADCAST: 'BROADCAST'
   },
   EVENT_STATUS: {
