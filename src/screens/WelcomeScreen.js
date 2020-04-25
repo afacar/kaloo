@@ -3,10 +3,9 @@ import {
   View,
   StyleSheet,
   TouchableOpacity,
-  Dimensions,
   Image
 } from 'react-native';
-import { Button, Text, Avatar } from 'react-native-elements';
+import { Text } from 'react-native-elements';
 import { connect } from 'react-redux';
 import { DefaultButton } from '../components/Buttons';
 import Video from "react-native-video";
@@ -17,7 +16,6 @@ class WelcomeScreen extends Component {
   static navigationOptions = { headerShown: false }
 
   render() {
-    const { DEFAULT_LOGO_IMAGE } = this.props.assets;
     return (
       <View style={styles.container}>
         <TransparentStatusBar />
@@ -43,7 +41,7 @@ class WelcomeScreen extends Component {
           <View style={{ margin: 25, alignSelf: 'stretch', opacity: 0.7 }}>
             <DefaultButton
               title={"Join your meeting"}
-              onPress={() => this.props.navigation.navigate('Ticket')}
+              onPress={() => this.props.navigation.navigate('ATicket')}
             />
           </View>
           <View style={styles.footer}>
