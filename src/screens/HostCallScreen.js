@@ -12,7 +12,7 @@ import HeaderGradient from '../components/HeaderGradient';
 import HostHeaderTitle from '../components/Headers/HostHeaderTitle';
 import HeaderLeft from '../components/Headers/HeaderLeft';
 import TransparentStatusBar from '../components/StatusBars/TransparentStatusBar';
-import MeetingView from '../components/MeetingView';
+import CallView from '../components/CallView';
 import SwitchCamera from '../components/Headers/SwitchCamera';
 import { WaitingModal } from '../components/Modals';
 
@@ -199,7 +199,7 @@ class HostCallScreen extends Component {
                 <KeepAwake />
                 <TransparentStatusBar />
                 <View style={{ flex: 1 }}>
-                    <MeetingView status={status} peerIds={peerIds} />
+                    <CallView status={status} peerIds={peerIds} />
                     <BroadcastButton status={status} eventType={eventType} onPress={this._onPress} />
                     <WaitingModal isWaiting={isConnecting} text='We are working on it...' />
                 </View>

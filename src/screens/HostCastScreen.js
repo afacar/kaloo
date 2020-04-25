@@ -12,7 +12,6 @@ import HeaderGradient from '../components/HeaderGradient';
 import HostHeaderTitle from '../components/Headers/HostHeaderTitle';
 import HeaderLeft from '../components/Headers/HeaderLeft';
 import TransparentStatusBar from '../components/StatusBars/TransparentStatusBar';
-import MeetingView from '../components/MeetingView';
 import SwitchCamera from '../components/Headers/SwitchCamera';
 import { WaitingModal } from '../components/Modals';
 import BroadcastView from '../components/BroadcastView';

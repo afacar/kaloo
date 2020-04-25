@@ -9,7 +9,7 @@ import { styles, app } from '../constants';
 import HeaderGradient from '../components/HeaderGradient';
 import HeaderLeft from '../components/Headers/HeaderLeft';
 import TransparentStatusBar from '../components/StatusBars/TransparentStatusBar';
-import MeetingView from '../components/MeetingView';
+import CallView from '../components/CallView';
 import SwitchCamera from '../components/Headers/SwitchCamera';
 import { WaitingModal } from '../components/Modals';
 import AudienceHeaderTitle from '../components/Headers/AudienceHeaderTitle';
@@ -90,7 +90,7 @@ class ACallScreen extends Component {
                 <TransparentStatusBar />
                 <View style={{ flex: 1 }}>
                     <View style={{ flex: 1 }}>
-                        <MeetingView status={status} peerIds={peerIds} />
+                        <CallView status={status} peerIds={peerIds} />
                     </View>
                     <WaitingModal isWaiting={isConnecting} text='We are connecting...' />
                 </View>

@@ -9,7 +9,6 @@ import { styles, app } from '../constants';
 import HeaderGradient from '../components/HeaderGradient';
 import HeaderLeft from '../components/Headers/HeaderLeft';
 import TransparentStatusBar from '../components/StatusBars/TransparentStatusBar';
-import MeetingView from '../components/MeetingView';
 import SwitchCamera from '../components/Headers/SwitchCamera';
 import { WaitingModal } from '../components/Modals';
 import AudienceHeaderTitle from '../components/Headers/AudienceHeaderTitle';

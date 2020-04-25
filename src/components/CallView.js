@@ -41,7 +41,7 @@ function WaitingComponent(props) {
   )
 }
 
-export default function MeetingView(props) {
+export default function CallView(props) {
   const { peerIds, status } = props
   const capacity = peerIds.length;
   console.log('peerIds at MeetoingView', peerIds)
