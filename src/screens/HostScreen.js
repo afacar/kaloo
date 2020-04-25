@@ -23,7 +23,7 @@ const {
 } = Agora
 
 const { COMPLETED, SUSPENDED, IN_PROGRESS, SCHEDULED } = app.EVENT_STATUS
-const { MEETING, BROADCAST } = app.EVENT_TYPE;
+const { BROADCAST } = app.EVENT_TYPE;
 
 class HostScreen extends Component {
     static navigationOptions = ({ navigation }) => ({
@@ -36,18 +36,19 @@ class HostScreen extends Component {
 
     componentDidMount() {
         const { eventType } = this.state
-        // live channelProfile: 1 & call channelProfile: 0
+        // Broadcast channelProfile: 1 & Call channelProfile: 0
         let channelProfile = eventType === BROADCAST ? 1 : 0
         let eventScreen = eventType === BROADCAST ? 'HostBroadcast' : 'HostCall'
-        // Host clientRole: 1
+        // Host clientRole: 1; Guest clientRole: 2
         let clientRole = 1
 
         this.setState({ channelProfile, eventScreen, clientRole })
     }
 
     componentWillUnmount() {
-        this.props.setEventId(null);
-     }
+        console.log('Normally I would setEventId: null after suspending broadcast')
+        //this.props.setEventId(null);
+    }
 
     onCamera = () => {
         const { channelProfile, clientRole, eventScreen } = this.state
@@ -123,10 +124,10 @@ const styles = StyleSheet.create({
     },
 })
 
-const mapStateToProps = ({ events }) => {
-    const { myEvents, eventId } = events
-    console.log('HostScreen mapStateToProps', myEvents[eventId])
-    return { event: myEvents[eventId] }
+const mapStateToProps = ({ joinEvent }) => {
+    const { event, viewers } = joinEvent
+    console.log('HostScreen mapStateToProps', joinEvent)
+    return { event, viewers }
 }
 
 export default connect(mapStateToProps, actions)(HostScreen);

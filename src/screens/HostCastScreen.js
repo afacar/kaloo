@@ -23,22 +23,15 @@ const HOST_UID = 1000;
 
 class HostCastScreen extends Component {
     static navigationOptions = ({ navigation }) => ({
-        headerTransparent:
-        {
-            ...styles.headerTransparent
-        },
+        headerTransparent: { ...styles.headerTransparent },
         headerBackground: () => <HeaderGradient />,
-        headerStyle:
-        {
-            opacity: 0.7,
-        },
+        headerStyle: { opacity: 0.7 },
         headerTitle: () => <HostHeaderTitle />,
         headerLeft: () => <HeaderLeft onPress={navigation.goBack} />,
         headerRight: () => <SwitchCamera />
     });
 
     state = {
-        clientRole: 1,
         peerIds: [],
         joinSucceed: false,
         time: 0,
@@ -53,13 +46,10 @@ class HostCastScreen extends Component {
         RtcEngine.startPreview();
 
         this.listenChannel()
-
-        // RtcEngine.stopPreview()
-        // setup back button listener
-        //handleAndroidBackButton(this.backButtonPressed);
     }
 
     listenChannel = () => {
+        console.log('Started listening HostCast joins')
         RtcEngine.on('userJoined', (data) => {
             console.log('userJoined data', data)
             const { peerIds } = this.state;
@@ -81,10 +71,9 @@ class HostCastScreen extends Component {
         })
     }
 
-
-
     onStartCall = async () => {
         const { eventId } = this.props.event;
+        RtcEngine.stopPreview();
         RtcEngine.leaveChannel();
         this.setState({ isConnecting: true })
         let response = await startEvent(eventId);
@@ -116,12 +105,12 @@ class HostCastScreen extends Component {
 
     onContinueCall = async () => {
         const { eventId } = this.props.event;
+        RtcEngine.stopPreview();
         RtcEngine.leaveChannel();
         this.setState({ isConnecting: true })
         let response = await continueLive(eventId);
         if (response) {
             console.log('host joinning channel with', eventId, HOST_UID)
-
             RtcEngine.joinChannel(eventId, HOST_UID)
                 .then(async (result) => {
                     this.setState({ isConnecting: false })
@@ -171,7 +160,7 @@ class HostCastScreen extends Component {
 
     _onSuspend = () => {
         // Suspend live event of host
-        console.log('this.prons _onSuspend', this.props)
+        console.log('this.props _onSuspend', this.props)
         const { eventId, status } = this.props.event
         if (status === IN_PROGRESS) {
             suspendLive(eventId)
@@ -186,7 +175,7 @@ class HostCastScreen extends Component {
 
     _onPress = () => {
         const { status } = this.props.event;
-        const onPress = status === SCHEDULED ? this._startCall : status === IN_PROGRESS ? this._endCall : this._continueCall;
+        const onPress = status === SCHEDULED ? this._startCall() : status === IN_PROGRESS ? this._endCall() : this._continueCall();
         return onPress
     }
 
@@ -198,9 +187,14 @@ class HostCastScreen extends Component {
                 <KeepAwake />
                 <TransparentStatusBar />
                 <View style={{ flex: 1 }}>
-                    <BroadcastView status={status} peerIds={peerIds} />
+                    <BroadcastView
+                        event={this.props.event}
+                        clientRole={1}
+                        viewers={this.props.viewers}
+                        hostId={1000}
+                    />
                     <BroadcastButton status={status} eventType={eventType} onPress={this._onPress} />
-                    <WaitingModal isWaiting={isConnecting} text='We are there just a second...' />
+                    <WaitingModal isWaiting={isConnecting} />
                 </View>
             </View>
         )
@@ -212,9 +206,10 @@ class HostCastScreen extends Component {
     }
 }
 
-const mapStateToProps = ({ events }) => {
-    const { myEvents, eventId } = events
-    return { event: myEvents[eventId] }
+const mapStateToProps = ({ joinEvent }) => {
+    console.log('HostCastingScreen mapStateToProps joinEvent', joinEvent)
+    const { event, viewers } = joinEvent
+    return { event, viewers }
 }
 
 export default connect(mapStateToProps, null)(HostCastScreen)

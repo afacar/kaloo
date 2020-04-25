@@ -23,22 +23,15 @@ const HOST_UID = 1000;
 
 class HostCallScreen extends Component {
     static navigationOptions = ({ navigation }) => ({
-        headerTransparent:
-        {
-            ...styles.headerTransparent
-        },
+        headerTransparent: { ...styles.headerTransparent },
         headerBackground: () => <HeaderGradient />,
-        headerStyle:
-        {
-            opacity: 0.7,
-        },
+        headerStyle: { opacity: 0.7 },
         headerTitle: () => <HostHeaderTitle />,
         headerLeft: () => <HeaderLeft onPress={navigation.goBack} />,
         headerRight: () => <SwitchCamera />
     });
 
     state = {
-        clientRole: 1,
         peerIds: [],
         joinSucceed: false,
         time: 0,
@@ -54,10 +47,6 @@ class HostCallScreen extends Component {
         RtcEngine.startPreview();
 
         this.listenChannel()
-
-        // RtcEngine.stopPreview()
-        // setup back button listener
-        //handleAndroidBackButton(this.backButtonPressed);
     }
 
     listenChannel = () => {
@@ -70,19 +59,17 @@ class HostCallScreen extends Component {
                 })
             }
             console.log('userJoined state', this.state)
-        })
+        });
         RtcEngine.on('userOffline', (data) => {
             console.log('userOffline data', data)
             this.setState({
                 peerIds: this.state.peerIds.filter(uid => uid !== data.uid)
             })
             console.log('userOffline state', this.state)
-        })
+        });
         RtcEngine.on('error', (error) => {
-        })
+        });
     }
-
-
 
     onStartCall = async () => {
         const { eventId } = this.props.event;
@@ -199,7 +186,7 @@ class HostCallScreen extends Component {
                 <KeepAwake />
                 <TransparentStatusBar />
                 <View style={{ flex: 1 }}>
-                    <CallView status={status} peerIds={peerIds} />
+                    <CallView event={this.props.event} peerIds={peerIds} />
                     <BroadcastButton status={status} eventType={eventType} onPress={this._onPress} />
                     <WaitingModal isWaiting={isConnecting} text='We are working on it...' />
                 </View>
@@ -214,10 +201,10 @@ class HostCallScreen extends Component {
     }
 }
 
-const mapStateToProps = ({ events }) => {
-    const { myEvents, eventId } = events
-    console.log('HostMeetingScreen mapStateToProps', myEvents[eventId])
-    return { event: myEvents[eventId] }
+const mapStateToProps = ({ joinEvent }) => {
+    const { event, viewers } = joinEvent
+    console.log('HostMCallScreen mapStateToProps', joinEvent)
+    return { event, viewers }
 }
 
 export default connect(mapStateToProps, null)(HostCallScreen)

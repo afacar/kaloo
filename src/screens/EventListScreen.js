@@ -1,12 +1,12 @@
 import React, { Component, Fragment } from 'react';
-import { View, StyleSheet, Text, ActivityIndicator, ScrollView, Image } from 'react-native';
+import { View, StyleSheet, Text, ScrollView, Image } from 'react-native';
 import { ListItem } from 'react-native-elements';
 import { auth } from "react-native-firebase";
 import { connect } from 'react-redux';
 import { SafeAreaView } from 'react-navigation'
 
 import { checkAudioPermission, checkCameraPermission, compare } from '../utils/Utils';
-import * as actions from '../appstate/actions/host_actions';
+import * as actions from '../appstate/actions/audience_actions';
 import app from "../constants/app";
 import { ContactUs } from '../components/ContactUs';
 import { DefaultButton, ClearButton, ClickableText } from '../components/Buttons';
@@ -79,7 +79,8 @@ class EventListScreen extends Component {
                             containerStyle={{ borderWidth: 0.7, borderRadius: 6, marginTop: 7, elevation: 1 }}
                             onPress={() => {
                                 console.log('before goin settin eventid', event)
-                                this.props.setEventId(event.eventId)
+                                this.props.setJoinEventListener(event)
+                                this.props.setViewerListener(event)
                                 this.props.navigation.navigate('Host', { eventId: event.eventId })
                             }}
                         />
@@ -104,7 +105,8 @@ class EventListScreen extends Component {
                             subtitle={description}
                             onPress={() => {
                                 console.log('before goin settin eventid', event)
-                                this.props.setEventId(event.eventId)
+                                this.props.setJoinEventListener(event)
+                                this.props.setViewerListener(event)
                                 this.props.navigation.navigate('Host', { eventId: event.eventId })
                             }}
                             containerStyle={{ borderWidth: 0.7, borderRadius: 6, marginTop: 7, elevation: 1 }}
@@ -178,7 +180,6 @@ const styles = StyleSheet.create({
 })
 
 const mapStateToProps = ({ auth, events }) => {
-    console.log('eventList mapStateToProps', events)
     return { profile: auth.profile, events: events.myEvents }
 }
 

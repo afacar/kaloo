@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
-import JoinEvent from '../components/JoinEvent';
+import GuestView from '../components/GuestView';
 import HeaderLeft from '../components/Headers/HeaderLeft';
+import { connect } from 'react-redux';
 
 
 class GuestScreen extends Component {
@@ -9,11 +10,21 @@ class GuestScreen extends Component {
     headerLeft: () => <HeaderLeft onPress={navigation.goBack} />
   });
 
-  event = this.props.navigation.getParam('event', '')
-
   render() {
-    return <JoinEvent event={this.event} navigation={this.props.navigation} />
+    return (
+      <GuestView
+        event={this.props.event}
+        ticket={this.props.ticket}
+        viewers={this.props.viewers}
+        navigation={this.props.navigation}
+      />
+    )
   }
 }
 
-export default GuestScreen;
+const mapStateToProps = ({ joinEvent }) => {
+  const { event, ticket, viewers } = joinEvent
+  return { event, ticket, viewers }
+}
+
+export default connect(mapStateToProps, null)(GuestScreen);
