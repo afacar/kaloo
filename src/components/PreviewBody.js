@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
-import { Slider, Button } from "react-native-elements";
+import { Slider } from "react-native-elements";
 import EventTime from './EventTime';
 import { H2Label, H3Label, Label } from './Labels';
 import { DefaultButton } from './Buttons';
@@ -40,8 +40,4 @@ export default function PreviewBody(props) {
 }
 
 
-const styles = StyleSheet.create({
-  container: {
-
-  },
-})
+const styles = StyleSheet.create({})

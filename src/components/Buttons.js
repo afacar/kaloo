@@ -6,7 +6,7 @@ import app from '../constants/app';
 import { colors } from '../constants'
 
 const { SCHEDULED, IN_PROGRESS, SUSPENDED, COMPLETED } = app.EVENT_STATUS;
-const { MEETING, BROADCAST } = app.EVENT_TYPE;
+const { BROADCAST } = app.EVENT_TYPE;
 
 export function HyperLink(props) {
     const { text, link } = props

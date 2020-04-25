@@ -16,7 +16,7 @@ import { WaitingModal } from '../components/Modals';
 import UserAvatar from '../components/UserAvatar';
 import app from '../constants/app';
 
-const { MEETING, BROADCAST } = app.EVENT_TYPE;
+const { BROADCAST } = app.EVENT_TYPE;
 
 class EventPreviewScreen extends Component {
   static navigationOptions = ({ navigation }) => ({
