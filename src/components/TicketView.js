@@ -7,12 +7,12 @@ import { SafeAreaView } from 'react-navigation';
 
 import * as actions from '../appstate/actions/audience_actions';
 import { Label } from './Labels';
-import { DefaultButton } from '../components/Buttons';
+import { DefaultButton } from './Buttons';
 import { ContactUs } from './ContactUs';
 import CustomStatusBar from './StatusBars/CustomStatusBar';
 
 
-class Ticket extends Component {
+class TicketView extends Component {
 
   state = { ticket: '', isWaiting: false, ticketError: '', isTicketFormat: false };
 
@@ -36,8 +36,9 @@ class Ticket extends Component {
         eventData.eventDate = date
         let guestScreen = auth().currentUser ? 'Guest' : 'AGuest'
         this.setState({ isWaiting: false })
-        this.props.setJoinEventListener(eventData.eventId)
-        this.props.setTicketListener(eventData.eventId, eventData.ticket.ticketId)
+        this.props.setJoinEventListener(eventData)
+        this.props.setTicketListener(eventData)
+        this.props.setViewerListener(eventData);
         this.props.navigation.navigate(guestScreen, { event: eventData })
       } else {
         this.setState({ isWaiting: false, ticketError: response.data.message })
@@ -138,4 +139,4 @@ const mapStateToProps = ({ assets, joinEvent }) => {
   return { assets: assets.assets, joinEvent }
 }
 
-export default connect(mapStateToProps, actions)(Ticket);
+export default connect(mapStateToProps, actions)(TicketView);
