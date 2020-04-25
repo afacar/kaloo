@@ -13,28 +13,26 @@ import { setUserProfile } from "../appstate/actions/auth_actions";
 
 class SplashScreen extends Component {
     async componentDidMount() {
-        setTimeout(async () => {
-            var deviceID
-            await AsyncStorage.getItem('deviceID').then(value => {
-                deviceID = value
-            });
-            if (!deviceID) {
-                deviceID = generateRandomString(5);
-                await AsyncStorage.setItem('deviceID', deviceID);
+        var deviceID
+        await AsyncStorage.getItem('deviceID').then(value => {
+            deviceID = value
+        });
+        if (!deviceID) {
+            deviceID = generateRandomString(5);
+            await AsyncStorage.setItem('deviceID', deviceID);
+        }
+        try {
+            await this.props.loadAssets()
+            const user = auth().currentUser;
+            if (user) {
+                await this.props.setUserProfile();
+                this.props.navigation.navigate('User');
+            } else {
+                this.props.navigation.navigate('Home');
             }
-            try {
-                await this.props.loadAssets()
-                const user = auth().currentUser;
-                if (user) {
-                    await this.props.setUserProfile();
-                    this.props.navigation.navigate('User');
-                } else {
-                    this.props.navigation.navigate('Home');
-                }
-            } catch (error) {
-                console.log('Splash error:', error)
-            }
-        }, 1500)
+        } catch (error) {
+            console.log('Splash error:', error)
+        }
     }
 
     componentWillUnmount() {

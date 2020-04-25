@@ -1,6 +1,7 @@
 import { Platform, PermissionsAndroid, Alert } from "react-native";
 import AsyncStorage from '@react-native-community/async-storage';
 import { months } from '../constants'
+import firebase, { functions, auth } from "react-native-firebase";
 
 export const formatTime = (seconds) => {
     var negative = false;
@@ -187,4 +188,73 @@ export function compare(a, b) {
         return 1;
     }
     return 0;
+}
+
+
+export const checkNotificationPermission = async () => {
+    try {
+        let enabled = await firebase.messaging().hasPermission()
+        if (enabled) {
+            console.log("Push permission var, token al!");
+            var token = await getFCMToken();
+            if (auth().currentUser)
+                saveFCMToken(token)
+        } else {
+            requestNotificationPermission();
+        }
+    } catch (error) {
+        console.log('checkPermisson error:', error.message);
+    }
+}
+
+export const requestNotificationPermission = async () => {
+    try {
+        await firebase.messaging().requestPermission();
+        // User has authorised
+        var token = await getFCMToken();
+        if (auth().currentUser)
+            saveFCMToken(token)
+    } catch (error) {
+        // User has rejected permissions
+        console.log('permission rejected');
+    }
+}
+
+export const getFCMToken = async () => {
+    try {
+        let token = "";
+        console.log("Existing token is,", token);
+        if (!token) {
+            token = await firebase.messaging().getToken();
+            console.log("New Token is taken :", token);
+            return token
+        }
+    } catch (error) {
+        console.log('getFCMToken error:', error.message);
+    }
+
+}
+
+export const saveFCMToken = async (token) => {
+    const { uid, displayName, photoURL } = firebase.auth().currentUser;
+    const url = `users/${uid}/FCMToken/${token}`;
+
+    if (token) {
+        // user has a device token
+        console.log('saveFCMToken url', url);
+        console.log('saveFCMToken token', token);
+        try {
+            console.log("started try")
+            let updateFCM = functions().httpsCallable('updateFCMToken');
+            let result = await updateFCM({ uid, token })
+            console.log("resulted function", result)
+            if (result.data.state !== 'SUCCESS') {
+                console.log("saveFCMToken FCMToken is saved to firebase!");
+            } else {
+                console.log("saveFCMToken FCMToken could not be saved to firebase!");
+            }
+        } catch (error) {
+            console.log("saveFCMToken has error", error.message);
+        }
+    }
 }

@@ -168,11 +168,12 @@ export const setLiveEventListener = (eventID, callback) => {
 }
 
 export const setTicketListener = (eventID, ticket, callback) => {
-    console.log('setting ticket listener', eventID)
+    console.log('setting ticket listener', eventID, ' ', ticket)
     ticketListener = firestore().collection('events').doc(eventID).collection('tickets').doc(ticket.tid).onSnapshot(ticketSnapshot => {
         const ticketStats = ticketSnapshot.data();
-        if (ticketStats && ticketStats.deviceID) {
-            callback(ticketStats.deviceID)
+        console.log('ticketStats', ticketStats)
+        if (ticketStats && (ticketStats.deviceID || ticketStats.reminder)) {
+            callback({ remoteID: ticketStats.deviceID, reminder: ticketStats.reminder })
         }
     })
 }

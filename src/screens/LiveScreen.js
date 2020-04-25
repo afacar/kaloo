@@ -207,7 +207,7 @@ export default class LiveScreen extends Component {
 
     setTicketListener = () => {
         const { eventID, ticket } = this.state;
-        setTicketListener(eventID, ticket, async (remoteID) => {
+        setTicketListener(eventID, ticket, async ({remoteID}) => {
             var localID = await getDeviceID();
             if (localID != remoteID) {
                 this.props.navigation.goBack();

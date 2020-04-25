@@ -4,10 +4,12 @@ import { Button, Text, Card, Rating, AirbnbRating } from 'react-native-elements'
 import { RtcEngine } from 'react-native-agora';
 import { app } from '../constants';
 import { AppText } from "./Labels";
-import { setEventListener, clearEventListener, joinEvent, rateEvent } from "../utils/EventHandler";
+import { setEventListener, clearEventListener, joinEvent, rateEvent, setTicketListener, clearTicketListener } from "../utils/EventHandler";
 import PreviewHeader from './PreviewHeader';
 import PreviewBody from './PreviewBody';
 import CustomStatusBar from './StatusBars/CustomStatusBar';
+import firebase, { firestore } from 'react-native-firebase';
+import { getFCMToken, saveFCMToken } from '../utils/Utils';
 const { Agora } = NativeModules;
 
 const {
@@ -24,11 +26,30 @@ class JoinEvent extends Component {
         isRatingComplete: false,
         joinLoading: false,
         rating: 3,
+        reminder: false,
         error: undefined
     }
 
     componentDidMount() {
         console.log('Event state is', this.state)
+        setTicketListener(this.state.eid, this.state.ticket, async ({ reminder }) => {
+            if (reminder) {
+                if (reminder === 'on') {
+                    this.setState({
+                        reminder: true
+                    })
+                }
+                else {
+                    this.setState({
+                        reminder: false
+                    })
+                }
+            } else {
+                this.setState({
+                    reminder: false
+                })
+            }
+        })
 
         setEventListener(this.state.eid, (event) => {
             this.setState({ ...event })
@@ -37,6 +58,7 @@ class JoinEvent extends Component {
 
     componentWillUnmount() {
         clearEventListener(this.event.eid);
+        clearTicketListener();
     }
 
     onCamera = async () => {
@@ -95,8 +117,16 @@ class JoinEvent extends Component {
         this.setState({ rating })
     }
 
+    toggleReminder = async () => {
+        const { eid, ticket, reminder } = this.state;
+        let FCMToken = await getFCMToken();
+        let setReminder = firebase.functions().httpsCallable('setReminder')
+        let reminderResult = await setReminder({ eid, tid: ticket.tid, reminder, FCMToken })
+        console.log('reminderResult', reminderResult)
+    }
+
     render() {
-        const { image, photoURL, title, description, displayName, duration, eventType, eventDate, status, ticket } = this.state;
+        const { image, photoURL, title, description, displayName, duration, eventType, eventDate, status, ticket, reminder } = this.state;
         return (
             <ScrollView contentContainerStyle={styles.container}>
                 <CustomStatusBar />
@@ -106,7 +136,7 @@ class JoinEvent extends Component {
                             event={{ image, photoURL, eventType }}
                         />
                         <PreviewBody
-                            event={{ displayName, title, eventDate, duration, description }}
+                            event={{ displayName, title, eventDate, duration, description, status, reminder, toggleReminder: this.toggleReminder }}
                         />
                         {
                             ((status === app.EVENT_STATUS.SCHEDULED) || (status === app.EVENT_STATUS.SUSPENDED)) && (

@@ -1,11 +1,11 @@
 import React, { Component, Fragment } from 'react';
 import { View, StyleSheet, Text, ActivityIndicator, ScrollView, Image } from 'react-native';
 import { ListItem } from 'react-native-elements';
-import { firestore, auth } from "react-native-firebase";
+import firebase, { firestore, auth } from "react-native-firebase";
 import { connect } from 'react-redux';
 import { SafeAreaView } from 'react-navigation'
 
-import { checkAudioPermission, checkCameraPermission, compare } from '../utils/Utils';
+import { checkAudioPermission, checkCameraPermission, compare, checkNotificationPermission } from '../utils/Utils';
 import app from "../constants/app";
 import { ContactUs } from '../components/ContactUs';
 import { DefaultButton, ClearButton, ClickableText } from '../components/Buttons';
@@ -38,6 +38,7 @@ class EventListScreen extends Component {
         this.checkMyEvents()
         checkCameraPermission()
         checkAudioPermission()
+        checkNotificationPermission()
     }
 
     checkMyEvents = async () => {
