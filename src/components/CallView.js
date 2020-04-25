@@ -4,28 +4,9 @@ import { AgoraView } from 'react-native-agora';
 
 import app from '../constants/app';
 import { AppText } from './Labels';
-import { dimensions } from '../constants';
+import Timer from './Timer';
 
 const { IN_PROGRESS } = app.EVENT_STATUS
-
-
-
-function renderTimer(props) {
-  const { time } = props;
-  if (time < 0) {
-    return (
-      <View style={styles.timer}>
-        <AppText style={styles.timerCardRed}>{this.state.timeStr}</AppText>
-      </View>
-    )
-  } else {
-    return (
-      <View style={styles.timerNViewer}>
-        <AppText style={styles.timerCard}>{this.state.timeStr}</AppText>
-      </View>
-    )
-  }
-}
 
 function WaitingComponent(props) {
   return (
@@ -42,10 +23,10 @@ function WaitingComponent(props) {
 }
 
 export default function CallView(props) {
-  const { peerIds, status } = props
+  const { peerIds } = props
+  const { status } = props.event
   const capacity = peerIds.length;
-  console.log('peerIds at MeetoingView', peerIds)
-
+  console.log('peerIds at CallView', props)
   if (status === IN_PROGRESS) {
     return (
       <View style={{ flex: 1, borderWidth: 2, borderColor: 'yellow', zIndex: -1100 }}>
@@ -61,6 +42,7 @@ export default function CallView(props) {
         <View style={{ flex: 1, borderWidth: 5, borderColor: 'orange' }}>
           <AgoraView style={{ flex: 1 }} showLocalVideo={true} mode={1} />
         </View>
+        <Timer event={props.event} />
       </View>
     )
   } else {
@@ -68,33 +50,11 @@ export default function CallView(props) {
       <View style={{ flex: 1, borderWidth: 2, borderColor: 'yellow', zIndex: -1100 }}>
         {/** Mirror */}
         <AgoraView style={{ flex: 1 }} showLocalVideo={true} mode={1} />
+        <Timer event={props.event} />
       </View>
     )
   }
 }
 
 
-const styles = StyleSheet.create({
-  timerNViewer: {
-    position: 'absolute',
-    top: 24 + dimensions.HEADER_MARGIN,
-    right: 24,
-    backgroundColor: 'transparent',
-  },
-  timer: {
-    position: 'absolute',
-    top: 24 + dimensions.HEADER_MARGIN,
-    right: 24,
-    backgroundColor: 'transparent',
-  },
-  timerCard: {
-    fontSize: 12,
-    backgroundColor: 'white',
-    color: 'black',
-    borderRadius: 6,
-    textAlign: 'center',
-    justifyContent: 'center',
-    alignContent: 'center',
-    padding: 8,
-  }
-})
+const styles = StyleSheet.create({})
