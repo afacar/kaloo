@@ -16,7 +16,7 @@ import HeaderLeft from '../components/Headers/HeaderLeft';
 import UserAvatar from '../components/UserAvatar';
 import app from '../constants/app';
 
-const { MEETING, BROADCAST } = app.EVENT_TYPE;
+const { CALL, BROADCAST } = app.EVENT_TYPE;
 
 const INITIAL_STATE = {
   image: null,
@@ -202,7 +202,7 @@ class EventCreateScreen extends Component {
                         value={capacity + ''}
                         keyboardType="numeric"
                         maxLength={3}
-                        disabled={eventType === MEETING}
+                        disabled={eventType === CALL}
                         inputContainerStyle={styles.inputContainerStyle}
                         containerStyle={{ paddingHorizontal: 0 }}
                       />
@@ -214,13 +214,13 @@ class EventCreateScreen extends Component {
                     iconLeft
                     checkedIcon="dot-circle-o"
                     uncheckedIcon="circle-o"
-                    checked={eventType === MEETING}
-                    onPress={() => this.setState({ eventType: MEETING, capacity: 1, })}
+                    checked={eventType === CALL}
+                    onPress={() => this.setState({ eventType: CALL, capacity: 1, })}
                     checkedColor="#FF3E6C"
                     uncheckedColor="#FF3E6C"
                     containerStyle={{ paddingHorizontal: 0 }} />
                   <View>
-                    <TouchableOpacity onPress={() => this.setState({ eventType: MEETING, capacity: 1 })}>
+                    <TouchableOpacity onPress={() => this.setState({ eventType: CALL, capacity: 1 })}>
                       <BoldLabel label="1-1 Meeting" />
                       <Label label="Create a private video call with just one person." />
                     </TouchableOpacity>
