@@ -35,7 +35,6 @@ class EventListScreen extends Component {
                 this.props.navigation.navigate('Splash');
             }
         });
-        //this.checkMyEvents()
         checkCameraPermission()
         checkAudioPermission()
 
@@ -81,7 +80,7 @@ class EventListScreen extends Component {
                             onPress={() => {
                                 console.log('before goin settin eventid', event)
                                 this.props.setEventId(event.eventId)
-                                this.props.navigation.navigate('MyEvent', { eventId: event.eventId })
+                                this.props.navigation.navigate('Host', { eventId: event.eventId })
                             }}
                         />
                     );
@@ -106,7 +105,7 @@ class EventListScreen extends Component {
                             onPress={() => {
                                 console.log('before goin settin eventid', event)
                                 this.props.setEventId(event.eventId)
-                                this.props.navigation.navigate('MyEvent', { eventId: event.eventId })
+                                this.props.navigation.navigate('Host', { eventId: event.eventId })
                             }}
                             containerStyle={{ borderWidth: 0.7, borderRadius: 6, marginTop: 7, elevation: 1 }}
                         />
@@ -151,7 +150,7 @@ class EventListScreen extends Component {
                                             onPress={() => this.props.navigation.navigate('EventCreate')} />
                                         <ClearButton
                                             title='Join a show'
-                                            onPress={() => this.props.navigation.navigate('MyTicket')} />
+                                            onPress={() => this.props.navigation.navigate('Ticket')} />
                                     </View>
                                     {this.renderEventList()}
                                 </View>

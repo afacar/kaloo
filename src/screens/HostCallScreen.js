@@ -15,14 +15,13 @@ import TransparentStatusBar from '../components/StatusBars/TransparentStatusBar'
 import MeetingView from '../components/MeetingView';
 import SwitchCamera from '../components/Headers/SwitchCamera';
 import { WaitingModal } from '../components/Modals';
-import BroadcastView from '../components/BroadcastView';
 
 const { SCHEDULED, IN_PROGRESS, SUSPENDED, COMPLETED } = app.EVENT_STATUS
 
 const HOST_UID = 1000;
 
 
-class HostBroadcastScreen extends Component {
+class HostCallScreen extends Component {
     static navigationOptions = ({ navigation }) => ({
         headerTransparent:
         {
@@ -48,7 +47,7 @@ class HostBroadcastScreen extends Component {
     };
 
     componentDidMount() {
-        console.log('HostMeetingScreen DidMount state', this.state)
+        console.log('HostCallScreen DidMount state', this.state)
         checkAudioPermission()
         checkCameraPermission()
 
@@ -188,7 +187,7 @@ class HostBroadcastScreen extends Component {
 
     _onPress = () => {
         const { status } = this.props.event;
-        const onPress = status === SCHEDULED ? this._startCall : status === IN_PROGRESS ? this._endCall : this._continueCall;
+        const onPress = status === SCHEDULED ? this._startCall() : status === IN_PROGRESS ? this._endCall() : this._continueCall();
         return onPress
     }
 
@@ -200,15 +199,16 @@ class HostBroadcastScreen extends Component {
                 <KeepAwake />
                 <TransparentStatusBar />
                 <View style={{ flex: 1 }}>
-                    <BroadcastView status={status} peerIds={peerIds} />
+                    <MeetingView status={status} peerIds={peerIds} />
                     <BroadcastButton status={status} eventType={eventType} onPress={this._onPress} />
-                    <WaitingModal isWaiting={isConnecting} text='We are there just a second...' />
+                    <WaitingModal isWaiting={isConnecting} text='We are working on it...' />
                 </View>
             </View>
         )
     }
 
     componentWillUnmount() {
+        //removeAndroidBackButtonHandler(this.backButtonPressed);
         this._onSuspend()
         RtcEngine.leaveChannel().then(res => { });
     }
@@ -216,7 +216,8 @@ class HostBroadcastScreen extends Component {
 
 const mapStateToProps = ({ events }) => {
     const { myEvents, eventId } = events
+    console.log('HostMeetingScreen mapStateToProps', myEvents[eventId])
     return { event: myEvents[eventId] }
 }
 
-export default connect(mapStateToProps, null)(HostBroadcastScreen)
+export default connect(mapStateToProps, null)(HostCallScreen)

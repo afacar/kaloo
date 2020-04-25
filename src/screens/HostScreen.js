@@ -25,7 +25,7 @@ const {
 const { COMPLETED, SUSPENDED, IN_PROGRESS, SCHEDULED } = app.EVENT_STATUS
 const { MEETING, BROADCAST } = app.EVENT_TYPE;
 
-class MyEventScreen extends Component {
+class HostScreen extends Component {
     static navigationOptions = ({ navigation }) => ({
         headerStyle: { backgroundColor: colors.BLUE, borderBottomWidth: 0, elevation: 0, shadowOpacity: 0 },
         headerTitle: () => <UserAvatar />,
@@ -38,7 +38,7 @@ class MyEventScreen extends Component {
         const { eventType } = this.state
         // live channelProfile: 1 & call channelProfile: 0
         let channelProfile = eventType === BROADCAST ? 1 : 0
-        let eventScreen = eventType === BROADCAST ? 'HostBroadcast' : 'HostMeeting'
+        let eventScreen = eventType === BROADCAST ? 'HostBroadcast' : 'HostCall'
         // Host clientRole: 1
         let clientRole = 1
 
@@ -125,8 +125,8 @@ const styles = StyleSheet.create({
 
 const mapStateToProps = ({ events }) => {
     const { myEvents, eventId } = events
-    console.log('MyEvent mapStateToProps', myEvents[eventId])
+    console.log('HostScreen mapStateToProps', myEvents[eventId])
     return { event: myEvents[eventId] }
 }
 
-export default connect(mapStateToProps, actions)(MyEventScreen);
+export default connect(mapStateToProps, actions)(HostScreen);

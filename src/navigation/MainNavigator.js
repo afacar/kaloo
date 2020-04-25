@@ -1,4 +1,3 @@
-
 import { createStackNavigator } from 'react-navigation-stack';
 import ATicketScreen from '../screens/ATicketScreen';
 import WelcomeScreen from '../screens/WelcomeScreen';

@@ -57,7 +57,7 @@ class EventPublishScreen extends Component {
               title='Go to Event'
               onPress={() => { 
                 this.props.setEventId(myEvent.eventId)
-                this.props.navigation.navigate('MyEvent', { event: myEvent }) 
+                this.props.navigation.navigate('Host', { event: myEvent }) 
               }}
             />
           </View>

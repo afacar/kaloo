@@ -14,10 +14,9 @@ import SwitchCamera from '../components/Headers/SwitchCamera';
 import { WaitingModal } from '../components/Modals';
 import AudienceHeaderTitle from '../components/Headers/AudienceHeaderTitle';
 import { leaveEvent } from '../utils/EventHandler';
-import BroadcastView from '../components/BroadcastView';
 
 
-class MyBroadcastScreen extends Component {
+class CallScreen extends Component {
     static navigationOptions = ({ navigation }) => ({
         headerTransparent:
         {
@@ -42,7 +41,7 @@ class MyBroadcastScreen extends Component {
     };
 
     componentDidMount() {
-        console.log('MyBroadcastScreen DidMount state', this.state)
+        console.log('CallScreen DidMount state', this.state)
         checkAudioPermission()
         checkCameraPermission()
 
@@ -91,7 +90,7 @@ class MyBroadcastScreen extends Component {
                 <TransparentStatusBar />
                 <View style={{ flex: 1 }}>
                     <View style={{ flex: 1 }}>
-                        <BroadcastView status={status} peerIds={peerIds} />
+                        <MeetingView status={status} peerIds={peerIds} />
                     </View>
                     <WaitingModal isWaiting={isConnecting} text='We are connecting...' />
                 </View>
@@ -106,9 +105,9 @@ class MyBroadcastScreen extends Component {
 }
 
 const mapStateToProps = ({ joinEvent }) => {
-    console.log('MyBroadcastScreen mapStateToProps', joinEvent)
+    console.log('CallScreen mapStateToProps', joinEvent)
     const { event, ticket } = joinEvent
     return { event, ticket }
 }
 
-export default connect(mapStateToProps, null)(MyBroadcastScreen)
+export default connect(mapStateToProps, null)(CallScreen)

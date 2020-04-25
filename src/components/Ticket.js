@@ -34,11 +34,11 @@ class Ticket extends Component {
           date = new Date(eventData.eventTimestamp)
         }
         eventData.eventDate = date
-        let joinEventScreen = auth().currentUser ? 'MyJoinEvent' : 'JoinEvent'
+        let guestScreen = auth().currentUser ? 'Guest' : 'AGuest'
         this.setState({ isWaiting: false })
         this.props.setJoinEventListener(eventData.eventId)
         this.props.setTicketListener(eventData.eventId, eventData.ticket.ticketId)
-        this.props.navigation.navigate(joinEventScreen, { event: eventData })
+        this.props.navigation.navigate(guestScreen, { event: eventData })
       } else {
         this.setState({ isWaiting: false, ticketError: response.data.message })
       }
