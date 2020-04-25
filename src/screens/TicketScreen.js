@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import Ticket from '../components/Ticket';
+import TicketView from '../components/TicketView';
 import HeaderLeft from '../components/Headers/HeaderLeft';
 
 
@@ -10,7 +10,7 @@ class TicketScreen extends Component {
   });
 
   render() {
-    return <Ticket navigation={this.props.navigation} />
+    return <TicketView navigation={this.props.navigation} />
   }
 }
 
