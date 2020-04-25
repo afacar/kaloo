@@ -1,31 +1,23 @@
 
 import { createStackNavigator } from 'react-navigation-stack';
-import TicketScreen from '../screens/TicketScreen';
+import ATicketScreen from '../screens/ATicketScreen';
 import WelcomeScreen from '../screens/WelcomeScreen';
 import SignInScreen from '../screens/SignInScreen';
-import JoinEventScreen from '../screens/JoinEventScreen';
+import AGuestScreen from '../screens/AGuestScreen';
 import RegisterScreen from '../screens/RegisterScreen';
-import LiveScreen from '../screens/LiveScreen';
-import MeetingScreen from '../screens/MeetingScreen';
-import VideoChatScreen from '../screens/VideoChatScreen';
-import BroadcastScreen from '../screens/BroadcastScreen';
+import ACallScreen from '../screens/ACallScreen';
+import ACastScreen from '../screens/ACastScreen';
 import { colors } from '../constants';
 
 export default MainNavigatior = createStackNavigator(
   {
     Home: WelcomeScreen,
-    Ticket: TicketScreen,
-    JoinEvent: JoinEventScreen,
+    ATicket: ATicketScreen,
+    AGuest: AGuestScreen,
+    ACall: ACallScreen,
+    ABroadcast: ACastScreen,
     SignIn: SignInScreen,
     Register: RegisterScreen,
-    Meeting: MeetingScreen,
-    Broadcast: BroadcastScreen,
-    Live: {
-      screen: LiveScreen,
-    },
-    VideoChat: {
-      screen: VideoChatScreen,
-    },
   },
   {
     initialRouteName: "Home",

@@ -9,7 +9,6 @@ import { styles, app } from '../constants';
 import HeaderGradient from '../components/HeaderGradient';
 import HeaderLeft from '../components/Headers/HeaderLeft';
 import TransparentStatusBar from '../components/StatusBars/TransparentStatusBar';
-import MeetingView from '../components/MeetingView';
 import SwitchCamera from '../components/Headers/SwitchCamera';
 import { WaitingModal } from '../components/Modals';
 import AudienceHeaderTitle from '../components/Headers/AudienceHeaderTitle';
@@ -17,7 +16,7 @@ import { leaveEvent } from '../utils/EventHandler';
 import BroadcastView from '../components/BroadcastView';
 
 
-class BroadcastScreen extends Component {
+class ACastScreen extends Component {
     static navigationOptions = ({ navigation }) => ({
         headerTransparent:
         {
@@ -111,4 +110,4 @@ const mapStateToProps = ({ joinEvent }) => {
     return { event, ticket }
 }
 
-export default connect(mapStateToProps, null)(BroadcastScreen)
+export default connect(mapStateToProps, null)(ACastScreen)

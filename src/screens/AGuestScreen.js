@@ -1,17 +1,19 @@
 import React, { Component } from 'react';
-import Ticket from '../components/Ticket';
+import JoinEvent from '../components/JoinEvent';
 import HeaderLeft from '../components/Headers/HeaderLeft';
 
 
-class TicketScreen extends Component {
+class AGuestScreen extends Component {
   static navigationOptions = ({ navigation }) => ({
     headerTitle: () => null,
     headerLeft: () => <HeaderLeft onPress={navigation.goBack} />
   });
 
+  event = this.props.navigation.getParam('event', '')
+
   render() {
-    return <Ticket navigation={this.props.navigation} />
+    return <JoinEvent event={this.event} navigation={this.props.navigation} />
   }
 }
 
-export default TicketScreen;
+export default AGuestScreen;

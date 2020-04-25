@@ -16,7 +16,7 @@ import AudienceHeaderTitle from '../components/Headers/AudienceHeaderTitle';
 import { leaveEvent } from '../utils/EventHandler';
 
 
-class MeetingScreen extends Component {
+class ACallScreen extends Component {
     static navigationOptions = ({ navigation }) => ({
         headerTransparent:
         {
@@ -110,4 +110,4 @@ const mapStateToProps = ({ joinEvent }) => {
     return { event, ticket }
 }
 
-export default connect(mapStateToProps, null)(MeetingScreen)
+export default connect(mapStateToProps, null)(ACallScreen)
