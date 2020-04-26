@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>1011562396023-si96csj9tkavjgetqgava7b24ee55ei1.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.1011562396023-si96csj9tkavjgetqgava7b24ee55ei1</string>
+	<key>API_KEY</key>
+	<string>AIzaSyD1KU3uTz0P4c1n80dzsPZzlxIF9f3R-ZY</string>
+	<key>GCM_SENDER_ID</key>
+	<string>1011562396023</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>org.fmob.kaloo</string>
+	<key>PROJECT_ID</key>
+	<string>kaloo-dev</string>
+	<key>STORAGE_BUCKET</key>
+	<string>kaloo-dev.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:1011562396023:ios:a5213b13db6e1436750972</string>
+	<key>DATABASE_URL</key>
+	<string>https://kaloo-dev.firebaseio.com</string>
+</dict>
+</plist>
