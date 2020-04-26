@@ -69,7 +69,7 @@ export const setViewerListener = (event) => async (dispatch) => {
             let ticket = viewerDoc.data()
             return dispatch({
                 type: LISTEN_VIEWER,
-                payload: ticket.viewerCount
+                payload: ticket.viewerCount || 0
             });
         });
 }
