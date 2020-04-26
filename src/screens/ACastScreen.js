@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { View } from 'react-native';
 import { RtcEngine } from 'react-native-agora';
 import KeepAwake from 'react-native-keep-awake';
-import { checkCameraPermission, checkAudioPermission, ConfirmModal, InfoModal } from '../utils/Utils';
+import { checkCameraPermission, checkAudioPermission, ConfirmModal, InfoModal, getDeviceID } from '../utils/Utils';
 import { connect } from 'react-redux';
 
 import { styles, app } from '../constants';
@@ -27,16 +27,17 @@ class ACastScreen extends Component {
 
     state = {
         peerIds: [],
-        joinSucceed: false,
-        time: 0,
-        timeStr: '',
-        isConnecting: false
+        isConnecting: false,
+        localDeviceID: null
     };
 
     componentDidMount() {
         console.log('BroadcastScreen DidMount state', this.state)
         checkAudioPermission()
         checkCameraPermission()
+        
+        let localDeviceID = await getDeviceID()
+        this.setState({ localDeviceID })
 
         RtcEngine.startPreview();
 
@@ -77,15 +78,24 @@ class ACastScreen extends Component {
     _onCompleted = async () => {
         this.props.navigation.goBack();
         let title = 'Brodcast finished',
-            message = 'Broadcast finished by host!',
-            onConfirm = () => { };
-        InfoModal(title, message, 'Ok', onConfirm)
+            message = 'Broadcast finished by host!';
+        InfoModal(title, message);
+    }
+
+    _onTicketCompromise = async () => {
+        this.props.navigation.goBack();
+        let title = 'Ticket in use',
+            message = 'Same ticket already being used on another device!';
+        InfoModal(title, message);
     }
 
     render() {
-        const { peerIds, isConnecting } = this.state
+        const { peerIds, isConnecting, localDeviceID } = this.state
         if (this.props.event.status === COMPLETED) {
             this._onCompleted()
+        }
+        if (localDeviceID && this.props.ticket.deviceID !== localDeviceID) {
+            this._onTicketCompromise()
         }
         return (
             <View style={{ flex: 1 }}>

@@ -30,16 +30,17 @@ class CastScreen extends Component {
 
     state = {
         peerIds: [],
-        joinSucceed: false,
-        time: 0,
-        timeStr: '',
-        isConnecting: false
+        isConnecting: false,
+        localDeviceID: null
     };
 
     componentDidMount() {
         console.log('CastScreen DidMount state', this.state)
         checkAudioPermission()
         checkCameraPermission()
+
+        let localDeviceID = await getDeviceID()
+        this.setState({ localDeviceID })
 
         RtcEngine.startPreview();
 
@@ -85,10 +86,20 @@ class CastScreen extends Component {
         InfoModal(title, message, 'Ok', onConfirm)
     }
 
+    _onTicketCompromise = async () => {
+        this.props.navigation.goBack();
+        let title = 'Ticket in use',
+            message = 'Same ticket already being used on another device!';
+        InfoModal(title, message);
+    }
+
     render() {
         const { peerIds, isConnecting } = this.state
         if (this.props.event.status === COMPLETED) {
             this._onCompleted()
+        }
+        if (localDeviceID && this.props.ticket.deviceID !== localDeviceID) {
+            this._onTicketCompromise()
         }
         return (
             <View style={{ flex: 1 }}>

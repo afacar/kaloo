@@ -29,13 +29,17 @@ class CallScreen extends Component {
 
     state = {
         peerIds: [],
-        isConnecting: false
+        isConnecting: false,
+        localDeviceID: null
     };
 
     componentDidMount() {
         console.log('CallScreen DidMount state', this.state)
         checkAudioPermission()
         checkCameraPermission()
+
+        let localDeviceID = await getDeviceID()
+        this.setState({ localDeviceID })
 
         RtcEngine.startPreview();
         this.listenChannel()
@@ -76,12 +80,22 @@ class CallScreen extends Component {
         this.props.navigation.goBack()
     }
 
+    _onTicketCompromise = async () => {
+        this.props.navigation.goBack();
+        let title = 'Ticket in use',
+            message = 'Same ticket already being used on another device!';
+        InfoModal(title, message);
+    }
+
     render() {
         const { peerIds, isConnecting } = this.state
         const { status } = this.props.event;
 
         if (status === COMPLETED) {
             this._onCompleted()
+        }
+        if (localDeviceID && this.props.ticket.deviceID !== localDeviceID) {
+            this._onTicketCompromise()
         }
         return (
             <View style={{ flex: 1 }}>
