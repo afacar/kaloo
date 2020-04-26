@@ -76,7 +76,7 @@ class SignInScreen extends Component {
     return (
       <SafeAreaView style={{ flex: 1, backgroundColor: 'white' }}>
         <CustomStatusBar />
-        <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : ''} style={styles.container}>
+        <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={styles.container}>
           <View style={{ flex: 1, backgroundColor: "#3598FE" }}>
             <ScrollView
               contentContainerStyle={{

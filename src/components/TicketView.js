@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, StyleSheet, KeyboardAvoidingView, ScrollView, Image, Text } from 'react-native';
+import { View, StyleSheet, KeyboardAvoidingView, ScrollView, Image, Text, Platform } from 'react-native';
 import { Input } from 'react-native-elements';
 import { functions, firestore, auth } from 'react-native-firebase';
 import { connect } from "react-redux";
@@ -67,7 +67,9 @@ class TicketView extends Component {
       <SafeAreaView style={{ flex: 1, backgroundColor: 'white' }}>
         <CustomStatusBar />
         <ScrollView contentContainerStyle={styles.scrollView} >
-          <KeyboardAvoidingView style={styles.container}>
+          <KeyboardAvoidingView
+            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+            style={styles.container}>
             <View>
               {/** EMPTY HEADER COMPONENT */}
             </View>

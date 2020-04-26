@@ -88,7 +88,9 @@ class ProfileScreen extends Component {
         const { email, displayName, photoURL, isAvatarChanged, isNameChanged, isWaiting, errorMessage } = this.state
         return (
             <SafeAreaView style={{ flex: 1, backgroundColor: "white" }}>
-                <KeyboardAvoidingView style={styles.container}>
+                <KeyboardAvoidingView
+                    behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+                    style={styles.container}>
                     <ScrollView contentContainerStyle={{ flexGrow: 1, paddingHorizontal: 40, paddingVertical: 10, borderTopLeftRadius: 26, borderTopRightRadius: 26, backgroundColor: 'white' }} >
                         <View style={{ flex: 1, justifyContent: 'space-between', }}>
                             <View>

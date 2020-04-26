@@ -80,7 +80,7 @@ class EventCreateScreen extends Component {
     const { date, time, gmt } = splitDate(eventDate)
     return (
       <SafeAreaView style={{ flex: 1, backgroundColor: "white" }}>
-        <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : ''} style={styles.container}>
+        <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={styles.container}>
           <View style={{ flex: 1, backgroundColor: "#3598FE" }}>
             <ScrollView contentContainerStyle={{
               flexGrow: 1,
