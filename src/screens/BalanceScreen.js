@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
-import { View, StyleSheet, ScrollView, KeyboardAvoidingView } from 'react-native';
+import { View, StyleSheet, KeyboardAvoidingView, Linking } from 'react-native';
+import { functions, auth } from 'react-native-firebase';
+
 import { colors } from '../constants';
 import HeaderLeft from '../components/Headers/HeaderLeft';
 import { ContactUs } from '../components/ContactUs';
@@ -15,7 +17,15 @@ class BalanceScreen extends Component {
     headerLeft: () => <HeaderLeft onPress={navigation.goBack} />
   });
 
-  state = { iban: '', totalBalance: '', currentBalance: 0, requestLoading: false };
+  state = { iban: '', totalBalance: '', currentBalance: 0, requestLoading: false, stripeUrl: '' };
+
+  async componentDidMount() {
+    let { uid } = auth().currentUser
+    let getCreateUserAccountUrl = functions().httpsCallable('getCreateUserAccountUrl')
+    let response = await getCreateUserAccountUrl({ uid })
+    if (response.data.state === 'SUCCESS')
+      this.setState({ stripeUrl: response.data.url })
+  }
 
   requestPayment = () => {
     this.setState({ requestLoading: true })
@@ -24,7 +34,7 @@ class BalanceScreen extends Component {
   }
 
   render() {
-    const { requestLoading, currentBalance } = this.state
+    const { requestLoading, currentBalance, stripeUrl } = this.state
     return (
       <SafeAreaView style={{ flex: 1, backgroundColor: "white" }}>
         <KeyboardAvoidingView style={styles.container}>
@@ -38,12 +48,12 @@ class BalanceScreen extends Component {
 
             <View>
               <DefaultButton
-                title={'Requst Payment'}
-                onPress={this.requestPayment}
-                loading={requestLoading} />
+                title={'Create Account'}
+                onPress={() => Linking.openURL(stripeUrl)}
+                loading={requestLoading}
+              />
               <ContactUs title='Need Help?' screen='Profile' />
             </View>
-
           </View>
         </KeyboardAvoidingView>
       </SafeAreaView>
