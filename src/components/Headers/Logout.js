@@ -3,13 +3,13 @@ import { Button } from 'react-native-elements';
 import { auth } from 'react-native-firebase';
 import { connect } from 'react-redux';
 
-import { clearLiveEventListener } from '../../appstate/actions/host_actions';
+import { clearHostEventsListener } from '../../appstate/actions/host_actions';
 
 class Logout extends React.Component {
 
     logout = () => {
         // TODO: Remove firebase cache and listeners
-        this.props.clearLiveEventListener()
+        this.props.clearHostEventsListener()
         auth().signOut()
     }
 
@@ -27,4 +27,4 @@ class Logout extends React.Component {
     }
 }
 
-export default connect(null, { clearLiveEventListener })(Logout);
+export default connect(null, { clearHostEventsListener })(Logout);

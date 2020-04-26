@@ -29,7 +29,7 @@ class EventListScreen extends Component {
 
     componentDidMount = async () => {
         this.authListener = auth().onAuthStateChanged(user => {
-            if (user && !user.isAnonymous) {
+            if (user) {
                 this.props.navigation.navigate('UserHome');
             } else {
                 this.props.navigation.navigate('Splash');

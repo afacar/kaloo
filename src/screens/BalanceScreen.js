@@ -37,16 +37,16 @@ class BalanceScreen extends Component {
             </View>
 
             <View>
-              <DefaultButton 
-              title={'Requst Payment'}
-              onPress={this.requestPayment}
-              loading={requestLoading} />
+              <DefaultButton
+                title={'Requst Payment'}
+                onPress={this.requestPayment}
+                loading={requestLoading} />
               <ContactUs title='Need Help?' screen='Profile' />
             </View>
 
           </View>
-        </KeyboardAvoidingView >
-      </SafeAreaView >
+        </KeyboardAvoidingView>
+      </SafeAreaView>
     );
   }
 }
