@@ -8,11 +8,9 @@ import HostScreen from '../screens/HostScreen';
 import EventCreateScreen from '../screens/EventCreateScreen';
 import EventPreviewScreen from '../screens/EventPreviewScreen';
 import EventPublishScreen from "../screens/EventPublishScreen";
-import HostCallScreen from '../screens/HostCallScreen';
+import HostVideoScreen from '../screens/HostVideoScreen';
+import VideoScreen from '../screens/VideoScreen';
 import { colors } from '../constants';
-import CallScreen from '../screens/CallScreen';
-import HostCastScreen from '../screens/HostCastScreen';
-import CastScreen from '../screens/CastScreen';
 
 export default UserNavigatior = createStackNavigator(
   {
@@ -25,12 +23,10 @@ export default UserNavigatior = createStackNavigator(
     Balance: BalanceScreen,
     /** SCREENS FOR HOSTING EVENT */
     Host: HostScreen,
-    HostCall: HostCallScreen,
-    HostBroadcast: HostCastScreen,
+    HostVideo: HostVideoScreen,
     /** SCREENS FOR JOINING EVENT */
     Guest: GuestScreen,
-    Call: CallScreen,
-    Broadcast: CastScreen,
+    Video: VideoScreen,
   },
   {
     initialRouteName: "UserHome",

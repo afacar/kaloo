@@ -15,32 +15,29 @@ import TransparentStatusBar from '../components/StatusBars/TransparentStatusBar'
 import CallView from '../components/CallView';
 import SwitchCamera from '../components/Headers/SwitchCamera';
 import { WaitingModal } from '../components/Modals';
+import BroadcastView from '../components/BroadcastView';
 
+const { HOST_UID } = app;
 const { SCHEDULED, IN_PROGRESS, SUSPENDED, COMPLETED } = app.EVENT_STATUS
+const { CALL, BROADCAST } = app.EVENT_TYPE
 
-const HOST_UID = 1000;
 
-
-class HostCallScreen extends Component {
+class HostVideoScreen extends Component {
     static navigationOptions = ({ navigation }) => ({
         headerTransparent: { ...styles.headerTransparent },
         headerBackground: () => <HeaderGradient />,
         headerStyle: { opacity: 0.7 },
         headerTitle: () => <HostHeaderTitle />,
         headerLeft: () => <HeaderLeft onPress={navigation.goBack} />,
-        headerRight: () => <SwitchCamera />
+        headerRight: () => <SwitchCamera clientRole={1} />
     });
 
     state = {
         peerIds: [],
-        joinSucceed: false,
-        time: 0,
-        timeStr: '',
         isConnecting: false
     };
 
     componentDidMount() {
-        console.log('HostCallScreen DidMount state', this.state)
         checkAudioPermission()
         checkCameraPermission()
 
@@ -77,8 +74,6 @@ class HostCallScreen extends Component {
         this.setState({ isConnecting: true })
         let response = await startEvent(eventId);
         if (response) {
-            console.log('host joinning channel with', eventId, HOST_UID)
-
             RtcEngine.joinChannel(eventId, HOST_UID)
                 .then(async (result) => {
                     this.setState({ isConnecting: false })
@@ -186,9 +181,21 @@ class HostCallScreen extends Component {
                 <KeepAwake />
                 <TransparentStatusBar />
                 <View style={{ flex: 1 }}>
-                    <CallView event={this.props.event} peerIds={peerIds} />
+                    {eventType === CALL ? (
+                        <CallView
+                            event={this.props.event}
+                            peerIds={peerIds}
+                        />
+                    ) : (
+                            <BroadcastView
+                                event={this.props.event}
+                                clientRole={1}
+                                viewers={this.props.viewers}
+                                hostId={HOST_UID}
+                            />
+                        )}
                     <BroadcastButton status={status} eventType={eventType} onPress={this._onPress} />
-                    <WaitingModal isWaiting={isConnecting} text='We are working on it...' />
+                    <WaitingModal isWaiting={isConnecting} />
                 </View>
             </View>
         )
@@ -203,8 +210,8 @@ class HostCallScreen extends Component {
 
 const mapStateToProps = ({ joinEvent }) => {
     const { event, viewers } = joinEvent
-    console.log('HostMCallScreen mapStateToProps', joinEvent)
+    console.log('HostVideoScreen mapStateToProps', joinEvent)
     return { event, viewers }
 }
 
-export default connect(mapStateToProps, null)(HostCallScreen)
+export default connect(mapStateToProps, null)(HostVideoScreen)

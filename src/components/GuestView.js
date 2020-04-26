@@ -71,7 +71,7 @@ class GuestView extends Component {
             RtcEngine.joinChannel(eventId, parseInt(ticket.index))
                 .then((res) => {
                     let nextScreen = auth().currentUser ? '' : 'A'
-                    nextScreen += eventType === BROADCAST ? 'Broadcast' : 'Call'
+                    nextScreen += 'Video'
                     navigate(nextScreen)
                 })
                 .catch((error) => {

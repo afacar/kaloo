@@ -4,8 +4,7 @@ import WelcomeScreen from '../screens/WelcomeScreen';
 import SignInScreen from '../screens/SignInScreen';
 import AGuestScreen from '../screens/AGuestScreen';
 import RegisterScreen from '../screens/RegisterScreen';
-import ACallScreen from '../screens/ACallScreen';
-import ACastScreen from '../screens/ACastScreen';
+import AVideoScreen from '../screens/AVideoScreen';
 import { colors } from '../constants';
 
 export default MainNavigatior = createStackNavigator(
@@ -13,8 +12,7 @@ export default MainNavigatior = createStackNavigator(
     Home: WelcomeScreen,
     ATicket: ATicketScreen,
     AGuest: AGuestScreen,
-    ACall: ACallScreen,
-    ABroadcast: ACastScreen,
+    AVideo: AVideoScreen,
     SignIn: SignInScreen,
     Register: RegisterScreen,
   },

@@ -38,11 +38,10 @@ class HostScreen extends Component {
         const { eventType } = this.state
         // Broadcast channelProfile: 1 & Call channelProfile: 0
         let channelProfile = eventType === BROADCAST ? 1 : 0
-        let eventScreen = eventType === BROADCAST ? 'HostBroadcast' : 'HostCall'
         // Host clientRole: 1; Guest clientRole: 2
         let clientRole = 1
 
-        this.setState({ channelProfile, eventScreen, clientRole })
+        this.setState({ channelProfile, clientRole })
     }
 
     componentWillUnmount() {
@@ -51,7 +50,7 @@ class HostScreen extends Component {
     }
 
     onCamera = () => {
-        const { channelProfile, clientRole, eventScreen } = this.state
+        const { channelProfile, clientRole } = this.state
         const options = {
             appid: app.AGORA_APP_ID,
             channelProfile,
@@ -68,7 +67,7 @@ class HostScreen extends Component {
         };
         // Opening camera here
         RtcEngine.init(options)
-        this.props.navigation.navigate(eventScreen)
+        this.props.navigation.navigate('HostVideo')
     }
 
     render() {

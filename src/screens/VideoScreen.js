@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { View } from 'react-native';
 import { RtcEngine } from 'react-native-agora';
 import KeepAwake from 'react-native-keep-awake';
-import { checkCameraPermission, checkAudioPermission, ConfirmModal, InfoModal } from '../utils/Utils';
+import { checkCameraPermission, checkAudioPermission, ConfirmModal, InfoModal, getDeviceID } from '../utils/Utils';
 import { connect } from 'react-redux';
 
 import { styles, app } from '../constants';
@@ -10,21 +10,25 @@ import HeaderGradient from '../components/HeaderGradient';
 import HeaderLeft from '../components/Headers/HeaderLeft';
 import TransparentStatusBar from '../components/StatusBars/TransparentStatusBar';
 import CallView from '../components/CallView';
-import SwitchCamera from '../components/Headers/SwitchCamera';
 import { WaitingModal } from '../components/Modals';
-import AudienceHeaderTitle from '../components/Headers/AudienceHeaderTitle';
+import GuestHeaderTitle from '../components/Headers/GuestHeaderTitle';
 import { leaveEvent } from '../utils/EventHandler';
+import BroadcastView from '../components/BroadcastView';
+import SwitchCamera from '../components/Headers/SwitchCamera';
 
+const { HOST_UID } = app
 const { COMPLETED } = app.EVENT_STATUS
+const { CALL } = app.EVENT_TYPE
 
-class CallScreen extends Component {
+
+class VideoScreen extends Component {
     static navigationOptions = ({ navigation }) => ({
         headerTransparent: { ...styles.headerTransparent },
         headerBackground: () => <HeaderGradient />,
         headerStyle: { opacity: 0.7 },
-        headerTitle: () => <AudienceHeaderTitle />,
+        headerTitle: () => <GuestHeaderTitle />,
         headerLeft: () => <HeaderLeft onPress={navigation.goBack} />,
-        headerRight: () => <SwitchCamera />
+        headerRight: () => <SwitchCamera clientRole={2} />
     });
 
     state = {
@@ -33,13 +37,14 @@ class CallScreen extends Component {
         localDeviceID: null
     };
 
-    componentDidMount() {
-        console.log('CallScreen DidMount state', this.state)
+    async componentDidMount() {
+        this._isMounted = true;
+        console.log('VideoScreen DidMount state', this.state)
         checkAudioPermission()
         checkCameraPermission()
 
         let localDeviceID = await getDeviceID()
-        this.setState({ localDeviceID })
+        this._isMounted && this.setState({ localDeviceID })
 
         RtcEngine.startPreview();
         this.listenChannel()
@@ -50,7 +55,7 @@ class CallScreen extends Component {
             console.log('userJoined data', data)
             const { peerIds } = this.state;
             if (peerIds.indexOf(data.uid) === -1) {
-                this.setState({
+                this._isMounted && this.setState({
                     peerIds: [...this.state.peerIds, data.uid]
                 })
             }
@@ -58,7 +63,7 @@ class CallScreen extends Component {
         })
         RtcEngine.on('userOffline', (data) => {
             console.log('userOffline data', data)
-            this.setState({
+            this._isMounted && this.setState({
                 peerIds: this.state.peerIds.filter(uid => uid !== data.uid)
             })
             console.log('userOffline state', this.state)
@@ -88,8 +93,8 @@ class CallScreen extends Component {
     }
 
     render() {
-        const { peerIds, isConnecting } = this.state
-        const { status } = this.props.event;
+        const { peerIds, isConnecting, localDeviceID } = this.state
+        const { status, eventType } = this.props.event;
 
         if (status === COMPLETED) {
             this._onCompleted()
@@ -102,7 +107,19 @@ class CallScreen extends Component {
                 <KeepAwake />
                 <TransparentStatusBar />
                 <View style={{ flex: 1 }}>
-                    <CallView event={this.props.event} peerIds={peerIds} />
+                    {eventType === CALL ? (
+                        <CallView
+                            event={this.props.event}
+                            peerIds={peerIds}
+                        />) : (
+                            <BroadcastView
+                                event={this.props.event}
+                                clientRole={2}
+                                viewers={this.props.viewers}
+                                hostId={HOST_UID}
+                            />
+                        )
+                    }
                     <WaitingModal isWaiting={isConnecting} text='We are connecting...' />
                 </View>
             </View>
@@ -110,15 +127,16 @@ class CallScreen extends Component {
     }
 
     componentWillUnmount() {
-        this._onSuspend()
         RtcEngine.leaveChannel().then(res => { });
+        this._onSuspend()
+        this._isMounted = false;
     }
 }
 
 const mapStateToProps = ({ joinEvent }) => {
-    console.log('CallScreen mapStateToProps', joinEvent)
-    const { event, ticket } = joinEvent
-    return { event, ticket }
+    console.log('VideoScreen mapStateToProps', joinEvent)
+    const { event, ticket, viewers } = joinEvent
+    return { event, ticket, viewers }
 }
 
-export default connect(mapStateToProps, null)(CallScreen)
+export default connect(mapStateToProps, null)(VideoScreen)
