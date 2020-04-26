@@ -71,12 +71,14 @@ class HostVideoScreen extends Component {
     }
 
     onStartCall = async () => {
-        const { eventId } = this.props.event;
+        let { event } = this.props;
         RtcEngine.leaveChannel();
         this._isMounted && this.setState({ isConnecting: true })
-        let response = await startEvent(eventId);
+        let response = await startEvent(event.eventId);
         if (response) {
-            RtcEngine.joinChannel(eventId, HOST_UID)
+            event.status = IN_PROGRESS
+            this.props.setHostEventListener(event)
+            RtcEngine.joinChannel(event.eventId, HOST_UID)
                 .then(async (result) => {
                     this._isMounted && this.setState({ isConnecting: false })
                 })
@@ -100,14 +102,15 @@ class HostVideoScreen extends Component {
     }
 
     onContinueCall = async () => {
-        const { eventId } = this.props.event;
+        let { event } = this.props;
         RtcEngine.leaveChannel();
         this._isMounted && this.setState({ isConnecting: true })
-        let response = await continueLive(eventId);
+        let response = await continueLive(event.eventId);
         if (response) {
-            console.log('host joinning channel with', eventId, HOST_UID)
-
-            RtcEngine.joinChannel(eventId, HOST_UID)
+            console.log('host joinning channel with', event.eventId, HOST_UID)
+            event.status = IN_PROGRESS
+            this.props.setHostEventListener(event)
+            RtcEngine.joinChannel(event.eventId, HOST_UID)
                 .then(async (result) => {
                     this._isMounted && this.setState({ isConnecting: false })
                 })
