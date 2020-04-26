@@ -176,6 +176,7 @@ const styles = StyleSheet.create({
         backgroundColor: colors.GREEN,
         bottom: 24,
         borderRadius: 6,
+        zIndex: 1000,
         padding: 12,
         justifyContent: 'center',
         alignItems: 'center'
@@ -185,6 +186,7 @@ const styles = StyleSheet.create({
         alignSelf: 'center',
         backgroundColor: colors.RED,
         bottom: 24,
+        zIndex: 1000,
         borderRadius: 6,
         padding: 12,
         justifyContent: 'center',
