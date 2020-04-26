@@ -16,6 +16,7 @@ export default {
     RESERVED: 'RESERVED',
     SOLD: 'SOLD',
     IN_USE: 'IN_USE'
-  }
+  },
+  HOST_UID: 1000001,
 
 }
