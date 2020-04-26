@@ -10,7 +10,7 @@ import { connect } from 'react-redux';
 import { generateRandomString } from '../utils/Utils';
 
 import { setUserProfile } from "../appstate/actions/auth_actions";
-import { setAllEventsListener, clearLiveEventListener } from "../appstate/actions/host_actions";
+import { setHostEventsListener, clearHostEventsListener } from "../appstate/actions/host_actions";
 
 class SplashScreen extends Component {
     async componentDidMount() {
@@ -27,11 +27,11 @@ class SplashScreen extends Component {
                 await this.props.loadAssets()
                 const user = auth().currentUser;
                 if (user) {
-                    await this.props.setAllEventsListener()
+                    await this.props.setHostEventsListener()
                     await this.props.setUserProfile();
                     this.props.navigation.navigate('User');
                 } else {
-                    this.props.clearLiveEventListener()
+                    this.props.clearHostEventsListener()
                     this.props.navigation.navigate('Home');
                 }
             } catch (error) {
@@ -72,4 +72,4 @@ const styles = StyleSheet.create({
     }
 })
 
-export default connect(null, { loadAssets, setUserProfile, setAllEventsListener, clearLiveEventListener })(SplashScreen);
+export default connect(null, { loadAssets, setUserProfile, setHostEventsListener, clearHostEventsListener })(SplashScreen);

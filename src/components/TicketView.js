@@ -36,7 +36,7 @@ class TicketView extends Component {
         eventData.eventDate = date
         let guestScreen = auth().currentUser ? 'Guest' : 'AGuest'
         this.setState({ isWaiting: false })
-        this.props.setJoinEventListener(eventData)
+        this.props.setGuestEventListener(eventData)
         this.props.setTicketListener(eventData)
         this.props.setViewerListener(eventData);
         this.props.navigation.navigate(guestScreen, { event: eventData })
@@ -135,8 +135,8 @@ const styles = StyleSheet.create({
   },
 });
 
-const mapStateToProps = ({ assets, joinEvent }) => {
-  return { assets: assets.assets, joinEvent }
+const mapStateToProps = ({ assets }) => {
+  return { assets: assets.assets }
 }
 
 export default connect(mapStateToProps, actions)(TicketView);

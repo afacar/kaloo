@@ -1,17 +1,17 @@
 import { firestore } from "react-native-firebase";
 
-import { LISTEN_JOIN_EVENT, UNLISTEN_JOIN_EVENT, LISTEN_TICKET, LISTEN_VIEWER } from "./types"
+import { LISTEN_GUEST_EVENT, UNLISTEN_GUEST_EVENT, LISTEN_TICKET, LISTEN_VIEWERS } from "./types"
 
-let joinEventListener = () => { console.log('joinEventListener Cleaned!') };
+let guestEventListener = () => { console.log('guestEventListener Cleaned!') };
 
 
-export const setJoinEventListener = (event) => async (dispatch) => {
+export const setGuestEventListener = (event) => async (dispatch) => {
     const { eventId } = event
     dispatch({
-        type: LISTEN_JOIN_EVENT,
+        type: LISTEN_GUEST_EVENT,
         payload: event
     });
-    joinEventListener = firestore().doc(`events/${eventId}`)
+    guestEventListener = firestore().doc(`events/${eventId}`)
         .onSnapshot((eventDoc) => {
             let event = eventDoc.data()
             let date = event.eventDate
@@ -22,7 +22,7 @@ export const setJoinEventListener = (event) => async (dispatch) => {
             }
             event.eventDate = date;
             return dispatch({
-                type: LISTEN_JOIN_EVENT,
+                type: LISTEN_GUEST_EVENT,
                 payload: event
             });
         });
@@ -35,7 +35,7 @@ export const setTicketListener = (event) => async (dispatch) => {
         type: LISTEN_TICKET,
         payload: ticket
     });
-    joinEventListener = firestore().doc(`events/${eventId}/tickets/${ticketId}`)
+    guestEventListener = firestore().doc(`events/${eventId}/tickets/${ticketId}`)
         .onSnapshot((ticketDoc) => {
             let ticket = ticketDoc.data()
             ticket.ticketId = ticketId
@@ -61,25 +61,24 @@ export const setTicketListener = (event) => async (dispatch) => {
 export const setViewerListener = (event) => async (dispatch) => {
     const { eventId } = event
     dispatch({
-        type: LISTEN_VIEWER,
+        type: LISTEN_VIEWERS,
         payload: 0
     });
-    joinEventListener = firestore().doc(`events/${eventId}/live/--stats--`)
+    guestEventListener = firestore().doc(`events/${eventId}/live/--stats--`)
         .onSnapshot((viewerDoc) => {
             let ticket = viewerDoc.data()
             return dispatch({
-                type: LISTEN_VIEWER,
+                type: LISTEN_VIEWERS,
                 payload: ticket.viewerCount || 0
             });
         });
 }
 
-export const clearJoinEventListener = () => (dispatch) => {
-    console.log('clearJoinEventListener')
-    if (joinEventListener)
-        joinEventListener();
+export const clearGuestEventListener = () => (dispatch) => {
+    if (guestEventListener)
+        guestEventListener();
     return dispatch({
-        type: UNLISTEN_JOIN_EVENT,
+        type: UNLISTEN_GUEST_EVENT,
         payload: null
     });
 }

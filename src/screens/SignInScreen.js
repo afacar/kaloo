@@ -10,7 +10,7 @@ import { Input } from 'react-native-elements';
 import { auth } from 'react-native-firebase';
 
 import { setUserProfile } from "../appstate/actions/auth_actions";
-import { setAllEventsListener } from "../appstate/actions/host_actions";
+import { setHostEventsListener } from "../appstate/actions/host_actions";
 import { HighlightedText, BoldLabel, H1Label } from '../components/Labels';
 import { DefaultButton, ClickableText } from '../components/Buttons';
 import { validateEmail } from '../utils/Utils'
@@ -44,7 +44,7 @@ class SignInScreen extends Component {
     try {
       let user = await auth().signInWithEmailAndPassword(email, password);
       if (user) {
-        await this.props.setAllEventsListener()
+        await this.props.setHostEventsListener()
         await this.props.setUserProfile();
         return this.props.navigation.navigate('UserHome');
       }
@@ -172,4 +172,4 @@ const styles = StyleSheet.create({
   }
 });
 
-export default connect(null, { setUserProfile, setAllEventsListener })(SignInScreen);
+export default connect(null, { setUserProfile, setHostEventsListener })(SignInScreen);

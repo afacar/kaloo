@@ -7,6 +7,6 @@ import audienceReducer from './audience_reducers';
 export default combineReducers({
     auth: authReducer,
     assets: appReducer,
-    events: hostReducer,
-    joinEvent: audienceReducer,
+    hostEvents: hostReducer,
+    guestEvent: audienceReducer,
 });

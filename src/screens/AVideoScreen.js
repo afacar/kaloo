@@ -133,9 +133,9 @@ class AVideoScreen extends Component {
     }
 }
 
-const mapStateToProps = ({ joinEvent }) => {
-    console.log('AVideoScreen mapStateToProps', joinEvent)
-    const { event, ticket, viewers } = joinEvent
+const mapStateToProps = ({ guestEvent }) => {
+    console.log('AVideoScreen mapStateToProps', guestEvent)
+    const { event, ticket, viewers } = guestEvent
     return { event, ticket, viewers }
 }
 

@@ -208,10 +208,9 @@ class HostVideoScreen extends Component {
     }
 }
 
-const mapStateToProps = ({ joinEvent }) => {
-    const { event, viewers } = joinEvent
-    console.log('HostVideoScreen mapStateToProps', joinEvent)
-    return { event, viewers }
+const mapStateToProps = ({ hostEvents }) => {
+    const { hostEvent, myViewers } = hostEvents
+    return { event: hostEvent, viewers: myViewers }
 }
 
 export default connect(mapStateToProps, null)(HostVideoScreen)

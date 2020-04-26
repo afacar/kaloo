@@ -25,15 +25,15 @@ class SwitchCamera extends React.Component {
                 </TouchableOpacity>
             )
         } else {
-            return <View></View>
+            return <View />
         }
     }
 }
 
-const mapStateToProps = ({ joinEvent }) => {
-    const { event } = joinEvent
-    console.log('SwitchCamera mapStateToProps status', joinEvent)
-    return { eventType: event.eventType }
+const mapStateToProps = ({ guestEvent }) => {
+    console.log('SwitchCamera mapStateToProps guestEvent ', guestEvent)
+    const eventType = guestEvent.event && guestEvent.event.eventType || CALL
+    return { eventType }
 }
 
 export default connect(mapStateToProps, null)(SwitchCamera)

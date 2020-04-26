@@ -1,4 +1,4 @@
-import { LISTEN_JOIN_EVENT, UNLISTEN_JOIN_EVENT, LISTEN_TICKET, LISTEN_VIEWER } from "../actions/types";
+import { LISTEN_GUEST_EVENT, UNLISTEN_GUEST_EVENT, LISTEN_TICKET, LISTEN_VIEWERS } from "../actions/types";
 
 const INITIAL_STATE = {
     event: null,
@@ -8,16 +8,16 @@ const INITIAL_STATE = {
 
 export default function (state = INITIAL_STATE, action) {
     switch (action.type) {
-        case UNLISTEN_JOIN_EVENT: {
+        case UNLISTEN_GUEST_EVENT: {
             return INITIAL_STATE
         }
-        case LISTEN_JOIN_EVENT: {
+        case LISTEN_GUEST_EVENT: {
             return { ...state, event: action.payload }
         }
         case LISTEN_TICKET: {
             return { ...state, ticket: action.payload }
         }
-        case LISTEN_VIEWER: {
+        case LISTEN_VIEWERS: {
             return { ...state, viewers: action.payload }
         }
         default:

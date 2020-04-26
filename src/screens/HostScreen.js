@@ -32,10 +32,8 @@ class HostScreen extends Component {
         headerLeft: () => <HeaderLeft onPress={navigation.goBack} />
     });
 
-    state = { ...this.props.event }
-
     componentDidMount() {
-        const { eventType } = this.state
+        const { eventType } = this.props.event
         // Broadcast channelProfile: 1 & Call channelProfile: 0
         let channelProfile = eventType === BROADCAST ? 1 : 0
         // Host clientRole: 1; Guest clientRole: 2
@@ -67,11 +65,11 @@ class HostScreen extends Component {
         };
         // Opening camera here
         RtcEngine.init(options)
-        this.props.navigation.navigate('HostVideo')
+        this.props.navigation.push('HostVideo')
     }
 
     render() {
-        var { status } = this.props.event
+        var { status, eventLink } = this.props.event
         let buttonTitle = status === COMPLETED ? 'Meeting Completed' : status === SUSPENDED ? 'Continue Meeting' : status === SCHEDULED ? 'Preview audio and video' : 'Meeting in Progress'
         return (
             <SafeAreaView style={{ flex: 1, backgroundColor: 'white' }}>
@@ -86,7 +84,7 @@ class HostScreen extends Component {
                             navigation={this.props.navigation}
                         />
                         <EventShare
-                            link={this.state.eventLink}
+                            link={eventLink}
                         />
                         <View style={{ marginVertical: 15 }}>
                             <DefaultButton
@@ -123,10 +121,10 @@ const styles = StyleSheet.create({
     },
 })
 
-const mapStateToProps = ({ joinEvent }) => {
-    const { event, viewers } = joinEvent
-    console.log('HostScreen mapStateToProps', joinEvent)
-    return { event, viewers }
+const mapStateToProps = ({ hostEvents }) => {
+    console.log('HostScreen mapStateToProps', hostEvents)
+    const { hostEvent, myViewers } = hostEvents
+    return { event: hostEvent, viewers: myViewers }
 }
 
 export default connect(mapStateToProps, actions)(HostScreen);

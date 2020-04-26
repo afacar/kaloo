@@ -6,7 +6,7 @@ import { connect } from 'react-redux';
 import { SafeAreaView } from 'react-navigation'
 
 import { checkAudioPermission, checkCameraPermission, compare } from '../utils/Utils';
-import * as actions from '../appstate/actions/audience_actions';
+import * as actions from '../appstate/actions/host_actions';
 import app from "../constants/app";
 import { ContactUs } from '../components/ContactUs';
 import { DefaultButton, ClearButton, ClickableText } from '../components/Buttons';
@@ -38,7 +38,6 @@ class EventListScreen extends Component {
         checkCameraPermission()
         checkAudioPermission()
 
-        //this.props.setAllEventsListener()
     }
 
     componentWillUnmount() {
@@ -78,9 +77,8 @@ class EventListScreen extends Component {
                             subtitle={description}
                             containerStyle={{ borderWidth: 0.7, borderRadius: 6, marginTop: 7, elevation: 1 }}
                             onPress={() => {
-                                console.log('before goin settin eventid', event)
-                                this.props.setJoinEventListener(event)
-                                this.props.setViewerListener(event)
+                                this.props.setHostEventListener(event)
+                                this.props.setMyViewersListener(event)
                                 this.props.navigation.navigate('Host', { eventId: event.eventId })
                             }}
                         />
@@ -105,8 +103,8 @@ class EventListScreen extends Component {
                             subtitle={description}
                             onPress={() => {
                                 console.log('before goin settin eventid', event)
-                                this.props.setJoinEventListener(event)
-                                this.props.setViewerListener(event)
+                                this.props.setHostEventListener(event)
+                                this.props.setMyViewersListener(event)
                                 this.props.navigation.navigate('Host', { eventId: event.eventId })
                             }}
                             containerStyle={{ borderWidth: 0.7, borderRadius: 6, marginTop: 7, elevation: 1 }}
@@ -179,8 +177,8 @@ const styles = StyleSheet.create({
     }
 })
 
-const mapStateToProps = ({ auth, events }) => {
-    return { profile: auth.profile, events: events.myEvents }
+const mapStateToProps = ({ auth, hostEvents }) => {
+    return { profile: auth.profile, events: hostEvents.allEvents }
 }
 
 export default connect(mapStateToProps, actions)(EventListScreen);
