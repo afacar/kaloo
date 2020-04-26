@@ -42,10 +42,9 @@ const styles = StyleSheet.create({
 
 })
 
-const mapStateToProps = ({ joinEvent }) => {
-    const { event } = joinEvent
-    const status = event.status
-    console.log('HostHeaderTitle mapStateToProps status', status)
+const mapStateToProps = ({ hostEvents }) => {
+    const { hostEvent } = hostEvents
+    const status = hostEvent.status
     return { status }
 }
 

@@ -6,6 +6,7 @@ import { startEvent, endLive, suspendLive, continueLive } from '../utils/EventHa
 import { checkCameraPermission, checkAudioPermission, ConfirmModal, InfoModal } from '../utils/Utils';
 import { connect } from 'react-redux';
 
+import * as actions from '../appstate/actions/host_actions';
 import { styles, app } from '../constants';
 import { BroadcastButton } from '../components/Buttons';
 import HeaderGradient from '../components/HeaderGradient';
@@ -128,10 +129,12 @@ class HostVideoScreen extends Component {
     }
 
     onEndCall = async () => {
-        const { eventId } = this.props.event;
+        let { event } = this.props;
         this.setState({ isConnecting: true })
-        let reponse = await endLive(eventId);
+        let reponse = await endLive(event.eventId);
         if (reponse) {
+            event.status = COMPLETED
+            this.props.setHostEventListener(event)
             RtcEngine.leaveChannel();
             this.props.navigation.goBack();
         } else {
@@ -208,10 +211,9 @@ class HostVideoScreen extends Component {
     }
 }
 
-const mapStateToProps = ({ joinEvent }) => {
-    const { event, viewers } = joinEvent
-    console.log('HostVideoScreen mapStateToProps', joinEvent)
-    return { event, viewers }
+const mapStateToProps = ({ hostEvents }) => {
+    const { hostEvent, myViewers } = hostEvents
+    return { event: hostEvent, viewers: myViewers }
 }
 
-export default connect(mapStateToProps, null)(HostVideoScreen)
+export default connect(mapStateToProps, actions)(HostVideoScreen)

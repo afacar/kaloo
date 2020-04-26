@@ -14,7 +14,7 @@ import { SafeAreaView } from 'react-navigation';
 import { connect } from "react-redux";
 
 import { setUserProfile } from "../appstate/actions/auth_actions";
-import { setAllEventsListener } from "../appstate/actions/host_actions";
+import { setHostEventsListener } from "../appstate/actions/host_actions";
 
 import { WaitingModal } from "../components/Modals";
 import { HighlightedText, H1Label } from '../components/Labels';
@@ -75,7 +75,7 @@ class RegisterScreen extends Component {
       console.log('result of createUser ', result);
       if (result.data.state === 'SUCCESS') {
         this.setState({ isWaiting: false });
-        this.props.setAllEventsListener()
+        this.props.setHostEventsListener()
         this.props.setUserProfile()
         this.props.navigation.navigate('UserHome', { displayName });
       } else {
@@ -296,4 +296,4 @@ const mapStateToProps = ({ assets }) => {
   return { assets: assets.assets }
 }
 
-export default connect(mapStateToProps, { setUserProfile, setAllEventsListener })(RegisterScreen);
+export default connect(mapStateToProps, { setUserProfile, setHostEventsListener })(RegisterScreen);

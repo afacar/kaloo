@@ -22,8 +22,8 @@ class GuestScreen extends Component {
   }
 }
 
-const mapStateToProps = ({ joinEvent }) => {
-  const { event, ticket, viewers } = joinEvent
+const mapStateToProps = ({ guestEvent }) => {
+  const { event, ticket, viewers } = guestEvent
   return { event, ticket, viewers }
 }
 

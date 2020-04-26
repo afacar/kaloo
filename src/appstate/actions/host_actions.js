@@ -1,24 +1,62 @@
 import { firestore, auth } from "react-native-firebase";
 
-import { LISTEN_EVENTS, UNLISTEN_EVENTS, SET_EVENT_ID } from "./types"
-import { app } from "../../constants";
+import {
+    LISTEN_HOST_EVENTS,
+    LISTEN_HOST_EVENT,
+    LISTEN_MY_VIEWERS,
+    UNLISTEN_HOST_EVENTS,
+    UNLISTEN_HOST_EVENT,
+    UNLISTEN_MY_VIEWERS
+} from "./types"
 
-let liveEventListener = () => { console.log('liveEventListener Cleaned!') };
-var ticketListener = () => { console.log('ticketListener Cleaned!') };
+let hostEventsListener = () => { console.log('hostEventsListener Cleaned!') };
+let hostEventListener = () => { console.log('hostEventListener Cleaned!') };
+let myViewersListener = () => { console.log('myViewersListener Cleaned!') }
 
-export const setEventId = (eventId) => async (dispatch) => {
-    console.log('setting setEventId ', eventId)
-    return dispatch({
-        type: SET_EVENT_ID,
-        payload: eventId
+export const setMyViewersListener = (event) => async (dispatch) => {
+    const { eventId } = event
+    dispatch({
+        type: LISTEN_MY_VIEWERS,
+        payload: 0
     });
+    myViewersListener = firestore().doc(`events/${eventId}/live/--stats--`)
+        .onSnapshot((viewerDoc) => {
+            let ticket = viewerDoc.data()
+            return dispatch({
+                type: LISTEN_MY_VIEWERS,
+                payload: ticket.viewerCount || 0
+            });
+        });
 }
 
-export const setAllEventsListener = () => async (dispatch) => {
-    console.log('setAllEventsListener on ')
+export const setHostEventListener = (event) => async (dispatch) => {
+    const { eventId } = event
+    dispatch({
+        type: LISTEN_HOST_EVENT,
+        payload: event
+    });
+    hostEventListener = firestore().doc(`events/${eventId}`)
+        .onSnapshot((eventDoc) => {
+            let event = eventDoc.data()
+            let date = event.eventDate
+            if (date instanceof firestore.Timestamp) {
+                date = date.toDate();
+            } else if (eventData.eventTimestamp) {
+                date = new Date(eventData.eventTimestamp)
+            }
+            event.eventDate = date;
+            return dispatch({
+                type: LISTEN_HOST_EVENT,
+                payload: event
+            });
+        });
+}
+
+export const setHostEventsListener = () => async (dispatch) => {
+    console.log('setHostEventsListener on ')
     const uid = auth().currentUser.uid
     if (!uid) return
-    liveEventListener = firestore().collection('events').where('uid', '==', uid)
+    hostEventsListener = firestore().collection('events').where('uid', '==', uid)
         .onSnapshot((querySnapshot) => {
             console.log('some event change...')
             let allEvents = {}
@@ -35,23 +73,40 @@ export const setAllEventsListener = () => async (dispatch) => {
                 allEvents[event.eventId] = event;
             });
             return dispatch({
-                type: LISTEN_EVENTS,
+                type: LISTEN_HOST_EVENTS,
                 payload: allEvents
             });
         });
 }
 
-export const clearLiveEventListener = () => (dispatch) => {
-    console.log('clearLiveEventListener')
-    if (liveEventListener)
-        liveEventListener();
+export const clearHostEventsListener = () => (dispatch) => {
+    if (hostEventsListener) {
+        hostEventsListener();
+        hostEventListener();
+        myViewersListener()
+    }
     return dispatch({
-        type: UNLISTEN_EVENTS,
+        type: UNLISTEN_HOST_EVENTS,
         payload: null
     });
 }
 
-export const clearTicketListener = () => {
-    if (ticketListener)
-        ticketListener();
+export const clearHostEventListener = () => {
+    if (hostEventListener) {
+        hostEventListener();
+        myViewersListener();
+    }
+    return dispatch({
+        type: UNLISTEN_HOST_EVENT,
+        payload: null
+    });
+}
+
+export const clearMyViewersListener = () => {
+    if (myViewersListener)
+        myViewersListener();
+    return dispatch({
+        type: UNLISTEN_MY_VIEWERS,
+        payload: null
+    });
 }
