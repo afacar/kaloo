@@ -30,7 +30,7 @@ class EventListScreen extends Component {
     componentDidMount = async () => {
         this.authListener = auth().onAuthStateChanged(user => {
             if (user && !user.isAnonymous) {
-                this.props.navigation.navigate('User');
+                this.props.navigation.navigate('UserHome');
             } else {
                 this.props.navigation.navigate('Splash');
             }
@@ -42,7 +42,6 @@ class EventListScreen extends Component {
 
     componentWillUnmount() {
         /* if (this.authListener) {
-            console.log('authListener Unmounts');
             this.authListener();
         } */
     }
@@ -102,7 +101,6 @@ class EventListScreen extends Component {
                             titleStyle={{ fontWeight: 'bold' }}
                             subtitle={description}
                             onPress={() => {
-                                console.log('before goin settin eventid', event)
                                 this.props.setHostEventListener(event)
                                 this.props.setMyViewersListener(event)
                                 this.props.navigation.navigate('Host', { eventId: event.eventId })

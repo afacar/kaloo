@@ -53,12 +53,11 @@ export const setHostEventListener = (event) => async (dispatch) => {
 }
 
 export const setHostEventsListener = () => async (dispatch) => {
-    console.log('setHostEventsListener on ')
+    console.log('setHostEventsListener on ...')
     const uid = auth().currentUser.uid
     if (!uid) return
     hostEventsListener = firestore().collection('events').where('uid', '==', uid)
         .onSnapshot((querySnapshot) => {
-            console.log('some event change...')
             let allEvents = {}
             querySnapshot.forEach(function (doc) {
                 let event = doc.data()

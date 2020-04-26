@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { View } from 'react-native';
 import { RtcEngine } from 'react-native-agora';
 import KeepAwake from 'react-native-keep-awake';
-import { checkCameraPermission, checkAudioPermission, ConfirmModal, InfoModal, getDeviceID } from '../utils/Utils';
+import { checkCameraPermission, checkAudioPermission, InfoModal, getDeviceID } from '../utils/Utils';
 import { connect } from 'react-redux';
 
 import { styles, app } from '../constants';
@@ -39,7 +39,6 @@ class VideoScreen extends Component {
 
     async componentDidMount() {
         this._isMounted = true;
-        console.log('VideoScreen DidMount state', this.state)
         checkAudioPermission()
         checkCameraPermission()
 
@@ -52,21 +51,17 @@ class VideoScreen extends Component {
 
     listenChannel = () => {
         RtcEngine.on('userJoined', (data) => {
-            console.log('userJoined data', data)
             const { peerIds } = this.state;
             if (peerIds.indexOf(data.uid) === -1) {
                 this._isMounted && this.setState({
                     peerIds: [...this.state.peerIds, data.uid]
                 })
             }
-            console.log('userJoined state', this.state)
         })
         RtcEngine.on('userOffline', (data) => {
-            console.log('userOffline data', data)
             this._isMounted && this.setState({
                 peerIds: this.state.peerIds.filter(uid => uid !== data.uid)
             })
-            console.log('userOffline state', this.state)
         })
         RtcEngine.on('error', (error) => {
             console.log('listenChannel error', error)
@@ -75,7 +70,6 @@ class VideoScreen extends Component {
 
     _onSuspend = () => {
         // Suspend live event of host
-        console.log('this.props _onSuspend', this.props)
         const { eventId } = this.props.event
         const ticket = this.props.ticket
         leaveEvent(eventId, ticket)
@@ -134,7 +128,6 @@ class VideoScreen extends Component {
 }
 
 const mapStateToProps = ({ guestEvent }) => {
-    console.log('VideoScreen mapStateToProps', guestEvent)
     const { event, ticket, viewers } = guestEvent
     return { event, ticket, viewers }
 }

@@ -40,9 +40,7 @@ class SplashScreen extends Component {
         }, 1500)
     }
 
-    componentWillUnmount() {
-        console.log('Splash unmount')
-    }
+    componentWillUnmount() { }
 
     render() {
         return (

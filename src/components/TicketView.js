@@ -24,7 +24,6 @@ class TicketView extends Component {
     try {
       let validateTicket = functions().httpsCallable('validateTicket')
       let response = await validateTicket({ ticketId: ticket })
-      console.log('ticketvalidation response', response)
       if (response && response.data && response.data.state === 'SUCCESS') {
         let eventData = response.data.event;
         let date = eventData.eventDate

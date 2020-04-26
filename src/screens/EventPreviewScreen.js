@@ -35,9 +35,7 @@ class EventPreviewScreen extends Component {
 
     this.setState({ isWaiting: true })
     try {
-      console.log('calling create event...', event);
       let response = await createEvent(event);
-      console.log('Recieved created event:=>', response);
       if (response && response.data && response.data.state === 'SUCCESS') {
         let eventData = response.data.event;
         let date = eventData.eventDate
@@ -48,7 +46,6 @@ class EventPreviewScreen extends Component {
         }
         eventData.eventDate = date
         this.setState({ isWaiting: false })
-        console.log('Sending event to EventPublish =>', eventData);
         this.props.navigation.navigate('EventPublish', { event: eventData })
       } else {
         this.setState({ isWaiting: false, errorMessage: response.data.message })

@@ -31,7 +31,6 @@ class SwitchCamera extends React.Component {
 }
 
 const mapStateToProps = ({ guestEvent }) => {
-    console.log('SwitchCamera mapStateToProps guestEvent ', guestEvent)
     const eventType = guestEvent.event && guestEvent.event.eventType || CALL
     return { eventType }
 }

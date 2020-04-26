@@ -67,7 +67,6 @@ class GuestView extends Component {
         RtcEngine.init(options)
         let result = await joinEvent(eventId, ticket)
         if (result.state === 'SUCCESS') {
-            console.log('audience joinning channel with', eventId, ticket.index)
             RtcEngine.joinChannel(eventId, parseInt(ticket.index))
                 .then((res) => {
                     let nextScreen = auth().currentUser ? '' : 'A'

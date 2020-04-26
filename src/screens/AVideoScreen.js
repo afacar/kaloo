@@ -39,7 +39,6 @@ class AVideoScreen extends Component {
 
     async componentDidMount() {
         this._isMounted = true
-        console.log('AVideoScreen DidMount state', this.state)
         checkAudioPermission()
         checkCameraPermission()
         let localDeviceID = await getDeviceID()
@@ -52,30 +51,24 @@ class AVideoScreen extends Component {
 
     listenChannel = () => {
         RtcEngine.on('userJoined', (data) => {
-            console.log('userJoined data', data)
             const { peerIds } = this.state;
             if (peerIds.indexOf(data.uid) === -1) {
                 this._isMounted && this.setState({
                     peerIds: [...this.state.peerIds, data.uid]
                 })
             }
-            console.log('userJoined state', this.state)
         })
         RtcEngine.on('userOffline', (data) => {
-            console.log('userOffline data', data)
             this._isMounted && this.setState({
                 peerIds: this.state.peerIds.filter(uid => uid !== data.uid)
             })
-            console.log('userOffline state', this.state)
         })
         RtcEngine.on('error', (error) => {
-            console.log('listenChannel error', error)
         })
     }
 
     _onSuspend = () => {
         // Suspend live event of host
-        console.log('this.props _onSuspend', this.props)
         const { eventId } = this.props.event
         const ticket = this.props.ticket
         leaveEvent(eventId, ticket)
@@ -134,7 +127,6 @@ class AVideoScreen extends Component {
 }
 
 const mapStateToProps = ({ guestEvent }) => {
-    console.log('AVideoScreen mapStateToProps', guestEvent)
     const { event, ticket, viewers } = guestEvent
     return { event, ticket, viewers }
 }

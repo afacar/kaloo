@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, StyleSheet, Text, ActivityIndicator, KeyboardAvoidingView, ScrollView, TouchableOpacity, Linking } from 'react-native';
+import { View, StyleSheet, Text, ActivityIndicator, KeyboardAvoidingView, ScrollView, TouchableOpacity } from 'react-native';
 import { Input, Avatar } from 'react-native-elements';
 import { auth, storage, functions } from "react-native-firebase";
 import ImagePicker from "react-native-image-crop-picker";
@@ -58,7 +58,6 @@ class ProfileScreen extends Component {
         try {
             let updateProfile = functions().httpsCallable('updateProfile');
             let result = await updateProfile(newProfile)
-            console.log('updateProfile result', result)
             if (result.data.state === 'ERROR') {
                 return this.setState({
                     isWaiting: false,
@@ -79,10 +78,8 @@ class ProfileScreen extends Component {
             height: 200,
             cropping: true,
         }).then(image => {
-            console.log(image);
             if (Platform.OS === 'ios')
                 image.path = image.path.replace('file://', '');
-            console.log('picked image', image);
             this.setState({ photoURL: image.path, imagePickerResponse: image, isAvatarChanged: true });
         }).catch(err => console.log('image-picker err:', err))
     }

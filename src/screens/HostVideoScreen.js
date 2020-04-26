@@ -50,23 +50,20 @@ class HostVideoScreen extends Component {
 
     listenChannel = () => {
         RtcEngine.on('userJoined', (data) => {
-            console.log('userJoined data', data)
             const { peerIds } = this.state;
             if (peerIds.indexOf(data.uid) === -1) {
                 this._isMounted && this.setState({
                     peerIds: [...this.state.peerIds, data.uid]
                 })
             }
-            console.log('userJoined state', this.state)
         });
         RtcEngine.on('userOffline', (data) => {
-            console.log('userOffline data', data)
             this._isMounted && this.setState({
                 peerIds: this.state.peerIds.filter(uid => uid !== data.uid)
             })
-            console.log('userOffline state', this.state)
         });
         RtcEngine.on('error', (error) => {
+            console.log('Host listenChannel error', error)
         });
     }
 
@@ -107,7 +104,6 @@ class HostVideoScreen extends Component {
         this._isMounted && this.setState({ isConnecting: true })
         let response = await continueLive(event.eventId);
         if (response) {
-            console.log('host joinning channel with', event.eventId, HOST_UID)
             event.status = IN_PROGRESS
             this.props.setHostEventListener(event)
             RtcEngine.joinChannel(event.eventId, HOST_UID)
@@ -161,7 +157,6 @@ class HostVideoScreen extends Component {
 
     _onSuspend = () => {
         // Suspend live event of host
-        console.log('this.prons _onSuspend', this.props)
         const { eventId, status } = this.props.event
         if (status === IN_PROGRESS) {
             suspendLive(eventId)

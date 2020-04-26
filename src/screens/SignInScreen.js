@@ -11,8 +11,8 @@ import { auth } from 'react-native-firebase';
 
 import { setUserProfile } from "../appstate/actions/auth_actions";
 import { setHostEventsListener } from "../appstate/actions/host_actions";
-import { HighlightedText, BoldLabel, H1Label } from '../components/Labels';
-import { DefaultButton, ClickableText } from '../components/Buttons';
+import { HighlightedText, H1Label } from '../components/Labels';
+import { DefaultButton } from '../components/Buttons';
 import { validateEmail } from '../utils/Utils'
 import { ContactUs } from '../components/ContactUs';
 import HeaderLeft from '../components/Headers/HeaderLeft';
@@ -39,7 +39,6 @@ class SignInScreen extends Component {
 
   handleSignIn = async () => {
     const { email, password } = this.state;
-    console.log('email and password', email, password);
     this.setState({ isWaiting: true });
     try {
       let user = await auth().signInWithEmailAndPassword(email, password);

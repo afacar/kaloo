@@ -27,9 +27,7 @@ export class ContactUs extends Component {
         try {
             let contactUs = functions().httpsCallable('contactUs')
             let contactData = { message, screen, user }
-            console.log('contactData', contactData)
             let result = await contactUs(contactData)
-            console.log('contactUs result', result)
             if (result.data.state === 'SUCCESS') {
                 this.setState({ infoMessage: 'Thanks for inquiry!', sent: true })
             } else {

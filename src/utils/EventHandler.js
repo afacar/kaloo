@@ -11,7 +11,6 @@ export const startEvent = async (eventId) => {
     try {
         let startEvent = functions().httpsCallable('startEvent')
         let response = await startEvent({ eventId })
-        console.log('startEvent response ', response)
         if (response.data && response.data.state === 'SUCCESS') {
             return true;
         }
@@ -26,7 +25,6 @@ export const suspendLive = async (eventId) => {
     try {
         let suspendLive = functions().httpsCallable('suspendEvent')
         let response = await suspendLive({ eventId })
-        console.log('suspendLive response ', response)
         if (response.data && response.data.state === 'SUCCESS') {
             return true;
         }
@@ -43,7 +41,6 @@ export const continueLive = async (eventId) => {
     try {
         let continueLive = functions().httpsCallable('continueEvent')
         let response = await continueLive({ eventId })
-        console.log('continueLive response ', response)
         if (response.data && response.data.state === 'SUCCESS') {
             return true;
         }
@@ -57,11 +54,9 @@ export const continueLive = async (eventId) => {
 }
 
 export const endLive = async (eventId) => {
-    console.log('endLive called!')
     try {
         let endLive = functions().httpsCallable('endEvent')
         let response = await endLive({ eventId })
-        console.log('endEvent response ', response)
         if (response.data && response.data.state === 'SUCCESS') {
             return true;
         }
@@ -76,12 +71,10 @@ export const endLive = async (eventId) => {
 
 /* Audience Funcions */
 export const joinEvent = async (eventId, ticket) => {
-    console.log('joinEvent called!')
     const deviceID = await getDeviceID();
     try {
         let joinEvent = functions().httpsCallable('joinEvent')
         let response = await joinEvent({ eventId, ticket, deviceID })
-        console.log('joinEvent response ', response)
         return response.data;
     } catch (error) {
         console.log('joinEvent  err: ', error)
@@ -92,11 +85,9 @@ export const joinEvent = async (eventId, ticket) => {
 }
 
 export const leaveEvent = async (eventId, ticket) => {
-    console.log('leaveEvent called!', eventId, ticket)
     try {
         let joinEvent = functions().httpsCallable('leaveEvent')
         let response = await joinEvent({ eventId, ticket })
-        console.log('leaveEvent response ', response)
         if (response.data && response.data.state === 'SUCCESS') {
             return true;
         }
@@ -111,11 +102,9 @@ export const leaveEvent = async (eventId, ticket) => {
 }
 
 export const rateEvent = async (eventId, ticket, rate) => {
-    console.log('rateEvent called!')
     try {
         let rateEvent = functions().httpsCallable('rateEvent')
         let response = await rateEvent({ eventId, ticket, rate })
-        console.log('rateEvent response ', response)
         if (response.data && response.data.state === 'SUCCESS') {
             return true;
         }
@@ -128,10 +117,8 @@ export const rateEvent = async (eventId, ticket, rate) => {
     }
 }
 
-export const setEventListener = (eventId, callback) => {
-    console.log('setting event listener', eventId)
+/* export const setEventListener = (eventId, callback) => {
     eventListener = firestore().collection('events').doc(eventId).onSnapshot(eventSnapshot => {
-        console.log('eventSnapshot ', eventSnapshot.data());
         // Convert Firebase Timestamp to JS Date
         let event = eventSnapshot.data()
         if (event) {
@@ -146,12 +133,10 @@ export const setEventListener = (eventId, callback) => {
             callback(event)
         }
     })
-}
+} */
 
-export const setLiveEventListener = (eventID, callback) => {
-    console.log('setting live listener', eventID)
+/* export const setLiveEventListener = (eventID, callback) => {
     liveEventListener = firestore().collection('events').doc(eventID).collection('live').doc('--stats--').onSnapshot(eventSnapshot => {
-        console.log('live Snapshot ', eventSnapshot.data());
         const liveStats = eventSnapshot.data();
         if (liveStats) {
             let startedAt = liveStats.startDate ? liveStats.startDate.toDate() : new Date()
@@ -161,29 +146,28 @@ export const setLiveEventListener = (eventID, callback) => {
             callback({ status: app.EVENT_STATUS.SCHEDULED, viewerCount: 0, startedAt: undefined })
         }
     })
-}
+} */
 
-export const setTicketListener = (eventID, ticket, callback) => {
-    console.log('setting ticket listener', eventID)
+/* export const setTicketListener = (eventID, ticket, callback) => {
     ticketListener = firestore().collection('events').doc(eventID).collection('tickets').doc(ticket.tid).onSnapshot(ticketSnapshot => {
         const ticketStats = ticketSnapshot.data();
         if (ticketStats && ticketStats.deviceID) {
             callback(ticketStats.deviceID)
         }
     })
-}
+} */
 
-export const clearEventListener = () => {
+/* export const clearEventListener = () => {
     if (eventListener)
         eventListener();
-}
+} */
 
-export const clearLiveEventListener = () => {
+/* export const clearLiveEventListener = () => {
     if (liveEventListener)
         liveEventListener();
-}
+} */
 
-export const clearTicketListener = () => {
+/* export const clearTicketListener = () => {
     if (ticketListener)
         ticketListener();
-}
+} */

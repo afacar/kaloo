@@ -55,7 +55,6 @@ class EventCreateScreen extends Component {
     }).then(image => {
       if (Platform.OS === 'ios')
         image.path = image.path.replace('file://', '');
-      console.log('picked image', image);
       // TODO: Upload image to ...
       this.setState({ uploading: true })
       let imagePath = `events/${uid}/${eventTimestamp}.jpg`

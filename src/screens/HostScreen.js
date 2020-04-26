@@ -42,10 +42,7 @@ class HostScreen extends Component {
         this.setState({ channelProfile, clientRole })
     }
 
-    componentWillUnmount() {
-        console.log('Normally I would setEventId: null after suspending broadcast')
-        //this.props.setEventId(null);
-    }
+    componentWillUnmount() { }
 
     onCamera = () => {
         const { channelProfile, clientRole } = this.state
@@ -122,7 +119,6 @@ const styles = StyleSheet.create({
 })
 
 const mapStateToProps = ({ hostEvents }) => {
-    console.log('HostScreen mapStateToProps', hostEvents)
     const { hostEvent, myViewers } = hostEvents
     return { event: hostEvent, viewers: myViewers }
 }

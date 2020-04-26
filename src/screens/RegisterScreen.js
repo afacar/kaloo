@@ -62,17 +62,14 @@ class RegisterScreen extends Component {
         let avatarRef = storage().ref(`users/${uid}/avatar/${uid}.jpg`);
         await avatarRef.putFile(photoURL);
         photoURL = await avatarRef.getDownloadURL()
-        console.log('picture is uploaded')
       }
 
       // Update user profile @Authentication
       currentUser.updateProfile({ displayName, photoURL });
-      console.log('updateProfile')
       // Create user @Firestore
       const newUser = { uid, displayName, photoURL }
       let createUser = functions().httpsCallable('createUser')
       let result = await createUser(newUser)
-      console.log('result of createUser ', result);
       if (result.data.state === 'SUCCESS') {
         this.setState({ isWaiting: false });
         this.props.setHostEventsListener()
@@ -120,10 +117,8 @@ class RegisterScreen extends Component {
       height: 200,
       cropping: true,
     }).then(image => {
-      console.log(image);
       if (Platform.OS === 'ios')
         image.path = image.path.replace('file://', '');
-      console.log('picked image', image);
       this.setState({ photoURL: image.path, imagePickerResponse: image });
     }).catch(err => console.log('image-picker err:', err))
   }
