@@ -1,34 +1,34 @@
 {
   "project_info": {
-    "project_number": "1011562396023",
-    "firebase_url": "https://kaloo-dev.firebaseio.com",
-    "project_id": "kaloo-dev",
-    "storage_bucket": "kaloo-dev.appspot.com"
+    "project_number": "228720631777",
+    "firebase_url": "https://kaloo-development.firebaseio.com",
+    "project_id": "kaloo-development",
+    "storage_bucket": "kaloo-development.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:1011562396023:android:b5918d9715154494750972",
+        "mobilesdk_app_id": "1:228720631777:android:fd23dc8f3928f099f7bca0",
         "android_client_info": {
           "package_name": "com.fmob.kaloo"
         }
       },
       "oauth_client": [
         {
-          "client_id": "1011562396023-j9rci9uu79ricpeiiqmrnh9fdn7qcmcs.apps.googleusercontent.com",
+          "client_id": "228720631777-cvtalkbbadpuac3fv9cc4fm7n1aieho4.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyAHLqqmYssrc9AX3VJ-bKtzJ4u9dTWCvQM"
+          "current_key": "AIzaSyBGYEeF3lWUkg2fdaAwwt8rRviD1s2eHEc"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "1011562396023-j9rci9uu79ricpeiiqmrnh9fdn7qcmcs.apps.googleusercontent.com",
+              "client_id": "228720631777-cvtalkbbadpuac3fv9cc4fm7n1aieho4.apps.googleusercontent.com",
               "client_type": 3
             }
           ]
