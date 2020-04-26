@@ -39,6 +39,7 @@ class HostVideoScreen extends Component {
     };
 
     componentDidMount() {
+        this._isMounted = true;
         checkAudioPermission()
         checkCameraPermission()
 
@@ -52,7 +53,7 @@ class HostVideoScreen extends Component {
             console.log('userJoined data', data)
             const { peerIds } = this.state;
             if (peerIds.indexOf(data.uid) === -1) {
-                this.setState({
+                this._isMounted && this.setState({
                     peerIds: [...this.state.peerIds, data.uid]
                 })
             }
@@ -60,7 +61,7 @@ class HostVideoScreen extends Component {
         });
         RtcEngine.on('userOffline', (data) => {
             console.log('userOffline data', data)
-            this.setState({
+            this._isMounted && this.setState({
                 peerIds: this.state.peerIds.filter(uid => uid !== data.uid)
             })
             console.log('userOffline state', this.state)
@@ -72,22 +73,22 @@ class HostVideoScreen extends Component {
     onStartCall = async () => {
         const { eventId } = this.props.event;
         RtcEngine.leaveChannel();
-        this.setState({ isConnecting: true })
+        this._isMounted && this.setState({ isConnecting: true })
         let response = await startEvent(eventId);
         if (response) {
             RtcEngine.joinChannel(eventId, HOST_UID)
                 .then(async (result) => {
-                    this.setState({ isConnecting: false })
+                    this._isMounted && this.setState({ isConnecting: false })
                 })
                 .catch((error) => {
                     console.log('Error onStartCall', error)
-                    this.setState({ isConnecting: false })
+                    this._isMounted && this.setState({ isConnecting: false })
                 });
         } else {
             let title = 'Error occured',
                 message = 'Unknown error occured while starting your call. Please try again!',
                 onConfirm = () => { };
-            this.setState({ isConnecting: false })
+                this._isMounted && this.setState({ isConnecting: false })
             InfoModal(title, message, 'Ok', onConfirm)
         }
     }
@@ -101,20 +102,20 @@ class HostVideoScreen extends Component {
     onContinueCall = async () => {
         const { eventId } = this.props.event;
         RtcEngine.leaveChannel();
-        this.setState({ isConnecting: true })
+        this._isMounted && this.setState({ isConnecting: true })
         let response = await continueLive(eventId);
         if (response) {
             console.log('host joinning channel with', eventId, HOST_UID)
 
             RtcEngine.joinChannel(eventId, HOST_UID)
                 .then(async (result) => {
-                    this.setState({ isConnecting: false })
+                    this._isMounted && this.setState({ isConnecting: false })
                 })
                 .catch((error) => {
-                    this.setState({ isConnecting: false })
+                    this._isMounted && this.setState({ isConnecting: false })
                 });
         } else {
-            this.setState({ isConnecting: false })
+            this._isMounted && this.setState({ isConnecting: false })
             let title = 'Error occured',
                 message = 'Unknown error occured while starting your call. Please try again!',
                 onConfirm = () => { };
@@ -130,7 +131,7 @@ class HostVideoScreen extends Component {
 
     onEndCall = async () => {
         let { event } = this.props;
-        this.setState({ isConnecting: true })
+        this._isMounted && this.setState({ isConnecting: true })
         let reponse = await endLive(event.eventId);
         if (reponse) {
             event.status = COMPLETED
@@ -138,13 +139,13 @@ class HostVideoScreen extends Component {
             RtcEngine.leaveChannel();
             this.props.navigation.goBack();
         } else {
-            this.setState({ isConnecting: false })
+            this._isMounted && this.setState({ isConnecting: false })
             let title = 'Error occured',
                 message = 'Unknown error occured while starting your call. Please try again!',
                 onConfirm = () => { };
             InfoModal(title, message, 'Ok', onConfirm)
         }
-        this.setState({ isConnecting: false })
+        this._isMounted && this.setState({ isConnecting: false })
     }
 
     _endCall = () => {
@@ -206,8 +207,9 @@ class HostVideoScreen extends Component {
 
     componentWillUnmount() {
         //removeAndroidBackButtonHandler(this.backButtonPressed);
-        this._onSuspend()
         RtcEngine.leaveChannel().then(res => { });
+        this._onSuspend()
+        this._isMounted = false 
     }
 }
 
