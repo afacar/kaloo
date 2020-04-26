@@ -25,6 +25,7 @@ const styles = StyleSheet.create({
   viewer: {
     fontSize: 12,
     backgroundColor: 'white',
+    opacity: 0.7,
     color: 'black',
     borderRadius: 6,
     textAlign: 'center',

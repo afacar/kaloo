@@ -53,16 +53,12 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: 24 + dimensions.HEADER_MARGIN,
     right: 24,
-  },
-  redTimer: {
-    position: 'absolute',
-    top: 24 + dimensions.HEADER_MARGIN,
-    right: 24,
-    backgroundColor: 'red',
+    //backgroundColor: 'rgba(255,255,255,0.5)'
   },
   timerCard: {
     fontSize: 12,
     backgroundColor: 'white',
+    opacity: 0.7,
     color: 'black',
     borderRadius: 6,
     textAlign: 'center',
@@ -73,6 +69,7 @@ const styles = StyleSheet.create({
   timerCardRed: {
     fontSize: 12,
     backgroundColor: colors.PINK,
+    opacity: 0.7,
     color: 'white',
     borderRadius: 6,
     textAlign: 'center',
