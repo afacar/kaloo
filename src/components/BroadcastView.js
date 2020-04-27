@@ -9,9 +9,9 @@ import Viewers from '../components/Viewers';
 
 const { IN_PROGRESS } = app.EVENT_STATUS
 
-function WaitingComponent(props) {
+function WaitingHost(props) {
   return (
-    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', borderWidth: 2, borderColor: 'purple' }}>
+    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
       <Image
         style={{ width: 150, height: 120 }}
         source={require('../assets/host-connecting.png')}
@@ -29,7 +29,7 @@ export default function BroadcastView(props) {
   if (clientRole === 1) {
     /** Host is Broadcasting */
     return (
-      <View style={{ flex: 1, borderWidth: 5, borderColor: 'red', zIndex: -1100 }}>
+      <View style={{ flex: 1, zIndex: -1100 }}>
         <AgoraView style={{ flex: 1 }} showLocalVideo={true} mode={1} />
         <Timer event={props.event} />
         <Viewers viewers={viewers} />
@@ -38,7 +38,7 @@ export default function BroadcastView(props) {
   } else if (status === IN_PROGRESS) {
     /** Guest is Watching */
     return (
-      <View style={{ flex: 1, borderWidth: 5, borderColor: 'green', zIndex: -1100 }}>
+      <View style={{ flex: 1, zIndex: -1100 }}>
         <AgoraView mode={1} style={{ flex: 1 }} remoteUid={hostId} />
         <Timer event={props.event} />
         <Viewers viewers={viewers} />
@@ -47,8 +47,8 @@ export default function BroadcastView(props) {
   } else {
     /** Guest is Waiting */
     return (
-      <View style={{ flex: 1, borderWidth: 5, borderColor: 'blue', zIndex: -1100 }}>
-        <WaitingComponent />
+      <View style={{ flex: 1, zIndex: -1100 }}>
+        <WaitingHost />
         <Timer event={props.event} />
         <Viewers viewers={viewers} />
       </View>

@@ -8,9 +8,9 @@ import Timer from './Timer';
 
 const { IN_PROGRESS } = app.EVENT_STATUS
 
-function Connecting(props) {
+function ConnectingPeer(props) {
   return (
-    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', borderWidth: 2, borderColor: 'purple' }}>
+    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
       <Image
         style={{ width: 150, height: 120 }}
         source={require('../assets/disconnected.png')}
@@ -28,17 +28,17 @@ export default function CallView(props) {
   const capacity = peerIds.length;
   if (status === IN_PROGRESS) {
     return (
-      <View style={{ flex: 1, borderWidth: 2, borderColor: 'yellow', zIndex: -1100 }}>
+      <View style={{ flex: 1, zIndex: -1100 }}>
         {/** Remote Stream */}
         <View style={{ flex: 1 }}>
-          {capacity == 0 ? (<Connecting />) :
+          {capacity == 0 ? (<ConnectingPeer />) :
             <View style={{ flex: 1 }}>
               <AgoraView mode={1} key={peerIds[0]} style={{ flex: 1 }} remoteUid={peerIds[0]} />
             </View>
           }
         </View>
         {/** Local Stream */}
-        <View style={{ flex: 1, borderWidth: 5, borderColor: 'orange' }}>
+        <View style={{ flex: 1 }}>
           <AgoraView style={{ flex: 1 }} showLocalVideo={true} mode={1} />
         </View>
         <Timer event={props.event} />
@@ -46,7 +46,7 @@ export default function CallView(props) {
     )
   } else {
     return (
-      <View style={{ flex: 1, borderWidth: 2, borderColor: 'yellow', zIndex: -1100 }}>
+      <View style={{ flex: 1, zIndex: -1100 }}>
         {/** Local Stream */}
         <AgoraView style={{ flex: 1 }} showLocalVideo={true} mode={1} />
         <Timer event={props.event} />
