@@ -6,6 +6,7 @@ import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import ImagePicker from 'react-native-image-crop-picker';
 import { connect } from 'react-redux';
 import { SafeAreaView } from 'react-navigation'
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 
 import { H1Label, BoldLabel, Label, ErrorLabel } from '../components/Labels';
 import { Stage } from '../components/Stages';
@@ -14,6 +15,7 @@ import { splitDate } from '../utils/Utils';
 import { DefaultButton } from '../components/Buttons';
 import HeaderLeft from '../components/Headers/HeaderLeft';
 import UserAvatar from '../components/UserAvatar';
+import EventImagePicker from '../components/EventImagePicker';
 import app from '../constants/app';
 import { colors } from '../constants';
 
@@ -79,193 +81,165 @@ class EventCreateScreen extends Component {
   }
 
   _preview = () => {
-    const { title } = this.state;
+    const { title, price } = this.state;
     this.setState({ titleMessage: '' })
-    if (!title)
+    if (!title) {
       return this.setState({ titleMessage: 'We need a title' })
+    }
+    if (price < 1) {
+      return this.setState({ priceMessage: 'Price should be at least $1' })
+    }
     this.props.navigation.navigate('EventPreview', { event: this.state })
   }
 
   render() {
-    const { image, title, description, duration, eventType, capacity, price, eventDate, titleMessage, dateMessage } = this.state;
+    const { image, title, description, duration, eventType, capacity, price, eventDate, titleMessage, dateMessage, priceMessage, uploading } = this.state;
     const { date, time, gmt } = splitDate(eventDate)
     return (
       <SafeAreaView style={styles.container}>
-        <KeyboardAvoidingView
-          behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={styles.container}
-          //keyboardVerticalOffset={50}
-        >
-          <View style={styles.componentStyle}>
-            <View style={{ flexDirection: 'row', justifyContent: "space-between", marginVertical: 10 }}>
-              <Stage value="1" text="Create" active={true} />
-              <Stage value="2" text="Preview" />
-              <Stage value="3" text="Published" />
-            </View>
-            <ScrollView
-              keyboardShouldPersistTaps='always'
-              contentContainerStyle={{
-                flexGrow: 1
-              }}>
-              <View style={{ flex: 1 }}>
 
-                <H1Label label="Create an event" />
-                <BoldLabel label="Meeting Image" />
-                <Label label="This image is going to be displayed on top of your event card." />
-                <View style={{ paddingVertical: 10 }}>
-                  <TouchableOpacity
-                    onPress={() => this.onImagePressed()}
-                    style={{ flexDirection: 'column', alignContent: 'center' }}>
-                    <Image containerStyle={{ alignSelf: 'stretch', borderRadius: 8, height: 150, overflow: 'hidden' }}
-                      source={{ uri: image }}
-                      style={{ flex: 1 }}
-                    //resizeMode="contain"
-                    />
-                    {this.state.uploading ? <ActivityIndicator size='small' style={{
-                      position: 'absolute',
-                      right: 5,
-                      bottom: 5,
-                    }} /> : <Icon
-                        reverse
-                        name="camera"
-                        type="material-community"
-                        size={10}
-                        containerStyle={{
-                          position: 'absolute',
-                          right: 5,
-                          bottom: 5,
-                        }}
-                      />
-
-                    }
-                  </TouchableOpacity>
-                </View>
-
-                <BoldLabel label="Meeting Title" />
-                <Input
-                  placeholder="Meeting name"
-                  placeholderTextColor="#c4c4c4"
-                  onChangeText={title => this.setState({ title, titleMessage: '' })}
-                  value={title}
-                  errorMessage={titleMessage}
-                  inputContainerStyle={styles.inputContainerStyle}
-                  containerStyle={{ paddingHorizontal: 0 }}
-                />
-                <BoldLabel label="Time*" />
-                <View
-                  style={{
-                    alignSelf: 'stretch',
-                    flexDirection: 'column',
-                    justifyContent: 'space-between',
-                    borderColor: 'blue',
-                  }}>
-                  <TouchableOpacity
-                    onPress={() => this.setState({ isDatePickerVisible: true })}>
-                    <Text style={styles.timeTextStyle}>
-                      {`${date}, ${time} (${gmt} GMT)`}
-                    </Text>
-                  </TouchableOpacity>
-                </View>
-                <ErrorLabel label={dateMessage} />
-                <DateTimePickerModal
-                  isVisible={this.state.isDatePickerVisible}
-                  mode="datetime"
-                  onConfirm={this.onDateChange}
-                  date={new Date(eventDate.getTime() - new Date().getTimezoneOffset() * 60000)}
-                  onCancel={() => this.setState({ isDatePickerVisible: false })}
-                  display='spinner'
-                />
-                <Text style={{ color: "#c4c4c4" }}>*based on current time zone of your device</Text>
-                <BoldLabel label="Duration (minutes)" />
-                <Input
-                  value={duration + ''}
-                  onChangeText={duration => this.setState({ duration: parseInt(duration) || 0 })}
-                  inputContainerStyle={styles.inputContainerStyle}
-                  containerStyle={{ paddingHorizontal: 0 }}
-                  keyboardType='numeric'
-                  maxLength={3}
-                />
-                <BoldLabel label="Event description" />
-                <Input
-                  placeholder="Write about your meeting"
-                  placeholderTextColor='#c4c4c4'
-                  onChangeText={description => this.setState({ description })}
-                  value={description}
-                  multiline={true}
-                  inputContainerStyle={{ ...styles.inputContainerStyle, height: 100 }}
-                  inputStyle={{ alignSelf: 'flex-start' }}
-                  containerStyle={{ paddingHorizontal: 0 }}
-                />
-                <BoldLabel label="Meeting Type" />
-                <View style={styles.checkBoxStyle}>
-                  <CheckBox
-                    iconRight
-                    checkedIcon="dot-circle-o"
-                    uncheckedIcon="circle-o"
-                    checked={eventType === BROADCAST}
-                    onPress={() => this.setState({ eventType: BROADCAST })}
-                    checkedColor="#FF3E6C"
-                    uncheckedColor="#FF3E6C"
-                    containerStyle={{ paddingHorizontal: 0 }} />
-                  <View style={{ paddingRight: 25 }}>
-                    <TouchableOpacity onPress={() => this.setState({ eventType: BROADCAST })}>
-                      <BoldLabel label="Broadcasting Event" />
-                      <Label label="Stream to large audience. You won’t be hearing your audience, communcation is one way." />
-                    </TouchableOpacity>
-                    {eventType === BROADCAST && <View>
-                      <BoldLabel label="How many viewers do you want?" />
-                      <Input
-                        onChangeText={capacity => this.setState({ capacity: parseInt(capacity) || 0 })}
-                        value={capacity + ''}
-                        keyboardType="numeric"
-                        maxLength={3}
-                        disabled={eventType === CALL}
-                        inputContainerStyle={styles.inputContainerStyle}
-                        containerStyle={{ paddingHorizontal: 0 }}
-                      />
-                    </View>}
-                  </View>
-                </View>
-                <View style={styles.checkBoxStyle}>
-                  <CheckBox
-                    iconLeft
-                    checkedIcon="dot-circle-o"
-                    uncheckedIcon="circle-o"
-                    checked={eventType === CALL}
-                    onPress={() => this.setState({ eventType: CALL, capacity: 1, })}
-                    checkedColor="#FF3E6C"
-                    uncheckedColor="#FF3E6C"
-                    containerStyle={{ paddingHorizontal: 0 }} />
-                  <View>
-                    <TouchableOpacity onPress={() => this.setState({ eventType: CALL, capacity: 1 })}>
-                      <BoldLabel label="1-1 Meeting" />
-                      <Label label="Create a private video call with just one person." />
-                    </TouchableOpacity>
-                  </View>
-                </View>
-
-                <BoldLabel label="Ticket Price (USD)" />
-                <Input
-                  placeholder="Price"
-                  placeholderTextColor='#c4c4c4'
-                  onChangeText={price => this.setState({ price: parseInt(price) || 0 })}
-                  value={price + ''}
-                  keyboardType="numeric"
-                  maxLength={3}
-                  inputContainerStyle={styles.inputContainerStyle}
-                  containerStyle={{ paddingHorizontal: 0 }}
-                />
-                <View style={{ paddingTop: 20 }}>
-                  <DefaultButton
-                    title="Preview"
-                    onPress={this._preview}
-                    disabled={this.state.uploading}
-                  />
-                </View>
-              </View>
-            </ScrollView>
+        <View style={styles.componentStyle}>
+          <View style={{ flexDirection: 'row', justifyContent: "space-between", marginVertical: 10 }}>
+            <Stage value="1" text="Create" active={true} />
+            <Stage value="2" text="Preview" />
+            <Stage value="3" text="Published" />
           </View>
-        </KeyboardAvoidingView>
-        <ContactUs />
+          <KeyboardAwareScrollView
+            showsHorizontalScrollIndicator={false}
+          >
+            <H1Label label="Create an event" />
+            <BoldLabel label="Meeting Image" />
+            <Label label="This image is going to be displayed on top of your event card." />
+            <EventImagePicker
+              image={image}
+              onPress={this.onImagePressed}
+              uploading={uploading}
+            />
+
+            <BoldLabel label="Meeting Title" />
+            <Input
+              placeholder="Meeting name"
+              placeholderTextColor="#c4c4c4"
+              onChangeText={title => this.setState({ title, titleMessage: '' })}
+              value={title}
+              errorMessage={titleMessage}
+              inputContainerStyle={styles.inputContainerStyle}
+              containerStyle={{ paddingHorizontal: 0 }}
+            />
+            <BoldLabel label="Time*" />
+            <View
+              style={{
+                alignSelf: 'stretch',
+                flexDirection: 'column',
+                justifyContent: 'space-between',
+                borderColor: 'blue',
+              }}>
+              <TouchableOpacity
+                onPress={() => this.setState({ isDatePickerVisible: true })}>
+                <Text style={styles.timeTextStyle}>
+                  {`${date}, ${time} (${gmt} GMT)`}
+                </Text>
+              </TouchableOpacity>
+            </View>
+            <ErrorLabel label={dateMessage} />
+            <DateTimePickerModal
+              isVisible={this.state.isDatePickerVisible}
+              mode="datetime"
+              onConfirm={this.onDateChange}
+              onCancel={() => this.setState({ isDatePickerVisible: false })}
+              display='spinner'
+            />
+            <Text style={{ color: "#c4c4c4" }}>*based on current time zone of your device</Text>
+            <BoldLabel label="Duration (minutes)" />
+            <Input
+              value={duration + ''}
+              onChangeText={duration => this.setState({ duration: parseInt(duration) || 0 })}
+              inputContainerStyle={styles.inputContainerStyle}
+              containerStyle={{ paddingHorizontal: 0 }}
+              keyboardType='numeric'
+              maxLength={3}
+            />
+            <BoldLabel label="Event description" />
+            <Input
+              placeholder="Write about your meeting"
+              placeholderTextColor='#c4c4c4'
+              onChangeText={description => this.setState({ description })}
+              value={description}
+              multiline={true}
+              inputContainerStyle={{ ...styles.inputContainerStyle, height: 100 }}
+              inputStyle={{ alignSelf: 'flex-start' }}
+              containerStyle={{ paddingHorizontal: 0 }}
+            />
+            <BoldLabel label="Meeting Type" />
+            <View style={styles.checkBoxStyle}>
+              <CheckBox
+                iconRight
+                checkedIcon="dot-circle-o"
+                uncheckedIcon="circle-o"
+                checked={eventType === BROADCAST}
+                onPress={() => this.setState({ eventType: BROADCAST })}
+                checkedColor="#FF3E6C"
+                uncheckedColor="#FF3E6C"
+                containerStyle={{ paddingHorizontal: 0 }} />
+              <View style={{ paddingRight: 25 }}>
+                <TouchableOpacity onPress={() => this.setState({ eventType: BROADCAST })}>
+                  <BoldLabel label="Broadcasting Event" />
+                  <Label label="Stream to large audience. You won’t be hearing your audience, communcation is one way." />
+                </TouchableOpacity>
+                {eventType === BROADCAST && <View>
+                  <BoldLabel label="How many viewers do you want?" />
+                  <Input
+                    onChangeText={capacity => this.setState({ capacity: parseInt(capacity) || 0 })}
+                    value={capacity + ''}
+                    keyboardType="numeric"
+                    maxLength={3}
+                    disabled={eventType === CALL}
+                    inputContainerStyle={styles.inputContainerStyle}
+                    containerStyle={{ paddingHorizontal: 0 }}
+                  />
+                </View>}
+              </View>
+            </View>
+            <View style={styles.checkBoxStyle}>
+              <CheckBox
+                iconLeft
+                checkedIcon="dot-circle-o"
+                uncheckedIcon="circle-o"
+                checked={eventType === CALL}
+                onPress={() => this.setState({ eventType: CALL, capacity: 1, })}
+                checkedColor="#FF3E6C"
+                uncheckedColor="#FF3E6C"
+                containerStyle={{ paddingHorizontal: 0 }} />
+              <View>
+                <TouchableOpacity onPress={() => this.setState({ eventType: CALL, capacity: 1 })}>
+                  <BoldLabel label="1-1 Meeting" />
+                  <Label label="Create a private video call with just one person." />
+                </TouchableOpacity>
+              </View>
+            </View>
+
+            <BoldLabel label="Ticket Price (USD)" />
+            <Input
+              placeholder="Price"
+              placeholderTextColor='#c4c4c4'
+              onChangeText={price => this.setState({ price: parseInt(price) || 0, priceMessage: '' })}
+              value={price + ''}
+              keyboardType="numeric"
+              maxLength={3}
+              inputContainerStyle={styles.inputContainerStyle}
+              containerStyle={{ paddingHorizontal: 0 }}
+              errorMessage={priceMessage}
+            />
+            <View style={{ paddingTop: 10 }}>
+              <DefaultButton
+                title="Preview"
+                onPress={this._preview}
+                disabled={this.state.uploading}
+              />
+            </View>
+          </KeyboardAwareScrollView>
+          <ContactUs />
+        </View>
       </SafeAreaView>
     );
   }
