@@ -161,10 +161,12 @@ export function BroadcastButton(props) {
     buttonTitle += eventType === BROADCAST ? ' Broadcast' : ' Meeting'
     const buttonStyle = status === SCHEDULED ? styles.startButton : status === IN_PROGRESS ? styles.endButton : styles.startButton;
     return (
-        <FloatingAction
-            onPressMain={props.onPress}
-            text={buttonTitle}
-        />
+        <TouchableOpacity
+            style={buttonStyle}
+            onPress={props.onPress}
+        >
+            <Text>{buttonTitle}</Text>
+        </TouchableOpacity>
     )
 }
 

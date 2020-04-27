@@ -80,19 +80,18 @@ class EventCreateScreen extends Component {
     const { date, time, gmt } = splitDate(eventDate)
     return (
       <SafeAreaView style={{ flex: 1, backgroundColor: "white" }}>
-        <KeyboardAvoidingView 
+        <KeyboardAvoidingView
           behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={styles.container}
-          keyboardVerticalOffset={50}
-          >
+          keyboardVerticalOffset={20}
+        >
           <View style={{ flex: 1, backgroundColor: "#3598FE" }}>
-            <ScrollView 
-            keyboardShouldPersistTaps='always'
-            keyboardDismissMode='on-drag'
-            contentContainerStyle={{
-              flexGrow: 1,
-              alignItems: 'center',
-              backgroundColor: "#3598FE",
-            }}>
+            <ScrollView
+              keyboardShouldPersistTaps='always'
+              contentContainerStyle={{
+                flexGrow: 1,
+                alignItems: 'center',
+                backgroundColor: "#3598FE",
+              }}>
               <View style={styles.componentStyle}>
                 <View style={{ flexDirection: 'row', justifyContent: "space-between", marginVertical: 10 }}>
                   <Stage2 value="1" text="Create" />
@@ -252,9 +251,9 @@ class EventCreateScreen extends Component {
                 </View>
               </View>
             </ScrollView>
-            <ContactUs />
           </View>
         </KeyboardAvoidingView>
+        <ContactUs />
       </SafeAreaView>
     );
   }
