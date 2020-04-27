@@ -7,7 +7,7 @@ import ImagePicker from 'react-native-image-crop-picker';
 import { connect } from 'react-redux';
 import { SafeAreaView } from 'react-navigation'
 
-import { H1Label, BoldLabel, Label } from '../components/Labels';
+import { H1Label, BoldLabel, Label, ErrorLabel } from '../components/Labels';
 import { Stage1, Stage2 } from '../components/Stages';
 import { ContactUs } from '../components/ContactUs'
 import { splitDate } from '../utils/Utils';
@@ -72,7 +72,17 @@ class EventCreateScreen extends Component {
   }
 
   onDateChange = (selectedDate) => {
+    if (selectedDate < Date.now())
+      return this.setState({ isDatePickerVisible: false, dateMessage: 'We need a future date' })
     this.setState({ isDatePickerVisible: false, eventDate: selectedDate, dateMessage: '' });
+  }
+
+  _preview = () => {
+    const { title } = this.state;
+    this.setState({ titleMessage: '' })
+    if (!title)
+      return this.setState({ titleMessage: 'We need a title' })
+    this.props.navigation.navigate('EventPreview', { event: this.state })
   }
 
   render() {
@@ -155,8 +165,17 @@ class EventCreateScreen extends Component {
                     </Text>
                   </TouchableOpacity>
                 </View>
+                <ErrorLabel label={dateMessage} />
+                <DateTimePickerModal
+                  isVisible={this.state.isDatePickerVisible}
+                  mode="datetime"
+                  onConfirm={this.onDateChange}
+                  date={new Date(eventDate.getTime() - new Date().getTimezoneOffset()*60000)}
+                  onCancel={() => this.setState({ isDatePickerVisible: false })}
+                  display='spinner'
+                />
                 <Text style={{ color: "#c4c4c4" }}>*based on current time zone of your device</Text>
-                <BoldLabel label="Duration (min)" />
+                <BoldLabel label="Duration (minutes)" />
                 <Input
                   value={duration + ''}
                   onChangeText={duration => this.setState({ duration: parseInt(duration) || 0 })}
@@ -164,13 +183,6 @@ class EventCreateScreen extends Component {
                   containerStyle={{ paddingHorizontal: 0 }}
                   keyboardType='numeric'
                   maxLength={3}
-                />
-                <DateTimePickerModal
-                  isVisible={this.state.isDatePickerVisible}
-                  mode="datetime"
-                  onConfirm={this.onDateChange}
-                  onCancel={() => this.setState({ isDatePickerVisible: false })}
-                  display='spinner'
                 />
                 <BoldLabel label="Event description" />
                 <Input
@@ -245,7 +257,7 @@ class EventCreateScreen extends Component {
                 <View style={{ paddingTop: 20 }}>
                   <DefaultButton
                     title="Preview"
-                    onPress={() => this.props.navigation.navigate('EventPreview', { event: this.state })}
+                    onPress={this._preview}
                     disabled={this.state.uploading}
                   />
                 </View>
