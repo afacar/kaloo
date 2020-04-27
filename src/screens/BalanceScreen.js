@@ -51,6 +51,7 @@ class BalanceScreen extends Component {
                 title={'Create Account'}
                 onPress={() => Linking.openURL(stripeUrl)}
                 loading={requestLoading}
+                disabled={!stripeUrl}
               />
               <ContactUs title='Need Help?' screen='Profile' />
             </View>
