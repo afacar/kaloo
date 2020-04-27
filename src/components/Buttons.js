@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { StyleSheet, TouchableOpacity, Text, View, Linking } from 'react-native';
 import { Icon, Button } from 'react-native-elements';
+import { FloatingAction } from "react-native-floating-action";
 
 import app from '../constants/app';
 import { colors } from '../constants'
@@ -153,17 +154,16 @@ export function ClearButton(props) {
     )
 }
 
+
 export function BroadcastButton(props) {
     const { status, loading, eventType } = props.event;
     let buttonTitle = status === SCHEDULED ? 'Start' : status === IN_PROGRESS ? 'End' : 'Continue';
     buttonTitle += eventType === BROADCAST ? ' Broadcast' : ' Meeting'
     const buttonStyle = status === SCHEDULED ? styles.startButton : status === IN_PROGRESS ? styles.endButton : styles.startButton;
     return (
-        <Button
-            title={buttonTitle}
-            buttonStyle={buttonStyle}
-            onPress={props.onPress}
-            loading={loading}
+        <FloatingAction
+            onPressMain={props.onPress}
+            text={buttonTitle}
         />
     )
 }
