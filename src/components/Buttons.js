@@ -164,7 +164,7 @@ export function BroadcastButton(props) {
             style={buttonStyle}
             onPress={props.onPress}
         >
-            <Text>{buttonTitle}</Text>
+            <Text style={{ color: 'white', fontSize: 17 }}>{buttonTitle}</Text>
         </TouchableOpacity>
     )
 }
@@ -179,6 +179,7 @@ const styles = StyleSheet.create({
         borderRadius: 6,
         zIndex: 1000,
         padding: 12,
+        opacity: 0.5,
         justifyContent: 'center',
         alignItems: 'center'
     },
@@ -189,6 +190,7 @@ const styles = StyleSheet.create({
         bottom: 24,
         zIndex: 1000,
         borderRadius: 6,
+        opacity: 0.7,
         padding: 12,
         justifyContent: 'center',
         alignItems: 'center'
