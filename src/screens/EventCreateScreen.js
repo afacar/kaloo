@@ -80,9 +80,15 @@ class EventCreateScreen extends Component {
     const { date, time, gmt } = splitDate(eventDate)
     return (
       <SafeAreaView style={{ flex: 1, backgroundColor: "white" }}>
-        <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={styles.container}>
+        <KeyboardAvoidingView 
+          behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={styles.container}
+          keyboardVerticalOffset={50}
+          >
           <View style={{ flex: 1, backgroundColor: "#3598FE" }}>
-            <ScrollView contentContainerStyle={{
+            <ScrollView 
+            keyboardShouldPersistTaps='always'
+            keyboardDismissMode='on-drag'
+            contentContainerStyle={{
               flexGrow: 1,
               alignItems: 'center',
               backgroundColor: "#3598FE",
@@ -175,7 +181,7 @@ class EventCreateScreen extends Component {
                   value={description}
                   multiline={true}
                   inputContainerStyle={{ ...styles.inputContainerStyle, height: 100 }}
-                  inputStyle={{ alignSelf: 'flex-start', paddingVertical: 5 }}
+                  inputStyle={{ alignSelf: 'flex-start' }}
                   containerStyle={{ paddingHorizontal: 0 }}
                 />
                 <BoldLabel label="Meeting Type" />
