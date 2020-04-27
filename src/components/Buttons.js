@@ -1,7 +1,6 @@
-import React, { Component } from 'react';
+import React from 'react';
 import { StyleSheet, TouchableOpacity, Text, View, Linking } from 'react-native';
 import { Icon, Button } from 'react-native-elements';
-import { FloatingAction } from "react-native-floating-action";
 
 import app from '../constants/app';
 import { colors } from '../constants'
