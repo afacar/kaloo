@@ -69,13 +69,11 @@ class HostScreen extends Component {
         var { status, eventLink } = this.props.event
         let buttonTitle = status === COMPLETED ? 'Meeting Completed' : status === SUSPENDED ? 'Continue Meeting' : status === SCHEDULED ? 'Preview audio and video' : 'Meeting in Progress'
         return (
-            <SafeAreaView style={{ flex: 1, backgroundColor: 'white' }}>
-                <ScrollView contentContainerStyle={{
-                    flexGrow: 1,
-                    alignItems: 'center',
-                    backgroundColor: "#3598FE"
-                }}>
-                    <View style={styles.componentStyle}>
+            <SafeAreaView style={styles.container}>
+                <View style={styles.cardStyle}>
+                    <ScrollView contentContainerStyle={{
+                        flexGrow: 1,
+                    }}>
                         <EventHeader
                             event={this.props.event}
                             navigation={this.props.navigation}
@@ -90,9 +88,9 @@ class HostScreen extends Component {
                                 disabled={status === COMPLETED}
                             />
                         </View>
-                    </View>
-                </ScrollView>
-                <ContactUs />
+                    </ScrollView>
+                    <ContactUs screen='HostScreen' />
+                </View>
             </SafeAreaView>
         )
     }
@@ -102,16 +100,12 @@ const styles = StyleSheet.create({
     container: {
         flexGrow: 1,
         justifyContent: 'flex-start',
-        marginHorizontal: 10,
-        padding: 10,
-        borderRadius: 15,
+        backgroundColor: colors.BLUE
     },
-    componentStyle: {
+    cardStyle: {
         flex: 1,
         paddingHorizontal: 40,
-        paddingVertical: 10,
         alignSelf: 'stretch',
-        paddingVertical: 20,
         backgroundColor: "white",
         borderTopRightRadius: 26,
         borderTopLeftRadius: 26,

@@ -71,7 +71,7 @@ class EventPreviewScreen extends Component {
 
     return (
       <SafeAreaView style={styles.container}>
-        <View style={styles.componentStyle}>
+        <View style={styles.cardStyle}>
           {!status && <View style={{ flexDirection: 'row', justifyContent: "space-between", marginVertical: 20 }}>
             <Stage value="1" text="Create" />
             <Stage value="2" text="Preview" active={true} />
@@ -79,7 +79,7 @@ class EventPreviewScreen extends Component {
           </View>}
           <ScrollView contentContainerStyle={{
             flexGrow: 1,
-            alignItems: 'center',
+            alignItems: 'stretch',
           }}>
             <View>
 
@@ -111,7 +111,7 @@ class EventPreviewScreen extends Component {
               <WaitingModal isWaiting={isWaiting} text='Creating your event...' />
             </View>
           </ScrollView>
-          <ContactUs />
+          <ContactUs screen='EventPreviewScreen' />
         </View>
       </SafeAreaView>
     );
@@ -124,12 +124,11 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-start',
     backgroundColor: colors.BLUE
   },
-  componentStyle: {
+  cardStyle: {
     flex: 1,
     paddingHorizontal: 30,
-    paddingVertical: 10,
     alignSelf: 'stretch',
-    paddingVertical: 20,
+    alignItems: 'stretch',
     backgroundColor: "white",
     borderTopRightRadius: 26,
     borderTopLeftRadius: 26,
