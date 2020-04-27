@@ -87,7 +87,7 @@ class HostVideoScreen extends Component {
             let title = 'Error occured',
                 message = 'Unknown error occured while starting your call. Please try again!',
                 onConfirm = () => { };
-                this._isMounted && this.setState({ isConnecting: false })
+            this._isMounted && this.setState({ isConnecting: false })
             InfoModal(title, message, 'Ok', onConfirm)
         }
     }
@@ -196,8 +196,8 @@ class HostVideoScreen extends Component {
                                 hostId={HOST_UID}
                             />
                         )}
-                    <BroadcastButton status={status} eventType={eventType} onPress={this._onPress} />
                     <WaitingModal isWaiting={isConnecting} />
+                    <BroadcastButton event={this.props.event} onPress={this._onPress} />
                 </View>
             </View>
         )
@@ -207,7 +207,7 @@ class HostVideoScreen extends Component {
         //removeAndroidBackButtonHandler(this.backButtonPressed);
         RtcEngine.leaveChannel().then(res => { });
         this._onSuspend()
-        this._isMounted = false 
+        this._isMounted = false
     }
 }
 

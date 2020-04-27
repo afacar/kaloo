@@ -154,7 +154,7 @@ export function ClearButton(props) {
 }
 
 export function BroadcastButton(props) {
-    const { status, onPress, loading, eventType } = props;
+    const { status, loading, eventType } = props.event;
     let buttonTitle = status === SCHEDULED ? 'Start' : status === IN_PROGRESS ? 'End' : 'Continue';
     buttonTitle += eventType === BROADCAST ? ' Broadcast' : ' Meeting'
     const buttonStyle = status === SCHEDULED ? styles.startButton : status === IN_PROGRESS ? styles.endButton : styles.startButton;
@@ -162,7 +162,7 @@ export function BroadcastButton(props) {
         <Button
             title={buttonTitle}
             buttonStyle={buttonStyle}
-            onPress={onPress}
+            onPress={props.onPress}
             loading={loading}
         />
     )
