@@ -8,13 +8,14 @@ import { connect } from 'react-redux';
 import { SafeAreaView } from 'react-navigation'
 
 import { H1Label, BoldLabel, Label, ErrorLabel } from '../components/Labels';
-import { Stage1, Stage2 } from '../components/Stages';
+import { Stage } from '../components/Stages';
 import { ContactUs } from '../components/ContactUs'
 import { splitDate } from '../utils/Utils';
 import { DefaultButton } from '../components/Buttons';
 import HeaderLeft from '../components/Headers/HeaderLeft';
 import UserAvatar from '../components/UserAvatar';
 import app from '../constants/app';
+import { colors } from '../constants';
 
 const { CALL, BROADCAST } = app.EVENT_TYPE;
 
@@ -89,25 +90,24 @@ class EventCreateScreen extends Component {
     const { image, title, description, duration, eventType, capacity, price, eventDate, titleMessage, dateMessage } = this.state;
     const { date, time, gmt } = splitDate(eventDate)
     return (
-      <SafeAreaView style={{ flex: 1, backgroundColor: "white" }}>
+      <SafeAreaView style={styles.container}>
         <KeyboardAvoidingView
           behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={styles.container}
-          keyboardVerticalOffset={20}
+          //keyboardVerticalOffset={50}
         >
-          <View style={{ flex: 1, backgroundColor: "#3598FE" }}>
+          <View style={styles.componentStyle}>
+            <View style={{ flexDirection: 'row', justifyContent: "space-between", marginVertical: 10 }}>
+              <Stage value="1" text="Create" active={true} />
+              <Stage value="2" text="Preview" />
+              <Stage value="3" text="Published" />
+            </View>
             <ScrollView
               keyboardShouldPersistTaps='always'
               contentContainerStyle={{
-                flexGrow: 1,
-                alignItems: 'center',
-                backgroundColor: "#3598FE",
+                flexGrow: 1
               }}>
-              <View style={styles.componentStyle}>
-                <View style={{ flexDirection: 'row', justifyContent: "space-between", marginVertical: 10 }}>
-                  <Stage2 value="1" text="Create" />
-                  <Stage1 value="2" text="Preview" />
-                  <Stage1 value="3" text="Published" />
-                </View>
+              <View style={{ flex: 1 }}>
+
                 <H1Label label="Create an event" />
                 <BoldLabel label="Meeting Image" />
                 <Label label="This image is going to be displayed on top of your event card." />
@@ -170,7 +170,7 @@ class EventCreateScreen extends Component {
                   isVisible={this.state.isDatePickerVisible}
                   mode="datetime"
                   onConfirm={this.onDateChange}
-                  date={new Date(eventDate.getTime() - new Date().getTimezoneOffset()*60000)}
+                  date={new Date(eventDate.getTime() - new Date().getTimezoneOffset() * 60000)}
                   onCancel={() => this.setState({ isDatePickerVisible: false })}
                   display='spinner'
                 />
@@ -274,7 +274,8 @@ class EventCreateScreen extends Component {
 
 const styles = StyleSheet.create({
   container: {
-    flexGrow: 1
+    flex: 1,
+    backgroundColor: colors.BLUE
   },
   inputContainerStyle: {
     borderWidth: 0.7,
@@ -299,7 +300,7 @@ const styles = StyleSheet.create({
   },
   componentStyle: {
     flex: 1,
-    paddingHorizontal: 40,
+    paddingHorizontal: 30,
     paddingVertical: 10,
     alignSelf: 'stretch',
     paddingVertical: 20,

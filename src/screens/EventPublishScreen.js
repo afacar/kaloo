@@ -6,7 +6,7 @@ import { connect } from 'react-redux';
 import * as actions from '../appstate/actions/host_actions';
 import { handleAndroidBackButton, removeAndroidBackButtonHandler } from '../utils/BackHandler'
 import EventShare from '../components/EventShare';
-import { Stage2, Stage3 } from '../components/Stages';
+import { Stage } from '../components/Stages';
 import { H1Label } from '../components/Labels';
 import { DefaultButton } from '../components/Buttons';
 
@@ -41,12 +41,12 @@ class EventPublishScreen extends Component {
     const myEvent = this.props.navigation.getParam('event');
 
     return (
-      <SafeAreaView style={{ flex: 1, backgroundColor: "#3598FE" }} forceInset={{ bottom: 'never' }}>
+      <SafeAreaView style={styles.container} forceInset={{ bottom: 'never' }}>
         <View style={styles.componentStyle}>
           <View style={{ flexDirection: 'row', justifyContent: "space-between", marginVertical: 20 }}>
-            <Stage3 value="1" text="Create" />
-            <Stage3 value="2" text="Preview" />
-            <Stage2 value="3" text="Published" />
+            <Stage value="1" text="Create" />
+            <Stage value="2" text="Preview" />
+            <Stage value="3" text="Published" active={true} />
           </View>
           <H1Label label="Your meeting is set!" />
           <EventShare
@@ -71,15 +71,13 @@ class EventPublishScreen extends Component {
 
 const styles = StyleSheet.create({
   container: {
-    flexGrow: 1,
+    flex: 1, 
+    backgroundColor: "#3598FE",
     justifyContent: 'flex-start',
-    marginHorizontal: 10,
-    padding: 10,
-    borderRadius: 15
   },
   componentStyle: {
     flex: 1,
-    paddingHorizontal: 40,
+    paddingHorizontal: 30,
     paddingVertical: 10,
     alignSelf: 'stretch',
     paddingVertical: 20,

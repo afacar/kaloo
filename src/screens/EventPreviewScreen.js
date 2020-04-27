@@ -7,7 +7,7 @@ import { SafeAreaView } from 'react-navigation';
 import { HighlightedText, BoldLabel, H1Label, ErrorLabel } from '../components/Labels';
 import PreviewHeader from "../components/PreviewHeader";
 import PreviewBody from '../components/PreviewBody';
-import { Stage1, Stage2, Stage3 } from '../components/Stages';
+import { Stage } from '../components/Stages';
 import { DefaultButton } from '../components/Buttons';
 import { ContactUs } from '../components/ContactUs'
 import HeaderLeft from '../components/Headers/HeaderLeft';
@@ -15,6 +15,7 @@ import { ConfirmModal } from '../utils/Utils';
 import { WaitingModal } from '../components/Modals';
 import UserAvatar from '../components/UserAvatar';
 import app from '../constants/app';
+import { colors } from '../constants';
 
 const { BROADCAST } = app.EVENT_TYPE;
 
@@ -69,19 +70,19 @@ class EventPreviewScreen extends Component {
     } = this.state;
 
     return (
-      <SafeAreaView style={{ flex: 1, backgroundColor: "white" }}>
-        <View style={{ flex: 1, backgroundColor: "#3598FE" }}>
+      <SafeAreaView style={styles.container}>
+        <View style={styles.componentStyle}>
+          {!status && <View style={{ flexDirection: 'row', justifyContent: "space-between", marginVertical: 20 }}>
+            <Stage value="1" text="Create" />
+            <Stage value="2" text="Preview" active={true} />
+            <Stage value="3" text="Published" />
+          </View>}
           <ScrollView contentContainerStyle={{
             flexGrow: 1,
             alignItems: 'center',
-            backgroundColor: "#3598FE"
           }}>
-            <View style={styles.componentStyle}>
-              {!status && <View style={{ flexDirection: 'row', justifyContent: "space-between", marginVertical: 20 }}>
-                <Stage3 value="1" text="Create" />
-                <Stage2 value="2" text="Preview" />
-                <Stage1 value="3" text="Published" />
-              </View>}
+            <View>
+
               {!status && <H1Label label="Preview & Publish" />}
               {!status && <HighlightedText
                 text='This is how your event is going to look like when it’s shared to your audience.'
@@ -119,11 +120,9 @@ class EventPreviewScreen extends Component {
 
 const styles = StyleSheet.create({
   container: {
-    flexGrow: 1,
+    flex: 1,
     justifyContent: 'flex-start',
-    marginHorizontal: 10,
-    padding: 10,
-    borderRadius: 15
+    backgroundColor: colors.BLUE
   },
   componentStyle: {
     flex: 1,
