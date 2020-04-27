@@ -84,6 +84,13 @@ class ProfileScreen extends Component {
         }).catch(err => console.log('image-picker err:', err))
     }
 
+    _checkProfile = () => {
+        const { displayName } = this.state;
+        if (!displayName)
+            return this.setState({ errorMessage: 'We need a display name' })
+        this.handleProfileUpdate()
+    }
+
     render() {
         const { email, displayName, photoURL, isAvatarChanged, isNameChanged, isWaiting, errorMessage } = this.state
         return (
@@ -132,8 +139,8 @@ class ProfileScreen extends Component {
                             <View>
                                 <ErrorLabel label={errorMessage} />
                                 <DefaultButton
-                                    title={isNameChanged ? 'Save Changes' : 'Edit Your Profile'}
-                                    onPress={this.handleProfileUpdate}
+                                    title='Save Changes'
+                                    onPress={this._checkProfile}
                                     disabled={!(isNameChanged || isAvatarChanged)}
                                 //loading={isWaiting}
                                 />
