@@ -15,16 +15,16 @@ import { colors } from '../constants';
 export default UserNavigatior = createStackNavigator(
   {
     UserHome: EventListScreen,
-    EventCreate: EventCreateScreen,
-    EventPreview: EventPreviewScreen,
-    EventPublish: EventPublishScreen,
-    Ticket: TicketScreen,
     Profile: ProfileScreen,
     Balance: BalanceScreen,
     /** SCREENS FOR HOSTING EVENT */
+    EventCreate: EventCreateScreen,
+    EventPreview: EventPreviewScreen,
+    EventPublish: EventPublishScreen,
     Host: HostScreen,
     HostVideo: HostVideoScreen,
     /** SCREENS FOR JOINING EVENT */
+    Ticket: TicketScreen,
     Guest: GuestScreen,
     Video: VideoScreen,
   },

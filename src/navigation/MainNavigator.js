@@ -1,20 +1,21 @@
 import { createStackNavigator } from 'react-navigation-stack';
-import ATicketScreen from '../screens/ATicketScreen';
 import WelcomeScreen from '../screens/WelcomeScreen';
 import SignInScreen from '../screens/SignInScreen';
-import AGuestScreen from '../screens/AGuestScreen';
 import RegisterScreen from '../screens/RegisterScreen';
-import AVideoScreen from '../screens/AVideoScreen';
+import TicketScreen from '../screens/TicketScreen';
+import GuestScreen from '../screens/GuestScreen';
+import VideoScreen from '../screens/VideoScreen';
+
 import { colors } from '../constants';
 
 export default MainNavigatior = createStackNavigator(
   {
     Home: WelcomeScreen,
-    ATicket: ATicketScreen,
-    AGuest: AGuestScreen,
-    AVideo: AVideoScreen,
     SignIn: SignInScreen,
     Register: RegisterScreen,
+    ATicket: TicketScreen,
+    AGuest: GuestScreen,
+    AVideo: VideoScreen,
   },
   {
     initialRouteName: "Home",
