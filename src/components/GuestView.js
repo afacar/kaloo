@@ -12,6 +12,7 @@ import PreviewBody from './PreviewBody';
 import CustomStatusBar from './StatusBars/CustomStatusBar';
 import { DefaultButton } from './Buttons';
 import RatingView from './RatingView';
+import { ContactUs } from './ContactUs';
 
 const { CALL, BROADCAST } = app.EVENT_TYPE;
 
@@ -101,7 +102,10 @@ class GuestView extends Component {
         const eventTypeName = eventType === CALL ? 'Meeting' : 'Broadcast'
         const buttonTitle = (status === COMPLETED) ? `${eventTypeName} Finished` : (status === SCHEDULED || status === SUSPENDED) ? 'Waiting Host' : `Join ${eventTypeName}`;
         return (
-            <ScrollView contentContainerStyle={styles.container}>
+            <ScrollView
+                showsVerticalScrollIndicator={false}
+                contentContainerStyle={styles.container}
+            >
                 <CustomStatusBar />
                 <Card containerStyle={{ alignSelf: 'stretch' }}>
                     <View>
@@ -127,6 +131,7 @@ class GuestView extends Component {
                         }
                     </View>
                 </Card>
+                <ContactUs screen='GuestScreen' />
             </ScrollView>
         )
     }
@@ -135,8 +140,8 @@ class GuestView extends Component {
 const styles = StyleSheet.create({
     container: {
         flexGrow: 1,
-        justifyContent: 'flex-start',
-        alignItems: 'center'
+        justifyContent: 'space-between',
+        alignItems: 'center',
     }
 })
 

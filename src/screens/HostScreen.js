@@ -71,9 +71,10 @@ class HostScreen extends Component {
         return (
             <SafeAreaView style={styles.container}>
                 <View style={styles.cardStyle}>
-                    <ScrollView contentContainerStyle={{
-                        flexGrow: 1,
-                    }}>
+                    <ScrollView
+                        showsVerticalScrollIndicator={false}
+                        contentContainerStyle={{ flexGrow: 1 }}
+                    >
                         <EventHeader
                             event={this.props.event}
                             navigation={this.props.navigation}
