@@ -1,11 +1,12 @@
 import React, { Component, Fragment } from 'react';
-import { View, StyleSheet, Text, ActivityIndicator, ScrollView, Image } from 'react-native';
+import { View, StyleSheet, Text, ScrollView, Image } from 'react-native';
 import { ListItem } from 'react-native-elements';
-import { firestore, auth } from "react-native-firebase";
+import { auth } from "react-native-firebase";
 import { connect } from 'react-redux';
 import { SafeAreaView } from 'react-navigation'
 
 import { checkAudioPermission, checkCameraPermission, compare } from '../utils/Utils';
+import * as actions from '../appstate/actions/host_actions';
 import app from "../constants/app";
 import { ContactUs } from '../components/ContactUs';
 import { DefaultButton, ClearButton, ClickableText } from '../components/Buttons';
@@ -13,7 +14,7 @@ import { Label, BoldLabel } from '../components/Labels';
 import DashboardHeader from "../components/DashboardHeader";
 import CustomStatusBar from '../components/StatusBars/CustomStatusBar';
 
-const db = firestore()
+const { SCHEDULED, SUSPENDED, IN_PROGRESS, COMPLETED } = app.EVENT_STATUS
 
 
 class EventListScreen extends Component {
@@ -28,67 +29,34 @@ class EventListScreen extends Component {
 
     componentDidMount = async () => {
         this.authListener = auth().onAuthStateChanged(user => {
-            console.log('UserHome onAuthStateChange>', user);
-            if (user && !user.isAnonymous) {
-                this.props.navigation.navigate('User');
+            if (user) {
+                this.props.navigation.navigate('UserHome');
             } else {
                 this.props.navigation.navigate('Splash');
             }
         });
-        this.checkMyEvents()
         checkCameraPermission()
         checkAudioPermission()
-    }
 
-    checkMyEvents = async () => {
-        const { uid } = auth().currentUser
-        this.setState({ isLoading: true })
-        const { IN_PROGRESS, SUSPENDED, SCHEDULED, COMPLETED } = app.EVENT_STATUS
-        var pathToEvents = `events`;
-        // TODO: filter events based on status [All the events except COMPLETED]
-
-
-        db.collection(pathToEvents).where('uid', '==', uid)
-            .onSnapshot((querySnapshot) => {
-                var liveEvents = [];
-                var upcomingEvents = [];
-                var pastEvents = [];
-                querySnapshot.forEach(function (doc) {
-                    let event = doc.data()
-                    // Convert Firebase Timestamp tp JS Date object
-                    let date = event.eventDate
-                    if (date instanceof firestore.Timestamp) {
-                        date = date.toDate();
-                    } else if (eventData.eventTimestamp) {
-                        date = new Date(eventData.eventTimestamp)
-                    }
-                    event.eventDate = date
-                    if (event.status === SUSPENDED || event.status === IN_PROGRESS) liveEvents.push(event)
-                    if (event.status === SCHEDULED) upcomingEvents.push(event)
-                    if (event.status === COMPLETED) pastEvents.push(event)
-                });
-                this.setState({ liveEvents, upcomingEvents, pastEvents, isLoading: false })
-                //return events;
-            });
     }
 
     componentWillUnmount() {
-        if (this.authListener) {
-            console.log('authListener Unmounts');
+        /* if (this.authListener) {
             this.authListener();
-        }
-    }
-
-    onEventPublish = (event) => {
-        let { events } = this.state;
-        events.push(event)
-        this.setState({ events })
-        this.props.navigation.navigate('MyEvent', { event })
+        } */
     }
 
     renderEventList = () => {
-        const { liveEvents, upcomingEvents, isLoading } = this.state;
-        if (isLoading) return <ActivityIndicator size='large' />
+        const events = this.props.events;
+        let upcomingEvents = [], liveEvents = [], pastEvents = []
+
+        for (var key in events) {
+            let event = events[key]
+            if (event.status === SUSPENDED || event.status === IN_PROGRESS) liveEvents.push(event)
+            if (event.status === SCHEDULED) upcomingEvents.push(event)
+            if (event.status === COMPLETED) pastEvents.push(event)
+        }
+
         liveEvents.sort(compare)
         upcomingEvents.sort(compare)
         // List SCHEDULED EVENT by sorting accordinf to eventDate
@@ -107,7 +75,11 @@ class EventListScreen extends Component {
                             titleStyle={{ fontWeight: 'bold' }}
                             subtitle={description}
                             containerStyle={{ borderWidth: 0.7, borderRadius: 6, marginTop: 7, elevation: 1 }}
-                            onPress={() => this.props.navigation.navigate('MyEvent', { event: event })}
+                            onPress={() => {
+                                this.props.setHostEventListener(event)
+                                this.props.setMyViewersListener(event)
+                                this.props.navigation.navigate('Host', { eventId: event.eventId })
+                            }}
                         />
                     );
                 })}
@@ -128,7 +100,11 @@ class EventListScreen extends Component {
                             title={event.title}
                             titleStyle={{ fontWeight: 'bold' }}
                             subtitle={description}
-                            onPress={() => this.props.navigation.navigate('MyEvent', { event: event })}
+                            onPress={() => {
+                                this.props.setHostEventListener(event)
+                                this.props.setMyViewersListener(event)
+                                this.props.navigation.navigate('Host', { eventId: event.eventId })
+                            }}
                             containerStyle={{ borderWidth: 0.7, borderRadius: 6, marginTop: 7, elevation: 1 }}
                         />
                     );
@@ -172,7 +148,7 @@ class EventListScreen extends Component {
                                             onPress={() => this.props.navigation.navigate('EventCreate')} />
                                         <ClearButton
                                             title='Join a show'
-                                            onPress={() => this.props.navigation.navigate('MyTicket')} />
+                                            onPress={() => this.props.navigation.navigate('Ticket')} />
                                     </View>
                                     {this.renderEventList()}
                                 </View>
@@ -199,8 +175,8 @@ const styles = StyleSheet.create({
     }
 })
 
-const mapStateToProps = ({ auth }) => {
-    return { profile: auth.profile }
+const mapStateToProps = ({ auth, hostEvents }) => {
+    return { profile: auth.profile, events: hostEvents.allEvents }
 }
 
-export default connect(mapStateToProps, null)(EventListScreen);
+export default connect(mapStateToProps, actions)(EventListScreen);

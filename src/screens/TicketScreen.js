@@ -1,8 +1,6 @@
 import React, { Component } from 'react';
-import Ticket from '../components/Ticket';
-import { Button } from 'react-native-elements';
+import TicketView from '../components/TicketView';
 import HeaderLeft from '../components/Headers/HeaderLeft';
-import { colors } from '../constants';
 
 
 class TicketScreen extends Component {
@@ -12,7 +10,7 @@ class TicketScreen extends Component {
   });
 
   render() {
-    return <Ticket navigation={this.props.navigation} />
+    return <TicketView navigation={this.props.navigation} />
   }
 }
 

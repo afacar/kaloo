@@ -1,4 +1,4 @@
-rootProject.name = 'InfluenceMe'
+rootProject.name = 'kaloo'
 include ':react-native-video'
 project(':react-native-video').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-video/android-exoplayer')
 include ':react-native-keep-awake'

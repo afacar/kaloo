@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import { Provider } from 'react-redux';
 import AppContainer from './src/navigation/AppNavigator';
-import { SafeAreaView } from 'react-navigation';
 import firebase from 'react-native-firebase';
 import { View } from 'react-native';
 

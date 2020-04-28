@@ -10,7 +10,6 @@
 		00E356F31AD99517003FC87E /* InfluenceMeTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 00E356F21AD99517003FC87E /* InfluenceMeTests.m */; };
 		09BCD05C3EC983B2B3F270B3 /* libPods-InfluenceMe.a in Frameworks */ = {isa = PBXBuildFile; fileRef = EC400366270F1508A4C85A8A /* libPods-InfluenceMe.a */; };
 		13B07FBC1A68108700A75B9A /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB01A68108700A75B9A /* AppDelegate.m */; };
-		13B07FBD1A68108700A75B9A /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB11A68108700A75B9A /* LaunchScreen.xib */; };
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
 		13B07FC11A68108700A75B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
 		1E97892B6FFEC6811803A6AA /* libPods-InfluenceMeTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 639172C101462442532CF1F3 /* libPods-InfluenceMeTests.a */; };
@@ -20,8 +19,8 @@
 		2DCD954D1E0B4F2C00145EB5 /* InfluenceMeTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 00E356F21AD99517003FC87E /* InfluenceMeTests.m */; };
 		5E9C6965B3D73C5401CA877E /* libPods-InfluenceMe-tvOSTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CE8804D1AC451E5E47AB2EF5 /* libPods-InfluenceMe-tvOSTests.a */; };
 		7C216F28BB3DED8CEB205066 /* libPods-InfluenceMe-tvOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 788A2417F1C4EBD75274016B /* libPods-InfluenceMe-tvOS.a */; };
+		8A964E532456DE5C00034770 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 8A964E522456DE5C00034770 /* GoogleService-Info.plist */; };
 		8AD294132434F6C10011FBF1 /* Fonts in Resources */ = {isa = PBXBuildFile; fileRef = 8AD294122434F6C10011FBF1 /* Fonts */; };
-		8AE372B62434D7AA00CD5BDF /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 8AE372B52434D7AA00CD5BDF /* GoogleService-Info.plist */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -55,7 +54,6 @@
 		13B07F961A680F5B00A75B9A /* InfluenceMe.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = InfluenceMe.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		13B07FAF1A68108700A75B9A /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppDelegate.h; path = InfluenceMe/AppDelegate.h; sourceTree = "<group>"; };
 		13B07FB01A68108700A75B9A /* AppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = AppDelegate.m; path = InfluenceMe/AppDelegate.m; sourceTree = "<group>"; };
-		13B07FB21A68108700A75B9A /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/LaunchScreen.xib; sourceTree = "<group>"; };
 		13B07FB51A68108700A75B9A /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = InfluenceMe/Images.xcassets; sourceTree = "<group>"; };
 		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = InfluenceMe/Info.plist; sourceTree = "<group>"; };
 		13B07FB71A68108700A75B9A /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = InfluenceMe/main.m; sourceTree = "<group>"; };
@@ -70,8 +68,8 @@
 		788A2417F1C4EBD75274016B /* libPods-InfluenceMe-tvOS.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-InfluenceMe-tvOS.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		859DFF137F5A4DD18BEB90A9 /* FontAwesome5_Solid.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = FontAwesome5_Solid.ttf; path = "../node_modules/react-native-vector-icons/Fonts/FontAwesome5_Solid.ttf"; sourceTree = "<group>"; };
 		8907EC8BD3873D1429994557 /* Pods-InfluenceMe-tvOSTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-InfluenceMe-tvOSTests.debug.xcconfig"; path = "Target Support Files/Pods-InfluenceMe-tvOSTests/Pods-InfluenceMe-tvOSTests.debug.xcconfig"; sourceTree = "<group>"; };
+		8A964E522456DE5C00034770 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = "GoogleService-Info.plist"; path = "../../../Downloads/GoogleService-Info.plist"; sourceTree = "<group>"; };
 		8AD294122434F6C10011FBF1 /* Fonts */ = {isa = PBXFileReference; lastKnownFileType = folder; name = Fonts; path = "../node_modules/react-native-vector-icons/Fonts"; sourceTree = "<group>"; };
-		8AE372B52434D7AA00CD5BDF /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = "GoogleService-Info.plist"; path = "../../GoogleService-Info.plist"; sourceTree = "<group>"; };
 		8CA0584ED68A4D4684C9B2A4 /* FontAwesome.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = FontAwesome.ttf; path = "../node_modules/react-native-vector-icons/Fonts/FontAwesome.ttf"; sourceTree = "<group>"; };
 		AA8A44910E9C43E4BE499F79 /* MaterialIcons.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = MaterialIcons.ttf; path = "../node_modules/react-native-vector-icons/Fonts/MaterialIcons.ttf"; sourceTree = "<group>"; };
 		B2C14837A5164D8B838B4749 /* Zocial.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Zocial.ttf; path = "../node_modules/react-native-vector-icons/Fonts/Zocial.ttf"; sourceTree = "<group>"; };
@@ -160,14 +158,13 @@
 		13B07FAE1A68108700A75B9A /* InfluenceMe */ = {
 			isa = PBXGroup;
 			children = (
+				8A964E522456DE5C00034770 /* GoogleService-Info.plist */,
 				008F07F21AC5B25A0029DE68 /* main.jsbundle */,
 				13B07FAF1A68108700A75B9A /* AppDelegate.h */,
 				13B07FB01A68108700A75B9A /* AppDelegate.m */,
-				8AE372B52434D7AA00CD5BDF /* GoogleService-Info.plist */,
 				13B07FB51A68108700A75B9A /* Images.xcassets */,
 				13B07FB61A68108700A75B9A /* Info.plist */,
 				8AD294122434F6C10011FBF1 /* Fonts */,
-				13B07FB11A68108700A75B9A /* LaunchScreen.xib */,
 				13B07FB71A68108700A75B9A /* main.m */,
 			);
 			name = InfluenceMe;
@@ -387,8 +384,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
-				13B07FBD1A68108700A75B9A /* LaunchScreen.xib in Resources */,
-				8AE372B62434D7AA00CD5BDF /* GoogleService-Info.plist in Resources */,
+				8A964E532456DE5C00034770 /* GoogleService-Info.plist in Resources */,
 				8AD294132434F6C10011FBF1 /* Fonts in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -671,18 +667,6 @@
 		};
 /* End PBXTargetDependency section */
 
-/* Begin PBXVariantGroup section */
-		13B07FB11A68108700A75B9A /* LaunchScreen.xib */ = {
-			isa = PBXVariantGroup;
-			children = (
-				13B07FB21A68108700A75B9A /* Base */,
-			);
-			name = LaunchScreen.xib;
-			path = InfluenceMe;
-			sourceTree = "<group>";
-		};
-/* End PBXVariantGroup section */
-
 /* Begin XCBuildConfiguration section */
 		00E356F61AD99517003FC87E /* Debug */ = {
 			isa = XCBuildConfiguration;
@@ -737,12 +721,13 @@
 				DEVELOPMENT_TEAM = 2V69HQNXM5;
 				INFOPLIST_FILE = InfluenceMe/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				MARKETING_VERSION = 0.1.5;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = org.influenceme;
+				PRODUCT_BUNDLE_IDENTIFIER = org.fmob.kaloo;
 				PRODUCT_NAME = InfluenceMe;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VERSIONING_SYSTEM = "apple-generic";
@@ -758,12 +743,13 @@
 				DEVELOPMENT_TEAM = 2V69HQNXM5;
 				INFOPLIST_FILE = InfluenceMe/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				MARKETING_VERSION = 0.1.5;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = org.influenceme;
+				PRODUCT_BUNDLE_IDENTIFIER = org.fmob.kaloo;
 				PRODUCT_NAME = InfluenceMe;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VERSIONING_SYSTEM = "apple-generic";

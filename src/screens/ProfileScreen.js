@@ -1,27 +1,28 @@
 import React, { Component } from 'react';
-import { View, StyleSheet, Text, ActivityIndicator, KeyboardAvoidingView, ScrollView, TouchableOpacity, Linking } from 'react-native';
+import { View, StyleSheet, Text, ActivityIndicator, KeyboardAvoidingView, ScrollView, TouchableOpacity } from 'react-native';
 import { Input, Avatar } from 'react-native-elements';
 import { auth, storage, functions } from "react-native-firebase";
 import ImagePicker from "react-native-image-crop-picker";
 import { connect } from 'react-redux';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 
 import * as actions from '../appstate/actions/auth_actions'
 import { DefaultButton } from '../components/Buttons';
 import { ErrorLabel } from "../components/Labels";
 import { ContactUs } from '../components/ContactUs';
 import HeaderLeft from '../components/Headers/HeaderLeft';
-import HeaderRight from '../components/Headers/HeaderRight';
 import { colors } from '../constants';
 import { AppText, BoldLabel } from '../components/Labels';
 import { SafeAreaView } from 'react-navigation'
 import { WaitingModal } from '../components/Modals';
+import Logout from '../components/Headers/Logout';
 
 
 class ProfileScreen extends Component {
     static navigationOptions = ({ navigation }) => ({
         headerTitle: () => null,
         headerLeft: () => <HeaderLeft onPress={navigation.goBack} />,
-        headerRight: () => <HeaderRight title='Logout' onPress={() => auth().signOut()} />
+        headerRight: () => <Logout />
     });
 
     state = {
@@ -58,7 +59,6 @@ class ProfileScreen extends Component {
         try {
             let updateProfile = functions().httpsCallable('updateProfile');
             let result = await updateProfile(newProfile)
-            console.log('updateProfile result', result)
             if (result.data.state === 'ERROR') {
                 return this.setState({
                     isWaiting: false,
@@ -79,71 +79,76 @@ class ProfileScreen extends Component {
             height: 200,
             cropping: true,
         }).then(image => {
-            console.log(image);
             if (Platform.OS === 'ios')
                 image.path = image.path.replace('file://', '');
-            console.log('picked image', image);
             this.setState({ photoURL: image.path, imagePickerResponse: image, isAvatarChanged: true });
         }).catch(err => console.log('image-picker err:', err))
+    }
+
+    _checkProfile = () => {
+        const { displayName } = this.state;
+        if (!displayName)
+            return this.setState({ errorMessage: 'We need a display name' })
+        this.handleProfileUpdate()
     }
 
     render() {
         const { email, displayName, photoURL, isAvatarChanged, isNameChanged, isWaiting, errorMessage } = this.state
         return (
-            <SafeAreaView style={{ flex: 1, backgroundColor: "white" }}>
-                <KeyboardAvoidingView style={styles.container}>
-                    <ScrollView contentContainerStyle={{ flexGrow: 1, paddingHorizontal: 40, paddingVertical: 10, borderTopLeftRadius: 26, borderTopRightRadius: 26, backgroundColor: 'white' }} >
-                        <View style={{ flex: 1, justifyContent: 'space-between', }}>
-                            <View>
-                                <View style={{ alignItems: 'flex-start', marginTop: 20 }}>
-                                    <AppText style={{ fontSize: 28, fontWeight: 'bold' }}> Edit Profile</AppText>
-                                </View>
-                                <View style={{ marginTop: 20, flexDirection: 'row', width: '100%', marginBottom: 20 }}>
-                                    <Avatar
-                                        renderPlaceholderContent={<ActivityIndicator />}
-                                        containerStyle={{ alignSelf: 'flex-start' }}
-                                        size='large'
-                                        rounded={true}
-                                        source={{ uri: photoURL }}
-                                    />
-                                    <View style={{ alignSelf: 'center', justifyContent: 'center', marginLeft: 20, }}>
-                                        <TouchableOpacity onPress={this.onImagePicker} >
-                                            <Text style={{ fontSize: 18, color: colors.BLUE }}>Change Profile Picture</Text>
-                                        </TouchableOpacity>
-                                    </View>
-                                </View>
-
-                                <BoldLabel label="Name" />
-                                <Input
-                                    placeholder='Display name'
-                                    onChangeText={displayName => this.setState({ displayName, isNameChanged: true })}
-                                    value={displayName}
-                                    inputContainerStyle={styles.inputContainerStyle}
-                                    containerStyle={{ paddingHorizontal: 0 }}
-                                />
-                                <BoldLabel label="E-mail" />
-                                <Input
-                                    placeholder='Enter Email'
-                                    value={email}
-                                    disabled
-                                    inputContainerStyle={styles.inputContainerStyle}
-                                    containerStyle={{ paddingHorizontal: 0 }}
-                                />
-                            </View>
-                            <View>
-                                <ErrorLabel label={errorMessage} />
-                                <DefaultButton
-                                    title={isNameChanged ? 'Save Changes' : 'Edit Your Profile'}
-                                    onPress={this.handleProfileUpdate}
-                                    disabled={!(isNameChanged || isAvatarChanged)}
-                                //loading={isWaiting}
-                                />
-                            </View>
+            <SafeAreaView style={styles.container}>
+                <View style={{ flex: 1, backgroundColor: colors.BLUE }}>
+                    <View style={styles.cardStyle}>
+                        <View style={{ alignItems: 'flex-start', marginTop: 20 }}>
+                            <AppText style={{ fontSize: 28, fontWeight: 'bold' }}>Edit Profile</AppText>
                         </View>
-                    </ScrollView>
-                    <ContactUs title='Need Help?' screen='Profile' />
-                                <WaitingModal isWaiting={isWaiting} text='Just a second...' />
-                </KeyboardAvoidingView>
+                        <KeyboardAwareScrollView showsVerticalScrollIndicator={false}>
+                            <View style={{ marginTop: 20, flexDirection: 'row', width: '100%', marginBottom: 20 }}>
+                                <Avatar
+                                    renderPlaceholderContent={<ActivityIndicator />}
+                                    containerStyle={{ alignSelf: 'flex-start' }}
+                                    size='large'
+                                    rounded={true}
+                                    source={{ uri: photoURL }}
+                                />
+                                <View style={{ alignSelf: 'center', justifyContent: 'center', marginLeft: 20, }}>
+                                    <TouchableOpacity onPress={this.onImagePicker} >
+                                        <Text style={{ fontSize: 18, color: colors.BLUE }}>Change Profile Picture</Text>
+                                    </TouchableOpacity>
+                                </View>
+                            </View>
+
+                            <BoldLabel label="Name" />
+                            <Input
+                                placeholder='Display name'
+                                onChangeText={displayName => this.setState({ displayName, isNameChanged: true })}
+                                value={displayName}
+                                inputContainerStyle={styles.inputContainerStyle}
+                                containerStyle={{ paddingHorizontal: 0 }}
+                            />
+                            <BoldLabel label="E-mail" />
+                            <Input
+                                placeholder='Enter Email'
+                                value={email}
+                                disabled
+                                inputContainerStyle={styles.inputContainerStyle}
+                                containerStyle={{ paddingHorizontal: 0 }}
+                            />
+
+                            <ErrorLabel label={errorMessage} />
+                            <DefaultButton
+                                title='Save Changes'
+                                onPress={this._checkProfile}
+                                disabled={!(isNameChanged || isAvatarChanged)}
+                            //loading={isWaiting}
+                            />
+                        </KeyboardAwareScrollView>
+                    </View>
+
+                    <View>
+                        <ContactUs title='Need Help?' screen='Profile' />
+                        <WaitingModal isWaiting={isWaiting} text='Just a second...' />
+                    </View>
+                </View>
             </SafeAreaView>
         )
     }
@@ -152,7 +157,14 @@ class ProfileScreen extends Component {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: colors.BLUE
+        backgroundColor: "#fff"
+    },
+    cardStyle: {
+        flex: 1,
+        backgroundColor: 'white',
+        borderTopLeftRadius: 26,
+        borderTopRightRadius: 26,
+        paddingHorizontal: '10%'
     },
     saveButtonContainer: {
         position: 'absolute',

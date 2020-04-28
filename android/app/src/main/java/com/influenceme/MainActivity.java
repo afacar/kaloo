@@ -1,4 +1,4 @@
-package com.influenceme;
+package com.fmob.kaloo;
 
 import com.facebook.react.ReactActivity;
 

@@ -9,9 +9,10 @@ import { SafeAreaView } from 'react-navigation';
 import { Input } from 'react-native-elements';
 import { auth } from 'react-native-firebase';
 
-import * as actions from '../appstate/actions/auth_actions';
-import { HighlightedText, BoldLabel, H1Label } from '../components/Labels';
-import { DefaultButton, ClickableText } from '../components/Buttons';
+import { setUserProfile } from "../appstate/actions/auth_actions";
+import { setHostEventsListener } from "../appstate/actions/host_actions";
+import { HighlightedText, H1Label } from '../components/Labels';
+import { DefaultButton } from '../components/Buttons';
 import { validateEmail } from '../utils/Utils'
 import { ContactUs } from '../components/ContactUs';
 import HeaderLeft from '../components/Headers/HeaderLeft';
@@ -38,12 +39,12 @@ class SignInScreen extends Component {
 
   handleSignIn = async () => {
     const { email, password } = this.state;
-    console.log('email and password', email, password);
     this.setState({ isWaiting: true });
     try {
       let user = await auth().signInWithEmailAndPassword(email, password);
       if (user) {
-        this.props.setUserProfile();
+        await this.props.setHostEventsListener()
+        await this.props.setUserProfile();
         return this.props.navigation.navigate('UserHome');
       }
     } catch (err) {
@@ -75,7 +76,7 @@ class SignInScreen extends Component {
     return (
       <SafeAreaView style={{ flex: 1, backgroundColor: 'white' }}>
         <CustomStatusBar />
-        <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : ''} style={styles.container}>
+        <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={styles.container}>
           <View style={{ flex: 1, backgroundColor: "#3598FE" }}>
             <ScrollView
               contentContainerStyle={{
@@ -170,4 +171,4 @@ const styles = StyleSheet.create({
   }
 });
 
-export default connect(null, actions)(SignInScreen);
+export default connect(null, { setUserProfile, setHostEventsListener })(SignInScreen);

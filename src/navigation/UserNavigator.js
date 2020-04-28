@@ -1,45 +1,34 @@
-
 import { createStackNavigator } from 'react-navigation-stack';
 import EventListScreen from '../screens/EventListScreen';
 import ProfileScreen from '../screens/ProfileScreen';
 import BalanceScreen from '../screens/BalanceScreen';
-import MyJoinEventScreen from '../screens/MyJoinEventScreen';
-import MyTicketScreen from '../screens/MyTicketScreen';
-import MyEventScreen from '../screens/MyEventScreen';
+import GuestScreen from '../screens/GuestScreen';
+import TicketScreen from '../screens/TicketScreen';
+import HostScreen from '../screens/HostScreen';
 import EventCreateScreen from '../screens/EventCreateScreen';
 import EventPreviewScreen from '../screens/EventPreviewScreen';
 import EventPublishScreen from "../screens/EventPublishScreen";
-import LiveScreen from '../screens/LiveScreen';
-import VideoChatScreen from '../screens/VideoChatScreen';
-import { Dimensions } from 'react-native';
+import HostVideoScreen from '../screens/HostVideoScreen';
+import VideoScreen from '../screens/VideoScreen';
 import { colors } from '../constants';
 
 export default UserNavigatior = createStackNavigator(
   {
     UserHome: EventListScreen,
+    Profile: ProfileScreen,
+    Balance: BalanceScreen,
+    /** SCREENS FOR HOSTING EVENT */
     EventCreate: EventCreateScreen,
     EventPreview: EventPreviewScreen,
     EventPublish: EventPublishScreen,
-    MyTicket: MyTicketScreen,
-    MyJoinEvent: MyJoinEventScreen,
-    Profile: ProfileScreen,
-    Balance: BalanceScreen,
-    MyEvent: MyEventScreen,
-    Live: {
-      screen: LiveScreen,
-      // navigationOptions: {
-      //   headerShown: false,
-      // }
-    },
-    VideoChat: {
-      screen: VideoChatScreen,
-      // navigationOptions: {
-      //   headerShown: false,
-      // }
-    },
+    Host: HostScreen,
+    HostVideo: HostVideoScreen,
+    /** SCREENS FOR JOINING EVENT */
+    Ticket: TicketScreen,
+    Guest: GuestScreen,
+    Video: VideoScreen,
   },
   {
-    //headerLayoutPreset: 'center',
     initialRouteName: "UserHome",
     defaultNavigationOptions: {
       headerTitleAlign: 'center',

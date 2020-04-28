@@ -142,7 +142,7 @@ export const checkCameraPermission = async () => {
             const granted = await PermissionsAndroid.request(
                 PermissionsAndroid.PERMISSIONS.CAMERA);
             if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-                console.log('You can use the camera');
+                console.log('Camera permission accessed');
             } else {
                 console.log('Camera permission denied');
             }
@@ -169,10 +169,11 @@ export function ConfirmModal(title, message, confirmText, canceltext, onConfirm)
 }
 
 export function InfoModal(title, message, confirmText, onConfirm) {
+    onPress = () => {}
     Alert.alert(title, message, [
         {
             text: confirmText || 'Ok',
-            onPress: onConfirm,
+            onPress: onConfirm || onPress,
         },
     ],
         { cancelable: false }

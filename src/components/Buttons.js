@@ -1,8 +1,12 @@
-import React, { Component } from 'react';
+import React from 'react';
 import { StyleSheet, TouchableOpacity, Text, View, Linking } from 'react-native';
 import { Icon, Button } from 'react-native-elements';
 
+import app from '../constants/app';
 import { colors } from '../constants'
+
+const { SCHEDULED, IN_PROGRESS, SUSPENDED, COMPLETED } = app.EVENT_STATUS;
+const { BROADCAST } = app.EVENT_TYPE;
 
 export function HyperLink(props) {
     const { text, link } = props
@@ -111,7 +115,7 @@ export function EndCallButon(props) {
 }
 
 export function DefaultButton(props) {
-    const { onPress, title, disabled,loading } = props
+    const { onPress, title, disabled, loading } = props
     return (
         <Button
             title={title}
@@ -150,14 +154,32 @@ export function ClearButton(props) {
 }
 
 
+export function BroadcastButton(props) {
+    const { status, loading, eventType } = props.event;
+    let buttonTitle = status === SCHEDULED ? 'Start' : status === IN_PROGRESS ? 'End' : 'Continue';
+    buttonTitle += eventType === BROADCAST ? ' Broadcast' : ' Meeting'
+    const buttonStyle = status === SCHEDULED ? styles.startButton : status === IN_PROGRESS ? styles.endButton : styles.startButton;
+    return (
+        <TouchableOpacity
+            style={buttonStyle}
+            onPress={props.onPress}
+        >
+            <Text style={{ color: 'white', fontSize: 19, fontWeight: 'bold' }}>{buttonTitle}</Text>
+        </TouchableOpacity>
+    )
+}
+
+
 const styles = StyleSheet.create({
     startButton: {
         position: 'absolute',
         alignSelf: 'center',
         backgroundColor: colors.GREEN,
-        bottom: 24,
+        bottom: 30,
         borderRadius: 6,
+        zIndex: 1000,
         padding: 12,
+        opacity: 0.7,
         justifyContent: 'center',
         alignItems: 'center'
     },
@@ -165,8 +187,10 @@ const styles = StyleSheet.create({
         position: 'absolute',
         alignSelf: 'center',
         backgroundColor: colors.RED,
-        bottom: 24,
+        bottom: 30,
+        zIndex: 1000,
         borderRadius: 6,
+        opacity: 0.7,
         padding: 12,
         justifyContent: 'center',
         alignItems: 'center'
