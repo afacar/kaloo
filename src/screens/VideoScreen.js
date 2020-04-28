@@ -37,6 +37,8 @@ class VideoScreen extends Component {
         localDeviceID: null
     };
 
+    _isMounted = null
+
     async componentDidMount() {
         this._isMounted = true;
         checkAudioPermission()
@@ -53,12 +55,15 @@ class VideoScreen extends Component {
         RtcEngine.on('userJoined', (data) => {
             const { peerIds } = this.state;
             if (peerIds.indexOf(data.uid) === -1) {
+                console.log('userJouned and isMounted', this._isMounted)
                 this._isMounted && this.setState({
                     peerIds: [...this.state.peerIds, data.uid]
                 })
             }
         })
         RtcEngine.on('userOffline', (data) => {
+            console.log('on userOffline and this._isMounted ', this._isMounted)
+
             this._isMounted && this.setState({
                 peerIds: this.state.peerIds.filter(uid => uid !== data.uid)
             })
@@ -70,12 +75,14 @@ class VideoScreen extends Component {
 
     _onSuspend = () => {
         // Suspend live event of host
+        console.log('_onsuspend this._isMounted', this._isMounted)
         const { eventId } = this.props.event
         const ticket = this.props.ticket
         leaveEvent(eventId, ticket)
     }
 
     _onCompleted = () => {
+        console.log('_onCompleted and isMounted', this._isMounted)
         this.props.navigation.goBack()
     }
 
@@ -89,11 +96,13 @@ class VideoScreen extends Component {
     render() {
         const { peerIds, isConnecting, localDeviceID } = this.state
         const { status, eventType } = this.props.event;
-
+        console.log('rendering state', this.state)
+        console.log('rendering props', this.props)
         if (status === COMPLETED) {
+            this._isMounted = false;
             this._onCompleted()
-        }
-        if (localDeviceID && this.props.ticket.deviceID !== localDeviceID) {
+        } else if (localDeviceID && this.props.ticket.deviceID !== localDeviceID) {
+            this._isMounted = false;
             this._onTicketCompromise()
         }
         return (
@@ -118,12 +127,14 @@ class VideoScreen extends Component {
                 </View>
             </View>
         )
+
     }
 
     componentWillUnmount() {
-        RtcEngine.leaveChannel().then(res => { });
-        this._onSuspend()
         this._isMounted = false;
+        console.log('componentWillUnmount _isMounted', this._isMounted)
+        RtcEngine.leaveChannel().then(res => { console.log('leaving channel... bye...') });
+        this._onSuspend()
     }
 }
 
