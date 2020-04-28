@@ -96,56 +96,58 @@ class ProfileScreen extends Component {
         const { email, displayName, photoURL, isAvatarChanged, isNameChanged, isWaiting, errorMessage } = this.state
         return (
             <SafeAreaView style={styles.container}>
-                <View style={styles.cardStyle}>
-                    <View style={{ alignItems: 'flex-start', marginTop: 20 }}>
-                        <AppText style={{ fontSize: 28, fontWeight: 'bold' }}>Edit Profile</AppText>
-                    </View>
-                    <KeyboardAwareScrollView showsVerticalScrollIndicator={false}>
-                        <View style={{ marginTop: 20, flexDirection: 'row', width: '100%', marginBottom: 20 }}>
-                            <Avatar
-                                renderPlaceholderContent={<ActivityIndicator />}
-                                containerStyle={{ alignSelf: 'flex-start' }}
-                                size='large'
-                                rounded={true}
-                                source={{ uri: photoURL }}
-                            />
-                            <View style={{ alignSelf: 'center', justifyContent: 'center', marginLeft: 20, }}>
-                                <TouchableOpacity onPress={this.onImagePicker} >
-                                    <Text style={{ fontSize: 18, color: colors.BLUE }}>Change Profile Picture</Text>
-                                </TouchableOpacity>
-                            </View>
+                <View style={{ flex: 1, backgroundColor: colors.BLUE }}>
+                    <View style={styles.cardStyle}>
+                        <View style={{ alignItems: 'flex-start', marginTop: 20 }}>
+                            <AppText style={{ fontSize: 28, fontWeight: 'bold' }}>Edit Profile</AppText>
                         </View>
+                        <KeyboardAwareScrollView showsVerticalScrollIndicator={false}>
+                            <View style={{ marginTop: 20, flexDirection: 'row', width: '100%', marginBottom: 20 }}>
+                                <Avatar
+                                    renderPlaceholderContent={<ActivityIndicator />}
+                                    containerStyle={{ alignSelf: 'flex-start' }}
+                                    size='large'
+                                    rounded={true}
+                                    source={{ uri: photoURL }}
+                                />
+                                <View style={{ alignSelf: 'center', justifyContent: 'center', marginLeft: 20, }}>
+                                    <TouchableOpacity onPress={this.onImagePicker} >
+                                        <Text style={{ fontSize: 18, color: colors.BLUE }}>Change Profile Picture</Text>
+                                    </TouchableOpacity>
+                                </View>
+                            </View>
 
-                        <BoldLabel label="Name" />
-                        <Input
-                            placeholder='Display name'
-                            onChangeText={displayName => this.setState({ displayName, isNameChanged: true })}
-                            value={displayName}
-                            inputContainerStyle={styles.inputContainerStyle}
-                            containerStyle={{ paddingHorizontal: 0 }}
-                        />
-                        <BoldLabel label="E-mail" />
-                        <Input
-                            placeholder='Enter Email'
-                            value={email}
-                            disabled
-                            inputContainerStyle={styles.inputContainerStyle}
-                            containerStyle={{ paddingHorizontal: 0 }}
-                        />
+                            <BoldLabel label="Name" />
+                            <Input
+                                placeholder='Display name'
+                                onChangeText={displayName => this.setState({ displayName, isNameChanged: true })}
+                                value={displayName}
+                                inputContainerStyle={styles.inputContainerStyle}
+                                containerStyle={{ paddingHorizontal: 0 }}
+                            />
+                            <BoldLabel label="E-mail" />
+                            <Input
+                                placeholder='Enter Email'
+                                value={email}
+                                disabled
+                                inputContainerStyle={styles.inputContainerStyle}
+                                containerStyle={{ paddingHorizontal: 0 }}
+                            />
 
-                        <ErrorLabel label={errorMessage} />
-                        <DefaultButton
-                            title='Save Changes'
-                            onPress={this._checkProfile}
-                            disabled={!(isNameChanged || isAvatarChanged)}
-                        //loading={isWaiting}
-                        />
-                    </KeyboardAwareScrollView>
-                </View>
+                            <ErrorLabel label={errorMessage} />
+                            <DefaultButton
+                                title='Save Changes'
+                                onPress={this._checkProfile}
+                                disabled={!(isNameChanged || isAvatarChanged)}
+                            //loading={isWaiting}
+                            />
+                        </KeyboardAwareScrollView>
+                    </View>
 
-                <View>
-                    <ContactUs title='Need Help?' screen='Profile' />
-                    <WaitingModal isWaiting={isWaiting} text='Just a second...' />
+                    <View>
+                        <ContactUs title='Need Help?' screen='Profile' />
+                        <WaitingModal isWaiting={isWaiting} text='Just a second...' />
+                    </View>
                 </View>
             </SafeAreaView>
         )
@@ -155,7 +157,7 @@ class ProfileScreen extends Component {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: colors.BLUE
+        backgroundColor: "#fff"
     },
     cardStyle: {
         flex: 1,

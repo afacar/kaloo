@@ -71,63 +71,65 @@ class EventPreviewScreen extends Component {
 
     return (
       <SafeAreaView style={styles.container}>
-        <View style={styles.cardStyle}>
-          {!status && <View style={{ flexDirection: 'row', justifyContent: "space-between", marginVertical: 20 }}>
-            <Stage value="1" text="Create" />
-            <Stage value="2" text="Preview" active={true} />
-            <Stage value="3" text="Published" />
-          </View>}
-          <ScrollView
-            showsVerticalScrollIndicator={false}
-            contentContainerStyle={{
-              flexGrow: 1,
-              alignItems: 'stretch',
-            }}>
-            <View>
+        <View style={{ flex: 1, backgroundColor: colors.BLUE }}>
+          <View style={styles.cardStyle}>
+            {!status && <View style={{ flexDirection: 'row', justifyContent: "space-between", marginVertical: 20 }}>
+              <Stage value="1" text="Create" />
+              <Stage value="2" text="Preview" active={true} />
+              <Stage value="3" text="Published" />
+            </View>}
+            <ScrollView
+              showsVerticalScrollIndicator={false}
+              contentContainerStyle={{
+                flexGrow: 1,
+                alignItems: 'stretch',
+              }}>
+              <View>
 
-              {!status && <H1Label label="Preview & Publish" />}
-              {!status && <HighlightedText
-                text='This is how your event is going to look like when it’s shared to your audience.'
-              />}
-              <BoldLabel label="Event Card Preview" />
-              <View style={{ borderWidth: 1, borderColor: "#c4c4c4", flex: 1, marginBottom: 30 }}>
-                <PreviewHeader
-                  event={{ image, photoURL, eventType }}
-                />
-                <View style={{ paddingHorizontal: 10 }}>
-                  <PreviewBody
-                    event={{ displayName, title, eventDate, duration, description, capacity, price }}
+                {!status && <H1Label label="Preview & Publish" />}
+                {!status && <HighlightedText
+                  text='This is how your event is going to look like when it’s shared to your audience.'
+                />}
+                <BoldLabel label="Event Card Preview" />
+                <View style={{ borderWidth: 1, borderColor: "#c4c4c4", flex: 1, marginBottom: 30 }}>
+                  <PreviewHeader
+                    event={{ image, photoURL, eventType }}
                   />
+                  <View style={{ paddingHorizontal: 10 }}>
+                    <PreviewBody
+                      event={{ displayName, title, eventDate, duration, description, capacity, price }}
+                    />
+                  </View>
                 </View>
+                {!status &&
+                  <View>
+                    <ErrorLabel label={this.state.errorMessage} />
+                    <DefaultButton
+                      title={eventType === BROADCAST ? 'Publish your event' : 'Publish your meeting'}
+                      disabled={isWaiting}
+                      onPress={this._confirmPublish}
+                    />
+                  </View>
+                }
+                <WaitingModal isWaiting={isWaiting} text='Creating your event...' />
               </View>
-              {!status &&
-                <View>
-                  <ErrorLabel label={this.state.errorMessage} />
-                  <DefaultButton
-                    title={eventType === BROADCAST ? 'Publish your event' : 'Publish your meeting'}
-                    disabled={isWaiting}
-                    onPress={this._confirmPublish}
-                  />
-                </View>
-              }
-              <WaitingModal isWaiting={isWaiting} text='Creating your event...' />
-            </View>
-          </ScrollView>
-          <ContactUs screen='EventPreviewScreen' />
-        </View>
+            </ScrollView>
+            <ContactUs screen='EventPreviewScreen' />
+          </View>
+          </View>
       </SafeAreaView>
     );
   }
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
+          container: {
+          flex: 1,
     justifyContent: 'flex-start',
-    backgroundColor: colors.BLUE
+    backgroundColor: "#fff"
   },
   cardStyle: {
-    flex: 1,
+          flex: 1,
     paddingHorizontal: 30,
     alignSelf: 'stretch',
     alignItems: 'stretch',
@@ -137,7 +139,7 @@ const styles = StyleSheet.create({
   },
 });
 
-const mapStateToProps = ({ assets }) => {
+const mapStateToProps = ({ assets}) => {
   return { assets: assets.assets }
 }
 

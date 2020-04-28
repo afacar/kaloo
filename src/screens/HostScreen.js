@@ -70,27 +70,29 @@ class HostScreen extends Component {
         let buttonTitle = status === COMPLETED ? 'Meeting Completed' : status === SUSPENDED ? 'Continue Meeting' : status === SCHEDULED ? 'Preview audio and video' : 'Meeting in Progress'
         return (
             <SafeAreaView style={styles.container}>
-                <View style={styles.cardStyle}>
-                    <ScrollView
-                        showsVerticalScrollIndicator={false}
-                        contentContainerStyle={{ flexGrow: 1 }}
-                    >
-                        <EventHeader
-                            event={this.props.event}
-                            navigation={this.props.navigation}
-                        />
-                        <EventShare
-                            link={eventLink}
-                        />
-                        <View style={{ marginVertical: 15 }}>
-                            <DefaultButton
-                                title={buttonTitle}
-                                onPress={this.onCamera}
-                                disabled={status === COMPLETED}
+                <View style={{ flex: 1, backgroundColor: colors.BLUE }}>
+                    <View style={styles.cardStyle}>
+                        <ScrollView
+                            showsVerticalScrollIndicator={false}
+                            contentContainerStyle={{ flexGrow: 1 }}
+                        >
+                            <EventHeader
+                                event={this.props.event}
+                                navigation={this.props.navigation}
                             />
-                        </View>
-                    </ScrollView>
-                    <ContactUs screen='HostScreen' />
+                            <EventShare
+                                link={eventLink}
+                            />
+                            <View style={{ marginVertical: 15 }}>
+                                <DefaultButton
+                                    title={buttonTitle}
+                                    onPress={this.onCamera}
+                                    disabled={status === COMPLETED}
+                                />
+                            </View>
+                        </ScrollView>
+                        <ContactUs screen='HostScreen' />
+                    </View>
                 </View>
             </SafeAreaView>
         )
@@ -101,7 +103,7 @@ const styles = StyleSheet.create({
     container: {
         flexGrow: 1,
         justifyContent: 'flex-start',
-        backgroundColor: colors.BLUE
+        backgroundColor: "#fff"
     },
     cardStyle: {
         flex: 1,
