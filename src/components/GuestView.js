@@ -13,6 +13,7 @@ import CustomStatusBar from './StatusBars/CustomStatusBar';
 import { DefaultButton } from './Buttons';
 import RatingView from './RatingView';
 import { ContactUs } from './ContactUs';
+import { WaitingModal } from './Modals';
 
 const { CALL, BROADCAST } = app.EVENT_TYPE;
 
@@ -78,7 +79,7 @@ class GuestView extends Component {
                     this.setState({ error: error.message || 'Check your connection' })
                 })
         } else {
-            this.setState({ error: result.message || 'Unknown error' })
+            this.setState({ error: result.message || 'Check your connection' })
         }
         this.setState({ joinLoading: false })
     }
@@ -94,10 +95,11 @@ class GuestView extends Component {
     }
 
     render() {
+        const { joinLoading } = this.state
         const eventData = this.props.event
         const ticketData = this.props.ticket
         const viewers = this.props.viewers // TODO: Maybe number of online viewes can be shown QuestView later
-        const { image, photoURL, title, description, displayName, duration, eventType, eventDate, status, joinLoading } = eventData;
+        const { image, photoURL, title, description, displayName, duration, eventType, eventDate, status } = eventData;
         const disabled = status !== IN_PROGRESS
         const eventTypeName = eventType === CALL ? 'Meeting' : 'Broadcast'
         const buttonTitle = (status === COMPLETED) ? `${eventTypeName} Finished` : (status === SCHEDULED || status === SUSPENDED) ? 'Waiting Host' : `Join ${eventTypeName}`;
@@ -131,6 +133,7 @@ class GuestView extends Component {
                         }
                     </View>
                 </Card>
+                <WaitingModal isWaiting={joinLoading} />
                 <ContactUs screen='GuestScreen' />
             </ScrollView>
         )
