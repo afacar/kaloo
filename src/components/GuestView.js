@@ -101,7 +101,10 @@ class GuestView extends Component {
         const eventTypeName = eventType === CALL ? 'Meeting' : 'Broadcast'
         const buttonTitle = (status === COMPLETED) ? `${eventTypeName} Finished` : (status === SCHEDULED || status === SUSPENDED) ? 'Waiting Host' : `Join ${eventTypeName}`;
         return (
-            <ScrollView contentContainerStyle={styles.container}>
+            <ScrollView
+                showsVerticalScrollIndicator={false}
+                contentContainerStyle={styles.container}
+            >
                 <CustomStatusBar />
                 <Card containerStyle={{ alignSelf: 'stretch' }}>
                     <View>
