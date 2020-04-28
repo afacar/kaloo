@@ -18,8 +18,8 @@ export default function Viewers(props) {
 const styles = StyleSheet.create({
   container: {
     position: 'absolute',
-    top: 24 + dimensions.HEADER_MARGIN,
-    left: 24,
+    top: 30 + dimensions.HEADER_MARGIN,
+    left: 20,
     backgroundColor: 'transparent'
   },
   viewer: {

@@ -25,13 +25,12 @@ function ConnectingPeer(props) {
 export default function CallView(props) {
   const { peerIds } = props
   const { status } = props.event
-  const capacity = peerIds.length;
   if (status === IN_PROGRESS) {
     return (
       <View style={{ flex: 1, zIndex: -1100 }}>
         {/** Remote Stream */}
         <View style={{ flex: 1 }}>
-          {capacity == 0 ? (<ConnectingPeer />) :
+          {peerIds.length == 0 ? (<ConnectingPeer />) :
             <View style={{ flex: 1 }}>
               <AgoraView mode={1} key={peerIds[0]} style={{ flex: 1 }} remoteUid={peerIds[0]} />
             </View>

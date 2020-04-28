@@ -51,8 +51,8 @@ export default class Timer extends React.Component {
 const styles = StyleSheet.create({
   timer: {
     position: 'absolute',
-    top: 24 + dimensions.HEADER_MARGIN,
-    right: 24,
+    top: 30 + dimensions.HEADER_MARGIN,
+    right: 20,
     //backgroundColor: 'rgba(255,255,255,0.5)'
   },
   timerCard: {
