@@ -77,10 +77,12 @@ class EventPreviewScreen extends Component {
             <Stage value="2" text="Preview" active={true} />
             <Stage value="3" text="Published" />
           </View>}
-          <ScrollView contentContainerStyle={{
-            flexGrow: 1,
-            alignItems: 'stretch',
-          }}>
+          <ScrollView
+            showsVerticalScrollIndicator={false}
+            contentContainerStyle={{
+              flexGrow: 1,
+              alignItems: 'stretch',
+            }}>
             <View>
 
               {!status && <H1Label label="Preview & Publish" />}

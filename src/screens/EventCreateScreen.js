@@ -105,6 +105,7 @@ class EventCreateScreen extends Component {
           </View>
           <KeyboardAwareScrollView
             showsHorizontalScrollIndicator={false}
+            showsVerticalScrollIndicator={false}
           >
             <H1Label label="Create an event" />
             <BoldLabel label="Meeting Image" />
