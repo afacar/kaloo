@@ -97,7 +97,7 @@ class VideoScreen extends Component {
             this._onTicketCompromise()
         }
         return (
-            <View style={{ flex: 1 }}>
+            <View style={{ flex: 1, backgroundColor: 'white', borderWidth: 0.2, borderColor: 'white' }}>
                 <KeepAwake />
                 <TransparentStatusBar />
                 <View style={{ flex: 1 }}>

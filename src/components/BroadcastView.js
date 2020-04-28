@@ -13,11 +13,11 @@ function WaitingHost(props) {
   return (
     <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
       <Image
-        style={{ width: 150, height: 120 }}
+        style={{ resizeMode:'contain' }}
         source={require('../assets/host-connecting.png')}
       />
-      <AppText style={{ color: 'black', marginLeft: 8, fontSize: 24, fontWeight: 'bold', textAlign: 'center' }}>
-        Waiting for your peer to connect...
+      <AppText style={{ color: 'black', marginTop:10, fontSize: 24, fontWeight: 'bold', textAlign: 'center' }}>
+        Waiting for the host to connect...
       </AppText>
     </View>
   )
@@ -45,9 +45,9 @@ export default function BroadcastView(props) {
       </View>
     )
   } else {
-    /** Guest is Waiting */
+    /** Guest is Waiting for Host */
     return (
-      <View style={{ flex: 1, zIndex: -1100 }}>
+      <View style={{ flex: 1 }}>
         <WaitingHost />
         <Timer event={props.event} />
         <Viewers viewers={viewers} />

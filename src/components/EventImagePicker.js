@@ -7,7 +7,7 @@ export default function EventImagePicker(props) {
   const { onPress, uploading, image } = props
 
   return (
-    <View style={{  }}>
+    <View>
       <TouchableOpacity
         onPress={onPress}
         style={{ flexDirection: 'column', height: 150, alignContent: 'center' }}>
