@@ -103,6 +103,7 @@ class EventCreateScreen extends Component {
     const { date, time, gmt } = splitDate(eventDate)
     return (
       <SafeAreaView style={styles.container}>
+        <View style={{flex:1, backgroundColor:colors.BLUE}}>
         <View style={styles.cardStyle}>
           <View style={{ flexDirection: 'row', justifyContent: "space-between", marginVertical: 10 }}>
             <Stage value="1" text="Create" active={true} />
@@ -247,6 +248,7 @@ class EventCreateScreen extends Component {
           </KeyboardAwareScrollView>
         </View>
         <ContactUs />
+        </View>
       </SafeAreaView>
     );
   }
@@ -256,7 +258,7 @@ class EventCreateScreen extends Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.BLUE
+    backgroundColor: "#fff"
   },
   inputContainerStyle: {
     borderWidth: 0.7,
