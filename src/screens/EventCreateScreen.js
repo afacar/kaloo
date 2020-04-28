@@ -81,7 +81,7 @@ class EventCreateScreen extends Component {
   }
 
   _preview = () => {
-    const { title, price } = this.state;
+    const { title, price, capacity, eventDate } = this.state;
     this.setState({ titleMessage: '' })
     if (!title) {
       return this.setState({ titleMessage: 'We need a title' })
@@ -89,11 +89,17 @@ class EventCreateScreen extends Component {
     if (price < 1) {
       return this.setState({ priceMessage: 'Price should be at least $1' })
     }
+    if (capacity < 1) {
+      return this.setState({ capacityMessage: 'Viewers should be at least $1' })
+    }
+    if (eventDate < new Date()) {
+      return this.setState({ dateMessage: 'You need to select a future date' })
+    }
     this.props.navigation.navigate('EventPreview', { event: this.state })
   }
 
   render() {
-    const { image, title, description, duration, eventType, capacity, price, eventDate, titleMessage, dateMessage, priceMessage, uploading } = this.state;
+    const { image, title, description, duration, eventType, capacity, price, eventDate, titleMessage, dateMessage, priceMessage, uploading, capacityMessage } = this.state;
     const { date, time, gmt } = splitDate(eventDate)
     return (
       <SafeAreaView style={styles.container}>
@@ -189,13 +195,14 @@ class EventCreateScreen extends Component {
                 {eventType === BROADCAST && <View>
                   <BoldLabel label="How many viewers do you want?" />
                   <Input
-                    onChangeText={capacity => this.setState({ capacity: parseInt(capacity) || 0 })}
+                    onChangeText={capacity => this.setState({ capacity: parseInt(capacity) || 1 })}
                     value={capacity + ''}
                     keyboardType="numeric"
                     maxLength={3}
                     disabled={eventType === CALL}
                     inputContainerStyle={styles.inputContainerStyle}
                     containerStyle={{ paddingHorizontal: 0 }}
+                    errorMessage={capacityMessage}
                   />
                 </View>}
               </View>
