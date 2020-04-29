@@ -1,7 +1,7 @@
 export default {
   APPLICATION_NAME: 'Kaloo',
   APP_FONT: 'System',
-  AGORA_APP_ID: 'a0ee6b5742ca4cfe84d1e9fa4c97b946',
+  AGORA_APP_ID: '90aa9f5746e946a9b848196b2bf36b7e',
   EVENT_TYPE: {
     CALL: 'CALL',
     BROADCAST: 'BROADCAST'
