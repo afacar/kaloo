@@ -190,8 +190,8 @@ const styles = StyleSheet.create({
     },
 })
 
-const mapStateToProps = ({ auth }) => {
-    return { profile: auth.profile }
+const mapStateToProps = ({ profile }) => {
+    return { profile }
 }
 
 export default connect(mapStateToProps, actions)(ProfileScreen);
