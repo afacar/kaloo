@@ -9,7 +9,7 @@ import { loadAssets } from "../appstate/actions/app_actions";
 import { connect } from 'react-redux';
 import { generateRandomString } from '../utils/Utils';
 
-import { setUserProfile } from "../appstate/actions/auth_actions";
+import { setUserProfile, clearUserProfile } from "../appstate/actions/auth_actions";
 import { setHostEventsListener, clearHostEventsListener } from "../appstate/actions/host_actions";
 
 class SplashScreen extends Component {
@@ -31,6 +31,7 @@ class SplashScreen extends Component {
                     await this.props.setUserProfile();
                     this.props.navigation.navigate('User');
                 } else {
+                    this.props.clearUserProfile()
                     this.props.clearHostEventsListener()
                     this.props.navigation.navigate('Home');
                 }
@@ -70,4 +71,4 @@ const styles = StyleSheet.create({
     }
 })
 
-export default connect(null, { loadAssets, setUserProfile, setHostEventsListener, clearHostEventsListener })(SplashScreen);
+export default connect(null, { loadAssets, setUserProfile, clearUserProfile, setHostEventsListener, clearHostEventsListener })(SplashScreen);

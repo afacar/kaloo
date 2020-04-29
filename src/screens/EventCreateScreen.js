@@ -291,8 +291,8 @@ const styles = StyleSheet.create({
   },
 })
 
-const mapStateToProps = ({ auth, assets }) => {
-  return { profile: auth.profile, assets: assets.assets }
+const mapStateToProps = ({ profile, assets }) => {
+  return { profile, assets: assets.assets }
 }
 
 

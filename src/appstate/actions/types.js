@@ -1,5 +1,8 @@
-// App actions
+// Auth actions
 export const CURRENT_USER = 'CURRENT_USER';
+export const CLEAR_USER = 'CLEAR_USER';
+
+// App actions
 export const LOAD_ASSETS = 'LOAD_ASSETS';
 
 // Host actions

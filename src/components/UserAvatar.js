@@ -20,10 +20,8 @@ function UserAvatar(props) {
     );
 }
 
-function mapStateToProps({ auth }) {
-    return {
-        profile: auth.profile
-    }
+function mapStateToProps({ profile }) {
+    return { profile }
 }
 
 export default connect(mapStateToProps, null)(UserAvatar)
