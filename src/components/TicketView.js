@@ -49,7 +49,7 @@ class TicketView extends Component {
   }
 
   onTicketChange = (ticket) => {
-    let formattedTicket = ticket.trim().split('-').join('')
+    let formattedTicket = ticket.trim().toUpperCase().split('-').join('')
     let first = formattedTicket.substr(0, 4)
     let second = formattedTicket.substr(4, 4)
     let third = formattedTicket.substr(8, 4)
@@ -91,6 +91,7 @@ class TicketView extends Component {
               errorMessage={ticketError}
               autoCapitalize="characters"
               disabled={isWaiting}
+              maxLength={TICKET_FORMAT.length || 14}
               containerStyle={{ paddingVertical: 10, paddingHorizontal: 0 }}
               inputContainerStyle={{
                 borderWidth: 0.7,
