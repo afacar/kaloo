@@ -61,12 +61,6 @@ class EventPublishScreen extends Component {
                 this.props.navigation.navigate('Host', { event: myEvent })
               }}
             />
-            <View style={{ marginVertical: 15 }}>
-              <DefaultButton
-                title='Go to Event'
-                onPress={() => this.props.navigation.navigate('MyEvent', { event: myEvent })}
-              />
-            </View>
           </View>
         </View>
         <ContactUs />

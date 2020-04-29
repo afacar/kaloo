@@ -5,7 +5,7 @@ import hostReducer from './host_reducers';
 import audienceReducer from './audience_reducers';
 
 export default combineReducers({
-    auth: authReducer,
+    profile: authReducer,
     assets: appReducer,
     hostEvents: hostReducer,
     guestEvent: audienceReducer,

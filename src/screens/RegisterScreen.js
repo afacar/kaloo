@@ -74,7 +74,7 @@ class RegisterScreen extends Component {
         this.setState({ isWaiting: false });
         this.props.setHostEventsListener()
         this.props.setUserProfile()
-        this.props.navigation.navigate('UserHome', { displayName });
+        return this.props.navigation.navigate('UserHome', { displayName });
       } else {
         this.setState({ isWaiting: false, termsMessage: result.data.message });
       }

@@ -1,12 +1,13 @@
 import React, { Component } from 'react';
 import { View, StyleSheet, KeyboardAvoidingView, Linking } from 'react-native';
 import { functions, auth } from 'react-native-firebase';
+import { connect } from 'react-redux';
 
 import { colors } from '../constants';
 import HeaderLeft from '../components/Headers/HeaderLeft';
 import { ContactUs } from '../components/ContactUs';
 import UserAvatar from '../components/UserAvatar'
-import { H1Label } from '../components/Labels';
+import { H1Label, H2Label, ErrorLabel } from '../components/Labels';
 import { SafeAreaView } from 'react-navigation'
 import { DefaultButton } from '../components/Buttons';
 
@@ -17,24 +18,41 @@ class BalanceScreen extends Component {
     headerLeft: () => <HeaderLeft onPress={navigation.goBack} />
   });
 
-  state = { iban: '', totalBalance: '', currentBalance: 0, requestLoading: false, stripeUrl: '' };
+  state = { totalBalance: '', currentBalance: 0, requestLoading: false, stripeUrl: '' };
 
-  async componentDidMount() {
-    let { uid } = auth().currentUser
-    let getCreateUserAccountUrl = functions().httpsCallable('getCreateUserAccountUrl')
-    let response = await getCreateUserAccountUrl({ uid })
-    if (response.data.state === 'SUCCESS')
-      this.setState({ stripeUrl: response.data.url })
+  componentDidMount() {
+    console.log('BalanceDidMount props', this.props.profile)
   }
 
-  requestPayment = () => {
+  createStripeAccount = async () => {
+    let { uid } = this.props.profile
     this.setState({ requestLoading: true })
-    console.warn('Request Payment is clicked')
+    let getCreateUserAccountUrl = functions().httpsCallable('getCreateUserAccountUrl')
+    let response = await getCreateUserAccountUrl({ uid })
     this.setState({ requestLoading: false })
+    if (response.data.state === 'SUCCESS' && response.data.url) {
+      Linking.openURL(response.data.url)
+    } else {
+      this.setState({ errorMessage: response.data.message || 'Check your connection and try again later!' })
+    }
+  }
+
+  requestPayment = async () => {
+    let { uid, email, displayName, connectedAccountId } = this.props.profile
+    this.setState({ requestLoading: true })
+    let requestPayment = functions().httpsCallable('requestPayment')
+    let response = await requestPayment({ uid, email, displayName, connectedAccountId })
+    this.setState({ requestLoading: false })
+    if (response.data.state === 'SUCCESS') {
+      this.setState({ successMessage: 'Payment request recieved!' })
+    } else {
+      this.setState({ errorMessage: response.data.message || 'Check your connection and try again later!' })
+    }
   }
 
   render() {
-    const { requestLoading, currentBalance, stripeUrl } = this.state
+    let { connectedAccountId, pendingPaymentRequest } = this.props.profile
+    const { requestLoading, currentBalance, successMessage, errorMessage } = this.state
     return (
       <SafeAreaView style={{ flex: 1, backgroundColor: "white" }}>
         <KeyboardAvoidingView style={styles.container}>
@@ -45,14 +63,26 @@ class BalanceScreen extends Component {
                 <H1Label label={'$' + currentBalance} />
               </View>
             </View>
-
+            <H2Label label={successMessage} />
+            <ErrorLabel label={errorMessage} />
             <View>
-              <DefaultButton
-                title={'Create Account'}
-                onPress={() => Linking.openURL(stripeUrl)}
-                loading={requestLoading}
-                disabled={!stripeUrl}
-              />
+              {connectedAccountId ? (
+                <DefaultButton
+                  title={pendingPaymentRequest ? 'Payment Request Pending' : 'Request Payment'}
+                  onPress={this.requestPayment}
+                  loading={requestLoading}
+                  disabled={pendingPaymentRequest}
+                />
+              ) : (
+                  <DefaultButton
+                    title={'Create Stripe Account'}
+                    onPress={this.createStripeAccount}
+                    loading={requestLoading}
+                    disabled={requestLoading}
+                  />
+                )
+
+              }
               <ContactUs title='Need Help?' screen='Profile' />
             </View>
           </View>
@@ -95,9 +125,7 @@ const styles = StyleSheet.create({
   componentStyle: {
     flex: 1,
     paddingHorizontal: 20,
-    paddingVertical: 10,
     alignSelf: 'stretch',
-    paddingVertical: 20,
     backgroundColor: "white",
     borderTopRightRadius: 26,
     borderTopLeftRadius: 26,
@@ -105,4 +133,8 @@ const styles = StyleSheet.create({
   },
 });
 
-export default BalanceScreen;
+const mapStateToProps = ({ profile }) => {
+  return { profile }
+}
+
+export default connect(mapStateToProps, null)(BalanceScreen);

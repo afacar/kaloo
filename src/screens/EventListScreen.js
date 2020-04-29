@@ -140,7 +140,11 @@ class EventListScreen extends Component {
                         //earnings={earnings} // TODO
                         />
                         <View style={styles.container}>
-                            <ScrollView overScrollMode='never' contentContainerStyle={{ flexGrow: 1, justifyContent: 'space-between' }}>
+                            <ScrollView
+                                showsVerticalScrollIndicator={false}
+                                overScrollMode='never'
+                                contentContainerStyle={{ flexGrow: 1, justifyContent: 'space-between' }}
+                            >
                                 <View>
                                     <View style={{ flexDirection: 'column', justifyContent: 'space-evenly' }}>
                                         <DefaultButton
@@ -175,8 +179,8 @@ const styles = StyleSheet.create({
     }
 })
 
-const mapStateToProps = ({ auth, hostEvents }) => {
-    return { profile: auth.profile, events: hostEvents.allEvents }
+const mapStateToProps = ({ profile, hostEvents }) => {
+    return { profile, events: hostEvents.allEvents }
 }
 
 export default connect(mapStateToProps, actions)(EventListScreen);
