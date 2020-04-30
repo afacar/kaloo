@@ -1,5 +1,6 @@
 import { Platform, PermissionsAndroid, Alert } from "react-native";
 import AsyncStorage from '@react-native-community/async-storage';
+import { firestore } from 'react-native-firebase';
 import { months } from '../constants'
 
 export const formatTime = (seconds) => {
@@ -169,7 +170,7 @@ export function ConfirmModal(title, message, confirmText, canceltext, onConfirm)
 }
 
 export function InfoModal(title, message, confirmText, onConfirm) {
-    onPress = () => {}
+    onPress = () => { }
     Alert.alert(title, message, [
         {
             text: confirmText || 'Ok',
@@ -181,6 +182,7 @@ export function InfoModal(title, message, confirmText, onConfirm) {
 }
 
 export function compare(a, b) {
+    /** Compare functions to sort events based on their event date */
     if (a.eventDate < b.eventDate) {
         return -1;
     }
@@ -189,3 +191,15 @@ export function compare(a, b) {
     }
     return 0;
 }
+
+export function convert2Date(date, timestamp) {
+    /** Convert firestore.Timestamp objects to JS Date object */ 
+
+    if (date instanceof firestore.Timestamp) {
+        date = date.toDate();
+    } else if (timestamp) {
+        date = new Date(timestamp);
+    }
+    return date
+}
+
