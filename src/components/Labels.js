@@ -1,6 +1,6 @@
-import React, { Component } from 'react';
+import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
-import { Icon } from "react-native-elements";
+
 import { app, colors } from '../constants';
 
 export function AppText(props) {
