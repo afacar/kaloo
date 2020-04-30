@@ -292,7 +292,7 @@ const styles = StyleSheet.create({
 })
 
 const mapStateToProps = ({ profile, assets }) => {
-  return { profile, assets: assets.assets }
+  return { profile, assets }
 }
 
 

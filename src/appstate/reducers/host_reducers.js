@@ -7,7 +7,9 @@ import {
     UNLISTEN_MY_VIEWERS} from "../actions/types";
 
 const INITIAL_STATE = {
-    allEvents: [],
+    liveEvents: [],
+    upcomingEvents: [],
+    pastEvents: [],
     hostEvent: null,
     myViewers: 0
 }
@@ -15,7 +17,7 @@ const INITIAL_STATE = {
 export default function (state = INITIAL_STATE, action) {
     switch (action.type) {
         case LISTEN_HOST_EVENTS: {
-            return { ...state, allEvents: action.payload }
+            return { ...state, ...action.payload }
         }
         case LISTEN_HOST_EVENT: {
             return { ...state, hostEvent: action.payload }

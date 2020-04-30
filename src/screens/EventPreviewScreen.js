@@ -11,7 +11,7 @@ import { Stage } from '../components/Stages';
 import { DefaultButton } from '../components/Buttons';
 import { ContactUs } from '../components/ContactUs'
 import HeaderLeft from '../components/Headers/HeaderLeft';
-import { ConfirmModal } from '../utils/Utils';
+import { ConfirmModal, convert2Date } from '../utils/Utils';
 import { WaitingModal } from '../components/Modals';
 import UserAvatar from '../components/UserAvatar';
 import app from '../constants/app';
@@ -39,13 +39,7 @@ class EventPreviewScreen extends Component {
       let response = await createEvent(event);
       if (response && response.data && response.data.state === 'SUCCESS') {
         let eventData = response.data.event;
-        let date = eventData.eventDate
-        if (date instanceof firestore.Timestamp) {
-          date = date.toDate();
-        } else if (eventData.eventTimestamp) {
-          date = new Date(eventData.eventTimestamp);
-        }
-        eventData.eventDate = date
+        eventData.eventDate = convert2Date(eventData.eventDate, eventData.eventTimestamp);
         this.setState({ isWaiting: false })
         this.props.navigation.navigate('EventPublish', { event: eventData })
       } else {
@@ -116,20 +110,20 @@ class EventPreviewScreen extends Component {
             </ScrollView>
             <ContactUs screen='EventPreviewScreen' />
           </View>
-          </View>
+        </View>
       </SafeAreaView>
     );
   }
 }
 
 const styles = StyleSheet.create({
-          container: {
-          flex: 1,
+  container: {
+    flex: 1,
     justifyContent: 'flex-start',
     backgroundColor: "#fff"
   },
   cardStyle: {
-          flex: 1,
+    flex: 1,
     paddingHorizontal: 30,
     alignSelf: 'stretch',
     alignItems: 'stretch',
@@ -139,8 +133,8 @@ const styles = StyleSheet.create({
   },
 });
 
-const mapStateToProps = ({ assets}) => {
-  return { assets: assets.assets }
+const mapStateToProps = ({ assets }) => {
+  return { assets }
 }
 
 export default connect(mapStateToProps, null)(EventPreviewScreen);
