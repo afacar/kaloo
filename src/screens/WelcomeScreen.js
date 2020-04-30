@@ -97,6 +97,6 @@ const styles = StyleSheet.create({
 });
 
 const mapStateToProps = ({ assets }) => {
-  return { assets: assets.assets }
+  return { assets }
 }
 export default connect(mapStateToProps, null)(WelcomeScreen);

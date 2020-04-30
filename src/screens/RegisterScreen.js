@@ -128,12 +128,14 @@ class RegisterScreen extends Component {
     const {
       displayName, email, password, repassword, photoURL, isWaiting, displayNameMessage, emailMessage, passwordMessage, termsMessage
     } = this.state;
+    const { TERMS_LINK } = this.props.assets
     return (
       <SafeAreaView style={{ flex: 1, backgroundColor: 'white' }}>
         <CustomStatusBar />
         <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={styles.container}>
           <View style={{ flex: 1, backgroundColor: "#3598FE" }}>
             <ScrollView
+              showsVerticalScrollIndicator={false}
               contentContainerStyle={{
                 flexGrow: 1,
                 alignItems: 'center',
@@ -216,7 +218,7 @@ class RegisterScreen extends Component {
                   />
                   <View style={{ justifyContent: 'center' }}>
                     <Text>By checking this box I aggree with</Text>
-                    <HyperLink text="terms and conditions" link='https://policies.google.com/terms?hl=en-US' />
+                    <HyperLink text="terms and conditions" link={TERMS_LINK} />
                   </View>
                 </View>
 
@@ -288,7 +290,7 @@ const styles = StyleSheet.create({
 });
 
 const mapStateToProps = ({ assets }) => {
-  return { assets: assets.assets }
+  return { assets }
 }
 
 export default connect(mapStateToProps, { setUserProfile, setHostEventsListener })(RegisterScreen);
