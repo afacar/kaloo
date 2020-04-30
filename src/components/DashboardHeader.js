@@ -18,8 +18,18 @@ export default function DashboradHeader(props) {
                 overlayContainerStyle={{ borderWidth: 3, borderColor: 'white' }}
             />
             <Text style={{ color: 'white', fontWeight: 'bold', paddingVertical: 10, fontSize: 20 }}>{profile.displayName}</Text>
-            <ClickableText color='white' text='Edit Profile' onPress={() => navigation.navigate('Profile')} />
-            <ClickableText color='white' text='Total Earnings: $0 →' onPress={() => navigation.navigate('Balance')} />
+            <ClickableText
+                text='Edit Profile'
+                underline
+                color='white'
+                onPress={() => navigation.navigate('Profile')}
+            />
+            <ClickableText
+                text='Total Earnings: $0 →'
+                underline
+                color='white'
+                onPress={() => navigation.navigate('Balance')}
+            />
         </View>
     );
 }

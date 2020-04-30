@@ -32,7 +32,12 @@ function UpcomingEventList(props) {
     </View> : <View style={{ alignSelf: 'center', alignItems: 'center', margin: 20 }}>
         <Image source={require('../assets/no-event.png')} />
         <Text>You don’t have any scheduled meetings.</Text>
-        <ClickableText text='Let’s create one!' onPress={() => this.props.navigation.navigate('EventCreate')} />
+        <ClickableText
+          underline
+          color='black'
+          text='Let’s create one!'
+          onPress={() => props.navigation.navigate('EventCreate')}
+        />
       </View>
     }
   </View>
