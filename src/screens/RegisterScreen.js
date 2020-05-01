@@ -148,7 +148,10 @@ class RegisterScreen extends Component {
               }}>
               <View style={styles.componentStyle}>
                 <H1Label label="Register" />
-                <HighlightedText text="You only need an account if you’re planning to host a paid meeting. " />
+                <HighlightedText
+                  text="You only need an account if you’re planning to host a paid meeting. "
+                  color='#FF5F99'
+                />
                 <View style={{ flexDirection: 'row', alignItems: "center", marginBottom: 5 }}>
                   <Avatar
                     rounded

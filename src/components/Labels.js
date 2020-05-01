@@ -10,13 +10,13 @@ export function AppText(props) {
 }
 
 export function HighlightedText(props) {
-    const { text } = props
+    const { color, text } = props
     return (
         <View style={{
             flexDirection: 'row',
             alignItems: 'center',
             justifyContent: "center",
-            backgroundColor: '#655FFF',
+            backgroundColor: color || '#655FFF',
             borderRadius: 6,
             paddingHorizontal: 15,
             marginVertical: 10
