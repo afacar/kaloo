@@ -18,7 +18,7 @@ import { setHostEventsListener } from "../appstate/actions/host_actions";
 
 import { WaitingModal } from "../components/Modals";
 import { HighlightedText, H1Label } from '../components/Labels';
-import { validateEmail } from '../utils/Utils'
+import { validateEmail, checkAudioPermission, checkCameraPermission } from '../utils/Utils'
 import { ClickableText, HyperLink, DefaultButton } from '../components/Buttons';
 import { ContactUs } from '../components/ContactUs';
 import HeaderLeft from '../components/Headers/HeaderLeft';
@@ -46,6 +46,11 @@ class RegisterScreen extends Component {
     emailMessage: '',
     passwordMessage: '',
   };
+
+  componentDidMount() {
+    checkAudioPermission()
+    checkCameraPermission()
+  }
 
   createAccount = async () => {
     let { displayName, email, password, photoURL } = this.state;

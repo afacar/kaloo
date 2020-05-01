@@ -14,6 +14,7 @@ import { DefaultButton } from './Buttons';
 import RatingView from './RatingView';
 import { ContactUs } from './ContactUs';
 import { WaitingModal } from './Modals';
+import { checkAudioPermission, checkCameraPermission } from '../utils/Utils';
 
 const { CALL, BROADCAST } = app.EVENT_TYPE;
 
@@ -35,7 +36,10 @@ class GuestView extends Component {
         error: undefined
     }
 
-    componentDidMount() { }
+    componentDidMount() {
+        checkAudioPermission()
+        checkCameraPermission()
+     }
 
     componentWillUnmount() { }
 
