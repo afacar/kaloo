@@ -32,7 +32,6 @@ const INITIAL_STATE = {
   price: '',
   priceMessage: '',
   isDatePickerVisible: false,
-  eventDate: new Date(),
   eventLink: '',
   titleMessage: '',
   dateMessage: '',
@@ -46,7 +45,7 @@ class EventCreateScreen extends Component {
     headerLeft: () => <HeaderLeft onPress={navigation.goBack} />
   });
 
-  state = { ...INITIAL_STATE, ...this.props.profile, image: this.props.assets.DEFAULT_EVENT_IMAGE }
+  state = { ...INITIAL_STATE, ...this.props.profile, eventDate: new Date(), image: this.props.assets.DEFAULT_EVENT_IMAGE }
 
   onImagePressed = () => {
     const { uid } = this.state;
@@ -163,6 +162,7 @@ class EventCreateScreen extends Component {
               <DateTimePickerModal
                 isVisible={this.state.isDatePickerVisible}
                 mode="datetime"
+                date={new Date()}
                 onConfirm={this.onDateChange}
                 onCancel={() => this.setState({ isDatePickerVisible: false })}
                 display='spinner'
