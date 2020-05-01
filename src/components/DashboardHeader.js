@@ -6,7 +6,7 @@ import { colors } from '../constants';
 import { ClickableText } from './Buttons';
 
 export default function DashboradHeader(props) {
-    let { navigation, profile } = props;
+    let { navigation, profile, totalEarnings } = props;
     profile = profile ? profile : auth().currentUser
     let imageSource = profile.photoURL ? { uri: profile.photoURL } : require('../assets/default-profile.png')
     return (
@@ -17,7 +17,7 @@ export default function DashboradHeader(props) {
                 source={imageSource}
                 overlayContainerStyle={{ borderWidth: 3, borderColor: 'white' }}
             />
-            <Text style={{ color: 'white', fontWeight: 'bold', paddingVertical: 10, fontSize: 20 }}>{profile.displayName}</Text>
+            <Text style={{ color: 'white', fontWeight: 'bold', paddingTop: 5, fontSize: 20 }}>{profile.displayName}</Text>
             <ClickableText
                 text='Edit Profile'
                 underline
@@ -25,8 +25,8 @@ export default function DashboradHeader(props) {
                 onPress={() => navigation.navigate('Profile')}
             />
             <ClickableText
-                text='Total Earnings: $0 →'
-                underline
+                text={`Total Earnings: $${totalEarnings || 0} →`}
+                size={17}
                 color='white'
                 onPress={() => navigation.navigate('Balance')}
             />

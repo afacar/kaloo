@@ -63,7 +63,7 @@ class EventPublishScreen extends Component {
             />
           </View>
         </View>
-        <ContactUs />
+        <ContactUs title='Have a problem?' screen='EventPublish' />
       </SafeAreaView>
     );
   }

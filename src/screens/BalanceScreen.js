@@ -57,7 +57,7 @@ class BalanceScreen extends Component {
       <SafeAreaView style={{ flex: 1, backgroundColor: "white" }}>
         <KeyboardAvoidingView style={styles.container}>
           <View style={styles.componentStyle}>
-            <View>
+            <View style={{ marginTop: 35 }}>
               <H1Label label="Total Earnings" />
               <View style={styles.balanceContainer}>
                 <H1Label label={'$' + currentBalance} />

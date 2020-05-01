@@ -100,7 +100,7 @@ class TicketView extends Component {
             />
             <View style={{ alignSelf: 'stretch' }}>
               <DefaultButton
-                title={isWaiting ? 'Checking Ticket...' : "Watch Now"}
+                title={isWaiting ? 'Checking Ticket...' : 'Access the Meeting'}
                 onPress={this.checkTicket}
                 disabled={isWaiting || ticket.length === 0} />
             </View>

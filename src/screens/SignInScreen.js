@@ -88,7 +88,7 @@ class SignInScreen extends Component {
               <View style={styles.componentStyle}>
                 <H1Label label='Sign In' />
                 <HighlightedText
-                  text='You don’t need an account if you want to join a meeting.'
+                  text='You only need an account if you’re planning to host a paid meeting.'
                   color='#FF5F99'
                 />
                 <Input

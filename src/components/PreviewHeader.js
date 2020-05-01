@@ -1,20 +1,21 @@
 import React from 'react';
-import { View, Image, ImageBackground, StyleSheet } from 'react-native';
+import { View, Image, ImageBackground, StyleSheet, Text } from 'react-native';
 
 export default function PreviewHeader(props) {
-  const { image, photoURL } = props.event
+  const { image, photoURL, price } = props.event
 
   return (
     <View style={styles.container}>
       <ImageBackground
         source={{ uri: image }}
         style={{ width: '100%', height: '100%' }}
-        imageStyle={{height:'85%'}}
-        
+        imageStyle={{ height: '85%' }}
+
       >
-        <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'center',}}>
-          <Image source={{ uri: photoURL }} style={styles.userPhotoStyle}/>
+        <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'center', }}>
+          <Image source={{ uri: photoURL }} style={styles.userPhotoStyle} />
         </View>
+        <Text style={styles.price}>${price}</Text>
       </ImageBackground>
     </View>
   )
@@ -24,6 +25,16 @@ export default function PreviewHeader(props) {
 const styles = StyleSheet.create({
   container: {
     height: 190,
+  },
+  price: {
+    position: 'absolute',
+    top:10,
+    right: 10,
+    backgroundColor: 'white',
+    paddingVertical: 5,
+    paddingHorizontal: 10,
+    borderRadius: 6,
+    fontWeight: 'bold'
   },
   userPhotoStyle: {
     height: 84,

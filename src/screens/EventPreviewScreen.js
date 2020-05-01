@@ -85,9 +85,9 @@ class EventPreviewScreen extends Component {
                   text='This is how your event is going to look like when it’s shared to your audience.'
                 />}
                 <BoldLabel label="Event Card Preview" />
-                <View style={{ borderWidth: 1, borderColor: "#c4c4c4", flex: 1, marginBottom: 30 }}>
+                <View style={styles.previewContainer}>
                   <PreviewHeader
-                    event={{ image, photoURL, eventType }}
+                    event={{ image, photoURL, eventType, price }}
                   />
                   <View style={{ paddingHorizontal: 10 }}>
                     <PreviewBody
@@ -99,7 +99,7 @@ class EventPreviewScreen extends Component {
                   <View>
                     <ErrorLabel label={this.state.errorMessage} />
                     <DefaultButton
-                      title={eventType === BROADCAST ? 'Publish your event' : 'Publish your meeting'}
+                      title={eventType === BROADCAST ? 'Publish Your Broadcast' : 'Publish Your Meeting'}
                       disabled={isWaiting}
                       onPress={this._confirmPublish}
                     />
@@ -108,7 +108,7 @@ class EventPreviewScreen extends Component {
                 <WaitingModal isWaiting={isWaiting} text='Creating your event...' />
               </View>
             </ScrollView>
-            <ContactUs screen='EventPreviewScreen' />
+            <ContactUs title='Have a problem?' screen='EventPreviewScreen' />
           </View>
         </View>
       </SafeAreaView>
@@ -131,6 +131,15 @@ const styles = StyleSheet.create({
     borderTopRightRadius: 26,
     borderTopLeftRadius: 26,
   },
+  previewContainer: { 
+    flex: 1, 
+    borderWidth: 0.5, 
+    elevation: 2, 
+    borderBottomLeftRadius: 6, 
+    borderBottomRightRadius:6, 
+    borderColor: "#c4c4c4", 
+    marginBottom: 30 
+  }
 });
 
 const mapStateToProps = ({ assets }) => {

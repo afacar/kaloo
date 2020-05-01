@@ -196,7 +196,7 @@ class HostVideoScreen extends Component {
                                 hostId={HOST_UID}
                             />
                         )}
-                    <WaitingModal isWaiting={isConnecting} />
+                    <WaitingModal text='Just a second...' isWaiting={isConnecting} />
                     <BroadcastButton event={this.props.event} onPress={this._onPress} />
                 </View>
             </View>
