@@ -103,7 +103,7 @@ class GuestView extends Component {
         const eventData = this.props.event
         const ticketData = this.props.ticket
         const viewers = this.props.viewers // TODO: Maybe number of online viewes can be shown QuestView later
-        const { image, photoURL, title, description, displayName, duration, eventType, eventDate, status } = eventData;
+        const { image, photoURL, title, description, displayName, duration, eventType, eventDate, status, price } = eventData;
         const disabled = status !== IN_PROGRESS
         const eventTypeName = eventType === CALL ? 'Meeting' : 'Broadcast'
         const buttonTitle = (status === COMPLETED) ? `${eventTypeName} Finished` : (status === SCHEDULED || status === SUSPENDED) ? 'Waiting Host' : `Join ${eventTypeName}`;
@@ -116,7 +116,7 @@ class GuestView extends Component {
                 <Card containerStyle={{ alignSelf: 'stretch' }}>
                     <View>
                         <PreviewHeader
-                            event={{ image, photoURL, eventType }}
+                            event={{ image, photoURL, eventType, price }}
                         />
                         <PreviewBody
                             event={{ displayName, title, eventDate, duration, description }}
@@ -138,7 +138,7 @@ class GuestView extends Component {
                     </View>
                 </Card>
                 <WaitingModal isWaiting={joinLoading} />
-                <ContactUs screen='GuestScreen' />
+                <ContactUs title='Have a problem?' screen='GuestScreen' />
             </ScrollView>
         )
     }
