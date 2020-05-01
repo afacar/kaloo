@@ -82,7 +82,7 @@ export function splitDate(dateObj) {
     let minutes = addZeroToTime(dateObj.getMinutes())
 
     let gmt = dateObj.getTimezoneOffset() / -60
-    gmt = gmt >= 0 ? `+${gmt}` : `-${gmt}`
+    gmt = gmt >= 0 ? `+${gmt}` : `${gmt}`
     const date = day + ' ' + month + ' ' + year
     const time = hour + ':' + minutes
     return { date, time, gmt }
