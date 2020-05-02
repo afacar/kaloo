@@ -39,7 +39,7 @@ export function formatDuration(duration) {
     duration = duration * minus;
 
     if (duration == 0)
-        return ''
+        return '0 min'
 
     if (duration < 60)
         return (duration * minus) + ' min'

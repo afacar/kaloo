@@ -39,7 +39,7 @@ class GuestView extends Component {
     componentDidMount() {
         checkAudioPermission()
         checkCameraPermission()
-     }
+    }
 
     componentWillUnmount() { }
 
@@ -106,27 +106,27 @@ class GuestView extends Component {
         const { image, photoURL, title, description, displayName, duration, eventType, eventDate, status, price } = eventData;
         const disabled = status !== IN_PROGRESS
         const eventTypeName = eventType === CALL ? 'Meeting' : 'Broadcast'
-        const buttonTitle = (status === COMPLETED) ? `${eventTypeName} Finished` : (status === SCHEDULED || status === SUSPENDED) ? 'Waiting Host' : `Join ${eventTypeName}`;
+        const buttonTitle = (status === SCHEDULED || status === SUSPENDED) ? 'Waiting Host' : `Join ${eventTypeName}`;
         return (
             <ScrollView
                 showsVerticalScrollIndicator={false}
                 contentContainerStyle={styles.container}
             >
                 <CustomStatusBar />
-                <Card containerStyle={{ alignSelf: 'stretch' }}>
-                    <View>
-                        <PreviewHeader
-                            event={{ image, photoURL, eventType, price }}
-                        />
+                <View>
+                    <PreviewHeader
+                        event={{ image, photoURL, eventType }}
+                    />
+                    <View style={{ paddingHorizontal: 30 }}>
                         <PreviewBody
-                            event={{ displayName, title, eventDate, duration, description }}
+                            event={{ displayName, title, eventDate, duration, description, status }}
                         />
-                        <DefaultButton
+                        {status !== COMPLETED && <DefaultButton
                             title={buttonTitle}
                             onPress={this.onCamera}
                             disabled={disabled}
                             loading={joinLoading}
-                        />
+                        />}
                         <RatingView event={eventData} ticket={ticketData} />
                         {
                             this.state.error && (
@@ -136,7 +136,7 @@ class GuestView extends Component {
                             )
                         }
                     </View>
-                </Card>
+                </View>
                 <WaitingModal isWaiting={joinLoading} />
                 <ContactUs title='Have a problem?' screen='GuestScreen' />
             </ScrollView>
@@ -148,7 +148,6 @@ const styles = StyleSheet.create({
     container: {
         flexGrow: 1,
         justifyContent: 'space-between',
-        alignItems: 'center',
     }
 })
 

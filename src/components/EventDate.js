@@ -24,10 +24,10 @@ const styles = StyleSheet.create({
     borderColor: '#C4C4C4',
     alignSelf: 'stretch',
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    justifyContent: 'space-around',
     alignItems: 'center',
-    padding: 9,
     backgroundColor: '#FAFAFA',
-    marginVertical:20
+    marginVertical:20,
+    paddingVertical: 5
   },
 })

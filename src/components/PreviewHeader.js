@@ -15,7 +15,7 @@ export default function PreviewHeader(props) {
         <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'center', }}>
           <Image source={{ uri: photoURL }} style={styles.userPhotoStyle} />
         </View>
-        <Text style={styles.price}>${price}</Text>
+        {price && <Text style={styles.price}>${price}</Text>}
       </ImageBackground>
     </View>
   )
@@ -37,12 +37,12 @@ const styles = StyleSheet.create({
     fontWeight: 'bold'
   },
   userPhotoStyle: {
-    height: 84,
-    width: 84,
+    height: 75,
+    width: 75,
     borderColor: 'white',
     borderRadius: 50,
     borderWidth: 4,
-    marginLeft: 10,
+    //marginLeft: 10,
     alignSelf: 'flex-end',
     bottom: 0
   },

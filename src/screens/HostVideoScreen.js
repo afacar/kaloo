@@ -131,8 +131,8 @@ class HostVideoScreen extends Component {
     onEndCall = async () => {
         let { event } = this.props;
         this._isMounted && this.setState({ isConnecting: true })
-        let reponse = await endLive(event.eventId);
-        if (reponse) {
+        let response = await endLive(event.eventId);
+        if (response) {
             event.status = COMPLETED
             this.props.setHostEventListener(event)
             RtcEngine.leaveChannel();

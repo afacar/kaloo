@@ -21,7 +21,7 @@ export function HighlightedText(props) {
             paddingHorizontal: 15,
             marginVertical: 10
         }}>
-            <Text style={{ color: 'white', paddingVertical: 15, fontSize: 15 }}>
+            <Text style={{ color: 'white', paddingVertical: 15, fontSize: 15, textAlign: 'center' }}>
                 {text}
             </Text>
         </View>

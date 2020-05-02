@@ -91,7 +91,7 @@ class EventPreviewScreen extends Component {
                   />
                   <View style={{ paddingHorizontal: 10 }}>
                     <PreviewBody
-                      event={{ displayName, title, eventDate, duration, description, capacity, price }}
+                      event={{ displayName, title, eventDate, duration, description, capacity, price, status }}
                     />
                   </View>
                 </View>

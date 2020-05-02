@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
-import { View, StyleSheet } from 'react-native';
+import { View, StyleSheet, Text } from 'react-native';
 import { Button, AirbnbRating } from 'react-native-elements';
 
 import { app } from '../constants';
-import { AppText } from "./Labels";
+import { AppText, BoldLabel } from "./Labels";
 import { rateEvent } from "../utils/EventHandler";
 
 const { COMPLETED } = app.EVENT_STATUS
@@ -35,9 +35,9 @@ class RatingView extends Component {
                 {
                     (status === COMPLETED && !this.state.isRatingComplete && !ticketData.rate) && (
                         <View>
+                            <BoldLabel label='How was the audio and video quality?' />
                             <AirbnbRating
                                 count={5}
-                                reviews={["Terrible", "Bad", "OK", "Good", "Unbelievable"]}
                                 defaultRating={3}
                                 onFinishRating={this.changeRate}
                                 size={20}

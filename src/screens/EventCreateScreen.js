@@ -235,7 +235,7 @@ class EventCreateScreen extends Component {
                   uncheckedColor="#FF3E6C"
                   containerStyle={{ paddingHorizontal: 0 }} />
                 <View>
-                  <TouchableOpacity onPress={() => this.setState({ eventType: CALL, capacity: 1 })}>
+                  <TouchableOpacity onPress={() => this.setState({ eventType: CALL, capacity: 1, capacityMessage: '' })}>
                     <BoldLabel label="1-1 Meeting" />
                     <Label label="Create a private video call with just one person." />
                   </TouchableOpacity>

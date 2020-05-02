@@ -38,7 +38,6 @@ export default class Timer extends React.Component {
 
   render() {
     const { remainingTime } = this.state
-    //this.updateTimer(duration, startDate)
     const style = remainingTime < 0 ? styles.timerCardRed : styles.timerCard
     return (
       <View style={styles.timer}>
