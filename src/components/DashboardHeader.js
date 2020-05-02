@@ -6,9 +6,10 @@ import { colors } from '../constants';
 import { ClickableText } from './Buttons';
 
 export default function DashboradHeader(props) {
-    let { navigation, profile, totalEarnings } = props;
+    let { navigation, profile } = props;
     profile = profile ? profile : auth().currentUser
     let imageSource = profile.photoURL ? { uri: profile.photoURL } : require('../assets/default-profile.png')
+    let totalEarnings = profile.totalEarnings || 0
     return (
         <View style={styles.container}>
             <Avatar

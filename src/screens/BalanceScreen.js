@@ -18,7 +18,7 @@ class BalanceScreen extends Component {
     headerLeft: () => <HeaderLeft onPress={navigation.goBack} />
   });
 
-  state = { totalBalance: '', currentBalance: 0, requestLoading: false, stripeUrl: '' };
+  state = { totalBalance: '', requestLoading: false, stripeUrl: '' };
 
   componentDidMount() {
     console.log('BalanceDidMount props', this.props.profile)
@@ -51,8 +51,8 @@ class BalanceScreen extends Component {
   }
 
   render() {
-    let { connectedAccountId, pendingPaymentRequest } = this.props.profile
-    const { requestLoading, currentBalance, successMessage, errorMessage } = this.state
+    let { connectedAccountId, pendingPaymentRequest, totalEarnings } = this.props.profile
+    const { requestLoading, successMessage, errorMessage } = this.state
     return (
       <SafeAreaView style={{ flex: 1, backgroundColor: "white" }}>
         <KeyboardAvoidingView style={styles.container}>
@@ -60,7 +60,7 @@ class BalanceScreen extends Component {
             <View style={{ marginTop: 35 }}>
               <H1Label label="Total Earnings" />
               <View style={styles.balanceContainer}>
-                <H1Label label={'$' + currentBalance} />
+                <H1Label label={'$' + totalEarnings} />
               </View>
             </View>
             <H2Label label={successMessage} />
