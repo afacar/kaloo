@@ -7,8 +7,9 @@ import { ClearButton } from './Buttons';
 async function onShare(link, title) {
     try {
         const result = await Share.share({
-            title: title,
-            message: link
+            title,
+            subject: title,
+            message: `${title}\n${link}`, 
         });
         if (result.action === Share.sharedAction) {
             if (result.activityType) {

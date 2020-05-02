@@ -66,7 +66,7 @@ class HostScreen extends Component {
     }
 
     render() {
-        var { status, eventLink } = this.props.event
+        var { status, eventLink, title } = this.props.event
         let buttonTitle = status === COMPLETED ? 'Session Completed' : status === SUSPENDED ? 'Back to Session' : status === SCHEDULED ? 'Preview audio and video' : 'Session in Progress'
         return (
             <SafeAreaView style={styles.container}>
@@ -81,6 +81,7 @@ class HostScreen extends Component {
                                 navigation={this.props.navigation}
                             />
                             <EventShare
+                                title={title}
                                 link={eventLink}
                             />
                             <View style={{ marginVertical: 15 }}>
