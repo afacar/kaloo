@@ -51,16 +51,22 @@ class BalanceScreen extends Component {
   }
 
   render() {
-    let { connectedAccountId, pendingPaymentRequest, totalEarnings } = this.props.profile
+    let { connectedAccountId, pendingPaymentRequest, totalEarnings, paidAmount } = this.props.profile
     const { requestLoading, successMessage, errorMessage } = this.state
     return (
       <SafeAreaView style={{ flex: 1, backgroundColor: "white" }}>
         <KeyboardAvoidingView style={styles.container}>
           <View style={styles.componentStyle}>
-            <View style={{ marginTop: 35 }}>
+            <View style={{ marginTop: 15 }}>
               <H1Label label="Total Earnings" />
               <View style={styles.balanceContainer}>
                 <H1Label label={'$' + totalEarnings} />
+              </View>
+            </View>
+            <View style={{ marginTop: 15 }}>
+              <H1Label label="Current Balance" />
+              <View style={styles.balanceContainer}>
+                <H1Label label={'$' + (totalEarnings - paidAmount)} />
               </View>
             </View>
             <H2Label label={successMessage} />
