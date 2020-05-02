@@ -50,6 +50,7 @@ class EventPublishScreen extends Component {
           </View>
           <H1Label label="Your meeting is set!" />
           <EventShare
+            status={myEvent.status}
             title={myEvent.title}
             link={myEvent.eventLink}
           />

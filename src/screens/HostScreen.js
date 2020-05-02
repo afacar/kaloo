@@ -81,6 +81,7 @@ class HostScreen extends Component {
                                 navigation={this.props.navigation}
                             />
                             <EventShare
+                                status={status}
                                 title={title}
                                 link={eventLink}
                             />

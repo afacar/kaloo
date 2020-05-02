@@ -1,15 +1,18 @@
 import React from 'react';
 import { View, Text, Alert, Share, Clipboard, TouchableOpacity } from 'react-native';
-import { Icon, Button } from 'react-native-elements';
+
+import { Icon } from 'react-native-elements';
 import { BoldLabel } from './Labels';
 import { ClearButton } from './Buttons';
+import app from '../constants/app';
+const { COMPLETED } = app.EVENT_STATUS
 
 async function onShare(link, title) {
     try {
         const result = await Share.share({
             title,
             subject: title,
-            message: `${title}\n${link}`, 
+            message: `${title}\n${link}`,
         });
         if (result.action === Share.sharedAction) {
             if (result.activityType) {
@@ -26,7 +29,7 @@ async function onShare(link, title) {
 };
 
 export default function EventShare(props) {
-    const { link, title } = props
+    const { link, title, status } = props
     return (
         <View>
             <BoldLabel label="Event Link" />
@@ -56,6 +59,7 @@ export default function EventShare(props) {
             <ClearButton
                 title='Share'
                 onPress={() => onShare(link, title)}
+                disabled={status === COMPLETED}
             />
         </View>
     )
