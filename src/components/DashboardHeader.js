@@ -9,6 +9,7 @@ export default function DashboradHeader(props) {
     let { navigation, profile } = props;
     profile = profile ? profile : auth().currentUser
     let imageSource = profile.photoURL ? { uri: profile.photoURL } : require('../assets/default-profile.png')
+    let totalEarnings = profile.totalEarnings || 0
     return (
         <View style={styles.container}>
             <Avatar
@@ -17,9 +18,19 @@ export default function DashboradHeader(props) {
                 source={imageSource}
                 overlayContainerStyle={{ borderWidth: 3, borderColor: 'white' }}
             />
-            <Text style={{ color: 'white', fontWeight: 'bold', paddingVertical: 10, fontSize: 20 }}>{profile.displayName}</Text>
-            <ClickableText color='white' text='Edit Profile' onPress={() => navigation.navigate('Profile')} />
-            <ClickableText color='white' text='Total Earnings: $0 →' onPress={() => navigation.navigate('Balance')} />
+            <Text style={{ color: 'white', fontWeight: 'bold', paddingTop: 5, fontSize: 20 }}>{profile.displayName}</Text>
+            <ClickableText
+                text='Edit Profile'
+                underline
+                color='white'
+                onPress={() => navigation.navigate('Profile')}
+            />
+            <ClickableText
+                text={`Total Earnings: $${totalEarnings || 0} →`}
+                size={17}
+                color='white'
+                onPress={() => navigation.navigate('Balance')}
+            />
         </View>
     );
 }

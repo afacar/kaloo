@@ -1,6 +1,7 @@
 import { firestore } from "react-native-firebase";
 
 import { LISTEN_GUEST_EVENT, UNLISTEN_GUEST_EVENT, LISTEN_TICKET, LISTEN_VIEWERS } from "./types"
+import { convert2Date } from "../../utils/Utils";
 
 let guestEventListener = () => { console.log('guestEventListener Cleaned!') };
 
@@ -14,13 +15,7 @@ export const setGuestEventListener = (event) => async (dispatch) => {
     guestEventListener = firestore().doc(`events/${eventId}`)
         .onSnapshot((eventDoc) => {
             let event = eventDoc.data()
-            let date = event.eventDate
-            if (date instanceof firestore.Timestamp) {
-                date = date.toDate();
-            } else if (eventData.eventTimestamp) {
-                date = new Date(eventData.eventTimestamp)
-            }
-            event.eventDate = date;
+            event.eventDate = convert2Date(event.eventDate, event.eventTimestamp);
             return dispatch({
                 type: LISTEN_GUEST_EVENT,
                 payload: event
@@ -41,14 +36,14 @@ export const setTicketListener = (event) => async (dispatch) => {
             ticket.ticketId = ticketId
             let { reserveDate, soldDate, updateDate } = ticket
 
-            if (reserveDate && reserveDate instanceof firestore.Timestamp) {
-                ticket.reserveDate = reserveDate.toDate();
+            if (reserveDate) {
+                ticket.reserveDate = convert2Date(ticket.reserveDate)
             }
-            if (soldDate && soldDate instanceof firestore.Timestamp) {
-                ticket.soldDate = soldDate.toDate();
+            if (soldDate) {
+                ticket.soldDate = convert2Date(ticket.soldDate)
             }
-            if (updateDate && updateDate instanceof firestore.Timestamp) {
-                ticket.updateDate = updateDate.toDate();
+            if (updateDate) {
+                ticket.updateDate = convert2Date(ticket.updateDate)
             }
 
             return dispatch({

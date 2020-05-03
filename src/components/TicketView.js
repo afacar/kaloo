@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
-import { View, StyleSheet, KeyboardAvoidingView, ScrollView, Image, Text, Platform } from 'react-native';
+import { View, StyleSheet, Image, Text } from 'react-native';
 import { Input } from 'react-native-elements';
-import { functions, firestore, auth } from 'react-native-firebase';
+import { functions, auth } from 'react-native-firebase';
 import { connect } from "react-redux";
 import { SafeAreaView } from 'react-navigation';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
@@ -11,6 +11,7 @@ import { Label } from './Labels';
 import { DefaultButton } from './Buttons';
 import { ContactUs } from './ContactUs';
 import CustomStatusBar from './StatusBars/CustomStatusBar';
+import { convert2Date } from '../utils/Utils';
 
 
 class TicketView extends Component {
@@ -27,13 +28,8 @@ class TicketView extends Component {
       let response = await validateTicket({ ticketId: ticket })
       if (response && response.data && response.data.state === 'SUCCESS') {
         let eventData = response.data.event;
-        let date = eventData.eventDate
-        if (date instanceof firestore.Timestamp) {
-          date = date.toDate()
-        } else if (eventData.eventTimestamp) {
-          date = new Date(eventData.eventTimestamp)
-        }
-        eventData.eventDate = date
+        eventData.eventDate = convert2Date(eventData.eventDate, eventData.eventTimestamp);
+
         let guestScreen = auth().currentUser ? 'Guest' : 'AGuest'
         this.setState({ isWaiting: false })
         this.props.setGuestEventListener(eventData)
@@ -49,7 +45,7 @@ class TicketView extends Component {
   }
 
   onTicketChange = (ticket) => {
-    let formattedTicket = ticket.trim().split('-').join('')
+    let formattedTicket = ticket.trim().toUpperCase().split('-').join('')
     let first = formattedTicket.substr(0, 4)
     let second = formattedTicket.substr(4, 4)
     let third = formattedTicket.substr(8, 4)
@@ -91,6 +87,7 @@ class TicketView extends Component {
               errorMessage={ticketError}
               autoCapitalize="characters"
               disabled={isWaiting}
+              maxLength={TICKET_FORMAT.length || 14}
               containerStyle={{ paddingVertical: 10, paddingHorizontal: 0 }}
               inputContainerStyle={{
                 borderWidth: 0.7,
@@ -103,7 +100,7 @@ class TicketView extends Component {
             />
             <View style={{ alignSelf: 'stretch' }}>
               <DefaultButton
-                title={isWaiting ? 'Checking Ticket...' : "Watch Now"}
+                title={isWaiting ? 'Checking Ticket...' : 'Access the Meeting'}
                 onPress={this.checkTicket}
                 disabled={isWaiting || ticket.length === 0} />
             </View>
@@ -132,7 +129,7 @@ const styles = StyleSheet.create({
 });
 
 const mapStateToProps = ({ assets }) => {
-  return { assets: assets.assets }
+  return { assets }
 }
 
 export default connect(mapStateToProps, actions)(TicketView);

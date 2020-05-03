@@ -6,12 +6,32 @@ import {
     LISTEN_MY_VIEWERS,
     UNLISTEN_HOST_EVENTS,
     UNLISTEN_HOST_EVENT,
-    UNLISTEN_MY_VIEWERS
+    UNLISTEN_MY_VIEWERS,
+    LISTEN_MY_TICKETS,
+    UNLISTEN_MY_TICKETS
 } from "./types"
+
+import { convert2Date, compare } from "../../utils/Utils";
+import app from '../../constants/app';
+
+const { SCHEDULED, SUSPENDED, IN_PROGRESS, COMPLETED } = app.EVENT_STATUS
 
 let hostEventsListener = () => { console.log('hostEventsListener Cleaned!') };
 let hostEventListener = () => { console.log('hostEventListener Cleaned!') };
 let myViewersListener = () => { console.log('myViewersListener Cleaned!') }
+let myTicketsListener = () => { console.log('myTicketsListener Cleaned!') }
+
+export const setMyTicketsListener = (event) => async (dispatch) => {
+    const { eventId } = event
+    myTicketsListener = firestore().doc(`events/${eventId}/tickets/--stats--`)
+        .onSnapshot((ticketDoc) => {
+            let ticketData = ticketDoc.data()
+            return dispatch({
+                type: LISTEN_MY_TICKETS,
+                payload: ticketData.sold || 0
+            });
+        });
+}
 
 export const setMyViewersListener = (event) => async (dispatch) => {
     const { eventId } = event
@@ -20,11 +40,11 @@ export const setMyViewersListener = (event) => async (dispatch) => {
         payload: 0
     });
     myViewersListener = firestore().doc(`events/${eventId}/live/--stats--`)
-        .onSnapshot((viewerDoc) => {
-            let ticket = viewerDoc.data()
+        .onSnapshot((liveDoc) => {
+            let liveData = liveDoc.data()
             return dispatch({
                 type: LISTEN_MY_VIEWERS,
-                payload: ticket.viewerCount || 0
+                payload: liveData.viewerCount || 0
             });
         });
 }
@@ -38,13 +58,7 @@ export const setHostEventListener = (event) => async (dispatch) => {
     hostEventListener = firestore().doc(`events/${eventId}`)
         .onSnapshot((eventDoc) => {
             let event = eventDoc.data()
-            let date = event.eventDate
-            if (date instanceof firestore.Timestamp) {
-                date = date.toDate();
-            } else if (eventData.eventTimestamp) {
-                date = new Date(eventData.eventTimestamp)
-            }
-            event.eventDate = date;
+            event.eventDate = convert2Date(event.eventDate, event.eventTimestamp);
             return dispatch({
                 type: LISTEN_HOST_EVENT,
                 payload: event
@@ -59,21 +73,29 @@ export const setHostEventsListener = () => async (dispatch) => {
     hostEventsListener = firestore().collection('events').where('uid', '==', uid)
         .onSnapshot((querySnapshot) => {
             let allEvents = {}
+
             querySnapshot.forEach(function (doc) {
                 let event = doc.data()
-                // Convert Firebase Timestamp tp JS Date object
-                let date = event.eventDate
-                if (date instanceof firestore.Timestamp) {
-                    date = date.toDate();
-                } else if (eventData.eventTimestamp) {
-                    date = new Date(eventData.eventTimestamp)
-                }
-                event.eventDate = date;
+                event.eventDate = convert2Date(event.eventDate, event.eventTimestamp);
                 allEvents[event.eventId] = event;
             });
+
+            let upcomingEvents = [], liveEvents = [], pastEvents = [];
+
+            for (var key in allEvents) {
+                let event = allEvents[key]
+                if (event.status === SUSPENDED || event.status === IN_PROGRESS) liveEvents.push(event)
+                if (event.status === SCHEDULED) upcomingEvents.push(event)
+                if (event.status === COMPLETED) pastEvents.push(event)
+            }
+
+            liveEvents.sort(compare)
+            upcomingEvents.sort(compare)
+            pastEvents.sort(compare)
+
             return dispatch({
                 type: LISTEN_HOST_EVENTS,
-                payload: allEvents
+                payload: { liveEvents, upcomingEvents, pastEvents }
             });
         });
 }
@@ -82,7 +104,8 @@ export const clearHostEventsListener = () => (dispatch) => {
     if (hostEventsListener) {
         hostEventsListener();
         hostEventListener();
-        myViewersListener()
+        myViewersListener();
+        myTicketsListener();
     }
     return dispatch({
         type: UNLISTEN_HOST_EVENTS,
@@ -106,6 +129,15 @@ export const clearMyViewersListener = () => {
         myViewersListener();
     return dispatch({
         type: UNLISTEN_MY_VIEWERS,
+        payload: null
+    });
+}
+
+export const clearMyTicketsListener = () => {
+    if (myTicketsListener)
+        myTicketsListener();
+    return dispatch({
+        type: UNLISTEN_MY_TICKETS,
         payload: null
     });
 }

@@ -50,6 +50,8 @@ class EventPublishScreen extends Component {
           </View>
           <H1Label label="Your meeting is set!" />
           <EventShare
+            status={myEvent.status}
+            title={myEvent.title}
             link={myEvent.eventLink}
           />
           <View style={{ marginVertical: 15 }}>
@@ -63,7 +65,7 @@ class EventPublishScreen extends Component {
             />
           </View>
         </View>
-        <ContactUs />
+        <ContactUs title='Have a problem?' screen='EventPublish' />
       </SafeAreaView>
     );
   }

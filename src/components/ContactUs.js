@@ -52,7 +52,7 @@ export class ContactUs extends Component {
         const { message, visible, infoMessage, chars, loading, sent } = this.state;
         return (
             <View style={{ alignSelf: 'stretch', alignItems:'center', backgroundColor: 'white' }}>
-                <ClickableText text={title || 'Contact Us'} onPress={this.openContactUs} />
+                <ClickableText opacity={0.5} text={title || 'Contact Us'} onPress={this.openContactUs} />
                 <Modal
                     animationType="slide"
                     visible={visible}

@@ -131,8 +131,8 @@ class HostVideoScreen extends Component {
     onEndCall = async () => {
         let { event } = this.props;
         this._isMounted && this.setState({ isConnecting: true })
-        let reponse = await endLive(event.eventId);
-        if (reponse) {
+        let response = await endLive(event.eventId);
+        if (response) {
             event.status = COMPLETED
             this.props.setHostEventListener(event)
             RtcEngine.leaveChannel();
@@ -196,7 +196,7 @@ class HostVideoScreen extends Component {
                                 hostId={HOST_UID}
                             />
                         )}
-                    <WaitingModal isWaiting={isConnecting} />
+                    <WaitingModal text='Just a second...' isWaiting={isConnecting} />
                     <BroadcastButton event={this.props.event} onPress={this._onPress} />
                 </View>
             </View>

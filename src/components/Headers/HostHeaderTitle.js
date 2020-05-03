@@ -12,7 +12,7 @@ class HostHeaderTitle extends Component {
 
     render() {
         const { status } = this.props
-        const text = status === IN_PROGRESS ? 'Live' : 'Preview';
+        const text = status === IN_PROGRESS ? 'LIVE' : 'TEST';
         const style = status === IN_PROGRESS ? 'live' : 'preview';
         return <AppText style={styles[style]}>{text}</AppText>
     }
@@ -23,6 +23,7 @@ const styles = StyleSheet.create({
         marginLeft: 16,
         fontSize: 12,
         color: 'white',
+        fontWeight: 'bold',
         backgroundColor: colors.PINK,
         borderRadius: 6,
         textAlign: 'center',
@@ -32,6 +33,7 @@ const styles = StyleSheet.create({
     preview: {
         marginLeft: 16,
         fontSize: 12,
+        fontWeight: 'bold',
         color: 'white',
         backgroundColor: colors.BLUE,
         borderRadius: 6,

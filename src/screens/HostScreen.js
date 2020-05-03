@@ -66,8 +66,10 @@ class HostScreen extends Component {
     }
 
     render() {
-        var { status, eventLink } = this.props.event
-        let buttonTitle = status === COMPLETED ? 'Meeting Completed' : status === SUSPENDED ? 'Continue Meeting' : status === SCHEDULED ? 'Preview audio and video' : 'Meeting in Progress'
+        var { status, eventLink, title } = this.props.event
+        var { soldTickets } = this.props
+
+        let buttonTitle = status === COMPLETED ? 'Session Completed' : status === SUSPENDED ? 'Back to Session' : status === SCHEDULED ? 'Preview audio and video' : 'Session in Progress'
         return (
             <SafeAreaView style={styles.container}>
                 <View style={{ flex: 1, backgroundColor: colors.BLUE }}>
@@ -78,9 +80,12 @@ class HostScreen extends Component {
                         >
                             <EventHeader
                                 event={this.props.event}
+                                soldTickets={soldTickets}
                                 navigation={this.props.navigation}
                             />
                             <EventShare
+                                status={status}
+                                title={title}
                                 link={eventLink}
                             />
                             <View style={{ marginVertical: 15 }}>
@@ -91,7 +96,7 @@ class HostScreen extends Component {
                                 />
                             </View>
                         </ScrollView>
-                        <ContactUs screen='HostScreen' />
+                        <ContactUs title='Have a problem?' screen='HostScreen' />
                     </View>
                 </View>
             </SafeAreaView>
@@ -107,7 +112,7 @@ const styles = StyleSheet.create({
     },
     cardStyle: {
         flex: 1,
-        paddingHorizontal: 40,
+        paddingHorizontal: 30,
         alignSelf: 'stretch',
         backgroundColor: "white",
         borderTopRightRadius: 26,
@@ -116,8 +121,8 @@ const styles = StyleSheet.create({
 })
 
 const mapStateToProps = ({ hostEvents }) => {
-    const { hostEvent, myViewers } = hostEvents
-    return { event: hostEvent, viewers: myViewers }
+    let { hostEvent, myViewers, soldTickets } = hostEvents
+    return { event: hostEvent, viewers: myViewers, soldTickets }
 }
 
 export default connect(mapStateToProps, actions)(HostScreen);

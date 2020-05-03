@@ -12,7 +12,9 @@ class Logout extends React.Component {
         // TODO: Remove firebase cache and listeners
         this.props.clearHostEventsListener()
         this.props.clearUserProfile()
-        auth().signOut()
+        auth().signOut().then(() => {
+            this.props.navigation.navigate('Splash')
+        })
     }
 
     render() {

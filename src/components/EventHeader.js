@@ -1,33 +1,30 @@
 import React from 'react';
 import { View, Text, Image, StyleSheet } from 'react-native';
-import EventTime from './EventTime';
-import { ClickableText } from './Buttons';
-import { formatDuration } from '../utils/Utils';
-import { H1Label, H3Label, Label, RedLabel } from './Labels';
+import EventDate from './EventDate';
+import { H1Label, H3Label, HighlightedText } from './Labels';
 import { app } from '../constants';
+import EventStatus from './EventStatus';
 
 const { SUSPENDED, SCHEDULED, COMPLETED, IN_PROGRESS } = app.EVENT_STATUS
 
 export default function EventHeader(props) {
-  const { event, navigation } = props
-  const { image, title, description, eventDate, duration, status } = event
-  let remaining = eventDate ? formatDuration(Math.floor((eventDate.getTime() - new Date().getTime()) / 60000)) : 'Unknown'
-  remaining = `Starts in ${remaining}`
-  const stat = status === SUSPENDED ? 'On Air' : status === SCHEDULED ? remaining : status === COMPLETED ? 'Finished' : 'In Progress'
+  const { event, soldTickets } = props
+  const { image, title, description, eventDate, duration, status, capacity } = event
+  const isActive = status === SUSPENDED || status === IN_PROGRESS;
   return (
     <View style={styles.container}>
       <View style={{ flex: 1, flexDirection: "row", justifyContent: 'space-between', alignItems: 'center' }}>
         <H1Label label="Up Next" />
-        <RedLabel label={stat} />
+        <EventStatus eventDate={eventDate} status={status} />
       </View>
+      {isActive && <HighlightedText
+        text='You have active audience waiting for you.'
+      />}
       <Image source={{ uri: image }} style={styles.imageStyle} />
       <H3Label label={title} />
-      <Label label={description} />
-      <EventTime eventTime={{ eventDate, duration }} />
-      <ClickableText
-        text='Preview event card'
-        onPress={() => navigation.push('EventPreview', { event })}
-      />
+      <Text style={{ fontStyle: 'italic' }}>{`${soldTickets} tickets sold`}</Text>
+      <Text style={{ fontSize: 15 }}>{description}</Text>
+      <EventDate eventTime={{ eventDate, duration }} />
     </View>
   )
 }

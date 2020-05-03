@@ -1,6 +1,6 @@
-import React, { Component } from 'react';
+import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
-import { Icon } from "react-native-elements";
+
 import { app, colors } from '../constants';
 
 export function AppText(props) {
@@ -10,18 +10,18 @@ export function AppText(props) {
 }
 
 export function HighlightedText(props) {
-    const { text } = props
+    const { color, text } = props
     return (
         <View style={{
             flexDirection: 'row',
             alignItems: 'center',
             justifyContent: "center",
-            backgroundColor: '#655FFF',
+            backgroundColor: color || '#655FFF',
             borderRadius: 6,
             paddingHorizontal: 15,
             marginVertical: 10
         }}>
-            <Text style={{ color: 'white', paddingVertical: 15, fontSize: 15 }}>
+            <Text style={{ color: 'white', paddingVertical: 15, fontSize: 15, textAlign: 'center' }}>
                 {text}
             </Text>
         </View>

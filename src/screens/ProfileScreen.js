@@ -22,7 +22,7 @@ class ProfileScreen extends Component {
     static navigationOptions = ({ navigation }) => ({
         headerTitle: () => null,
         headerLeft: () => <HeaderLeft onPress={navigation.goBack} />,
-        headerRight: () => <Logout />
+        headerRight: () => <Logout navigation={navigation} />
     });
 
     state = {
@@ -134,13 +134,15 @@ class ProfileScreen extends Component {
                                 containerStyle={{ paddingHorizontal: 0 }}
                             />
 
-                            <ErrorLabel label={errorMessage} />
-                            <DefaultButton
-                                title='Save Changes'
-                                onPress={this._checkProfile}
-                                disabled={!(isNameChanged || isAvatarChanged)}
-                            //loading={isWaiting}
-                            />
+                            <View style={{ alignContent: 'flex-end' }}>
+                                <ErrorLabel label={errorMessage} />
+                                <DefaultButton
+                                    title='Save Changes'
+                                    onPress={this._checkProfile}
+                                    disabled={!(isNameChanged || isAvatarChanged)}
+                                //loading={isWaiting}
+                                />
+                            </View>
                         </KeyboardAwareScrollView>
                     </View>
 

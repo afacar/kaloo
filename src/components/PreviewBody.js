@@ -1,19 +1,23 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { Slider } from "react-native-elements";
-import EventTime from './EventTime';
+
+import EventDate from './EventDate';
 import { H2Label, H3Label, Label } from './Labels';
 import { DefaultButton } from './Buttons';
+import app from '../constants/app';
+import EventStatus from './EventStatus';
+const { SUSPENDED, IN_PROGRESS, COMPLETED } = app.EVENT_STATUS
 
 export default function PreviewBody(props) {
-  const { displayName, title, eventDate, duration, description, capacity, price } = props.event
-
+  const { displayName, title, eventDate, duration, description, capacity, price, status } = props.event
   return (
-    <View style={{ marginTop: 5, paddingBottom:15}}>
+    <View style={{ marginTop: 5, paddingBottom: 15, paddingHorizontal: 5 }}>
       <View style={{ alignItems: 'center' }}>
+        <EventStatus eventDate={eventDate} status={status} />
         <H2Label label={displayName} />
         <H3Label label={title} />
-        <EventTime eventTime={{ eventDate, duration }} />
+        <EventDate eventTime={{ eventDate, duration }} />
         <Label label={description || 'No description'} />
       </View>
       {capacity && <View>

@@ -2,7 +2,7 @@ import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { splitDate, formatDuration } from "../utils/Utils";
 
-export default function EventTime(props) {
+export default function EventDate(props) {
   let { eventDate, duration } = props.eventTime
   const { date, time, gmt } = splitDate(eventDate)
   return (
@@ -24,10 +24,10 @@ const styles = StyleSheet.create({
     borderColor: '#C4C4C4',
     alignSelf: 'stretch',
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    justifyContent: 'space-around',
     alignItems: 'center',
-    padding: 9,
     backgroundColor: '#FAFAFA',
-    marginVertical:20
+    marginVertical:20,
+    paddingVertical: 5
   },
 })

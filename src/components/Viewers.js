@@ -10,7 +10,7 @@ export default function Viewers(props) {
 
   return (
     <View style={styles.container}>
-      <AppText style={styles.viewer}>{viewers}</AppText>
+      <AppText style={styles.viewer}>{viewers} Viewers</AppText>
     </View>
   )
 }

@@ -10,7 +10,6 @@ const INITIAL_STATE = {
 }
 
 export default function (state = INITIAL_STATE, action) {
-    console.log('Auth reducer action', action)
     switch (action.type) {
         case CURRENT_USER: {
             return { ...state, ...action.payload }

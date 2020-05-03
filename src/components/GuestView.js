@@ -14,6 +14,7 @@ import { DefaultButton } from './Buttons';
 import RatingView from './RatingView';
 import { ContactUs } from './ContactUs';
 import { WaitingModal } from './Modals';
+import { checkAudioPermission, checkCameraPermission } from '../utils/Utils';
 
 const { CALL, BROADCAST } = app.EVENT_TYPE;
 
@@ -35,7 +36,10 @@ class GuestView extends Component {
         error: undefined
     }
 
-    componentDidMount() { }
+    componentDidMount() {
+        checkAudioPermission()
+        checkCameraPermission()
+    }
 
     componentWillUnmount() { }
 
@@ -99,30 +103,30 @@ class GuestView extends Component {
         const eventData = this.props.event
         const ticketData = this.props.ticket
         const viewers = this.props.viewers // TODO: Maybe number of online viewes can be shown QuestView later
-        const { image, photoURL, title, description, displayName, duration, eventType, eventDate, status } = eventData;
+        const { image, photoURL, title, description, displayName, duration, eventType, eventDate, status, price } = eventData;
         const disabled = status !== IN_PROGRESS
         const eventTypeName = eventType === CALL ? 'Meeting' : 'Broadcast'
-        const buttonTitle = (status === COMPLETED) ? `${eventTypeName} Finished` : (status === SCHEDULED || status === SUSPENDED) ? 'Waiting Host' : `Join ${eventTypeName}`;
+        const buttonTitle = (status === SCHEDULED || status === SUSPENDED) ? 'Waiting Host' : `Join ${eventTypeName}`;
         return (
             <ScrollView
                 showsVerticalScrollIndicator={false}
                 contentContainerStyle={styles.container}
             >
                 <CustomStatusBar />
-                <Card containerStyle={{ alignSelf: 'stretch' }}>
-                    <View>
-                        <PreviewHeader
-                            event={{ image, photoURL, eventType }}
-                        />
+                <View>
+                    <PreviewHeader
+                        event={{ image, photoURL, eventType }}
+                    />
+                    <View style={{ paddingHorizontal: 30 }}>
                         <PreviewBody
-                            event={{ displayName, title, eventDate, duration, description }}
+                            event={{ displayName, title, eventDate, duration, description, status }}
                         />
-                        <DefaultButton
+                        {status !== COMPLETED && <DefaultButton
                             title={buttonTitle}
                             onPress={this.onCamera}
                             disabled={disabled}
                             loading={joinLoading}
-                        />
+                        />}
                         <RatingView event={eventData} ticket={ticketData} />
                         {
                             this.state.error && (
@@ -132,9 +136,9 @@ class GuestView extends Component {
                             )
                         }
                     </View>
-                </Card>
+                </View>
                 <WaitingModal isWaiting={joinLoading} />
-                <ContactUs screen='GuestScreen' />
+                <ContactUs title='Have a problem?' screen='GuestScreen' />
             </ScrollView>
         )
     }
@@ -144,7 +148,6 @@ const styles = StyleSheet.create({
     container: {
         flexGrow: 1,
         justifyContent: 'space-between',
-        alignItems: 'center',
     }
 })
 

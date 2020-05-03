@@ -7,7 +7,7 @@ import { colors } from '../constants';
 import HeaderLeft from '../components/Headers/HeaderLeft';
 import { ContactUs } from '../components/ContactUs';
 import UserAvatar from '../components/UserAvatar'
-import { H1Label, H2Label, ErrorLabel } from '../components/Labels';
+import { H1Label, H2Label, ErrorLabel, HighlightedText } from '../components/Labels';
 import { SafeAreaView } from 'react-navigation'
 import { DefaultButton } from '../components/Buttons';
 
@@ -18,7 +18,7 @@ class BalanceScreen extends Component {
     headerLeft: () => <HeaderLeft onPress={navigation.goBack} />
   });
 
-  state = { totalBalance: '', currentBalance: 0, requestLoading: false, stripeUrl: '' };
+  state = { totalBalance: '', requestLoading: false, stripeUrl: '' };
 
   componentDidMount() {
     console.log('BalanceDidMount props', this.props.profile)
@@ -51,16 +51,22 @@ class BalanceScreen extends Component {
   }
 
   render() {
-    let { connectedAccountId, pendingPaymentRequest } = this.props.profile
-    const { requestLoading, currentBalance, successMessage, errorMessage } = this.state
+    let { connectedAccountId, pendingPaymentRequest, totalEarnings, paidAmount } = this.props.profile
+    const { requestLoading, successMessage, errorMessage } = this.state
     return (
       <SafeAreaView style={{ flex: 1, backgroundColor: "white" }}>
         <KeyboardAvoidingView style={styles.container}>
           <View style={styles.componentStyle}>
-            <View>
+            <View style={{ marginTop: 15 }}>
               <H1Label label="Total Earnings" />
               <View style={styles.balanceContainer}>
-                <H1Label label={'$' + currentBalance} />
+                <H1Label label={'$' + totalEarnings} />
+              </View>
+            </View>
+            <View style={{ marginTop: 15 }}>
+              <H1Label label="Current Balance" />
+              <View style={styles.balanceContainer}>
+                <H1Label label={'$' + (totalEarnings - paidAmount)} />
               </View>
             </View>
             <H2Label label={successMessage} />
@@ -74,14 +80,18 @@ class BalanceScreen extends Component {
                   disabled={pendingPaymentRequest}
                 />
               ) : (
-                  <DefaultButton
-                    title={'Create Stripe Account'}
-                    onPress={this.createStripeAccount}
-                    loading={requestLoading}
-                    disabled={requestLoading}
-                  />
+                  <View>
+                    <HighlightedText
+                      text='You need to create a Stripe account to get payments!'
+                    />
+                    <DefaultButton
+                      title={'Connect with Stripe'}
+                      onPress={this.createStripeAccount}
+                      loading={requestLoading}
+                      disabled={requestLoading}
+                    />
+                  </View>
                 )
-
               }
               <ContactUs title='Need Help?' screen='Profile' />
             </View>

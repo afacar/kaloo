@@ -21,24 +21,21 @@ class WelcomeScreen extends Component {
         <TransparentStatusBar />
         <View style={{ flex: 8, justifyContent: 'center', alignItems: 'center' }}>
           <Video
-            source={require('../assets/welcome-video.mov')}
+            source={require('../assets/welcome-video.mp4')}
             muted={true}
             repeat={true}
             resizeMode={"cover"}
             repeat
             style={styles.video}
           />
-          <View style={{ alignItems: 'center', opacity: 0.7 }}>
+          <View style={{ alignItems: 'center' }}>
             <Image
               source={require('../assets/default-logo.png')}
-              style={{ width: 150, height: 150 }}
+              style={{ width: 75, height: 75 }}
             />
-            <Text style={{ fontSize: 25, fontWeight: 'bold', color: 'white' }}>
-              Kaloo
-            </Text>
-            <Text style={{ width: 250, textAlign: 'center', color: 'white' }}> Access premium meetings to get together online</Text>
+            <Text style={{ marginTop: 10, width: 250, textAlign: 'center', color: 'white' }}> Access premium meetings to get together online</Text>
           </View>
-          <View style={{ margin: 25, alignSelf: 'stretch', opacity: 0.7 }}>
+          <View style={{ margin: 25, alignSelf: 'stretch' }}>
             <DefaultButton
               title={"Join your meeting"}
               onPress={() => this.props.navigation.navigate('ATicket')}
@@ -61,7 +58,6 @@ class WelcomeScreen extends Component {
               </TouchableOpacity>
             </View>
           </View>
-
         </View>
       </View>
     );
@@ -97,6 +93,6 @@ const styles = StyleSheet.create({
 });
 
 const mapStateToProps = ({ assets }) => {
-  return { assets: assets.assets }
+  return { assets }
 }
 export default connect(mapStateToProps, null)(WelcomeScreen);
