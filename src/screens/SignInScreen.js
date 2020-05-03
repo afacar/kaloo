@@ -2,12 +2,12 @@ import React, { Component } from 'react';
 import {
   View,
   StyleSheet,
-  KeyboardAvoidingView,
-  ScrollView,
 } from 'react-native';
 import { SafeAreaView } from 'react-navigation';
 import { Input } from 'react-native-elements';
 import { auth } from 'react-native-firebase';
+import { connect } from 'react-redux';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 
 import { setUserProfile } from "../appstate/actions/auth_actions";
 import { setHostEventsListener } from "../appstate/actions/host_actions";
@@ -19,7 +19,7 @@ import HeaderLeft from '../components/Headers/HeaderLeft';
 import CustomStatusBar from '../components/StatusBars/CustomStatusBar';
 import HeaderRight from '../components/Headers/HeaderRight';
 import { WaitingModal } from '../components/Modals';
-import { connect } from 'react-redux';
+import { colors } from '../constants';
 
 class SignInScreen extends Component {
   static navigationOptions = ({ navigation }) => ({
@@ -74,84 +74,72 @@ class SignInScreen extends Component {
   render() {
     const { email, password, emailError, passwordError, isWaiting } = this.state;
     return (
-      <SafeAreaView style={{ flex: 1, backgroundColor: 'white' }}>
+      <SafeAreaView style={{ flex: 1, backgroundColor: colors.BLUE }}>
         <CustomStatusBar />
-        <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={styles.container}>
-          <View style={{ flex: 1, backgroundColor: "#3598FE" }}>
-            <ScrollView
-              contentContainerStyle={{
-                flexGrow: 1,
-                alignItems: 'center',
-                backgroundColor: "#3598FE"
-              }}>
-
-              <View style={styles.componentStyle}>
-                <H1Label label='Sign In' />
-                <HighlightedText
-                  text='You only need an account if you’re planning to host a paid meeting.'
-                  color='#FF5F99'
-                />
-                <Input
-                  placeholder="Enter Your email"
-                  placeholderTextColor="#b2c2bf"
-                  onChangeText={email => this.setState({ email, emailMessage: '' })}
-                  value={email}
-                  keyboardType="email-address"
-                  errorMessage={emailError}
-                  disabled={isWaiting}
-                  inputContainerStyle={styles.inputContainerStyle}
-                  containerStyle={{ paddingHorizontal: 0, marginTop: 10 }}
-                  leftIcon={{ type: 'material-community', name: 'email-outline', color: "#909090" }}
-                  leftIconContainerStyle={{ paddingHorizontal: 10, marginLeft: 0 }}
-                />
-                <Input
-                  placeholder="Enter Your password"
-                  placeholderTextColor="#b2c2bf"
-                  onChangeText={password => this.setState({ password, passwordMessage: '' })}
-                  value={password}
-                  errorMessage={passwordError}
-                  secureTextEntry
-                  disabled={isWaiting}
-                  inputContainerStyle={styles.inputContainerStyle}
-                  containerStyle={{ paddingHorizontal: 0, marginTop: 10 }}
-                  leftIcon={{ type: 'material-community', name: 'key-variant', color: "#909090" }}
-                  leftIconContainerStyle={{ paddingHorizontal: 10, marginLeft: 0 }}
-                />
-                <View style={{ alignSelf: 'stretch', marginTop: 15 }}>
-                  <DefaultButton
-                    title="Sign in"
-                    onPress={this._checkSignIn}
-                    disabled={this.state.isWaiting} />
-                </View>
-                <View style={styles.contactUs}>
-                  <ContactUs title="Have a problem?" screen='SignIn' />
-                </View>
-              </View>
-              <View style={styles.contactUs}>
-                <ContactUs title="Have a problem?" screen='SignIn' />
-                <WaitingModal isWaiting={isWaiting} text='Just a second...' />
-              </View>
-            </ScrollView>
-          </View>
-        </KeyboardAvoidingView>
+        <View style={styles.container}>
+          <H1Label label='Sign In' />
+          <KeyboardAwareScrollView
+            showsVerticalScrollIndicator={false}
+            contentContainerStyle={styles.scroll}
+          >
+            <HighlightedText
+              text='You only need an account if you’re planning to host a paid meeting.'
+              color='#FF5F99'
+            />
+            <Input
+              placeholder="Enter Your email"
+              placeholderTextColor="#b2c2bf"
+              onChangeText={email => this.setState({ email, emailMessage: '' })}
+              value={email}
+              keyboardType="email-address"
+              errorMessage={emailError}
+              disabled={isWaiting}
+              inputContainerStyle={styles.inputContainerStyle}
+              containerStyle={{ paddingHorizontal: 0, marginTop: 10 }}
+              leftIcon={{ type: 'material-community', name: 'email-outline', color: "#909090" }}
+              leftIconContainerStyle={{ paddingHorizontal: 10, marginLeft: 0 }}
+            />
+            <Input
+              placeholder="Enter Your password"
+              placeholderTextColor="#b2c2bf"
+              onChangeText={password => this.setState({ password, passwordMessage: '' })}
+              value={password}
+              errorMessage={passwordError}
+              secureTextEntry
+              disabled={isWaiting}
+              inputContainerStyle={styles.inputContainerStyle}
+              containerStyle={{ paddingHorizontal: 0, marginTop: 10 }}
+              leftIcon={{ type: 'material-community', name: 'key-variant', color: "#909090" }}
+              leftIconContainerStyle={{ paddingHorizontal: 10, marginLeft: 0 }}
+            />
+            <View style={{ alignSelf: 'stretch', marginTop: 15 }}>
+              <DefaultButton
+                title="Sign in"
+                onPress={this._checkSignIn}
+                disabled={this.state.isWaiting} />
+            </View>
+            <WaitingModal isWaiting={isWaiting} text='Just a second...' />
+          </KeyboardAwareScrollView>
+        </View>
+        <ContactUs title="Have a problem?" screen='SignIn' />
       </SafeAreaView>
-    );
+    )
   }
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-  },
-  componentStyle: {
-    flex: 1,
-    paddingHorizontal: 20,
     paddingVertical: 10,
     alignSelf: 'stretch',
     paddingVertical: 20,
-    backgroundColor: "white",
     borderTopRightRadius: 26,
     borderTopLeftRadius: 26,
+    backgroundColor: 'white',
+    paddingHorizontal: 30
+  },
+  scroll: {
+    flexGrow: 1,
   },
   inputContainerStyle: {
     borderWidth: 0.7,
@@ -164,13 +152,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#196BFF',
     borderRadius: 6,
     paddingVertical: 15
-  },
-  contactUs: {
-    position: 'absolute', //Here is the trick
-    bottom: 0, //Here is the trick
-    alignItems: 'center',
-    alignSelf: 'center',
-
   }
 });
 
