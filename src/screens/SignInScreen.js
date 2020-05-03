@@ -74,8 +74,10 @@ class SignInScreen extends Component {
   render() {
     const { email, password, emailError, passwordError, isWaiting } = this.state;
     return (
-      <SafeAreaView style={{ flex: 1, backgroundColor: colors.BLUE }}>
+      <>
+      <SafeAreaView style={{ flex: 1, backgroundColor: "#fff" }} >
         <CustomStatusBar />
+        <View style={{ flex: 1, backgroundColor: colors.BLUE }}>
         <View style={styles.container}>
           <H1Label label='Sign In' />
           <KeyboardAwareScrollView
@@ -122,7 +124,9 @@ class SignInScreen extends Component {
           </KeyboardAwareScrollView>
         </View>
         <ContactUs title="Have a problem?" screen='SignIn' />
+        </View>
       </SafeAreaView>
+      </>
     )
   }
 }

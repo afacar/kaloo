@@ -148,8 +148,9 @@ class RegisterScreen extends Component {
     } = this.state;
     const { TERMS_LINK } = this.props.assets
     return (
-      <SafeAreaView style={{ flex: 1, backgroundColor: colors.BLUE }}>
+      <SafeAreaView style={{ flex: 1, backgroundColor: "#fff" }}>
         <CustomStatusBar />
+        <View style={{ flex: 1, backgroundColor: colors.BLUE }}>
         <View style={styles.container}>
           <H1Label label="Register" />
           <KeyboardAwareScrollView
@@ -249,6 +250,7 @@ class RegisterScreen extends Component {
           </KeyboardAwareScrollView>
         </View>
         <ContactUs title="Have a problem?" screen='Register' />
+        </View>
       </SafeAreaView>
     );
   }
