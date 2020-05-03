@@ -6,7 +6,9 @@ import {
     LISTEN_MY_VIEWERS,
     UNLISTEN_HOST_EVENTS,
     UNLISTEN_HOST_EVENT,
-    UNLISTEN_MY_VIEWERS
+    UNLISTEN_MY_VIEWERS,
+    LISTEN_MY_TICKETS,
+    UNLISTEN_MY_TICKETS
 } from "./types"
 
 import { convert2Date, compare } from "../../utils/Utils";
@@ -17,6 +19,19 @@ const { SCHEDULED, SUSPENDED, IN_PROGRESS, COMPLETED } = app.EVENT_STATUS
 let hostEventsListener = () => { console.log('hostEventsListener Cleaned!') };
 let hostEventListener = () => { console.log('hostEventListener Cleaned!') };
 let myViewersListener = () => { console.log('myViewersListener Cleaned!') }
+let myTicketsListener = () => { console.log('myTicketsListener Cleaned!') }
+
+export const setMyTicketsListener = (event) => async (dispatch) => {
+    const { eventId } = event
+    myTicketsListener = firestore().doc(`events/${eventId}/tickets/--stats--`)
+        .onSnapshot((ticketDoc) => {
+            let ticketData = ticketDoc.data()
+            return dispatch({
+                type: LISTEN_MY_TICKETS,
+                payload: ticketData.sold || 0
+            });
+        });
+}
 
 export const setMyViewersListener = (event) => async (dispatch) => {
     const { eventId } = event
@@ -25,11 +40,11 @@ export const setMyViewersListener = (event) => async (dispatch) => {
         payload: 0
     });
     myViewersListener = firestore().doc(`events/${eventId}/live/--stats--`)
-        .onSnapshot((viewerDoc) => {
-            let ticket = viewerDoc.data()
+        .onSnapshot((liveDoc) => {
+            let liveData = liveDoc.data()
             return dispatch({
                 type: LISTEN_MY_VIEWERS,
-                payload: ticket.viewerCount || 0
+                payload: liveData.viewerCount || 0
             });
         });
 }
@@ -66,8 +81,7 @@ export const setHostEventsListener = () => async (dispatch) => {
             });
 
             let upcomingEvents = [], liveEvents = [], pastEvents = [];
-            console.log('allevents actoin', allEvents);
-            
+
             for (var key in allEvents) {
                 let event = allEvents[key]
                 if (event.status === SUSPENDED || event.status === IN_PROGRESS) liveEvents.push(event)
@@ -90,7 +104,8 @@ export const clearHostEventsListener = () => (dispatch) => {
     if (hostEventsListener) {
         hostEventsListener();
         hostEventListener();
-        myViewersListener()
+        myViewersListener();
+        myTicketsListener();
     }
     return dispatch({
         type: UNLISTEN_HOST_EVENTS,
@@ -114,6 +129,15 @@ export const clearMyViewersListener = () => {
         myViewersListener();
     return dispatch({
         type: UNLISTEN_MY_VIEWERS,
+        payload: null
+    });
+}
+
+export const clearMyTicketsListener = () => {
+    if (myTicketsListener)
+        myTicketsListener();
+    return dispatch({
+        type: UNLISTEN_MY_TICKETS,
         payload: null
     });
 }

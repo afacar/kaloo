@@ -22,6 +22,7 @@ function PastEventList(props) {
               onPress={() => {
                 props.setHostEventListener(event)
                 props.setMyViewersListener(event)
+                props.setMyTicketsListener(event)
                 props.navigation.navigate('Host', { eventId: event.eventId })
               }}
             />
