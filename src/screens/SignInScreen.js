@@ -74,59 +74,57 @@ class SignInScreen extends Component {
   render() {
     const { email, password, emailError, passwordError, isWaiting } = this.state;
     return (
-      <>
       <SafeAreaView style={{ flex: 1, backgroundColor: "#fff" }} >
         <CustomStatusBar />
         <View style={{ flex: 1, backgroundColor: colors.BLUE }}>
-        <View style={styles.container}>
-          <H1Label label='Sign In' />
-          <KeyboardAwareScrollView
-            showsVerticalScrollIndicator={false}
-            contentContainerStyle={styles.scroll}
-          >
-            <HighlightedText
-              text='You only need an account if you’re planning to host a paid meeting.'
-              color='#FF5F99'
-            />
-            <Input
-              placeholder="Enter Your email"
-              placeholderTextColor="#b2c2bf"
-              onChangeText={email => this.setState({ email, emailMessage: '' })}
-              value={email}
-              keyboardType="email-address"
-              errorMessage={emailError}
-              disabled={isWaiting}
-              inputContainerStyle={styles.inputContainerStyle}
-              containerStyle={{ paddingHorizontal: 0, marginTop: 10 }}
-              leftIcon={{ type: 'material-community', name: 'email-outline', color: "#909090" }}
-              leftIconContainerStyle={{ paddingHorizontal: 10, marginLeft: 0 }}
-            />
-            <Input
-              placeholder="Enter Your password"
-              placeholderTextColor="#b2c2bf"
-              onChangeText={password => this.setState({ password, passwordMessage: '' })}
-              value={password}
-              errorMessage={passwordError}
-              secureTextEntry
-              disabled={isWaiting}
-              inputContainerStyle={styles.inputContainerStyle}
-              containerStyle={{ paddingHorizontal: 0, marginTop: 10 }}
-              leftIcon={{ type: 'material-community', name: 'key-variant', color: "#909090" }}
-              leftIconContainerStyle={{ paddingHorizontal: 10, marginLeft: 0 }}
-            />
-            <View style={{ alignSelf: 'stretch', marginTop: 15 }}>
-              <DefaultButton
-                title="Sign in"
-                onPress={this._checkSignIn}
-                disabled={this.state.isWaiting} />
-            </View>
-            <WaitingModal isWaiting={isWaiting} text='Just a second...' />
-          </KeyboardAwareScrollView>
-        </View>
-        <ContactUs title="Have a problem?" screen='SignIn' />
+          <View style={styles.container}>
+            <H1Label label='Sign In' />
+            <KeyboardAwareScrollView
+              showsVerticalScrollIndicator={false}
+              contentContainerStyle={styles.scroll}
+            >
+              <HighlightedText
+                text='You only need an account if you’re planning to host a paid meeting.'
+                color='#FF5F99'
+              />
+              <Input
+                placeholder="Enter Your email"
+                placeholderTextColor="#b2c2bf"
+                onChangeText={email => this.setState({ email, emailMessage: '' })}
+                value={email}
+                keyboardType="email-address"
+                errorMessage={emailError}
+                disabled={isWaiting}
+                inputContainerStyle={styles.inputContainerStyle}
+                containerStyle={{ paddingHorizontal: 0, marginTop: 10 }}
+                leftIcon={{ type: 'material-community', name: 'email-outline', color: "#909090" }}
+                leftIconContainerStyle={{ paddingHorizontal: 10, marginLeft: 0 }}
+              />
+              <Input
+                placeholder="Enter Your password"
+                placeholderTextColor="#b2c2bf"
+                onChangeText={password => this.setState({ password, passwordMessage: '' })}
+                value={password}
+                errorMessage={passwordError}
+                secureTextEntry
+                disabled={isWaiting}
+                inputContainerStyle={styles.inputContainerStyle}
+                containerStyle={{ paddingHorizontal: 0, marginTop: 10 }}
+                leftIcon={{ type: 'material-community', name: 'key-variant', color: "#909090" }}
+                leftIconContainerStyle={{ paddingHorizontal: 10, marginLeft: 0 }}
+              />
+              <View style={{ alignSelf: 'stretch', marginTop: 15 }}>
+                <DefaultButton
+                  title="Sign in"
+                  onPress={this._checkSignIn}
+                  disabled={this.state.isWaiting} />
+              </View>
+              <WaitingModal isWaiting={isWaiting} text='Just a second...' />
+            </KeyboardAwareScrollView>
+          </View>
+          <ContactUs title="Have a problem?" screen='SignIn' />
         </View>
       </SafeAreaView>
-      </>
     )
   }
 }
@@ -134,9 +132,7 @@ class SignInScreen extends Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingVertical: 10,
     alignSelf: 'stretch',
-    paddingVertical: 20,
     borderTopRightRadius: 26,
     borderTopLeftRadius: 26,
     backgroundColor: 'white',

@@ -26,18 +26,9 @@ class EventListScreen extends Component {
     }
 
     componentDidMount = async () => {
-        this.authListener = auth().onAuthStateChanged(user => {
-            if (user) {
-                this.props.navigation.navigate('UserHome');
-            } else {
-                this.props.navigation.navigate('Splash');
-            }
-        });
         checkCameraPermission()
         checkAudioPermission()
     }
-
-    componentWillUnmount() { }
 
     render() {
         const { liveEvents, upcomingEvents, pastEvents, navigation } = this.props;

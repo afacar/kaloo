@@ -22,7 +22,7 @@ class ProfileScreen extends Component {
     static navigationOptions = ({ navigation }) => ({
         headerTitle: () => null,
         headerLeft: () => <HeaderLeft onPress={navigation.goBack} />,
-        headerRight: () => <Logout />
+        headerRight: () => <Logout navigation={navigation} />
     });
 
     state = {

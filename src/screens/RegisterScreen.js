@@ -266,17 +266,8 @@ const styles = StyleSheet.create({
     backgroundColor: 'white'
   },
   scroll: {
-    flex: 1,
-    backgroundColor: 'white',
+    flexGrow: 1,
     paddingBottom: 20
-  },
-  inputContainerStyle: {
-    borderWidth: 0.7,
-    borderColor: '#3b3a30',
-    borderRadius: 6,
-    paddingHorizontal: 10,
-    marginHorizontal: 0,
-    paddingVertical: 5,
   },
   checkBoxStyle: {
     flexDirection: 'row',
@@ -286,19 +277,10 @@ const styles = StyleSheet.create({
     borderRadius: 6,
     paddingVertical: 15
   },
-  componentStyle: {
-    flex: 1,
-    alignSelf: 'stretch',
-    backgroundColor: "white",
-    borderTopRightRadius: 26,
-    borderTopLeftRadius: 26,
-  },
   inputContainerStyle: {
     borderWidth: 0.7,
     borderColor: '#909090',
     borderRadius: 6,
-    //paddingVertical: 5,
-
   }
 });
 
