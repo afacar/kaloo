@@ -58,27 +58,40 @@ class RegisterScreen extends Component {
     this.setState({ isWaiting: true });
 
     try {
+      console.log('createUserWithEmailAndPassword...');
+
       await auth().createUserWithEmailAndPassword(email, password);
       const { currentUser } = auth();
       const { uid } = currentUser
 
       // Upload new profile image to @Storage
       if (photoURL !== DEFAULT_PROFILE_IMAGE) {
+        console.log('uploading profile pic...');
+
         let avatarRef = storage().ref(`users/${uid}/avatar/${uid}.jpg`);
         await avatarRef.putFile(photoURL);
+        console.log('Getting Download URL...');
         photoURL = await avatarRef.getDownloadURL()
       }
+
+      console.log('currentUser.updateProfile...');
 
       // Update user profile @Authentication
       currentUser.updateProfile({ displayName, photoURL });
       // Create user @Firestore
       const newUser = { uid, displayName, photoURL }
       let createUser = functions().httpsCallable('createUser')
+      console.log('creatingUser at db....');
+      
       let result = await createUser(newUser)
       if (result.data.state === 'SUCCESS') {
+        console.log('SUCCESSED and setting waitingstate to false');
+        
         this.setState({ isWaiting: false });
+        console.log('calling auth actions...');
         this.props.setHostEventsListener()
         this.props.setUserProfile()
+        console.log('navigating UserHome');
         return this.props.navigation.navigate('UserHome', { displayName });
       } else {
         this.setState({ isWaiting: false, termsMessage: result.data.message });
