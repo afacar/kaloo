@@ -67,6 +67,8 @@ class HostScreen extends Component {
 
     render() {
         var { status, eventLink, title } = this.props.event
+        var { soldTickets } = this.props
+
         let buttonTitle = status === COMPLETED ? 'Session Completed' : status === SUSPENDED ? 'Back to Session' : status === SCHEDULED ? 'Preview audio and video' : 'Session in Progress'
         return (
             <SafeAreaView style={styles.container}>
@@ -78,6 +80,7 @@ class HostScreen extends Component {
                         >
                             <EventHeader
                                 event={this.props.event}
+                                soldTickets={soldTickets}
                                 navigation={this.props.navigation}
                             />
                             <EventShare
@@ -118,8 +121,8 @@ const styles = StyleSheet.create({
 })
 
 const mapStateToProps = ({ hostEvents }) => {
-    const { hostEvent, myViewers } = hostEvents
-    return { event: hostEvent, viewers: myViewers }
+    let { hostEvent, myViewers, soldTickets } = hostEvents
+    return { event: hostEvent, viewers: myViewers, soldTickets }
 }
 
 export default connect(mapStateToProps, actions)(HostScreen);

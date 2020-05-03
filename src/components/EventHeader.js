@@ -1,7 +1,6 @@
 import React from 'react';
 import { View, Text, Image, StyleSheet } from 'react-native';
 import EventDate from './EventDate';
-import { ClickableText } from './Buttons';
 import { H1Label, H3Label, HighlightedText } from './Labels';
 import { app } from '../constants';
 import EventStatus from './EventStatus';
@@ -9,8 +8,8 @@ import EventStatus from './EventStatus';
 const { SUSPENDED, SCHEDULED, COMPLETED, IN_PROGRESS } = app.EVENT_STATUS
 
 export default function EventHeader(props) {
-  const { event, navigation } = props
-  const { image, title, description, eventDate, duration, status } = event
+  const { event, soldTickets } = props
+  const { image, title, description, eventDate, duration, status, capacity } = event
   const isActive = status === SUSPENDED || status === IN_PROGRESS;
   return (
     <View style={styles.container}>
@@ -23,12 +22,9 @@ export default function EventHeader(props) {
       />}
       <Image source={{ uri: image }} style={styles.imageStyle} />
       <H3Label label={title} />
+      <Text style={{ fontStyle: 'italic' }}>{`${soldTickets} tickets sold`}</Text>
       <Text style={{ fontSize: 15 }}>{description}</Text>
       <EventDate eventTime={{ eventDate, duration }} />
-      <ClickableText
-        text='Preview event card'
-        onPress={() => navigation.push('EventPreview', { event })}
-      />
     </View>
   )
 }
