@@ -81,11 +81,6 @@ class VideoScreen extends Component {
         leaveEvent(eventId, ticket)
     }
 
-    _onCompleted = () => {
-        console.log('_onCompleted and isMounted', this._isMounted)
-        this.props.navigation.goBack()
-    }
-
     _onTicketCompromise = async () => {
         this.props.navigation.goBack();
         let title = 'Ticket in use',
@@ -96,12 +91,7 @@ class VideoScreen extends Component {
     render() {
         const { peerIds, isConnecting, localDeviceID } = this.state
         const { status, eventType } = this.props.event;
-        console.log('rendering state', this.state)
-        console.log('rendering props', this.props)
-        if (status === COMPLETED) {
-            this._isMounted = false;
-            this._onCompleted()
-        } else if (localDeviceID && this.props.ticket.deviceID !== localDeviceID) {
+        if (localDeviceID && this.props.ticket.deviceID !== localDeviceID) {
             this._isMounted = false;
             this._onTicketCompromise()
         }

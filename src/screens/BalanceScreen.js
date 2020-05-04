@@ -57,13 +57,11 @@ class BalanceScreen extends Component {
       <SafeAreaView style={{ flex: 1, backgroundColor: "white" }}>
         <KeyboardAvoidingView style={styles.container}>
           <View style={styles.componentStyle}>
-            <View style={{ marginTop: 15 }}>
+            <View>
               <H1Label label="Total Earnings" />
               <View style={styles.balanceContainer}>
                 <H1Label label={'$' + totalEarnings} />
               </View>
-            </View>
-            <View style={{ marginTop: 15 }}>
               <H1Label label="Current Balance" />
               <View style={styles.balanceContainer}>
                 <H1Label label={'$' + (totalEarnings - paidAmount)} />
@@ -108,11 +106,9 @@ const styles = StyleSheet.create({
     backgroundColor: colors.BLUE
   },
   balanceContainer: {
-    marginTop: 20,
     backgroundColor: colors.LIGHT_GREY,
     justifyContent: 'center',
     alignItems: 'center',
-    height: 80,
     width: '100%',
     borderWidth: 1,
     borderColor: 'gray',
