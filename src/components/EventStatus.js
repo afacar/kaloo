@@ -28,14 +28,12 @@ export default class EventStatus extends React.Component {
   updateTimer() {
     this.timerListener = setInterval(() => {
       this.setState({ remainingTime: this.getRemainingTime() })
-      console.log('timerListener', this.state.remainingTime);
     }, 60000)
   }
 
   render() {
     const { remainingTime } = this.state
     const { status } = this.props
-    console.log('EventStatis props', this.props);
     
     let statusText = ''
     let statusStyle = ''

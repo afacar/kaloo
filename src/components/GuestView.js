@@ -29,6 +29,9 @@ const {
 } = Agora
 
 class GuestView extends Component {
+
+    _isMounted = null
+
     state = {
         isRatingComplete: false,
         joinLoading: false,
@@ -37,14 +40,17 @@ class GuestView extends Component {
     }
 
     componentDidMount() {
+        this._isMounted = true
         checkAudioPermission()
         checkCameraPermission()
     }
 
-    componentWillUnmount() { }
+    componentWillUnmount() {
+        this._isMounted = false
+    }
 
     onCamera = async () => {
-        this.setState({
+        this._isMounted && this.setState({
             joinLoading: true,
             error: undefined
         })
@@ -80,22 +86,22 @@ class GuestView extends Component {
                     navigate(nextScreen)
                 })
                 .catch((error) => {
-                    this.setState({ error: error.message || 'Check your connection' })
+                    this._isMounted && this.setState({ error: error.message || 'Check your connection' })
                 })
         } else {
-            this.setState({ error: result.message || 'Check your connection' })
+            this._isMounted && this.setState({ error: result.message || 'Check your connection' })
         }
-        this.setState({ joinLoading: false })
+        this._isMounted && this.setState({ joinLoading: false })
     }
 
     rateEvent = async () => {
         const { eid, ticket, rating } = this.state;
-        this.setState({ isRatingComplete: true })
+        this._isMounted && this.setState({ isRatingComplete: true })
         rateEvent(eid, ticket, rating)
     }
 
     changeRate = (rating) => {
-        this.setState({ rating })
+        this._isMounted && this.setState({ rating })
     }
 
     render() {
