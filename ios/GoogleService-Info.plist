@@ -3,21 +3,21 @@
 <plist version="1.0">
 <dict>
 	<key>CLIENT_ID</key>
-	<string>228720631777-l2lvh9e42gebkbg1fbr9a559si1odl7o.apps.googleusercontent.com</string>
+	<string>998750293854-ir8vngvmmciu9r8nej78rvb6kf9cfaog.apps.googleusercontent.com</string>
 	<key>REVERSED_CLIENT_ID</key>
-	<string>com.googleusercontent.apps.228720631777-l2lvh9e42gebkbg1fbr9a559si1odl7o</string>
+	<string>com.googleusercontent.apps.998750293854-ir8vngvmmciu9r8nej78rvb6kf9cfaog</string>
 	<key>API_KEY</key>
-	<string>AIzaSyCO6KNPyHCQOJ1hRh6gedwEN0DKub_RHgc</string>
+	<string>AIzaSyAcKNOFNBPE3MEdjPEwycj5bljiMiJzxps</string>
 	<key>GCM_SENDER_ID</key>
-	<string>228720631777</string>
+	<string>998750293854</string>
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
 	<string>org.fmob.kaloo</string>
 	<key>PROJECT_ID</key>
-	<string>kaloo-development</string>
+	<string>kaloo-production</string>
 	<key>STORAGE_BUCKET</key>
-	<string>kaloo-development.appspot.com</string>
+	<string>kaloo-production.appspot.com</string>
 	<key>IS_ADS_ENABLED</key>
 	<false></false>
 	<key>IS_ANALYTICS_ENABLED</key>
@@ -29,8 +29,8 @@
 	<key>IS_SIGNIN_ENABLED</key>
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:228720631777:ios:f0fcbb953b89de89f7bca0</string>
+	<string>1:998750293854:ios:6c07de5973050074ab49cf</string>
 	<key>DATABASE_URL</key>
-	<string>https://kaloo-development.firebaseio.com</string>
+	<string>https://kaloo-production.firebaseio.com</string>
 </dict>
 </plist>
