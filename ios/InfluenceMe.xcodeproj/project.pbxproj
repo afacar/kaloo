@@ -16,6 +16,7 @@
 		2D02E4BD1E0B4A84006451C7 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
 		2D02E4BF1E0B4AB3006451C7 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
 		2DCD954D1E0B4F2C00145EB5 /* InfluenceMeTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 00E356F21AD99517003FC87E /* InfluenceMeTests.m */; };
+		8A3C1E8E24644AD700DDBC5F /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 8A3C1E8D24644AD700DDBC5F /* GoogleService-Info.plist */; };
 		8AD294132434F6C10011FBF1 /* Fonts in Resources */ = {isa = PBXBuildFile; fileRef = 8AD294122434F6C10011FBF1 /* Fonts */; };
 		B255CBBAC5CAAEE82328F167 /* libPods-InfluenceMe-tvOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 26A8FD55004BB52EA3401F9F /* libPods-InfluenceMe-tvOS.a */; };
 		C0023DF9F2F100B38E4B2F0D /* libPods-InfluenceMe.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FDC60C68D95E25DE00225180 /* libPods-InfluenceMe.a */; };
@@ -64,6 +65,7 @@
 		5FDF2B6CD3646056037C9F43 /* libPods-InfluenceMe-tvOSTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-InfluenceMe-tvOSTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		7A0CD3289970AD0F692F2D01 /* libPods-InfluenceMeTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-InfluenceMeTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		859DFF137F5A4DD18BEB90A9 /* FontAwesome5_Solid.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = FontAwesome5_Solid.ttf; path = "../node_modules/react-native-vector-icons/Fonts/FontAwesome5_Solid.ttf"; sourceTree = "<group>"; };
+		8A3C1E8D24644AD700DDBC5F /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = "GoogleService-Info.plist"; path = "../../GoogleService files/prod/GoogleService-Info.plist"; sourceTree = "<group>"; };
 		8AD294122434F6C10011FBF1 /* Fonts */ = {isa = PBXFileReference; lastKnownFileType = folder; name = Fonts; path = "../node_modules/react-native-vector-icons/Fonts"; sourceTree = "<group>"; };
 		8CA0584ED68A4D4684C9B2A4 /* FontAwesome.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = FontAwesome.ttf; path = "../node_modules/react-native-vector-icons/Fonts/FontAwesome.ttf"; sourceTree = "<group>"; };
 		998EA7046E0F2EEABF336E19 /* Pods-InfluenceMe.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-InfluenceMe.debug.xcconfig"; path = "Target Support Files/Pods-InfluenceMe/Pods-InfluenceMe.debug.xcconfig"; sourceTree = "<group>"; };
@@ -154,6 +156,7 @@
 		13B07FAE1A68108700A75B9A /* InfluenceMe */ = {
 			isa = PBXGroup;
 			children = (
+				8A3C1E8D24644AD700DDBC5F /* GoogleService-Info.plist */,
 				008F07F21AC5B25A0029DE68 /* main.jsbundle */,
 				13B07FAF1A68108700A75B9A /* AppDelegate.h */,
 				13B07FB01A68108700A75B9A /* AppDelegate.m */,
@@ -380,6 +383,7 @@
 			files = (
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
 				8AD294132434F6C10011FBF1 /* Fonts in Resources */,
+				8A3C1E8E24644AD700DDBC5F /* GoogleService-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
