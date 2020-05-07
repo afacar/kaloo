@@ -17,7 +17,6 @@
 		2D02E4BF1E0B4AB3006451C7 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
 		2DCD954D1E0B4F2C00145EB5 /* InfluenceMeTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 00E356F21AD99517003FC87E /* InfluenceMeTests.m */; };
 		8AD294132434F6C10011FBF1 /* Fonts in Resources */ = {isa = PBXBuildFile; fileRef = 8AD294122434F6C10011FBF1 /* Fonts */; };
-		8AE503C32459BA2900F34B76 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 8AE503C22459BA2900F34B76 /* GoogleService-Info.plist */; };
 		B255CBBAC5CAAEE82328F167 /* libPods-InfluenceMe-tvOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 26A8FD55004BB52EA3401F9F /* libPods-InfluenceMe-tvOS.a */; };
 		C0023DF9F2F100B38E4B2F0D /* libPods-InfluenceMe.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FDC60C68D95E25DE00225180 /* libPods-InfluenceMe.a */; };
 		E3A43512C2C38D4C0C7E1717 /* libPods-InfluenceMeTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7A0CD3289970AD0F692F2D01 /* libPods-InfluenceMeTests.a */; };
@@ -65,9 +64,7 @@
 		5FDF2B6CD3646056037C9F43 /* libPods-InfluenceMe-tvOSTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-InfluenceMe-tvOSTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		7A0CD3289970AD0F692F2D01 /* libPods-InfluenceMeTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-InfluenceMeTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		859DFF137F5A4DD18BEB90A9 /* FontAwesome5_Solid.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = FontAwesome5_Solid.ttf; path = "../node_modules/react-native-vector-icons/Fonts/FontAwesome5_Solid.ttf"; sourceTree = "<group>"; };
-		8A1CFE27607EEAC78885B7A9 /* Pods-InfluenceMe-tvOSTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-InfluenceMe-tvOSTests.debug.xcconfig"; path = "Target Support Files/Pods-InfluenceMe-tvOSTests/Pods-InfluenceMe-tvOSTests.debug.xcconfig"; sourceTree = "<group>"; };
 		8AD294122434F6C10011FBF1 /* Fonts */ = {isa = PBXFileReference; lastKnownFileType = folder; name = Fonts; path = "../node_modules/react-native-vector-icons/Fonts"; sourceTree = "<group>"; };
-		8AE503C22459BA2900F34B76 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = "GoogleService-Info.plist"; path = "../../../Downloads/GoogleService-Info.plist"; sourceTree = "<group>"; };
 		8CA0584ED68A4D4684C9B2A4 /* FontAwesome.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = FontAwesome.ttf; path = "../node_modules/react-native-vector-icons/Fonts/FontAwesome.ttf"; sourceTree = "<group>"; };
 		998EA7046E0F2EEABF336E19 /* Pods-InfluenceMe.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-InfluenceMe.debug.xcconfig"; path = "Target Support Files/Pods-InfluenceMe/Pods-InfluenceMe.debug.xcconfig"; sourceTree = "<group>"; };
 		A25368655A58FE926249A496 /* Pods-InfluenceMe-tvOS.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-InfluenceMe-tvOS.debug.xcconfig"; path = "Target Support Files/Pods-InfluenceMe-tvOS/Pods-InfluenceMe-tvOS.debug.xcconfig"; sourceTree = "<group>"; };
@@ -147,7 +144,6 @@
 				E92A0410514C8C39CF8E83C8 /* Pods-InfluenceMe.release.xcconfig */,
 				A25368655A58FE926249A496 /* Pods-InfluenceMe-tvOS.debug.xcconfig */,
 				16CB61AF4DFA8CE8ABA380B5 /* Pods-InfluenceMe-tvOS.release.xcconfig */,
-				8A1CFE27607EEAC78885B7A9 /* Pods-InfluenceMe-tvOSTests.debug.xcconfig */,
 				D2C758333A736556B23F2FB3 /* Pods-InfluenceMe-tvOSTests.release.xcconfig */,
 				26733E31B89F320BDE853E2C /* Pods-InfluenceMeTests.debug.xcconfig */,
 				D204E3E14F291EFC8E755027 /* Pods-InfluenceMeTests.release.xcconfig */,
@@ -158,7 +154,6 @@
 		13B07FAE1A68108700A75B9A /* InfluenceMe */ = {
 			isa = PBXGroup;
 			children = (
-				8AE503C22459BA2900F34B76 /* GoogleService-Info.plist */,
 				008F07F21AC5B25A0029DE68 /* main.jsbundle */,
 				13B07FAF1A68108700A75B9A /* AppDelegate.h */,
 				13B07FB01A68108700A75B9A /* AppDelegate.m */,
@@ -385,7 +380,6 @@
 			files = (
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
 				8AD294132434F6C10011FBF1 /* Fonts in Resources */,
-				8AE503C32459BA2900F34B76 /* GoogleService-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -814,7 +808,6 @@
 		};
 		2D02E4991E0B4A5E006451C7 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 8A1CFE27607EEAC78885B7A9 /* Pods-InfluenceMe-tvOSTests.debug.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CLANG_ANALYZER_NONNULL = YES;
