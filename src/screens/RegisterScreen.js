@@ -24,6 +24,7 @@ import HeaderLeft from '../components/Headers/HeaderLeft';
 import HeaderRight from '../components/Headers/HeaderRight';
 import CustomStatusBar from '../components/StatusBars/CustomStatusBar';
 import { colors } from '../constants';
+import MyAvatar from '../components/MyAvatar';
 
 
 class RegisterScreen extends Component {
@@ -167,14 +168,8 @@ class RegisterScreen extends Component {
                   color='#FF5F99'
                 />
                 <View style={{ flexDirection: 'row', alignItems: "center", marginBottom: 5 }}>
-                  <Avatar
-                    rounded
-                    size="large"
-                    //icon={{name: 'camera-outline', type: 'material-community', color:"#E7E7E7"}}
-                    overlayContainerStyle={{ backgroundColor: 'white', borderWidth: 1, borderColor: "#E7E7E7" }}
+                  <MyAvatar
                     onPress={this.onImagePicker}
-                    containerStyle={{ marginRight: 20 }}
-                    //showEditButton={true}
                     source={{ uri: photoURL }}
                   />
                   <ClickableText text="Pick a profile picture" onPress={this.onImagePicker} />
