@@ -177,7 +177,7 @@ class RegisterScreen extends Component {
                 <Input
                   placeholder="Enter Your email"
                   placeholderTextColor="#b2c2bf"
-                  onChangeText={email => this.setState({ email, emailMessage: '' })}
+                  onChangeText={email => this.setState({ email: email.trim(), emailMessage: '' })}
                   value={email}
                   keyboardType="email-address"
                   errorMessage={emailMessage}
