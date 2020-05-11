@@ -16,6 +16,7 @@ import { AppText, BoldLabel } from '../components/Labels';
 import { SafeAreaView } from 'react-navigation'
 import { WaitingModal } from '../components/Modals';
 import Logout from '../components/Headers/Logout';
+import MyAvatar from '../components/MyAvatar';
 
 
 class ProfileScreen extends Component {
@@ -103,11 +104,7 @@ class ProfileScreen extends Component {
                         </View>
                         <KeyboardAwareScrollView showsVerticalScrollIndicator={false}>
                             <View style={{ marginTop: 20, flexDirection: 'row', width: '100%', marginBottom: 20 }}>
-                                <Avatar
-                                    renderPlaceholderContent={<ActivityIndicator />}
-                                    containerStyle={{ alignSelf: 'flex-start' }}
-                                    size='large'
-                                    rounded={true}
+                                <MyAvatar
                                     source={{ uri: photoURL }}
                                 />
                                 <View style={{ alignSelf: 'center', justifyContent: 'center', marginLeft: 20, }}>
