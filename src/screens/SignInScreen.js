@@ -59,12 +59,12 @@ class SignInScreen extends Component {
     this.setState({ emailError: '', passwordError: '' });
     // Check email
     if (!validateEmail(email))
-      return this.setState({ emailError: 'A proper email please!' });
+      return this.setState({ emailError: 'Check your email please!' });
 
     // Check password and repassword
     if (password.length < 6)
       return this.setState({
-        passwordError: 'Password is less than 6 characters!',
+        passwordError: 'Password must be at least 6 characters!',
       });
 
     // Everything is ok, let's create account
@@ -90,7 +90,7 @@ class SignInScreen extends Component {
               <Input
                 placeholder="Enter Your email"
                 placeholderTextColor="#b2c2bf"
-                onChangeText={email => this.setState({ email, emailMessage: '' })}
+                onChangeText={email => this.setState({ email: email.trim(), emailError: '' })}
                 value={email}
                 keyboardType="email-address"
                 errorMessage={emailError}
