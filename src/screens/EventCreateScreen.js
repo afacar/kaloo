@@ -1,14 +1,14 @@
 import React, { Component } from 'react';
-import { StyleSheet, View, ScrollView, Text, TouchableOpacity, KeyboardAvoidingView, Platform, ActivityIndicator } from 'react-native';
+import { StyleSheet, View, Text, TouchableOpacity, Platform } from 'react-native';
 import { storage } from 'react-native-firebase';
-import { Input, Image, CheckBox, Icon } from 'react-native-elements';
+import { Input, CheckBox } from 'react-native-elements';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import ImagePicker from 'react-native-image-crop-picker';
 import { connect } from 'react-redux';
 import { SafeAreaView } from 'react-navigation'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 
-import { H1Label, BoldLabel, Label, ErrorLabel, RedLabel } from '../components/Labels';
+import { H1Label, BoldLabel, Label, ErrorLabel } from '../components/Labels';
 import { Stage } from '../components/Stages';
 import { ContactUs } from '../components/ContactUs'
 import { splitDate } from '../utils/Utils';
@@ -264,7 +264,7 @@ class EventCreateScreen extends Component {
               </View>
             </KeyboardAwareScrollView>
           </View>
-          <ContactUs />
+          <ContactUs screen={`${Platform.OS.toUpperCase()} EventCreateScreen`} />
         </View>
       </SafeAreaView>
     );

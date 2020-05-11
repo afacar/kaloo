@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet, View, Platform } from 'react-native';
 import { SafeAreaView } from 'react-navigation'
 import { connect } from 'react-redux';
 
@@ -65,7 +65,7 @@ class EventPublishScreen extends Component {
             />
           </View>
         </View>
-        <ContactUs title='Have a problem?' screen='EventPublish' />
+        <ContactUs title='Have a problem?' screen={`${Platform.OS.toUpperCase()} EventPublishScreen`} />
       </SafeAreaView>
     );
   }

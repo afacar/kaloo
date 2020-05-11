@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { ScrollView, StyleSheet, NativeModules, View } from 'react-native';
+import { ScrollView, StyleSheet, NativeModules, View, Platform } from 'react-native';
 import { RtcEngine } from 'react-native-agora';
 
 import * as actions from '../appstate/actions/host_actions';
@@ -96,7 +96,7 @@ class HostScreen extends Component {
                                 />
                             </View>
                         </ScrollView>
-                        <ContactUs title='Have a problem?' screen='HostScreen' />
+                        <ContactUs title='Have a problem?' screen={`${Platform.OS.toUpperCase()} HostScreen`} />
                     </View>
                 </View>
             </SafeAreaView>

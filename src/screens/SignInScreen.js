@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import {
   View,
   StyleSheet,
+  Platform,
 } from 'react-native';
 import { SafeAreaView } from 'react-navigation';
 import { Input } from 'react-native-elements';
@@ -122,7 +123,7 @@ class SignInScreen extends Component {
               <WaitingModal isWaiting={isWaiting} text='Just a second...' />
             </KeyboardAwareScrollView>
           </View>
-          <ContactUs title="Have a problem?" screen='SignIn' />
+          <ContactUs title="Have a problem?" screen={`${Platform.OS.toUpperCase()} SigninScreen`} />
         </View>
       </SafeAreaView>
     )

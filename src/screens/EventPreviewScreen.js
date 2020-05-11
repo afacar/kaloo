@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
-import { StyleSheet, ScrollView, View } from 'react-native';
-import { firestore, functions } from 'react-native-firebase';
+import { StyleSheet, ScrollView, View, Platform } from 'react-native';
+import { functions } from 'react-native-firebase';
 import { connect } from 'react-redux';
 import { SafeAreaView } from 'react-navigation';
 
@@ -108,7 +108,7 @@ class EventPreviewScreen extends Component {
                 <WaitingModal isWaiting={isWaiting} text='Creating your event...' />
               </View>
             </ScrollView>
-            <ContactUs title='Have a problem?' screen='EventPreviewScreen' />
+            <ContactUs title='Have a problem?' screen={`${Platform.OS.toUpperCase()} EventPreviewScreen`} />
           </View>
         </View>
       </SafeAreaView>

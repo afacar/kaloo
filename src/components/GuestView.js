@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
-import { View, StyleSheet, NativeModules, ScrollView } from 'react-native';
-import { Card } from 'react-native-elements';
+import { View, StyleSheet, NativeModules, ScrollView, Platform } from 'react-native';
 import { RtcEngine } from 'react-native-agora';
 import { auth } from 'react-native-firebase';
 
@@ -144,7 +143,7 @@ class GuestView extends Component {
                     </View>
                 </View>
                 <WaitingModal isWaiting={joinLoading} />
-                <ContactUs title='Have a problem?' screen='GuestScreen' />
+                <ContactUs title='Have a problem?' screen={`${Platform.OS.toUpperCase()} GuestScreen`} />
             </ScrollView>
         )
     }

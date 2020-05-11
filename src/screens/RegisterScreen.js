@@ -5,7 +5,7 @@ import {
   Platform,
   Text
 } from 'react-native';
-import { Input, Avatar, CheckBox } from 'react-native-elements';
+import { Input, CheckBox } from 'react-native-elements';
 import { functions, storage, auth } from 'react-native-firebase';
 import ImagePicker from 'react-native-image-crop-picker';
 import { SafeAreaView } from 'react-navigation';
@@ -249,7 +249,7 @@ class RegisterScreen extends Component {
               <WaitingModal isWaiting={isWaiting} text='Creating your account...' />
             </KeyboardAwareScrollView>
           </View>
-          <ContactUs title="Have a problem?" screen='Register' />
+          <ContactUs title="Have a problem?" screen={`${Platform.OS.toUpperCase()} RegisterScreen`} />
         </View>
       </SafeAreaView>
     );

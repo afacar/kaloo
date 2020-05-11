@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
-import { View, StyleSheet, KeyboardAvoidingView, Linking } from 'react-native';
-import { functions, auth } from 'react-native-firebase';
+import { View, StyleSheet, KeyboardAvoidingView, Linking, Platform } from 'react-native';
+import { functions } from 'react-native-firebase';
 import { connect } from 'react-redux';
 
 import { colors } from '../constants';
@@ -91,7 +91,7 @@ class BalanceScreen extends Component {
                   </View>
                 )
               }
-              <ContactUs title='Need Help?' screen='Profile' />
+              <ContactUs title='Need Help?' screen={`${Platform.OS.toUpperCase()} BalanceScreen`} />
             </View>
           </View>
         </KeyboardAvoidingView>

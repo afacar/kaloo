@@ -1,6 +1,5 @@
 import React, { Component, Fragment } from 'react';
-import { View, StyleSheet, ScrollView } from 'react-native';
-import { auth } from "react-native-firebase";
+import { View, StyleSheet, ScrollView, Platform } from 'react-native';
 import { connect } from 'react-redux';
 import { SafeAreaView } from 'react-navigation'
 
@@ -64,7 +63,7 @@ class EventListScreen extends Component {
                                     <PastEventList events={pastEvents} navigation={navigation} />
                                 </View>
                             </ScrollView>
-                            <ContactUs title='Have a problem?' screen='EventList' />
+                            <ContactUs title='Have a problem?' screen={`${Platform.OS.toUpperCase()} EventListScreen`} />
                         </View>
                     </View>
                 </SafeAreaView>

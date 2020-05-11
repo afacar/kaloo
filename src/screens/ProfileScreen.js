@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, StyleSheet, Text, ActivityIndicator, KeyboardAvoidingView, ScrollView, TouchableOpacity } from 'react-native';
+import { View, StyleSheet, Text, ActivityIndicator, TouchableOpacity, Platform } from 'react-native';
 import { Input, Avatar } from 'react-native-elements';
 import { auth, storage, functions } from "react-native-firebase";
 import ImagePicker from "react-native-image-crop-picker";
@@ -147,7 +147,7 @@ class ProfileScreen extends Component {
                     </View>
 
                     <View>
-                        <ContactUs title='Need Help?' screen='Profile' />
+                        <ContactUs title='Need Help?' screen={`${Platform.OS.toUpperCase()} ProfileScreen`} />
                         <WaitingModal isWaiting={isWaiting} text='Just a second...' />
                     </View>
                 </View>

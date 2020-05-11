@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, StyleSheet, Image, Text } from 'react-native';
+import { View, StyleSheet, Image, Text, Platform } from 'react-native';
 import { Input } from 'react-native-elements';
 import { functions, auth } from 'react-native-firebase';
 import { connect } from "react-redux";
@@ -108,7 +108,7 @@ class TicketView extends Component {
           <View style={{ alignItems: 'center' }}>
             {/** FOOTER */}
             <Text>Lost your ticket number?</Text>
-            <ContactUs screen='TicketScreen' />
+            <ContactUs screen={`${Platform.OS.toUpperCase()} TicketScreen`} />
           </View>
         </KeyboardAwareScrollView>
       </SafeAreaView>
