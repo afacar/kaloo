@@ -5,7 +5,7 @@ import { Icon, Button } from 'react-native-elements';
 import app from '../constants/app';
 import { colors } from '../constants'
 
-const { SCHEDULED, IN_PROGRESS, SUSPENDED, COMPLETED } = app.EVENT_STATUS;
+const { SCHEDULED, IN_PROGRESS, SUSPENDED, COMPLETED, OFFLINE } = app.EVENT_STATUS;
 const { BROADCAST } = app.EVENT_TYPE;
 
 export function HyperLink(props) {
@@ -156,13 +156,15 @@ export function ClearButton(props) {
 
 export function BroadcastButton(props) {
     const { status, loading, eventType } = props.event;
-    let buttonTitle = status === SCHEDULED ? 'Start' : status === IN_PROGRESS ? 'End' : 'Continue';
-    buttonTitle += eventType === BROADCAST ? ' Broadcast' : ' Meeting'
-    const buttonStyle = status === SCHEDULED ? styles.startButton : status === IN_PROGRESS ? styles.endButton : styles.startButton;
+    let buttonTitle = status === SCHEDULED ? 'Start' : status === IN_PROGRESS ? 'End' : status === OFFLINE ? 'No internet' : 'Continue';
+    if (status != OFFLINE)
+        buttonTitle += eventType === BROADCAST ? ' Broadcast' : ' Meeting'
+    const buttonStyle = status === SCHEDULED ? styles.startButton : status === IN_PROGRESS ? styles.endButton : status === OFFLINE ? styles.offline : styles.startButton;
     return (
         <TouchableOpacity
             style={buttonStyle}
             onPress={props.onPress}
+            disabled={status === OFFLINE}
         >
             <Text style={{ color: 'white', fontSize: 19, fontWeight: 'bold' }}>{buttonTitle}</Text>
         </TouchableOpacity>
@@ -200,6 +202,19 @@ const styles = StyleSheet.create({
         backgroundColor: colors.RED,
         borderRadius: 16,
         height: 50,
+    },
+    offline: {
+        position: 'absolute',
+        alignSelf: 'center',
+        backgroundColor: colors.ORANGE,
+        color: 'black',
+        bottom: 30,
+        borderRadius: 6,
+        zIndex: 1000,
+        padding: 12,
+        opacity: 0.7,
+        justifyContent: 'center',
+        alignItems: 'center'
     },
     defaultButtonColor: {
         backgroundColor: "#3BCDE2",

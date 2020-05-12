@@ -82,3 +82,10 @@ export const clearGuestEventListener = () => (dispatch) => {
         payload: null
     });
 }
+
+export const setGuestEvent = (event) => (dispatch) => {
+    return dispatch({
+        type: LISTEN_GUEST_EVENT,
+        payload: event
+    })
+}

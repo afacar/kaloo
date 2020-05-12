@@ -4,6 +4,7 @@ import { RtcEngine } from 'react-native-agora';
 import KeepAwake from 'react-native-keep-awake';
 import { checkCameraPermission, checkAudioPermission, InfoModal, getDeviceID } from '../utils/Utils';
 import { connect } from 'react-redux';
+import * as actions from '../appstate/actions/audience_actions';
 
 import { styles, app } from '../constants';
 import HeaderGradient from '../components/HeaderGradient';
@@ -15,6 +16,7 @@ import GuestHeaderTitle from '../components/Headers/GuestHeaderTitle';
 import { leaveEvent } from '../utils/EventHandler';
 import BroadcastView from '../components/BroadcastView';
 import SwitchCamera from '../components/Headers/SwitchCamera';
+import firebase from 'react-native-firebase';
 
 const { HOST_UID } = app
 const { COMPLETED } = app.EVENT_STATUS
@@ -49,21 +51,40 @@ class VideoScreen extends Component {
 
         RtcEngine.startPreview();
         this.listenChannel()
+        this.setUpPresence();
+    }
+
+    setUpPresence() {
+        firebase.database().ref('.info/connected').on('value', (snapshot) => {
+            // If we're not currently connected, don't do anything.
+            if (snapshot.val() == false) {
+                this.setState({ isConnecting: true })
+            } else {
+                this.setState({ isConnecting: false })
+            }
+        });
     }
 
     listenChannel = () => {
         RtcEngine.on('userJoined', (data) => {
             const { peerIds } = this.state;
+            var event = this.props.event;
+            if (data.uid === HOST_UID && event.status === app.EVENT_STATUS.OFFLINE) {
+                event.status = app.EVENT_STATUS.IN_PROGRESS
+                this.props.setGuestEvent(event);
+            }
             if (peerIds.indexOf(data.uid) === -1) {
-                console.log('userJouned and isMounted', this._isMounted)
                 this._isMounted && this.setState({
                     peerIds: [...this.state.peerIds, data.uid]
                 })
             }
         })
         RtcEngine.on('userOffline', (data) => {
-            console.log('on userOffline and this._isMounted ', this._isMounted)
-
+            var event = this.props.event;
+            if (data.uid === HOST_UID && event.status === app.EVENT_STATUS.IN_PROGRESS) {
+                event.status = app.EVENT_STATUS.OFFLINE
+                this.props.setGuestEvent(event);
+            }
             this._isMounted && this.setState({
                 peerIds: this.state.peerIds.filter(uid => uid !== data.uid)
             })
@@ -110,11 +131,15 @@ class VideoScreen extends Component {
                 <KeepAwake />
                 <TransparentStatusBar />
                 <View style={{ flex: 1 }}>
-                    {eventType === CALL ? (
-                        <CallView
-                            event={this.props.event}
-                            peerIds={peerIds}
-                        />) : (
+                    {eventType === CALL ?
+                        (
+                            <CallView
+                                event={this.props.event}
+                                peerIds={peerIds}
+                            />
+                        )
+                        :
+                        (
                             <BroadcastView
                                 event={this.props.event}
                                 clientRole={2}
@@ -143,4 +168,4 @@ const mapStateToProps = ({ guestEvent }) => {
     return { event, ticket, viewers }
 }
 
-export default connect(mapStateToProps, null)(VideoScreen)
+export default connect(mapStateToProps, actions)(VideoScreen)

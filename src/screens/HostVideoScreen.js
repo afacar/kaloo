@@ -17,6 +17,7 @@ import CallView from '../components/CallView';
 import SwitchCamera from '../components/Headers/SwitchCamera';
 import { WaitingModal } from '../components/Modals';
 import BroadcastView from '../components/BroadcastView';
+import firebase from 'react-native-firebase';
 
 const { HOST_UID } = app;
 const { SCHEDULED, IN_PROGRESS, SUSPENDED, COMPLETED } = app.EVENT_STATUS
@@ -42,13 +43,45 @@ class HostVideoScreen extends Component {
         this._isMounted = true;
         checkAudioPermission()
         checkCameraPermission()
-
         RtcEngine.startPreview();
 
         this.listenChannel()
+        this.setUpPresence();
     }
 
+    setUpPresence() {
+        firebase.database().ref('.info/connected').on('value', (snapshot) => {
+            // If we're not currently connected, don't do anything.
+            if (snapshot.val() == false) {
+                console.warn("OFFLINE")
+                var event = this.props.event;
+                if (event.status === app.EVENT_STATUS.IN_PROGRESS) {
+                    event.status = app.EVENT_STATUS.OFFLINE
+                    this.props.setHostEvent(event)
+                }
+                return;
+            } else {
+                console.warn("ONLINE")
+                var event = this.props.event;
+                if (event.status === app.EVENT_STATUS.OFFLINE) {
+                    event.status = app.EVENT_STATUS.IN_PROGRESS
+                    this.props.setHostEvent(event)
+                }
+            }
+        });
+    }
     listenChannel = () => {
+        const { status, eventId } = this.props.event;
+        if (status === app.EVENT_STATUS.IN_PROGRESS) {
+            RtcEngine.joinChannel(eventId, HOST_UID)
+                .then(async (result) => {
+                    this._isMounted && this.setState({ isConnecting: false })
+                })
+                .catch((error) => {
+                    console.log('Error onStartCall', error)
+                    this._isMounted && this.setState({ isConnecting: false })
+                });
+        }
         RtcEngine.on('userJoined', (data) => {
             const { peerIds } = this.state;
             if (peerIds.indexOf(data.uid) === -1) {
@@ -179,27 +212,31 @@ class HostVideoScreen extends Component {
         const { peerIds, isConnecting } = this.state
         const { status, eventType } = this.props.event;
         return (
-            <View style={{ flex: 1 }}>
+            <View style={{ flex: 1 }} >
                 <KeepAwake />
                 <TransparentStatusBar />
                 <View style={{ flex: 1 }}>
-                    {eventType === CALL ? (
-                        <CallView
-                            event={this.props.event}
-                            peerIds={peerIds}
-                        />
-                    ) : (
+                    {eventType === CALL ?
+                        (
+                            <CallView
+                                event={this.props.event}
+                                peerIds={peerIds}
+                            />
+                        )
+                        :
+                        (
                             <BroadcastView
                                 event={this.props.event}
                                 clientRole={1}
                                 viewers={this.props.viewers}
                                 hostId={HOST_UID}
                             />
-                        )}
+                        )
+                }
                     <WaitingModal isWaiting={isConnecting} />
-                    <BroadcastButton event={this.props.event} onPress={this._onPress} />
+                    <BroadcastButton status={status} event={this.props.event} onPress={this._onPress} />
                 </View>
-            </View>
+            </View >
         )
     }
 

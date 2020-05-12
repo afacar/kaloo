@@ -12,6 +12,7 @@ import io.invertase.firebase.auth.RNFirebaseAuthPackage; // <-- Add this line
 import io.invertase.firebase.firestore.RNFirebaseFirestorePackage; // <-- Add this line
 import io.invertase.firebase.storage.RNFirebaseStoragePackage; // <-- Add this line
 import io.invertase.firebase.functions.RNFirebaseFunctionsPackage; // <-- Add this line
+import io.invertase.firebase.database.RNFirebaseDatabasePackage; // <-- Add this line
 import com.facebook.react.ReactNativeHost;
 import com.facebook.react.ReactPackage;
 import com.facebook.soloader.SoLoader;
@@ -38,7 +39,7 @@ public class MainApplication extends Application implements ReactApplication {
           packages.add(new RNFirebaseStoragePackage()); // <-- Add this line
           packages.add(new RNFirebaseFunctionsPackage()); // <-- Add this line
           packages.add(new ReactVideoPackage()); // <-- Add this line
-
+          packages.add(new RNFirebaseDatabasePackage()); // <-- Add this line
           return packages;
         }
 

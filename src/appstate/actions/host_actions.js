@@ -109,3 +109,10 @@ export const clearMyViewersListener = () => {
         payload: null
     });
 }
+
+export const setHostEvent = (event) => (dispatch) => {
+    return dispatch({
+        type: LISTEN_HOST_EVENT,
+        payload: event
+    })
+}
