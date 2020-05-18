@@ -1,4 +1,6 @@
 import { createStackNavigator } from 'react-navigation-stack';
+import { createSwitchNavigator } from 'react-navigation';
+
 import EventListScreen from '../screens/EventListScreen';
 import ProfileScreen from '../screens/ProfileScreen';
 import BalanceScreen from '../screens/BalanceScreen';
@@ -12,7 +14,7 @@ import HostVideoScreen from '../screens/HostVideoScreen';
 import VideoScreen from '../screens/VideoScreen';
 import { colors } from '../constants';
 
-export default UserNavigatior = createStackNavigator(
+const UserMainNavigatior = createStackNavigator(
   {
     UserHome: EventListScreen,
     Profile: ProfileScreen,
@@ -20,7 +22,7 @@ export default UserNavigatior = createStackNavigator(
     /** SCREENS FOR HOSTING EVENT */
     EventCreate: EventCreateScreen,
     EventPreview: EventPreviewScreen,
-    EventPublish: EventPublishScreen,
+    //EventPublish: EventPublishScreen,
     Host: HostScreen,
     HostVideo: HostVideoScreen,
     /** SCREENS FOR JOINING EVENT */
@@ -38,3 +40,20 @@ export default UserNavigatior = createStackNavigator(
     }
   }
 );
+
+export default UserNavigator = createSwitchNavigator(
+  {
+    UserMain: { screen: UserMainNavigatior },
+    EventPublish: { screen: EventPublishScreen },
+  },
+  {
+    initialRouteName: "UserMain",
+    defaultNavigationOptions: {
+      headerTitleAlign: 'center',
+      headerStyle: { backgroundColor: colors.BLUE, borderBottomWidth: 0, elevation: 0, shadowOpacity: 0 },
+      headerTitleStyle: { color: '#fff', fontWeight: 'normal' },
+      cardStyle: { backgroundColor: 'white' }
+    }
+  },
+);
+

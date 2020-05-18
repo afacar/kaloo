@@ -4,44 +4,38 @@ import { SafeAreaView } from 'react-navigation'
 import { connect } from 'react-redux';
 
 import * as actions from '../appstate/actions/host_actions';
-import { handleAndroidBackButton, removeAndroidBackButtonHandler } from '../utils/BackHandler'
 import EventShare from '../components/EventShare';
 import { Stage } from '../components/Stages';
 import { H1Label } from '../components/Labels';
 import { DefaultButton } from '../components/Buttons';
 
-import HeaderLeft from '../components/Headers/HeaderLeft';
 import HeaderRight from '../components/Headers/HeaderRight';
 import { ContactUs } from '../components/ContactUs';
+import UserAvatar from '../components/UserAvatar';
 
 
 class EventPublishScreen extends Component {
-  static navigationOptions = ({ navigation }) => ({
-    title: 'Event ready!',
-    headerLeft: () => <HeaderLeft onPress={() => navigation.navigate('UserHome')} />,
-    headerRight: () => <HeaderRight title='Done' onPress={() => navigation.navigate('UserHome')} />
-  });
 
   state = {};
 
-  componentDidMount() {
-    handleAndroidBackButton(this.handleBackButton)
-  }
+  componentDidMount() { }
 
-  handleBackButton = () => {
-    this.props.navigation.popToTop()
-    return true
-  }
-
-  componentWillUnmount() {
-    removeAndroidBackButtonHandler(this.handleBackButton)
-  }
+  componentWillUnmount() { }
 
   render() {
     const myEvent = this.props.navigation.getParam('event');
 
     return (
       <SafeAreaView style={styles.container} forceInset={{ bottom: 'never' }}>
+        <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+          <View style={{ flex: 1 }} />
+          <View style={{ flex: 1 }}>
+            <UserAvatar />
+          </View>
+          <View style={{ flex:1, alignItems: 'flex-end' }}>
+            <HeaderRight title='Done' onPress={() => this.props.navigation.navigate('UserHome')} />
+          </View>
+        </View>
         <View style={styles.componentStyle}>
           <View style={{ flexDirection: 'row', justifyContent: "space-between", marginVertical: 20 }}>
             <Stage value="1" text="Create" />
@@ -73,7 +67,7 @@ class EventPublishScreen extends Component {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1, 
+    flex: 1,
     backgroundColor: "#3598FE",
     justifyContent: 'flex-start',
   },

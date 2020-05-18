@@ -9,7 +9,7 @@ function UserAvatar(props) {
     profile = profile ? profile : auth().currentUser
     let imageSource = profile.photoURL ? { uri: profile.photoURL } : require('../assets/default-profile.png')
     return (
-        <View style={{ flex: 1, justifyContent: 'center' }}>
+        <View style={{ alignSelf:'center' }}>
             <Avatar
                 rounded={true}
                 size='small'
