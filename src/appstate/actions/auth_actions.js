@@ -5,17 +5,20 @@ const db = firestore();
 
 let listenUserProfile = () => { console.log('User profile is unlistening!') }
 
-export const setUserProfile = () => async (dispatch) => {
-    const { uid, displayName, email, photoURL } = auth().currentUser;
-    console.log('setUserProfile', uid, displayName, email, photoURL)
-    dispatch({
-        type: CURRENT_USER,
-        payload: { uid, displayName, email, photoURL }
-    })
+export const setUserProfile = (data) => async (dispatch) => {
+    console.log('setUserProfile data', data)
+    if (data) {
+        dispatch({
+            type: CURRENT_USER,
+            payload: data
+        })
+    }
+
+    const { uid } = auth().currentUser;
     listenUserProfile = db.doc(`users/${uid}`).onSnapshot((userDoc) => {
         let profile = userDoc.data()
-        console.log('user profile changed', profile)
-        return dispatch({
+        console.log('user profile fetched', profile)
+        dispatch({
             type: CURRENT_USER,
             payload: profile
         })

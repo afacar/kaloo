@@ -6,7 +6,9 @@ const INITIAL_STATE = {
     email: null,
     photoURL: null,
     userNumber: null,
-
+    totalEarnings: 0, 
+    paidAmount: 0,
+    blockedEarnings: 0,
 }
 
 export default function (state = INITIAL_STATE, action) {

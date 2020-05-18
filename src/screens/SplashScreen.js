@@ -26,6 +26,7 @@ class SplashScreen extends Component {
             try {
                 await this.props.loadAssets()
                 const user = auth().currentUser;
+                console.log('Splash user', user)
                 if (user) {
                     await this.props.setHostEventsListener()
                     await this.props.setUserProfile();
