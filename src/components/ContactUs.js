@@ -1,40 +1,44 @@
 import React, { Component } from 'react';
 import { View, Text, Modal, StyleSheet } from 'react-native';
-import { Input, Button } from 'react-native-elements';
+import { Input } from 'react-native-elements';
 import { functions, auth } from "react-native-firebase";
-import { ClickableText, DefaultButton, RedButton, ClearButton } from './Buttons';
 
-const INITIAL_STATE = { message: '', visible: false, infoMessage: '', chars: 0, loading: false, sent: false }
+import { ClickableText, DefaultButton, ClearButton } from './Buttons';
+import { HighlightedText } from '../components/Labels';
+import { validateEmail } from '../utils/Utils';
+
+const INITIAL_STATE = { message: '', visible: false, emailError: '', messageError: '', infoMessage: '', chars: 0, loading: false, sent: false }
 
 export class ContactUs extends Component {
-    state = INITIAL_STATE
+    user = auth().currentUser ? {
+        uid: auth().currentUser.uid, email: auth().currentUser.email
+    } : { uid: '', email: '' }
+    state = { ...INITIAL_STATE, ...this.user }
 
     onSubmit = async () => {
-        const { message } = this.state;
+        const { uid, email, message } = this.state;
         const { screen } = this.props
-        let user = { uid: '', email: '' }
+
+        // Check email
+        if (!validateEmail(email))
+            return this.setState({ emailError: 'Check email format!' });
 
         if (message.length < 3) {
-            return this.setState({ infoMessage: 'We need more than this :)' })
-        }
-
-        if (auth().currentUser) {
-            user.uid = auth().currentUser.uid
-            user.email = auth().currentUser.email
+            return this.setState({ messageError: 'We need more explanation :)' })
         }
 
         this.setState({ loading: true })
         try {
             let contactUs = functions().httpsCallable('contactUs')
-            let contactData = { message, screen, user }
+            let contactData = { message, screen, email, uid }
             let result = await contactUs(contactData)
             if (result.data.state === 'SUCCESS') {
                 this.setState({ infoMessage: 'Thanks for inquiry!', sent: true })
             } else {
-                this.setState({ infoMessage: result.data.message })
+                this.setState({ messageError: result.data.message })
             }
         } catch (error) {
-            this.setState({ infoMessage: error.message })
+            this.setState({ messageError: error.message })
         }
         this.setState({ loading: false })
     };
@@ -49,9 +53,9 @@ export class ContactUs extends Component {
 
     render() {
         const { title } = this.props
-        const { message, visible, infoMessage, chars, loading, sent } = this.state;
+        const { uid, email, message, visible, infoMessage, chars, loading, sent, emailError, messageError } = this.state;
         return (
-            <View style={{ alignSelf: 'stretch', alignItems:'center', backgroundColor: 'white' }}>
+            <View style={{ alignSelf: 'stretch', alignItems: 'center', backgroundColor: 'white' }}>
                 <ClickableText opacity={0.5} text={title || 'Contact Us'} onPress={this.openContactUs} />
                 <Modal
                     animationType="slide"
@@ -62,28 +66,48 @@ export class ContactUs extends Component {
                 >
                     <View style={styles.container}>
                         <View style={styles.modalView}>
-                            <Text style={{ color: 'red' }}>{infoMessage}</Text>
-                            {!sent && <Input
-                                value={message}
-                                onChangeText={message => this.setState({ message, chars: message.length })}
-                                placeholder='Text goes here'
-                                multiline
-                                maxLength={250}
-                                inputContainerStyle={{ ...styles.inputContainerStyle, height: 100 }}
-                                //inputStyle={{ alignSelf: 'flex-start', paddingVertical: 5 }}
-                                containerStyle={{ paddingHorizontal: 0 }}
-                            />}
-                            <Text style={{ alignSelf: 'flex-end', color: 'grey' }}>{chars}/250</Text>
+                            {sent ? (
+                                <HighlightedText text={infoMessage} />
+                            ) : (
+                                    <View>
+                                        {!uid && <Input
+                                            value={email}
+                                            onChangeText={email => this.setState({ email, emailError: '' })}
+                                            placeholder='your@email.com'
+                                            maxLength={100}
+                                            inputContainerStyle={{ ...styles.inputContainerStyle }}
+                                            containerStyle={{ paddingHorizontal: 0, marginTop: 10 }}
+                                            errorMessage={emailError}
+                                            keyboardType='email-address'
+                                            disabled={loading}
+                                        />}
+                                        <Input
+                                            value={message}
+                                            onChangeText={message => this.setState({ message, chars: message.length, messageError: '' })}
+                                            placeholder='Your inquiry...'
+                                            multiline
+                                            maxLength={250}
+                                            inputContainerStyle={{ ...styles.inputContainerStyle, height: 100 }}
+                                            containerStyle={{ paddingHorizontal: 0, marginTop: 10 }}
+                                            errorMessage={messageError}
+                                            disabled={loading}
+                                        />
+                                        <Text style={{ alignSelf: 'flex-end', color: 'grey' }}>{chars}/250</Text>
 
-                            <View style={{ flexDirection: 'row',alignItems:'center', justifyContent:'space-evenly' }}>
+                                    </View>
+                                )
+                            }
+                            <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-evenly' }}>
                                 <ClearButton
-                                title='Close'
-                                onPress={this.closeContactUs}/>
+                                    title='Close'
+                                    onPress={this.closeContactUs}
+                                    disabled={loading}
+                                />
                                 <DefaultButton
                                     title='Submit'
                                     onPress={this.onSubmit}
                                     loading={loading}
-                                    disabled={sent}
+                                    disabled={sent || loading}
                                 />
                             </View>
                         </View>
@@ -103,12 +127,11 @@ const styles = StyleSheet.create({
     },
     modalView: {
         margin: 20,
-        backgroundColor: "white",
         opacity: 1,
-        borderRadius: 20,
+        borderRadius: 5,
         padding: 35,
-        alignItems: 'stretch',
-        shadowColor: "#000",
+        backgroundColor: '#fff',
+        shadowColor: "#fff",
         shadowOffset: {
             width: 0,
             height: 2
@@ -120,7 +143,7 @@ const styles = StyleSheet.create({
     inputContainerStyle: {
         borderWidth: 0.7,
         borderColor: '#3b3a30',
-        borderRadius: 6,
+        borderRadius: 5,
         paddingHorizontal: 10,
         marginHorizontal: 0,
     },
