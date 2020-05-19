@@ -107,7 +107,7 @@ class ProfileScreen extends Component {
                                 <MyAvatar
                                     source={{ uri: photoURL }}
                                 />
-                                <View style={{ alignSelf: 'center', justifyContent: 'center', marginLeft: 20, }}>
+                                <View style={{ alignSelf: 'center', justifyContent: 'center' }}>
                                     <TouchableOpacity onPress={this.onImagePicker} >
                                         <Text style={{ fontSize: 18, color: colors.BLUE }}>Change Profile Picture</Text>
                                     </TouchableOpacity>
