@@ -20,8 +20,8 @@ class TicketView extends Component {
 
   checkTicket = async () => {
     let { ticket } = this.state;
-    ticket = ticket.trim()
-    this.setState({ isWaiting: true })
+    ticket = ticket.trim().toUpperCase()
+    this.setState({ ticket, isWaiting: true })
 
     try {
       let validateTicket = functions().httpsCallable('validateTicket')
@@ -45,7 +45,7 @@ class TicketView extends Component {
   }
 
   onTicketChange = (ticket) => {
-    let formattedTicket = ticket.trim().toUpperCase().split('-').join('')
+    let formattedTicket = ticket.trim().split('-').join('')
     let first = formattedTicket.substr(0, 4)
     let second = formattedTicket.substr(4, 4)
     let third = formattedTicket.substr(8, 4)
@@ -86,8 +86,9 @@ class TicketView extends Component {
               keyboardType="ascii-capable"
               errorMessage={ticketError}
               autoCapitalize="characters"
+              autoCorrect={false}
               disabled={isWaiting}
-              maxLength={TICKET_FORMAT.length || 14}
+              maxLength={TICKET_FORMAT.length + 2 || 14}
               containerStyle={{ paddingVertical: 10, paddingHorizontal: 0 }}
               inputContainerStyle={{
                 borderWidth: 0.7,
