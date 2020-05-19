@@ -107,6 +107,7 @@ class GuestView extends Component {
         const { joinLoading } = this.state
         const eventData = this.props.event
         const ticketData = this.props.ticket
+        const screenData = `${Platform.OS.toUpperCase()} - GuestScreen\n TicketId: ${ticketData.ticketId}\n EventId: ${eventData.eventId}`
         const viewers = this.props.viewers // TODO: Maybe number of online viewes can be shown QuestView later
         const { image, photoURL, title, description, displayName, duration, eventType, eventDate, status, price } = eventData;
         const disabled = status !== IN_PROGRESS
@@ -143,7 +144,7 @@ class GuestView extends Component {
                     </View>
                 </View>
                 <WaitingModal isWaiting={joinLoading} />
-                <ContactUs title='Have a problem?' screen={`${Platform.OS.toUpperCase()} GuestScreen`} />
+                <ContactUs title='Have a problem?' screen={screenData} />
             </ScrollView>
         )
     }
